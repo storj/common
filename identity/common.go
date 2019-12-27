@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-package identity // import "storj.io/storj/pkg/identity"
+package identity
 
 import (
 	"github.com/zeebo/errs"
