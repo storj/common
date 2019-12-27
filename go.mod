@@ -1,8 +1,6 @@
-module storj.io/storj
+module storj.io/common
 
 go 1.13
-
-replace storj.io/common => ./common
 
 // force specific versions for minio
 require (

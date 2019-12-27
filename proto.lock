@@ -1,7 +1,7 @@
 {
   "definitions": [
     {
-      "protopath": "pkg:/:macaroon:/:types.proto",
+      "protopath": "macaroon:/:types.proto",
       "def": {
         "messages": [
           {
@@ -94,7 +94,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:certificate.proto",
+      "protopath": "pb:/:certificate.proto",
       "def": {
         "messages": [
           {
@@ -148,7 +148,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:contact.proto",
+      "protopath": "pb:/:contact.proto",
       "def": {
         "messages": [
           {
@@ -237,7 +237,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:datarepair.proto",
+      "protopath": "pb:/:datarepair.proto",
       "def": {
         "messages": [
           {
@@ -292,7 +292,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:encryption.proto",
+      "protopath": "pb:/:encryption.proto",
       "def": {
         "enums": [
           {
@@ -345,7 +345,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:encryption_access.proto",
+      "protopath": "pb:/:encryption_access.proto",
       "def": {
         "messages": [
           {
@@ -404,7 +404,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:gogo.proto",
+      "protopath": "pb:/:gogo.proto",
       "def": {
         "messages": [
           {
@@ -838,7 +838,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:gracefulexit.proto",
+      "protopath": "pb:/:gracefulexit.proto",
       "def": {
         "enums": [
           {
@@ -1341,7 +1341,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:inspector.proto",
+      "protopath": "pb:/:inspector.proto",
       "def": {
         "messages": [
           {
@@ -1799,7 +1799,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:meta.proto",
+      "protopath": "pb:/:meta.proto",
       "def": {
         "messages": [
           {
@@ -1835,7 +1835,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:metainfo.proto",
+      "protopath": "pb:/:metainfo.proto",
       "def": {
         "enums": [
           {
@@ -4220,7 +4220,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:node.proto",
+      "protopath": "pb:/:node.proto",
       "def": {
         "enums": [
           {
@@ -4450,7 +4450,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:nodestats.proto",
+      "protopath": "pb:/:nodestats.proto",
       "def": {
         "messages": [
           {
@@ -4642,7 +4642,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:orders.proto",
+      "protopath": "pb:/:orders.proto",
       "def": {
         "enums": [
           {
@@ -5229,7 +5229,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:overlay.proto",
+      "protopath": "pb:/:overlay.proto",
       "def": {
         "enums": [
           {
@@ -5333,7 +5333,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:payments.proto",
+      "protopath": "pb:/:payments.proto",
       "def": {
         "messages": [
           {
@@ -5414,7 +5414,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:piecestore2.proto",
+      "protopath": "pb:/:piecestore2.proto",
       "def": {
         "enums": [
           {
@@ -5778,7 +5778,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:pointerdb.proto",
+      "protopath": "pb:/:pointerdb.proto",
       "def": {
         "enums": [
           {
@@ -6055,7 +6055,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:referralmanager.proto",
+      "protopath": "pb:/:referralmanager.proto",
       "def": {
         "messages": [
           {
@@ -6162,7 +6162,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:scope.proto",
+      "protopath": "pb:/:scope.proto",
       "def": {
         "messages": [
           {
@@ -6203,7 +6203,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:streams.proto",
+      "protopath": "pb:/:streams.proto",
       "def": {
         "messages": [
           {
@@ -6289,7 +6289,7 @@
       }
     },
     {
-      "protopath": "pkg:/:pb:/:vouchers.proto",
+      "protopath": "pb:/:vouchers.proto",
       "def": {
         "enums": [
           {
