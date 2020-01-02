@@ -140,3 +140,33 @@ func TestExpiration(t *testing.T) {
 		}
 	}
 }
+
+func TestGetAllowedBuckets(t *testing.T) {
+	secret, err := NewSecret()
+	require.NoError(t, err)
+	key, err := NewAPIKey(secret)
+	require.NoError(t, err)
+
+	restricted, err := key.Restrict(Caveat{
+		AllowedPaths: []*Caveat_Path{{Bucket: []byte("test1")}, {Bucket: []byte("test2")}},
+	})
+	require.NoError(t, err)
+
+	restricted, err = restricted.Restrict(Caveat{
+		AllowedPaths: []*Caveat_Path{{Bucket: []byte("test1")}, {Bucket: []byte("test3")}},
+	})
+	require.NoError(t, err)
+
+	now := time.Now()
+	action := Action{
+		Op:   ActionRead,
+		Time: now,
+	}
+
+	allowed, err := restricted.GetAllowedBuckets(ctx, action)
+	require.NoError(t, err)
+	require.Equal(t, allowed, AllowedBuckets{
+		All:     false,
+		Buckets: map[string]struct{}{"test1": {}},
+	})
+}
