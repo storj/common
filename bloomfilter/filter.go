@@ -1,6 +1,7 @@
-// Copyright (C) 2019 Storj Labs, Inc.
+// Copyright (C) 2020 Storj Labs, Inc.
 // See LICENSE for copying information.
 
+// Package bloomfilter implements a bloom-filter for pieces that need to be preserved.
 package bloomfilter
 
 import (

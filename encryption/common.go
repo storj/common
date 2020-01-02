@@ -1,6 +1,7 @@
-// Copyright (C) 2019 Storj Labs, Inc.
+// Copyright (C) 2020 Storj Labs, Inc.
 // See LICENSE for copying information.
 
+// Package encryption collects common cryptographic primitives needed for path and data encryption.
 package encryption
 
 import (
