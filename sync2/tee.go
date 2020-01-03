@@ -5,9 +5,10 @@ package sync2
 
 import (
 	"io"
-	"io/ioutil"
 	"sync"
 	"sync/atomic"
+
+	"github.com/calebcase/tmpfile"
 )
 
 type tee struct {
@@ -27,7 +28,7 @@ type tee struct {
 
 // NewTeeFile returns a tee that uses file-system to offload memory
 func NewTeeFile(readers int, tempdir string) ([]PipeReader, PipeWriter, error) {
-	tempfile, err := ioutil.TempFile(tempdir, "tee")
+	file, err := tmpfile.New(tempdir, "tee")
 	if err != nil {
 		return nil, nil, err
 	}
@@ -35,7 +36,7 @@ func NewTeeFile(readers int, tempdir string) ([]PipeReader, PipeWriter, error) {
 	handles := int64(readers + 1) // +1 for the writer
 
 	buffer := &offsetFile{
-		file: tempfile,
+		file: file,
 		open: &handles,
 	}
 

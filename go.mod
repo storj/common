@@ -8,6 +8,7 @@ require github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a
 replace google.golang.org/grpc => github.com/storj/grpc-go v1.23.1-0.20190918084400-1c4561bf5127
 
 require (
+	github.com/calebcase/tmpfile v1.0.1
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.2.1
 	github.com/golang/protobuf v1.3.2
@@ -22,7 +23,6 @@ require (
 	golang.org/x/crypto v0.0.0-20190911031432-227b76d455e7
 	golang.org/x/net v0.0.0-20190916140828-c8589233b77d // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/sys v0.0.0-20190916202348-b4ddaad3f8a3 // indirect
 	golang.org/x/text v0.3.2 // indirect
 	google.golang.org/genproto v0.0.0-20190716160619-c506a9f90610 // indirect
 	google.golang.org/grpc v1.23.1
