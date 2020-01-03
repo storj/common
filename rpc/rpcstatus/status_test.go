@@ -5,6 +5,9 @@ package rpcstatus
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -44,4 +47,9 @@ func TestStatus(t *testing.T) {
 	assert.Equal(t, Code(nil), OK)
 	assert.Equal(t, Code(context.Canceled), Canceled)
 	assert.Equal(t, Code(context.DeadlineExceeded), DeadlineExceeded)
+}
+
+func TestStatus_WrapFormatting(t *testing.T) {
+	err := Wrap(Internal, errors.New("test"))
+	assert.True(t, strings.Count(fmt.Sprintf("%+v", err), "\n") > 0)
 }

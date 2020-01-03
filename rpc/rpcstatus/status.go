@@ -6,9 +6,9 @@ package rpcstatus
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
+	"github.com/zeebo/errs"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -62,34 +62,52 @@ func Code(err error) StatusCode {
 	}
 }
 
+// Wrap wraps the error with the provided status code.
+func Wrap(code StatusCode, err error) error {
+	if err == nil {
+		return nil
+	}
+
+	ce := &codeErr{
+		code: code,
+		grpc: status.New(code.toGRPC(), err.Error()),
+	}
+
+	if ee, ok := err.(errsError); ok {
+		ce.errsError = ee
+	} else {
+		ce.errsError = errs.Wrap(err).(errsError)
+	}
+
+	return ce
+}
+
 // Error wraps the message with a status code into an error.
 func Error(code StatusCode, msg string) error {
-	return &codeErr{
-		err:  errors.New(msg),
-		code: code,
-		grpc: status.New(code.toGRPC(), msg),
-	}
+	return Wrap(code, errs.New("%s", msg))
 }
 
 // Errorf : Error :: fmt.Sprintf : fmt.Sprint
 func Errorf(code StatusCode, format string, a ...interface{}) error {
-	return &codeErr{
-		err:  fmt.Errorf(format, a...),
-		code: code,
-		grpc: status.Newf(code.toGRPC(), format, a...),
-	}
+	return Wrap(code, errs.New(format, a...))
+}
+
+type errsError interface {
+	error
+	fmt.Formatter
+	Name() (string, bool)
 }
 
 // codeErr implements error that can work both in grpc and drpc.
 type codeErr struct {
-	err  error
+	errsError
 	code StatusCode
 	grpc *status.Status
 }
 
-func (c *codeErr) Error() string              { return c.err.Error() }
-func (c *codeErr) Unwrap() error              { return c.err }
-func (c *codeErr) Cause() error               { return c.err }
+func (c *codeErr) Unwrap() error { return c.errsError }
+func (c *codeErr) Cause() error  { return c.errsError }
+
 func (c *codeErr) Code() uint64               { return uint64(c.code) }
 func (c *codeErr) GRPCStatus() *status.Status { return c.grpc }
 
