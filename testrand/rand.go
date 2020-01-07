@@ -188,10 +188,11 @@ func Metadata() map[string]string {
 // created.
 func Path() string {
 	const (
-		max = 1 * 1024
+		max = 1 * 1023
 	)
 
-	total := rand.Intn(max)
+	// generate non empty path
+	total := rand.Intn(max) + 1
 	path := ""
 
 	for used := 0; len(path) < total; {
@@ -200,6 +201,7 @@ func Path() string {
 		}
 
 		path += SegmentID(rand.Intn(total - used)).String()
+		used = len(path)
 	}
 
 	return path[:total]
