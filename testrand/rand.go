@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Storj Labs, Inc.
+// Copyright (C) 2020 Storj Labs, Inc.
 // See LICENSE for copying information.
 
 // Package testrand implements generating random base types for testing.
@@ -179,30 +179,65 @@ func Metadata() map[string]string {
 	return metadata
 }
 
-// Path creates a random path mostly conforming to the retrictions of S3:
-// https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#object-keys
-//
-// NOTE: This may not generate values that cover all valid values (for Storj or
-// S3). This is a best effort to cover most cases we believe our design
-// requires and will need to be revisited when a more explicit design spec is
-// created.
-func Path() string {
-	const (
-		max = 1 * 1023
-	)
+const (
+	letters    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	numbers    = "0123456789"
+	safepath   = "-_."
+	unsafepath = "[]()^ #%&!@:+={}'~"
+	// things that are non-printable and isn't special for path component encoding
+	nonprintable = "\x03\xfd\xf0\x2d\x30"
+)
 
-	// generate non empty path
-	total := rand.Intn(max) + 1
-	path := ""
+// URLPath creates a clean random url path.
+func URLPath() string {
+	n := rand.Intn(1024) + 1
+	path := bytesOf(n, letters+numbers+numbers+safepath+safepath+safepath)
 
-	for used := 0; len(path) < total; {
-		if used != 0 {
-			path += "/"
-		}
-
-		path += SegmentID(rand.Intn(total - used)).String()
-		used = len(path)
+	// replace / every 3 to 100 characters
+	offset := randomRange(3, 100)
+	for offset < len(path) {
+		path[offset] = '/'
+		offset += randomRange(3, 100)
 	}
 
-	return path[:total]
+	return string(path)
+}
+
+// URLPathNonFolder creates a clean random url path that is not a folder.
+func URLPathNonFolder() string {
+	n := rand.Intn(1024) + 1
+	path := bytesOf(n, letters+numbers+numbers+safepath+safepath+safepath)
+
+	// replace / every 3 to 100 characters
+	offset := randomRange(3, 100)
+	for offset < len(path)-1 {
+		path[offset] = '/'
+		offset += randomRange(3, 100)
+	}
+
+	return string(path)
+}
+
+// Path creates a random path that Storj should support.
+func Path() string {
+	n := rand.Intn(1024) + 1
+	path := bytesOf(n, letters+numbers+numbers+safepath+safepath+safepath+unsafepath+"/////"+nonprintable+nonprintable+nonprintable)
+	return string(path)
+}
+
+// bytesOf generates random bytes using the specified alphabet.
+func bytesOf(length int, alphabet string) []byte {
+	if len(alphabet) > 256 {
+		panic("alphabet too large")
+	}
+
+	data := BytesInt(length)
+	for i, v := range data {
+		data[i] = alphabet[int(v)%len(alphabet)]
+	}
+	return data
+}
+
+func randomRange(min, max int) int {
+	return rand.Intn(max-min) + min
 }
