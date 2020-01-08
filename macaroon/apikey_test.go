@@ -14,9 +14,9 @@ import (
 	"github.com/zeebo/errs"
 )
 
-var ctx = context.Background() // test context
-
 func TestSerializeParseRestrictAndCheck(t *testing.T) {
+	ctx := context.Background()
+
 	secret, err := NewSecret()
 	require.NoError(t, err)
 	key, err := NewAPIKey(secret)
@@ -64,6 +64,8 @@ func TestSerializeParseRestrictAndCheck(t *testing.T) {
 }
 
 func TestRevocation(t *testing.T) {
+	ctx := context.Background()
+
 	secret, err := NewSecret()
 	require.NoError(t, err)
 	key, err := NewAPIKey(secret)
@@ -88,6 +90,8 @@ func TestRevocation(t *testing.T) {
 }
 
 func TestExpiration(t *testing.T) {
+	ctx := context.Background()
+
 	secret, err := NewSecret()
 	require.NoError(t, err)
 	key, err := NewAPIKey(secret)
@@ -142,6 +146,8 @@ func TestExpiration(t *testing.T) {
 }
 
 func TestGetAllowedBuckets(t *testing.T) {
+	ctx := context.Background()
+
 	secret, err := NewSecret()
 	require.NoError(t, err)
 	key, err := NewAPIKey(secret)

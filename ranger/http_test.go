@@ -16,11 +16,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	ctx = context.Background() // test context
-)
-
 func TestHTTPRanger(t *testing.T) {
+	ctx := context.Background()
+
 	var content string
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +52,7 @@ func TestHTTPRanger(t *testing.T) {
 		if assert.NoError(t, err, tag) {
 			assert.Equal(t, tt.size, rr.Size(), tag)
 		}
-		r, err := rr.Range(context.Background(), tt.offset, tt.length)
+		r, err := rr.Range(ctx, tt.offset, tt.length)
 		if tt.errString != "" {
 			assert.EqualError(t, err, tt.errString, tag)
 			continue
@@ -68,12 +66,15 @@ func TestHTTPRanger(t *testing.T) {
 }
 
 func TestHTTPRangerURLError(t *testing.T) {
+	ctx := context.Background()
 	rr, err := HTTPRanger(ctx, "")
 	assert.Nil(t, rr)
 	assert.NotNil(t, err)
 }
 
 func TestHTTPRangeStatusCodeOk(t *testing.T) {
+	ctx := context.Background()
+
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusForbidden)
@@ -85,6 +86,8 @@ func TestHTTPRangeStatusCodeOk(t *testing.T) {
 }
 
 func TestHTTPRangerSize(t *testing.T) {
+	ctx := context.Background()
+
 	var content string
 	ts := httptest.NewServer(http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -116,7 +119,7 @@ func TestHTTPRangerSize(t *testing.T) {
 		content = tt.data
 		rr := HTTPRangerSize(ts.URL, tt.size)
 		assert.Equal(t, tt.size, rr.Size(), tag)
-		r, err := rr.Range(context.Background(), tt.offset, tt.length)
+		r, err := rr.Range(ctx, tt.offset, tt.length)
 		if tt.errString != "" {
 			assert.EqualError(t, err, tt.errString, tag)
 			continue
