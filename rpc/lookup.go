@@ -3,19 +3,22 @@
 
 package rpc
 
-import "net"
+import (
+	"context"
+	"net"
+)
 
 // LookupNodeAddress resolves a storage node address to the first IP address resolved.
 // If an IP address is accidentally provided it is returned back. This function
 // is used to resolve storage node IP addresses so that uplinks can use
 // IP addresses directly without resolving many hosts.
-func LookupNodeAddress(nodeAddress string) string {
+func LookupNodeAddress(ctx context.Context, nodeAddress string) string {
 	// We check if the address is an IP address.
 	ip := net.ParseIP(nodeAddress)
 	if ip == nil {
 		// We have a hostname not an IP address so we should resolve the IP address
 		// to give back to the uplink client.
-		addresses, err := net.LookupHost(nodeAddress)
+		addresses, err := net.DefaultResolver.LookupHost(ctx, nodeAddress)
 		if err == nil && len(addresses) > 0 {
 			// We return the first address found because some DNS servers already do
 			// round robin load balancing and we would be messing with their behaviour

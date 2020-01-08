@@ -4,6 +4,7 @@
 package rpc
 
 import (
+	"context"
 	"net"
 	"testing"
 
@@ -12,7 +13,7 @@ import (
 
 func TestLookupNodeAddressWithHost(t *testing.T) {
 	// When we provide a host to LookupHostFirstAddress we should get a valid IP address back.
-	address := LookupNodeAddress("google.com")
+	address := LookupNodeAddress(context.Background(), "google.com")
 
 	// Verify we get a properly formatted IP address back.
 	ip := net.ParseIP(address)
@@ -21,7 +22,7 @@ func TestLookupNodeAddressWithHost(t *testing.T) {
 
 func TestLookupNodeAddressWithIP(t *testing.T) {
 	// When we provide an IP address to LookupHostFirstAddress we should get the same IP address back.
-	address := LookupNodeAddress("8.8.8.8")
+	address := LookupNodeAddress(context.Background(), "8.8.8.8")
 
 	// Verify we get the same IP address back.
 	assert.Equal(t, "8.8.8.8", address)
