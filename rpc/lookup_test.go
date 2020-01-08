@@ -9,9 +9,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"storj.io/common/testcontext"
 )
 
-func TestLookupNodeAddressWithHost(t *testing.T) {
+func TestLookupNodeAddress_Host(t *testing.T) {
 	// When we provide a host to LookupHostFirstAddress we should get a valid IP address back.
 	address := LookupNodeAddress(context.Background(), "google.com")
 
@@ -20,10 +22,29 @@ func TestLookupNodeAddressWithHost(t *testing.T) {
 	assert.NotNil(t, ip)
 }
 
-func TestLookupNodeAddressWithIP(t *testing.T) {
-	// When we provide an IP address to LookupHostFirstAddress we should get the same IP address back.
-	address := LookupNodeAddress(context.Background(), "8.8.8.8")
+func TestLookupNodeAddress_HostAndPort(t *testing.T) {
+	// When we provide a host to LookupHostFirstAddress we should get a valid IP address and port back.
+	address := LookupNodeAddress(context.Background(), "google.com:8888")
 
-	// Verify we get the same IP address back.
-	assert.Equal(t, "8.8.8.8", address)
+	// Verify we get a properly formatted IP address back.
+	host, port, err := net.SplitHostPort(address)
+	assert.NoError(t, err)
+	assert.Equal(t, "8888", port)
+	assert.NotNil(t, net.ParseIP(host))
+}
+
+func TestLookupNodeAddress_IP(t *testing.T) {
+	ctx := testcontext.New(t)
+	defer ctx.Cleanup()
+
+	tests := []string{
+		"8.8.8.8",
+		"2001:4860:4860::8888",
+		"192.168.0.1:8888",
+		"[2001:4860:4860::8888]:8888",
+	}
+	for _, test := range tests {
+		address := LookupNodeAddress(ctx, test)
+		assert.Equal(t, test, address)
+	}
 }
