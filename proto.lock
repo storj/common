@@ -5366,6 +5366,18 @@
             "name": "ApplyInvoiceRecordsResponse"
           },
           {
+            "name": "PrepareInvoiceCouponsRequest"
+          },
+          {
+            "name": "PrepareInvoiceCouponsResponse"
+          },
+          {
+            "name": "ApplyInvoiceCouponsRequest"
+          },
+          {
+            "name": "ApplyInvoiceCouponsResponse"
+          },
+          {
             "name": "CreateInvoicesRequest"
           },
           {
@@ -5385,6 +5397,16 @@
                 "name": "ApplyInvoiceRecords",
                 "in_type": "ApplyInvoiceRecordsRequest",
                 "out_type": "ApplyInvoiceRecordsResponse"
+              },
+              {
+                "name": "PrepareInvoiceCoupons",
+                "in_type": "PrepareInvoiceCouponsRequest",
+                "out_type": "PrepareInvoiceCouponsResponse"
+              },
+              {
+                "name": "ApplyInvoiceCoupons",
+                "in_type": "ApplyInvoiceCouponsRequest",
+                "out_type": "ApplyInvoiceCouponsResponse"
               },
               {
                 "name": "CreateInvoices",

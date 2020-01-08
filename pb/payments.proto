@@ -12,6 +12,8 @@ import "google/protobuf/timestamp.proto";
 service Payments {
     rpc PrepareInvoiceRecords(PrepareInvoiceRecordsRequest) returns (PrepareInvoiceRecordsResponse);
     rpc ApplyInvoiceRecords(ApplyInvoiceRecordsRequest) returns (ApplyInvoiceRecordsResponse);
+    rpc PrepareInvoiceCoupons(PrepareInvoiceCouponsRequest) returns (PrepareInvoiceCouponsResponse);
+    rpc ApplyInvoiceCoupons(ApplyInvoiceCouponsRequest) returns (ApplyInvoiceCouponsResponse);
     rpc CreateInvoices(CreateInvoicesRequest) returns (CreateInvoicesResponse);
 }
 
@@ -23,6 +25,12 @@ message PrepareInvoiceRecordsResponse {}
 
 message ApplyInvoiceRecordsRequest {}
 message ApplyInvoiceRecordsResponse {}
+
+message PrepareInvoiceCouponsRequest {}
+message PrepareInvoiceCouponsResponse {}
+
+message ApplyInvoiceCouponsRequest {}
+message ApplyInvoiceCouponsResponse {}
 
 message CreateInvoicesRequest {}
 message CreateInvoicesResponse {}
