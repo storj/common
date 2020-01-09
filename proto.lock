@@ -192,6 +192,29 @@
             ]
           },
           {
+            "name": "GetTimeRequest"
+          },
+          {
+            "name": "GetTimeResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "timestamp",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "name": "ContactPingRequest"
           },
           {
@@ -216,11 +239,22 @@
                 "name": "CheckIn",
                 "in_type": "CheckInRequest",
                 "out_type": "CheckInResponse"
+              },
+              {
+                "name": "GetTime",
+                "in_type": "GetTimeRequest",
+                "out_type": "GetTimeResponse"
               }
             ]
           }
         ],
         "imports": [
+          {
+            "path": "gogo.proto"
+          },
+          {
+            "path": "google/protobuf/timestamp.proto"
+          },
           {
             "path": "node.proto"
           }

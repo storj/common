@@ -6,6 +6,8 @@ option go_package = "pb";
 
 package contact;
 
+import "gogo.proto";
+import "google/protobuf/timestamp.proto";
 import "node.proto";
 
 service Contact {
@@ -14,6 +16,7 @@ service Contact {
 
 service Node {
     rpc CheckIn(CheckInRequest) returns (CheckInResponse);
+    rpc GetTime(GetTimeRequest) returns (GetTimeResponse);
 }
 
 message CheckInRequest {
@@ -26,6 +29,12 @@ message CheckInRequest {
 message CheckInResponse {
     bool ping_node_success = 1;
     string ping_error_message = 2;
+}
+
+message GetTimeRequest {}
+
+message GetTimeResponse {
+     google.protobuf.Timestamp timestamp = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
 message ContactPingRequest {}
