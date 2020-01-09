@@ -1,7 +1,8 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-// Package useragent implements parts of https://tools.ietf.org/html/rfc7231#section-5.5.3 and
+// Package useragent implements parts of
+// https://tools.ietf.org/html/rfc7231#section-5.5 and
 // https://tools.ietf.org/html/rfc2616#section-14.43
 package useragent
 
