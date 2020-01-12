@@ -11,9 +11,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/zeebo/errs"
 	"go.uber.org/zap"
 
 	"storj.io/common/memory"
+	"storj.io/common/netutil"
 	"storj.io/common/pb"
 	"storj.io/common/peertls/tlsopts"
 	"storj.io/common/rpc/rpcpool"
@@ -57,13 +59,19 @@ type Dialer struct {
 
 	// ConnectionOptions controls the options that we pass to drpc connections.
 	ConnectionOptions drpcconn.Options
+
+	// TCPUserTimeout controls what setting to use for the TCP_USER_TIMEOUT
+	// socket option on dialed connections. Only valid on linux. Only set
+	// if positive.
+	TCPUserTimeout time.Duration
 }
 
 // NewDefaultDialer returns a Dialer with default timeouts set.
 func NewDefaultDialer(tlsOptions *tlsopts.Options) Dialer {
 	return Dialer{
-		TLSOptions:  tlsOptions,
-		DialTimeout: 20 * time.Second,
+		TLSOptions:     tlsOptions,
+		DialTimeout:    20 * time.Second,
+		TCPUserTimeout: 60 * time.Second,
 		PoolOptions: rpcpool.Options{
 			Capacity:       5,
 			IdleExpiration: 2 * time.Minute,
@@ -110,8 +118,14 @@ func (d Dialer) dialContext(ctx context.Context, address string) (net.Conn, erro
 		}
 	}
 
+	if tcpconn, ok := conn.(*net.TCPConn); d.TCPUserTimeout > 0 && ok {
+		if err := netutil.SetUserTimeout(tcpconn, d.TCPUserTimeout); err != nil {
+			return nil, errs.Combine(Error.Wrap(err), Error.Wrap(conn.Close()))
+		}
+	}
+
 	return &timedConn{
-		Conn: conn,
+		Conn: netutil.TrackClose(conn),
 		rate: d.TransferRate,
 	}, nil
 }
