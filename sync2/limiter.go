@@ -8,20 +8,20 @@ import (
 	"sync"
 )
 
-// Limiter implements concurrent goroutine limiting
+// Limiter implements concurrent goroutine limiting.
 type Limiter struct {
 	limit   chan struct{}
 	working sync.WaitGroup
 }
 
-// NewLimiter creates a new limiter with limit set to n
+// NewLimiter creates a new limiter with limit set to n.
 func NewLimiter(n int) *Limiter {
 	limiter := &Limiter{}
 	limiter.limit = make(chan struct{}, n)
 	return limiter
 }
 
-// Go tries to starts fn as a goroutine.
+// Go tries to start fn as a goroutine.
 // When the limit is reached it will wait until it can run it
 // or the context is canceled.
 func (limiter *Limiter) Go(ctx context.Context, fn func()) bool {
@@ -44,7 +44,7 @@ func (limiter *Limiter) Go(ctx context.Context, fn func()) bool {
 	return true
 }
 
-// Wait waits for all running goroutines to finish
+// Wait waits for all running goroutines to finish.
 func (limiter *Limiter) Wait() {
 	limiter.working.Wait()
 }
