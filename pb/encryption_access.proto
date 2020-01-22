@@ -7,14 +7,21 @@ option go_package = "pb";
 
 package encryption_access;
 
+import "encryption.proto";
+
 message EncryptionAccess {
     message StoreEntry {
         bytes bucket = 1;
         bytes unencrypted_path = 2;
         bytes encrypted_path = 3;
         bytes key = 4;
+
+        encryption.CipherSuite path_cipher = 5;
+        encryption.EncryptionParameters encryption_parameters = 6;
     }
 
     bytes default_key = 1;
     repeated StoreEntry store_entries = 2;
+    encryption.CipherSuite default_path_cipher = 3;
+    encryption.EncryptionParameters default_encryption_parameters = 4;
 }

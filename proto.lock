@@ -395,6 +395,16 @@
                 "name": "store_entries",
                 "type": "StoreEntry",
                 "is_repeated": true
+              },
+              {
+                "id": 3,
+                "name": "default_path_cipher",
+                "type": "encryption.CipherSuite"
+              },
+              {
+                "id": 4,
+                "name": "default_encryption_parameters",
+                "type": "encryption.EncryptionParameters"
               }
             ],
             "messages": [
@@ -420,10 +430,25 @@
                     "id": 4,
                     "name": "key",
                     "type": "bytes"
+                  },
+                  {
+                    "id": 5,
+                    "name": "path_cipher",
+                    "type": "encryption.CipherSuite"
+                  },
+                  {
+                    "id": 6,
+                    "name": "encryption_parameters",
+                    "type": "encryption.EncryptionParameters"
                   }
                 ]
               }
             ]
+          }
+        ],
+        "imports": [
+          {
+            "path": "encryption.proto"
           }
         ],
         "package": {
