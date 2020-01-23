@@ -5431,6 +5431,12 @@
             "name": "ApplyInvoiceCouponsResponse"
           },
           {
+            "name": "ApplyInvoiceCreditsRequest"
+          },
+          {
+            "name": "ApplyInvoiceCreditsResponse"
+          },
+          {
             "name": "CreateInvoicesRequest"
           },
           {
@@ -5455,6 +5461,11 @@
                 "name": "ApplyInvoiceCoupons",
                 "in_type": "ApplyInvoiceCouponsRequest",
                 "out_type": "ApplyInvoiceCouponsResponse"
+              },
+              {
+                "name": "ApplyInvoiceCredits",
+                "in_type": "ApplyInvoiceCreditsRequest",
+                "out_type": "ApplyInvoiceCreditsResponse"
               },
               {
                 "name": "CreateInvoices",
