@@ -32,8 +32,9 @@ import (
 //    b1, u6/u7       => <{e8:u8}, u6/, <u6, e6, k6>>
 //    b2, u1          => <{}, u1, <u1, e1', k1'>>
 type Store struct {
-	roots      map[string]*node
-	defaultKey *storj.Key
+	roots             map[string]*node
+	defaultKey        *storj.Key
+	defaultPathCipher storj.CipherSuite
 
 	// EncryptionBypass makes it so we can interoperate with
 	// the network without having encryption keys. paths will be encrypted but
@@ -57,6 +58,7 @@ type Base struct {
 	Unencrypted paths.Unencrypted
 	Encrypted   paths.Encrypted
 	Key         storj.Key
+	PathCipher  storj.CipherSuite
 }
 
 // clone returns a copy of the Base. The implementation can be simple because the
@@ -94,8 +96,18 @@ func (s *Store) GetDefaultKey() *storj.Key {
 	return s.defaultKey
 }
 
+// SetDefaultPathCipher  adds a default path cipher to be returned for any lookup that does not match a bucket.
+func (s *Store) SetDefaultPathCipher(defaultPathCipher storj.CipherSuite) {
+	s.defaultPathCipher = defaultPathCipher
+}
+
+// GetDefaultPathCipher returns the default path cipher, or EncUnspecified if none has been set.
+func (s *Store) GetDefaultPathCipher() storj.CipherSuite {
+	return s.defaultPathCipher
+}
+
 // Add creates a mapping from the unencrypted path to the encrypted path and key.
-func (s *Store) Add(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key) error {
+func (s *Store) Add(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite) error {
 	root, ok := s.roots[bucket]
 	if !ok {
 		root = newNode()
@@ -106,6 +118,7 @@ func (s *Store) Add(bucket string, unenc paths.Unencrypted, enc paths.Encrypted,
 		Unencrypted: unenc,
 		Encrypted:   enc,
 		Key:         key,
+		PathCipher:  pathCipher,
 	}); err != nil {
 		return err
 	}
@@ -170,7 +183,7 @@ func (s *Store) LookupUnencrypted(bucket string, path paths.Unencrypted) (
 		consumed = paths.NewUnencrypted(rawConsumed)
 	}
 	if base == nil && s.defaultKey != nil {
-		return nil, paths.Unencrypted{}, &Base{Key: *s.defaultKey}
+		return nil, paths.Unencrypted{}, s.defaultBase()
 	}
 	return revealed, consumed, base.clone()
 }
@@ -188,9 +201,13 @@ func (s *Store) LookupEncrypted(bucket string, path paths.Encrypted) (
 		consumed = paths.NewEncrypted(rawConsumed)
 	}
 	if base == nil && s.defaultKey != nil {
-		return nil, paths.Encrypted{}, &Base{Key: *s.defaultKey}
+		return nil, paths.Encrypted{}, s.defaultBase()
 	}
 	return revealed, consumed, base.clone()
+}
+
+func (s *Store) defaultBase() *Base {
+	return &Base{Key: *s.defaultKey, PathCipher: s.defaultPathCipher}
 }
 
 // lookup searches for the path in the node tree structure.
@@ -225,7 +242,7 @@ func (n *node) lookup(path paths.Iterator, bestConsumed string, bestBase *Base, 
 }
 
 // Iterate executes the callback with every value that has been Added to the Store.
-func (s *Store) Iterate(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key) error) error {
+func (s *Store) Iterate(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key, storj.CipherSuite) error) error {
 	for bucket, root := range s.roots {
 		if err := root.iterate(fn, bucket); err != nil {
 			return err
@@ -235,9 +252,9 @@ func (s *Store) Iterate(fn func(string, paths.Unencrypted, paths.Encrypted, stor
 }
 
 // iterate calls the callback if the node has a base, and recurses to its children.
-func (n *node) iterate(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key) error, bucket string) error {
+func (n *node) iterate(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key, storj.CipherSuite) error, bucket string) error {
 	if n.base != nil {
-		err := fn(bucket, n.base.Unencrypted, n.base.Encrypted, n.base.Key)
+		err := fn(bucket, n.base.Unencrypted, n.base.Encrypted, n.base.Key, n.base.PathCipher)
 		if err != nil {
 			return err
 		}

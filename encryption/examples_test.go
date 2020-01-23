@@ -24,9 +24,10 @@ func ExampleEncryptPath() {
 
 	store := encryption.NewStore()
 	store.SetDefaultKey(seed)
+	store.SetDefaultPathCipher(storj.EncAESGCM)
 
 	// use the seed for encrypting the path
-	encryptedPath, err := encryption.EncryptPath("bucket", path, storj.EncAESGCM, store)
+	encryptedPath, err := encryption.EncryptPath("bucket", path, store)
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +35,7 @@ func ExampleEncryptPath() {
 	fmt.Println("encrypted path: ", hex.EncodeToString([]byte(encryptedPath.Raw())))
 
 	// decrypting the path
-	decryptedPath, err := encryption.DecryptPath("bucket", encryptedPath, storj.EncAESGCM, store)
+	decryptedPath, err := encryption.DecryptPath("bucket", encryptedPath, store)
 	if err != nil {
 		panic(err)
 	}

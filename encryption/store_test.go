@@ -40,13 +40,13 @@ func ExampleStore() {
 	up := paths.NewUnencrypted
 
 	// Add a fairly complicated tree to the store.
-	abortIfError(s.Add("b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3")))
-	abortIfError(s.Add("b1", up("u1/u2/u3/u4"), ep("e1/e2/e3/e4"), toKey("k4")))
-	abortIfError(s.Add("b1", up("u1/u5"), ep("e1/e5"), toKey("k5")))
-	abortIfError(s.Add("b1", up("u6"), ep("e6"), toKey("k6")))
-	abortIfError(s.Add("b1", up("u6/u7/u8"), ep("e6/e7/e8"), toKey("k8")))
-	abortIfError(s.Add("b2", up("u1"), ep("e1'"), toKey("k1")))
-	abortIfError(s.Add("b3", paths.Unencrypted{}, paths.Encrypted{}, toKey("m1")))
+	abortIfError(s.Add("b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), storj.EncAESGCM))
+	abortIfError(s.Add("b1", up("u1/u2/u3/u4"), ep("e1/e2/e3/e4"), toKey("k4"), storj.EncAESGCM))
+	abortIfError(s.Add("b1", up("u1/u5"), ep("e1/e5"), toKey("k5"), storj.EncAESGCM))
+	abortIfError(s.Add("b1", up("u6"), ep("e6"), toKey("k6"), storj.EncAESGCM))
+	abortIfError(s.Add("b1", up("u6/u7/u8"), ep("e6/e7/e8"), toKey("k8"), storj.EncAESGCM))
+	abortIfError(s.Add("b2", up("u1"), ep("e1'"), toKey("k1"), storj.EncAESGCM))
+	abortIfError(s.Add("b3", paths.Unencrypted{}, paths.Encrypted{}, toKey("m1"), storj.EncAESGCM))
 
 	// Look up some complicated queries by the unencrypted path.
 	printLookup(s.LookupUnencrypted("b1", up("u1")))
@@ -92,20 +92,26 @@ func ExampleStore() {
 }
 
 func TestStoreErrors(t *testing.T) {
-	s := NewStore()
-	ep := paths.NewEncrypted
-	up := paths.NewUnencrypted
+	for _, pathCipher := range []storj.CipherSuite{
+		storj.EncNull,
+		storj.EncAESGCM,
+		storj.EncSecretBox,
+	} {
+		s := NewStore()
+		ep := paths.NewEncrypted
+		up := paths.NewUnencrypted
 
-	// Too many encrypted parts
-	require.Error(t, s.Add("b1", up("u1"), ep("e1/e2/e3"), storj.Key{}))
+		// Too many encrypted parts
+		require.Error(t, s.Add("b1", up("u1"), ep("e1/e2/e3"), storj.Key{}, pathCipher))
 
-	// Too many unencrypted parts
-	require.Error(t, s.Add("b1", up("u1/u2/u3"), ep("e1"), storj.Key{}))
+		// Too many unencrypted parts
+		require.Error(t, s.Add("b1", up("u1/u2/u3"), ep("e1"), storj.Key{}, pathCipher))
 
-	// Mismatches
-	require.NoError(t, s.Add("b1", up("u1"), ep("e1"), storj.Key{}))
-	require.Error(t, s.Add("b1", up("u2"), ep("e1"), storj.Key{}))
-	require.Error(t, s.Add("b1", up("u1"), ep("f1"), storj.Key{}))
+		// Mismatches
+		require.NoError(t, s.Add("b1", up("u1"), ep("e1"), storj.Key{}, pathCipher))
+		require.Error(t, s.Add("b1", up("u2"), ep("e1"), storj.Key{}, pathCipher))
+		require.Error(t, s.Add("b1", up("u1"), ep("f1"), storj.Key{}, pathCipher))
+	}
 }
 
 func TestStoreErrorState(t *testing.T) {
@@ -117,7 +123,9 @@ func TestStoreErrorState(t *testing.T) {
 	revealed1, consumed1, base1 := s.LookupUnencrypted("b1", up("u1/u2"))
 
 	// Attempt to do an addition that fails.
-	require.Error(t, s.Add("b1", up("u1/u2"), ep("e1/e2/e3"), storj.Key{}))
+	require.Error(t, s.Add("b1", up("u1/u2"), ep("e1/e2/e3"), storj.Key{}, storj.EncNull))
+	require.Error(t, s.Add("b1", up("u1/u2"), ep("e1/e2/e3"), storj.Key{}, storj.EncAESGCM))
+	require.Error(t, s.Add("b1", up("u1/u2"), ep("e1/e2/e3"), storj.Key{}, storj.EncSecretBox))
 
 	// Ensure that we get the same results as before
 	revealed2, consumed2, base2 := s.LookupUnencrypted("b1", up("u1/u2"))
@@ -128,34 +136,42 @@ func TestStoreErrorState(t *testing.T) {
 }
 
 func TestStoreIterate(t *testing.T) {
-	s := NewStore()
-	ep := paths.NewEncrypted
-	up := paths.NewUnencrypted
-
 	type storeEntry struct {
-		bucket string
-		unenc  paths.Unencrypted
-		enc    paths.Encrypted
-		key    storj.Key
-	}
-	expected := map[storeEntry]struct{}{
-		{"b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3")}:         {},
-		{"b1", up("u1/u2/u3/u4"), ep("e1/e2/e3/e4"), toKey("k4")}:   {},
-		{"b1", up("u1/u5"), ep("e1/e5"), toKey("k5")}:               {},
-		{"b1", up("u6"), ep("e6"), toKey("k6")}:                     {},
-		{"b1", up("u6/u7/u8"), ep("e6/e7/e8"), toKey("k8")}:         {},
-		{"b2", up("u1"), ep("e1'"), toKey("k1")}:                    {},
-		{"b3", paths.Unencrypted{}, paths.Encrypted{}, toKey("m1")}: {},
+		bucket     string
+		unenc      paths.Unencrypted
+		enc        paths.Encrypted
+		key        storj.Key
+		pathCipher storj.CipherSuite
 	}
 
-	for entry := range expected {
-		require.NoError(t, s.Add(entry.bucket, entry.unenc, entry.enc, entry.key))
-	}
+	for _, pathCipher := range []storj.CipherSuite{
+		storj.EncNull,
+		storj.EncAESGCM,
+		storj.EncSecretBox,
+	} {
+		s := NewStore()
+		ep := paths.NewEncrypted
+		up := paths.NewUnencrypted
 
-	got := make(map[storeEntry]struct{})
-	require.NoError(t, s.Iterate(func(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key) error {
-		got[storeEntry{bucket, unenc, enc, key}] = struct{}{}
-		return nil
-	}))
-	require.Equal(t, expected, got)
+		expected := map[storeEntry]struct{}{
+			{"b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), pathCipher}:         {},
+			{"b1", up("u1/u2/u3/u4"), ep("e1/e2/e3/e4"), toKey("k4"), pathCipher}:   {},
+			{"b1", up("u1/u5"), ep("e1/e5"), toKey("k5"), pathCipher}:               {},
+			{"b1", up("u6"), ep("e6"), toKey("k6"), pathCipher}:                     {},
+			{"b1", up("u6/u7/u8"), ep("e6/e7/e8"), toKey("k8"), pathCipher}:         {},
+			{"b2", up("u1"), ep("e1'"), toKey("k1"), pathCipher}:                    {},
+			{"b3", paths.Unencrypted{}, paths.Encrypted{}, toKey("m1"), pathCipher}: {},
+		}
+
+		for entry := range expected {
+			require.NoError(t, s.Add(entry.bucket, entry.unenc, entry.enc, entry.key, entry.pathCipher))
+		}
+
+		got := make(map[storeEntry]struct{})
+		require.NoError(t, s.Iterate(func(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite) error {
+			got[storeEntry{bucket, unenc, enc, key, pathCipher}] = struct{}{}
+			return nil
+		}))
+		require.Equal(t, expected, got)
+	}
 }

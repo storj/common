@@ -18,9 +18,9 @@ import (
 	"storj.io/common/testrand"
 )
 
-func newStore(key storj.Key) *Store {
+func newStore(key storj.Key, pathCipher storj.CipherSuite) *Store {
 	store := NewStore()
-	if err := store.Add("bucket", paths.Unencrypted{}, paths.Encrypted{}, key); err != nil {
+	if err := store.Add("bucket", paths.Unencrypted{}, paths.Encrypted{}, key, pathCipher); err != nil {
 		panic(err)
 	}
 	return store
@@ -40,15 +40,15 @@ func TestStoreEncryption(t *testing.T) {
 		} {
 			errTag := fmt.Sprintf("test:%d path:%q cipher:%v", i, rawPath, cipher)
 
-			store := newStore(testrand.Key())
+			store := newStore(testrand.Key(), cipher)
 			path := paths.NewUnencrypted(rawPath)
 
-			encPath, err := EncryptPath("bucket", path, cipher, store)
+			encPath, err := EncryptPath("bucket", path, store)
 			if !assert.NoError(t, err, errTag) {
 				continue
 			}
 
-			decPath, err := DecryptPath("bucket", encPath, cipher, store)
+			decPath, err := DecryptPath("bucket", encPath, store)
 			if !assert.NoError(t, err, errTag) {
 				continue
 			}
@@ -151,6 +151,7 @@ func TestEncodingDecodingStress(t *testing.T) {
 func TestDecryptPath_EncryptionBypass(t *testing.T) {
 	encStore := NewStore()
 	encStore.SetDefaultKey(&storj.Key{})
+	encStore.SetDefaultPathCipher(storj.EncAESGCM)
 
 	bucketName := "test-bucket"
 
@@ -161,7 +162,8 @@ func TestDecryptPath_EncryptionBypass(t *testing.T) {
 	}
 
 	for _, path := range filePaths {
-		encryptedPath, err := EncryptPath(bucketName, paths.NewUnencrypted(path), storj.EncAESGCM, encStore)
+		encStore.EncryptionBypass = false
+		encryptedPath, err := EncryptPath(bucketName, paths.NewUnencrypted(path), encStore)
 		require.NoError(t, err)
 
 		var expectedPath, next string
@@ -172,7 +174,8 @@ func TestDecryptPath_EncryptionBypass(t *testing.T) {
 		}
 		expectedPath = strings.TrimRight(expectedPath, "/")
 
-		actualPath, err := DecryptPath(bucketName, encryptedPath, storj.EncNullBase64URL, encStore)
+		encStore.EncryptionBypass = true
+		actualPath, err := DecryptPath(bucketName, encryptedPath, encStore)
 		require.NoError(t, err)
 
 		require.Equal(t, paths.NewUnencrypted(expectedPath), actualPath)
@@ -182,6 +185,7 @@ func TestDecryptPath_EncryptionBypass(t *testing.T) {
 func TestEncryptPath_EncryptionBypass(t *testing.T) {
 	encStore := NewStore()
 	encStore.SetDefaultKey(&storj.Key{})
+	encStore.SetDefaultPathCipher(storj.EncAESGCM)
 
 	bucketName := "test-bucket"
 
@@ -192,7 +196,8 @@ func TestEncryptPath_EncryptionBypass(t *testing.T) {
 	}
 
 	for _, path := range filePaths {
-		encryptedPath, err := EncryptPath(bucketName, paths.NewUnencrypted(path), storj.EncAESGCM, encStore)
+		encStore.EncryptionBypass = false
+		encryptedPath, err := EncryptPath(bucketName, paths.NewUnencrypted(path), encStore)
 		require.NoError(t, err)
 
 		var encodedPath, next string
@@ -203,7 +208,8 @@ func TestEncryptPath_EncryptionBypass(t *testing.T) {
 		}
 		encodedPath = strings.TrimRight(encodedPath, "/")
 
-		actualPath, err := EncryptPath(bucketName, paths.NewUnencrypted(encodedPath), storj.EncNullBase64URL, encStore)
+		encStore.EncryptionBypass = true
+		actualPath, err := EncryptPath(bucketName, paths.NewUnencrypted(encodedPath), encStore)
 		require.NoError(t, err)
 
 		require.Equal(t, encryptedPath.String(), actualPath.String())

@@ -27,7 +27,7 @@ var (
 
 // EncryptPath encrypts the path using the provided cipher and looking up
 // keys from the provided store and bucket.
-func EncryptPath(bucket string, path paths.Unencrypted, cipher storj.CipherSuite, store *Store) (
+func EncryptPath(bucket string, path paths.Unencrypted, store *Store) (
 	encPath paths.Encrypted, err error) {
 
 	// Invalid paths map to invalid paths
@@ -35,13 +35,18 @@ func EncryptPath(bucket string, path paths.Unencrypted, cipher storj.CipherSuite
 		return paths.Encrypted{}, nil
 	}
 
-	if cipher == storj.EncNull {
-		return paths.NewEncrypted(path.Raw()), nil
-	}
-
 	_, consumed, base := store.LookupUnencrypted(bucket, path)
 	if base == nil {
 		return paths.Encrypted{}, errs.New("unable to find encryption base for: %s/%q", bucket, path)
+	}
+
+	pathCipher := base.PathCipher
+	if store.EncryptionBypass {
+		pathCipher = storj.EncNullBase64URL
+	}
+
+	if pathCipher == storj.EncNull {
+		return paths.NewEncrypted(path.Raw()), nil
 	}
 
 	remaining, ok := path.Consume(consumed)
@@ -59,7 +64,7 @@ func EncryptPath(bucket string, path paths.Unencrypted, cipher storj.CipherSuite
 		}
 	}
 
-	encrypted, err := EncryptPathRaw(remaining.Raw(), cipher, key)
+	encrypted, err := EncryptPathRaw(remaining.Raw(), pathCipher, key)
 	if err != nil {
 		return paths.Encrypted{}, errs.Wrap(err)
 	}
@@ -105,7 +110,7 @@ func EncryptPathRaw(raw string, cipher storj.CipherSuite, key *storj.Key) (strin
 
 // DecryptPath decrypts the path using the provided cipher and looking up
 // keys from the provided store and bucket.
-func DecryptPath(bucket string, path paths.Encrypted, cipher storj.CipherSuite, store *Store) (
+func DecryptPath(bucket string, path paths.Encrypted, store *Store) (
 	unencPath paths.Unencrypted, err error) {
 
 	// Invalid paths map to invalid paths
@@ -113,13 +118,18 @@ func DecryptPath(bucket string, path paths.Encrypted, cipher storj.CipherSuite, 
 		return paths.Unencrypted{}, nil
 	}
 
-	if cipher == storj.EncNull {
-		return paths.NewUnencrypted(path.Raw()), nil
-	}
-
 	_, consumed, base := store.LookupEncrypted(bucket, path)
 	if base == nil {
 		return paths.Unencrypted{}, errs.New("unable to find decryption base for: %q", path)
+	}
+
+	pathCipher := base.PathCipher
+	if store.EncryptionBypass {
+		pathCipher = storj.EncNullBase64URL
+	}
+
+	if pathCipher == storj.EncNull {
+		return paths.NewUnencrypted(path.Raw()), nil
 	}
 
 	remaining, ok := path.Consume(consumed)
@@ -137,7 +147,7 @@ func DecryptPath(bucket string, path paths.Encrypted, cipher storj.CipherSuite, 
 		}
 	}
 
-	decrypted, err := DecryptPathRaw(remaining.Raw(), cipher, key)
+	decrypted, err := DecryptPathRaw(remaining.Raw(), pathCipher, key)
 	if err != nil {
 		return paths.Unencrypted{}, errs.Wrap(err)
 	}
