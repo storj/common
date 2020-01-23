@@ -143,18 +143,13 @@ type AllowedBuckets struct {
 func (a *APIKey) GetAllowedBuckets(ctx context.Context, action Action) (allowed AllowedBuckets, err error) {
 	defer mon.Task()(&ctx)(&err)
 
-	caveats := a.mac.Caveats()
-
-	// if there aren't any caveats, then all buckets are allowed
-	if len(caveats) == 0 {
-		allowed.All = true
-		return allowed, nil
-	}
+	// Every bucket is allowed until we find a caveat that restricts some paths.
+	allowed.All = true
 
 	// every caveat that includes a list of allowed paths must include the bucket for
 	// the bucket to be allowed. in other words, the set of allowed buckets is the
 	// intersection of all of the buckets in the allowed paths.
-	for _, cavbuf := range caveats {
+	for _, cavbuf := range a.mac.Caveats() {
 		var cav Caveat
 		err := proto.Unmarshal(cavbuf, &cav)
 		if err != nil {
@@ -163,6 +158,15 @@ func (a *APIKey) GetAllowedBuckets(ctx context.Context, action Action) (allowed 
 		if !cav.Allows(action) {
 			return AllowedBuckets{}, ErrUnauthorized.New("action disallowed")
 		}
+
+		// If the caveat does not include any allowed paths, then it is not restricting it.
+		if len(cav.AllowedPaths) == 0 {
+			continue
+		}
+
+		// Since we found some path restrictions, it's definitely the case that not every
+		// bucket is allowed.
+		allowed.All = false
 
 		caveatBuckets := map[string]struct{}{}
 		for _, caveatPath := range cav.AllowedPaths {

@@ -175,4 +175,14 @@ func TestGetAllowedBuckets(t *testing.T) {
 		All:     false,
 		Buckets: map[string]struct{}{"test1": {}},
 	})
+
+	restricted, err = restricted.Restrict(Caveat{DisallowWrites: true})
+	require.NoError(t, err)
+
+	allowed, err = restricted.GetAllowedBuckets(ctx, action)
+	require.NoError(t, err)
+	require.Equal(t, allowed, AllowedBuckets{
+		All:     false,
+		Buckets: map[string]struct{}{"test1": {}},
+	})
 }
