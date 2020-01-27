@@ -73,3 +73,16 @@ func AddressEqual(a1, a2 *NodeAddress) bool {
 	return a1.Transport == a2.Transport &&
 		a1.Address == a2.Address
 }
+
+// NewRedundancySchemeToStorj creates new storj.RedundancyScheme from the given
+// protobuf RedundancyScheme.
+func NewRedundancySchemeToStorj(scheme *RedundancyScheme) *storj.RedundancyScheme {
+	return &storj.RedundancyScheme{
+		Algorithm:      storj.RedundancyAlgorithm(scheme.GetType()),
+		ShareSize:      scheme.GetErasureShareSize(),
+		RequiredShares: int16(scheme.GetMinReq()),
+		RepairShares:   int16(scheme.GetRepairThreshold()),
+		OptimalShares:  int16(scheme.GetSuccessThreshold()),
+		TotalShares:    int16(scheme.GetTotal()),
+	}
+}
