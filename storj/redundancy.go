@@ -38,8 +38,8 @@ func (scheme RedundancyScheme) StripeSize() int32 {
 	return scheme.ShareSize * int32(scheme.RequiredShares)
 }
 
-// DownloadNodes calculates how many minimum nodes are needed for download,
-// based on t = k + (n-o)k/o.
+// DownloadNodes calculates the number of nodes needed to download in the
+// presence of node failure based on t = k + (n-o)k/o.
 func (scheme RedundancyScheme) DownloadNodes() int32 {
 	extra := int32(1)
 
