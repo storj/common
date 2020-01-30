@@ -20,7 +20,7 @@ import (
 
 func newStore(key storj.Key, pathCipher storj.CipherSuite) *Store {
 	store := NewStore()
-	if err := store.Add("bucket", paths.Unencrypted{}, paths.Encrypted{}, key, pathCipher); err != nil {
+	if err := store.AddWithCipher("bucket", paths.Unencrypted{}, paths.Encrypted{}, key, pathCipher); err != nil {
 		panic(err)
 	}
 	return store
@@ -43,12 +43,12 @@ func TestStoreEncryption(t *testing.T) {
 			store := newStore(testrand.Key(), cipher)
 			path := paths.NewUnencrypted(rawPath)
 
-			encPath, err := EncryptPath("bucket", path, store)
+			encPath, err := EncryptPathWithStoreCipher("bucket", path, store)
 			if !assert.NoError(t, err, errTag) {
 				continue
 			}
 
-			decPath, err := DecryptPath("bucket", encPath, store)
+			decPath, err := DecryptPathWithStoreCipher("bucket", encPath, store)
 			if !assert.NoError(t, err, errTag) {
 				continue
 			}
@@ -163,7 +163,7 @@ func TestDecryptPath_EncryptionBypass(t *testing.T) {
 
 	for _, path := range filePaths {
 		encStore.EncryptionBypass = false
-		encryptedPath, err := EncryptPath(bucketName, paths.NewUnencrypted(path), encStore)
+		encryptedPath, err := EncryptPathWithStoreCipher(bucketName, paths.NewUnencrypted(path), encStore)
 		require.NoError(t, err)
 
 		var expectedPath, next string
@@ -175,7 +175,7 @@ func TestDecryptPath_EncryptionBypass(t *testing.T) {
 		expectedPath = strings.TrimRight(expectedPath, "/")
 
 		encStore.EncryptionBypass = true
-		actualPath, err := DecryptPath(bucketName, encryptedPath, encStore)
+		actualPath, err := DecryptPathWithStoreCipher(bucketName, encryptedPath, encStore)
 		require.NoError(t, err)
 
 		require.Equal(t, paths.NewUnencrypted(expectedPath), actualPath)
@@ -197,7 +197,7 @@ func TestEncryptPath_EncryptionBypass(t *testing.T) {
 
 	for _, path := range filePaths {
 		encStore.EncryptionBypass = false
-		encryptedPath, err := EncryptPath(bucketName, paths.NewUnencrypted(path), encStore)
+		encryptedPath, err := EncryptPathWithStoreCipher(bucketName, paths.NewUnencrypted(path), encStore)
 		require.NoError(t, err)
 
 		var encodedPath, next string
@@ -209,7 +209,7 @@ func TestEncryptPath_EncryptionBypass(t *testing.T) {
 		encodedPath = strings.TrimRight(encodedPath, "/")
 
 		encStore.EncryptionBypass = true
-		actualPath, err := EncryptPath(bucketName, paths.NewUnencrypted(encodedPath), encStore)
+		actualPath, err := EncryptPathWithStoreCipher(bucketName, paths.NewUnencrypted(encodedPath), encStore)
 		require.NoError(t, err)
 
 		require.Equal(t, encryptedPath.String(), actualPath.String())

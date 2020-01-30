@@ -27,7 +27,7 @@ func ExampleEncryptPath() {
 	store.SetDefaultPathCipher(storj.EncAESGCM)
 
 	// use the seed for encrypting the path
-	encryptedPath, err := encryption.EncryptPath("bucket", path, store)
+	encryptedPath, err := encryption.EncryptPathWithStoreCipher("bucket", path, store)
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +35,7 @@ func ExampleEncryptPath() {
 	fmt.Println("encrypted path: ", hex.EncodeToString([]byte(encryptedPath.Raw())))
 
 	// decrypting the path
-	decryptedPath, err := encryption.DecryptPath("bucket", encryptedPath, store)
+	decryptedPath, err := encryption.DecryptPathWithStoreCipher("bucket", encryptedPath, store)
 	if err != nil {
 		panic(err)
 	}

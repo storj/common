@@ -106,8 +106,13 @@ func (s *Store) GetDefaultPathCipher() storj.CipherSuite {
 	return s.defaultPathCipher
 }
 
-// Add creates a mapping from the unencrypted path to the encrypted path and key.
-func (s *Store) Add(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite) error {
+// Add creates a mapping from the unencrypted path to the encrypted path and key. It uses the current default cipher.
+func (s *Store) Add(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key) error {
+	return s.AddWithCipher(bucket, unenc, enc, key, s.defaultPathCipher)
+}
+
+// AddWithCipher creates a mapping from the unencrypted path to the encrypted path and key with the given cipher.
+func (s *Store) AddWithCipher(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite) error {
 	root, ok := s.roots[bucket]
 	if !ok {
 		root = newNode()
@@ -242,7 +247,8 @@ func (n *node) lookup(path paths.Iterator, bestConsumed string, bestBase *Base, 
 }
 
 // Iterate executes the callback with every value that has been Added to the Store.
-func (s *Store) Iterate(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key, storj.CipherSuite) error) error {
+// NOTE: This call is lossy! Please upgrade any code paths to use IterateWithCipher!
+func (s *Store) Iterate(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key) error) error {
 	for bucket, root := range s.roots {
 		if err := root.iterate(fn, bucket); err != nil {
 			return err
@@ -252,7 +258,37 @@ func (s *Store) Iterate(fn func(string, paths.Unencrypted, paths.Encrypted, stor
 }
 
 // iterate calls the callback if the node has a base, and recurses to its children.
-func (n *node) iterate(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key, storj.CipherSuite) error, bucket string) error {
+func (n *node) iterate(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key) error, bucket string) error {
+	if n.base != nil {
+		err := fn(bucket, n.base.Unencrypted, n.base.Encrypted, n.base.Key)
+		if err != nil {
+			return err
+		}
+	}
+
+	// recurse down only the unenc map, as the enc map should be the same.
+	for _, child := range n.unenc {
+		err := child.iterate(fn, bucket)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// IterateWithCipher executes the callback with every value that has been Added to the Store.
+func (s *Store) IterateWithCipher(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key, storj.CipherSuite) error) error {
+	for bucket, root := range s.roots {
+		if err := root.iterateWithCipher(fn, bucket); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// iterateWithCipher calls the callback if the node has a base, and recurses to its children.
+func (n *node) iterateWithCipher(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key, storj.CipherSuite) error, bucket string) error {
 	if n.base != nil {
 		err := fn(bucket, n.base.Unencrypted, n.base.Encrypted, n.base.Key, n.base.PathCipher)
 		if err != nil {
@@ -262,7 +298,7 @@ func (n *node) iterate(fn func(string, paths.Unencrypted, paths.Encrypted, storj
 
 	// recurse down only the unenc map, as the enc map should be the same.
 	for _, child := range n.unenc {
-		err := child.iterate(fn, bucket)
+		err := child.iterateWithCipher(fn, bucket)
 		if err != nil {
 			return err
 		}
