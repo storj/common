@@ -221,3 +221,13 @@ func (size *Size) Set(s string) error {
 
 // Type implements pflag.Value
 func (Size) Type() string { return "memory.Size" }
+
+// MarshalText returns size as a string.
+func (size *Size) MarshalText() (string, error) {
+	return size.String(), nil
+}
+
+// UnmarshalText parses text as a string.
+func (size *Size) UnmarshalText(text []byte) error {
+	return size.Set(string(text))
+}
