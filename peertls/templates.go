@@ -18,7 +18,6 @@ func CATemplate() (*x509.Certificate, error) {
 	template := &x509.Certificate{
 		SerialNumber:          serialNumber,
 		KeyUsage:              x509.KeyUsageCertSign,
-		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true,
 		IsCA:                  true,
 		Subject:               pkix.Name{Organization: []string{"Storj"}},
