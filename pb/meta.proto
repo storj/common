@@ -3,11 +3,19 @@
 
 syntax = "proto3";
 option go_package = "pb";
+import "gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 package objects;
 
 // SerializableMeta is the object metadata that will be stored serialized
 message SerializableMeta {
-	string content_type = 1;
 	map<string, string> user_defined = 2;
+
+	string content_type   = 1;
+	int64  content_length = 3;
+
+	google.protobuf.Timestamp file_created  = 4 [(gogoproto.stdtime) = true];
+	google.protobuf.Timestamp file_modified = 5 [(gogoproto.stdtime) = true];
+	uint32                    file_permissions = 6;
 }
