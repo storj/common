@@ -127,8 +127,15 @@ func ChainBytes(chain ...*x509.Certificate) ([]byte, error) {
 
 // CreateSelfSignedCertificate creates a new self-signed X.509v3 certificate
 // using fields from the given template.
+//
+// A part of the errors that CreateCertificate can return it can return
+// pkcrypto.ErrUnsuportedKey error.
 func CreateSelfSignedCertificate(key crypto.PrivateKey, template *x509.Certificate) (*x509.Certificate, error) {
-	return CreateCertificate(pkcrypto.PublicKeyFromPrivate(key), key, template, template)
+	pubKey, err := pkcrypto.PublicKeyFromPrivate(key)
+	if err != nil {
+		return nil, err
+	}
+	return CreateCertificate(pubKey, key, template, template)
 }
 
 // CreateCertificate creates a new X.509v3 certificate based on a template.

@@ -58,7 +58,10 @@ func TestNewCert_Leaf(t *testing.T) {
 	leafTemplate, err := peertls.LeafTemplate()
 	assert.NoError(t, err)
 
-	leafCert, err := peertls.CreateCertificate(pkcrypto.PublicKeyFromPrivate(leafKey), caKey, leafTemplate, caCert)
+	pubKey, err := pkcrypto.PublicKeyFromPrivate(leafKey)
+	require.NoError(t, err)
+
+	leafCert, err := peertls.CreateCertificate(pubKey, caKey, leafTemplate, caCert)
 	assert.NoError(t, err)
 
 	assert.NotEmpty(t, caKey)
@@ -111,7 +114,9 @@ func TestVerifyPeerCertChains(t *testing.T) {
 	wrongKey, err := pkcrypto.GeneratePrivateKey()
 	assert.NoError(t, err)
 
-	leafCert, err = peertls.CreateCertificate(pkcrypto.PublicKeyFromPrivate(leafKey), wrongKey, leafCert, caCert)
+	pubKey, err := pkcrypto.PublicKeyFromPrivate(leafKey)
+	require.NoError(t, err)
+	leafCert, err = peertls.CreateCertificate(pubKey, wrongKey, leafCert, caCert)
 	assert.NoError(t, err)
 
 	err = peertls.VerifyPeerFunc(peertls.VerifyPeerCertChains)([][]byte{leafCert.Raw, caCert.Raw}, nil)

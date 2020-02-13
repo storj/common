@@ -26,8 +26,13 @@ func TestNewCertChain(t *testing.T) {
 			assert.Len(t, chain, length)
 			assert.Len(t, keys, length)
 
-			assert.Equal(t, pkcrypto.PublicKeyFromPrivate(keys[peertls.CAIndex]), chain[peertls.CAIndex].PublicKey)
-			assert.Equal(t, pkcrypto.PublicKeyFromPrivate(keys[peertls.LeafIndex]), chain[peertls.LeafIndex].PublicKey)
+			pubKey, err := pkcrypto.PublicKeyFromPrivate(keys[peertls.CAIndex])
+			require.NoError(t, err)
+			assert.Equal(t, pubKey, chain[peertls.CAIndex].PublicKey)
+
+			pubKey, err = pkcrypto.PublicKeyFromPrivate(keys[peertls.LeafIndex])
+			require.NoError(t, err)
+			assert.Equal(t, pubKey, chain[peertls.LeafIndex].PublicKey)
 
 			err = peertls.VerifyPeerCertChains(nil, identity.ToChains(chain))
 			assert.NoError(t, err)

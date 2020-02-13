@@ -48,9 +48,13 @@ func NewCertChain(length int, versionNumber storj.IDVersionNumber) (keys []crypt
 		if i == 0 {
 			cert, err = peertls.CreateSelfSignedCertificate(key, template)
 		} else {
-			// NB: 	`keys[1]`: key has already been prepended; parent key is at first index
-			// 		`certs[0]`: cert hasn't been prepended yet; parent cert is at zeroth index
-			cert, err = peertls.CreateCertificate(pkcrypto.PublicKeyFromPrivate(key), keys[1], template, certs[0])
+			var pubKey crypto.PublicKey
+			pubKey, err = pkcrypto.PublicKeyFromPrivate(key)
+			if err == nil {
+				// NB: 	`keys[1]`: key has already been prepended; parent key is at first index
+				// 		`certs[0]`: cert hasn't been prepended yet; parent cert is at zeroth index
+				cert, err = peertls.CreateCertificate(pubKey, keys[1], template, certs[0])
+			}
 		}
 		if err != nil {
 			return nil, nil, err

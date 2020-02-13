@@ -27,7 +27,14 @@ func GenerateKey(ctx context.Context, minDifficulty uint16, version storj.IDVers
 		if err != nil {
 			break
 		}
-		id, err = NodeIDFromKey(pkcrypto.PublicKeyFromPrivate(k), version)
+
+		var pubKey crypto.PublicKey
+		pubKey, err = pkcrypto.PublicKeyFromPrivate(k)
+		if err != nil {
+			break
+		}
+
+		id, err = NodeIDFromKey(pubKey, version)
 		if err != nil {
 			break
 		}

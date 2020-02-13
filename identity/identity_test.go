@@ -46,7 +46,9 @@ func TestPeerIdentityFromCertChain(t *testing.T) {
 	leafKey, err := pkcrypto.GeneratePrivateKey()
 	require.NoError(t, err)
 
-	leafCert, err := peertls.CreateCertificate(pkcrypto.PublicKeyFromPrivate(leafKey), caKey, leafTemplate, caTemplate)
+	pubKey, err := pkcrypto.PublicKeyFromPrivate(leafKey)
+	require.NoError(t, err)
+	leafCert, err := peertls.CreateCertificate(pubKey, caKey, leafTemplate, caTemplate)
 	require.NoError(t, err)
 
 	peerIdent, err := identity.PeerIdentityFromChain([]*x509.Certificate{leafCert, caCert})
@@ -74,7 +76,9 @@ func TestFullIdentityFromPEM(t *testing.T) {
 	leafKey, err := pkcrypto.GeneratePrivateKey()
 	require.NoError(t, err)
 
-	leafCert, err := peertls.CreateCertificate(pkcrypto.PublicKeyFromPrivate(leafKey), caKey, leafTemplate, caTemplate)
+	pubKey, err := pkcrypto.PublicKeyFromPrivate(leafKey)
+	require.NoError(t, err)
+	leafCert, err := peertls.CreateCertificate(pubKey, caKey, leafTemplate, caTemplate)
 	require.NoError(t, err)
 	require.NotEmpty(t, leafCert)
 

@@ -42,7 +42,11 @@ func (private *PrivateKey) HashAndSign(ctx context.Context, data []byte) (_ []by
 // HashAndVerifySignature hashes the data and verifies that the signature belongs to the PrivateKey.
 func (private *PrivateKey) HashAndVerifySignature(ctx context.Context, data, signature []byte) (err error) {
 	defer mon.Task()(&ctx)(&err)
-	pub := pkcrypto.PublicKeyFromPrivate(private.Key)
+	pub, err := pkcrypto.PublicKeyFromPrivate(private.Key)
+	if err != nil {
+		return err
+	}
+
 	return pkcrypto.HashAndVerifySignature(pub, data, signature)
 }
 

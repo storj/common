@@ -91,14 +91,15 @@ func verifyRSASignatureWithoutHashing(pubKey *rsa.PublicKey, digest, signatureBy
 
 // PublicKeyFromPrivate returns the public key corresponding to a given private
 // key.
-func PublicKeyFromPrivate(privKey crypto.PrivateKey) crypto.PublicKey {
+// It returns an error if the key isn't of an accepted implementation.
+func PublicKeyFromPrivate(privKey crypto.PrivateKey) (crypto.PublicKey, error) {
 	switch key := privKey.(type) {
 	case *ecdsa.PrivateKey:
-		return key.Public()
+		return key.Public(), nil
 	case *rsa.PrivateKey:
-		return key.Public()
+		return key.Public(), nil
 	}
-	return ErrUnsupportedKey.New("%T", privKey)
+	return nil, ErrUnsupportedKey.New("%T", privKey)
 }
 
 // SignWithoutHashing signs the given digest with the private key and returns
