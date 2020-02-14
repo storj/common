@@ -223,11 +223,25 @@ func (size *Size) Set(s string) error {
 func (Size) Type() string { return "memory.Size" }
 
 // MarshalText returns size as a string.
-func (size *Size) MarshalText() (string, error) {
+func (size Size) MarshalText() (string, error) {
 	return size.String(), nil
 }
 
 // UnmarshalText parses text as a string.
 func (size *Size) UnmarshalText(text []byte) error {
 	return size.Set(string(text))
+}
+
+// MarshalJSON returns size as a json string.
+func (size Size) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.Quote(size.String())), nil
+}
+
+// UnmarshalJSON parses text from a json string.
+func (size *Size) UnmarshalJSON(text []byte) error {
+	unquoted, err := strconv.Unquote(string(text))
+	if err != nil {
+		return err
+	}
+	return size.Set(unquoted)
 }

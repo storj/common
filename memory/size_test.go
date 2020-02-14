@@ -4,7 +4,10 @@
 package memory_test
 
 import (
+	"encoding/json"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	"storj.io/common/memory"
 )
@@ -182,4 +185,19 @@ func TestInvalidParse(t *testing.T) {
 			t.Errorf("%d. didn't get error", i)
 		}
 	}
+}
+
+func TestJSON(t *testing.T) {
+	var input struct {
+		Value memory.Size `json:"value"`
+	}
+	input.Value = memory.TiB
+
+	data, err := json.Marshal(input)
+	require.NoError(t, err)
+	require.Equal(t, `{"value":"1.0 TiB"}`, string(data))
+
+	err = json.Unmarshal([]byte(`{"value" : "1GB"}`), &input)
+	require.NoError(t, err)
+	require.Equal(t, memory.GB, input.Value)
 }
