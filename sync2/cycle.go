@@ -9,6 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	monkit "github.com/spacemonkeygo/monkit/v3"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -84,7 +85,9 @@ func (cycle *Cycle) Run(ctx context.Context, fn func(ctx context.Context) error)
 	cycle.ticker = time.NewTicker(currentInterval)
 	defer cycle.ticker.Stop()
 
-	if err := fn(ctx); err != nil {
+	choreCtx := monkit.ResetContextSpan(ctx)
+
+	if err := fn(choreCtx); err != nil {
 		return err
 	}
 	for {
@@ -127,7 +130,7 @@ func (cycle *Cycle) Run(ctx context.Context, fn func(ctx context.Context) error)
 
 			case cycleTrigger:
 				// trigger the function
-				if err := fn(ctx); err != nil {
+				if err := fn(choreCtx); err != nil {
 					return err
 				}
 				if message.done != nil {
@@ -144,7 +147,7 @@ func (cycle *Cycle) Run(ctx context.Context, fn func(ctx context.Context) error)
 
 		case <-cycle.ticker.C:
 			// trigger the function
-			if err := fn(ctx); err != nil {
+			if err := fn(choreCtx); err != nil {
 				return err
 			}
 		}

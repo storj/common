@@ -33,8 +33,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/skyrings/skyring-common v0.0.0-20160929130248-d1c0bb1cbd5e h1:jrZSSgPUDtBeJbGXqgGUeupQH8I+ZvGXfhpIahye2Bc=
 github.com/skyrings/skyring-common v0.0.0-20160929130248-d1c0bb1cbd5e/go.mod h1:d8hQseuYt4rJoOo21lFzYJdhMjmDqLY++ayArbgYjWI=
-github.com/spacemonkeygo/monkit/v3 v3.0.1 h1:mSZQU+LOFuN5KSUvE1EiU1lxlFcOz/r0N5Tz8z+TwN0=
-github.com/spacemonkeygo/monkit/v3 v3.0.1/go.mod h1:JcK1pCbReQsOsMKF/POFSZCq7drXFybgGmbc27tuwes=
+github.com/spacemonkeygo/monkit/v3 v3.0.2 h1:g7fi1RLOAIOcMkip5D9DHY/BQWpYbrvUO3SNBW5CazQ=
+github.com/spacemonkeygo/monkit/v3 v3.0.2/go.mod h1:JcK1pCbReQsOsMKF/POFSZCq7drXFybgGmbc27tuwes=
 github.com/spacemonkeygo/monotime v0.0.0-20180824235756-e3f48a95f98a h1:8+cCjxhToanKmxLIbuyBNe2EnpgwhiivsIaRJstDRFA=
 github.com/spacemonkeygo/monotime v0.0.0-20180824235756-e3f48a95f98a/go.mod h1:ul4bvvnCOPZgq8w0nTkSmWVg/hauVpFS97Am1YM1XXo=
 github.com/storj/grpc-go v1.23.1-0.20190918084400-1c4561bf5127 h1:sJtPW3g23UOuV+b5o3ARQ7467NzjjacUoBBPTyvIP9c=

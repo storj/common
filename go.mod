@@ -15,7 +15,7 @@ require (
 	github.com/minio/sha256-simd v0.0.0-20190328051042-05b4dd3047e5
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/skyrings/skyring-common v0.0.0-20160929130248-d1c0bb1cbd5e
-	github.com/spacemonkeygo/monkit/v3 v3.0.1
+	github.com/spacemonkeygo/monkit/v3 v3.0.2
 	github.com/stretchr/testify v1.3.0
 	github.com/zeebo/errs v1.2.2
 	go.uber.org/atomic v1.4.0 // indirect
