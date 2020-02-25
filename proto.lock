@@ -1868,38 +1868,6 @@
                 "id": 1,
                 "name": "content_type",
                 "type": "string"
-              },
-              {
-                "id": 3,
-                "name": "content_length",
-                "type": "int64"
-              },
-              {
-                "id": 4,
-                "name": "file_created",
-                "type": "google.protobuf.Timestamp",
-                "options": [
-                  {
-                    "name": "(gogoproto.stdtime)",
-                    "value": "true"
-                  }
-                ]
-              },
-              {
-                "id": 5,
-                "name": "file_modified",
-                "type": "google.protobuf.Timestamp",
-                "options": [
-                  {
-                    "name": "(gogoproto.stdtime)",
-                    "value": "true"
-                  }
-                ]
-              },
-              {
-                "id": 6,
-                "name": "file_permissions",
-                "type": "uint32"
               }
             ],
             "maps": [
