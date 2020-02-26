@@ -8,36 +8,10 @@ import (
 	"crypto/x509"
 	"strings"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-
 	"storj.io/common/identity"
 	"storj.io/common/peertls"
 	"storj.io/common/storj"
 )
-
-// ServerOption returns a grpc `ServerOption` for incoming connections
-// to the node with this full identity.
-func (opts *Options) ServerOption() grpc.ServerOption {
-	tlsConfig := opts.ServerTLSConfig()
-	return grpc.Creds(credentials.NewTLS(tlsConfig))
-}
-
-// DialOption returns a grpc `DialOption` for making outgoing connections
-// to the node with this peer identity.
-func (opts *Options) DialOption(id storj.NodeID) (grpc.DialOption, error) {
-	if id.IsZero() {
-		return nil, Error.New("no ID specified for DialOption")
-	}
-	tlsConfig := opts.ClientTLSConfig(id)
-	return grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig)), nil
-}
-
-// DialUnverifiedIDOption returns a grpc `DialUnverifiedIDOption`
-func (opts *Options) DialUnverifiedIDOption() grpc.DialOption {
-	tlsConfig := opts.tlsConfig(false)
-	return grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig))
-}
 
 // ServerTLSConfig returns a TSLConfig for use as a server in handshaking with a peer.
 func (opts *Options) ServerTLSConfig() *tls.Config {
