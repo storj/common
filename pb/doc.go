@@ -3,3 +3,5 @@
 
 // Package pb contains protobuf definitions for Storj peers.
 package pb
+
+//go:generate go run gen.go

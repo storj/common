@@ -6,9 +6,10 @@ package pb
 import (
 	context "context"
 	fmt "fmt"
-	proto "github.com/gogo/protobuf/proto"
-	grpc "google.golang.org/grpc"
 	math "math"
+
+	proto "github.com/gogo/protobuf/proto"
+
 	drpc "storj.io/drpc"
 )
 
@@ -130,6 +131,8 @@ var fileDescriptor_c0d34c34dd33be4b = []byte{
 	0x1a, 0xa9, 0xdc, 0xdc, 0xe4, 0x00, 0x00, 0x00,
 }
 
+// --- DRPC BEGIN ---
+
 type DRPCCertificatesClient interface {
 	DRPCConn() drpc.Conn
 
@@ -199,74 +202,4 @@ func (x *drpcCertificatesSignStream) SendAndClose(m *SigningResponse) error {
 	return x.CloseSend()
 }
 
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// CertificatesClient is the client API for Certificates service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type CertificatesClient interface {
-	Sign(ctx context.Context, in *SigningRequest, opts ...grpc.CallOption) (*SigningResponse, error)
-}
-
-type certificatesClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewCertificatesClient(cc *grpc.ClientConn) CertificatesClient {
-	return &certificatesClient{cc}
-}
-
-func (c *certificatesClient) Sign(ctx context.Context, in *SigningRequest, opts ...grpc.CallOption) (*SigningResponse, error) {
-	out := new(SigningResponse)
-	err := c.cc.Invoke(ctx, "/node.Certificates/Sign", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// CertificatesServer is the server API for Certificates service.
-type CertificatesServer interface {
-	Sign(context.Context, *SigningRequest) (*SigningResponse, error)
-}
-
-func RegisterCertificatesServer(s *grpc.Server, srv CertificatesServer) {
-	s.RegisterService(&_Certificates_serviceDesc, srv)
-}
-
-func _Certificates_Sign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SigningRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CertificatesServer).Sign(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/node.Certificates/Sign",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CertificatesServer).Sign(ctx, req.(*SigningRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Certificates_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "node.Certificates",
-	HandlerType: (*CertificatesServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Sign",
-			Handler:    _Certificates_Sign_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "certificate.proto",
-}
+// --- DRPC END ---

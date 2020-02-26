@@ -6,13 +6,14 @@ package pb
 import (
 	context "context"
 	fmt "fmt"
+	math "math"
+	time "time"
+
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
-	grpc "google.golang.org/grpc"
-	math "math"
+
 	drpc "storj.io/drpc"
-	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1156,6 +1157,8 @@ var fileDescriptor_8f0acbf2ce5fa631 = []byte{
 	0x0b, 0x00, 0x00, 0xff, 0xff, 0x0a, 0x34, 0xd5, 0xa1, 0x6a, 0x0c, 0x00, 0x00,
 }
 
+// --- DRPC BEGIN ---
+
 type DRPCNodeGracefulExitClient interface {
 	DRPCConn() drpc.Conn
 
@@ -1401,244 +1404,4 @@ func (x *drpcSatelliteGracefulExitProcessStream) Recv() (*StorageNodeMessage, er
 	return m, nil
 }
 
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// NodeGracefulExitClient is the client API for NodeGracefulExit service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type NodeGracefulExitClient interface {
-	// GetSatellitesList returns a list of satellites that the storagenode has not exited.
-	GetNonExitingSatellites(ctx context.Context, in *GetNonExitingSatellitesRequest, opts ...grpc.CallOption) (*GetNonExitingSatellitesResponse, error)
-	// InitiateGracefulExit updates one or more satellites in the storagenode's database to be gracefully exiting.
-	InitiateGracefulExit(ctx context.Context, in *InitiateGracefulExitRequest, opts ...grpc.CallOption) (*ExitProgress, error)
-	// GetExitProgress returns graceful exit status on each satellite for a given storagenode.
-	GetExitProgress(ctx context.Context, in *GetExitProgressRequest, opts ...grpc.CallOption) (*GetExitProgressResponse, error)
-}
-
-type nodeGracefulExitClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewNodeGracefulExitClient(cc *grpc.ClientConn) NodeGracefulExitClient {
-	return &nodeGracefulExitClient{cc}
-}
-
-func (c *nodeGracefulExitClient) GetNonExitingSatellites(ctx context.Context, in *GetNonExitingSatellitesRequest, opts ...grpc.CallOption) (*GetNonExitingSatellitesResponse, error) {
-	out := new(GetNonExitingSatellitesResponse)
-	err := c.cc.Invoke(ctx, "/gracefulexit.NodeGracefulExit/GetNonExitingSatellites", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *nodeGracefulExitClient) InitiateGracefulExit(ctx context.Context, in *InitiateGracefulExitRequest, opts ...grpc.CallOption) (*ExitProgress, error) {
-	out := new(ExitProgress)
-	err := c.cc.Invoke(ctx, "/gracefulexit.NodeGracefulExit/InitiateGracefulExit", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *nodeGracefulExitClient) GetExitProgress(ctx context.Context, in *GetExitProgressRequest, opts ...grpc.CallOption) (*GetExitProgressResponse, error) {
-	out := new(GetExitProgressResponse)
-	err := c.cc.Invoke(ctx, "/gracefulexit.NodeGracefulExit/GetExitProgress", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// NodeGracefulExitServer is the server API for NodeGracefulExit service.
-type NodeGracefulExitServer interface {
-	// GetSatellitesList returns a list of satellites that the storagenode has not exited.
-	GetNonExitingSatellites(context.Context, *GetNonExitingSatellitesRequest) (*GetNonExitingSatellitesResponse, error)
-	// InitiateGracefulExit updates one or more satellites in the storagenode's database to be gracefully exiting.
-	InitiateGracefulExit(context.Context, *InitiateGracefulExitRequest) (*ExitProgress, error)
-	// GetExitProgress returns graceful exit status on each satellite for a given storagenode.
-	GetExitProgress(context.Context, *GetExitProgressRequest) (*GetExitProgressResponse, error)
-}
-
-func RegisterNodeGracefulExitServer(s *grpc.Server, srv NodeGracefulExitServer) {
-	s.RegisterService(&_NodeGracefulExit_serviceDesc, srv)
-}
-
-func _NodeGracefulExit_GetNonExitingSatellites_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetNonExitingSatellitesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NodeGracefulExitServer).GetNonExitingSatellites(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/gracefulexit.NodeGracefulExit/GetNonExitingSatellites",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeGracefulExitServer).GetNonExitingSatellites(ctx, req.(*GetNonExitingSatellitesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _NodeGracefulExit_InitiateGracefulExit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InitiateGracefulExitRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NodeGracefulExitServer).InitiateGracefulExit(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/gracefulexit.NodeGracefulExit/InitiateGracefulExit",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeGracefulExitServer).InitiateGracefulExit(ctx, req.(*InitiateGracefulExitRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _NodeGracefulExit_GetExitProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetExitProgressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NodeGracefulExitServer).GetExitProgress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/gracefulexit.NodeGracefulExit/GetExitProgress",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeGracefulExitServer).GetExitProgress(ctx, req.(*GetExitProgressRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _NodeGracefulExit_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "gracefulexit.NodeGracefulExit",
-	HandlerType: (*NodeGracefulExitServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetNonExitingSatellites",
-			Handler:    _NodeGracefulExit_GetNonExitingSatellites_Handler,
-		},
-		{
-			MethodName: "InitiateGracefulExit",
-			Handler:    _NodeGracefulExit_InitiateGracefulExit_Handler,
-		},
-		{
-			MethodName: "GetExitProgress",
-			Handler:    _NodeGracefulExit_GetExitProgress_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "gracefulexit.proto",
-}
-
-// SatelliteGracefulExitClient is the client API for SatelliteGracefulExit service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type SatelliteGracefulExitClient interface {
-	// Process is called by storage nodes to initiate the graceful exit, get pieces to transfer, and receive exit status.
-	Process(ctx context.Context, opts ...grpc.CallOption) (SatelliteGracefulExit_ProcessClient, error)
-}
-
-type satelliteGracefulExitClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewSatelliteGracefulExitClient(cc *grpc.ClientConn) SatelliteGracefulExitClient {
-	return &satelliteGracefulExitClient{cc}
-}
-
-func (c *satelliteGracefulExitClient) Process(ctx context.Context, opts ...grpc.CallOption) (SatelliteGracefulExit_ProcessClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_SatelliteGracefulExit_serviceDesc.Streams[0], "/gracefulexit.SatelliteGracefulExit/Process", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &satelliteGracefulExitProcessClient{stream}
-	return x, nil
-}
-
-type SatelliteGracefulExit_ProcessClient interface {
-	Send(*StorageNodeMessage) error
-	Recv() (*SatelliteMessage, error)
-	grpc.ClientStream
-}
-
-type satelliteGracefulExitProcessClient struct {
-	grpc.ClientStream
-}
-
-func (x *satelliteGracefulExitProcessClient) Send(m *StorageNodeMessage) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *satelliteGracefulExitProcessClient) Recv() (*SatelliteMessage, error) {
-	m := new(SatelliteMessage)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// SatelliteGracefulExitServer is the server API for SatelliteGracefulExit service.
-type SatelliteGracefulExitServer interface {
-	// Process is called by storage nodes to initiate the graceful exit, get pieces to transfer, and receive exit status.
-	Process(SatelliteGracefulExit_ProcessServer) error
-}
-
-func RegisterSatelliteGracefulExitServer(s *grpc.Server, srv SatelliteGracefulExitServer) {
-	s.RegisterService(&_SatelliteGracefulExit_serviceDesc, srv)
-}
-
-func _SatelliteGracefulExit_Process_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(SatelliteGracefulExitServer).Process(&satelliteGracefulExitProcessServer{stream})
-}
-
-type SatelliteGracefulExit_ProcessServer interface {
-	Send(*SatelliteMessage) error
-	Recv() (*StorageNodeMessage, error)
-	grpc.ServerStream
-}
-
-type satelliteGracefulExitProcessServer struct {
-	grpc.ServerStream
-}
-
-func (x *satelliteGracefulExitProcessServer) Send(m *SatelliteMessage) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *satelliteGracefulExitProcessServer) Recv() (*StorageNodeMessage, error) {
-	m := new(StorageNodeMessage)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-var _SatelliteGracefulExit_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "gracefulexit.SatelliteGracefulExit",
-	HandlerType: (*SatelliteGracefulExitServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Process",
-			Handler:       _SatelliteGracefulExit_Process_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-	},
-	Metadata: "gracefulexit.proto",
-}
+// --- DRPC END ---

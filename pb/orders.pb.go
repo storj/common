@@ -6,13 +6,14 @@ package pb
 import (
 	context "context"
 	fmt "fmt"
+	math "math"
+	time "time"
+
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
-	grpc "google.golang.org/grpc"
-	math "math"
+
 	drpc "storj.io/drpc"
-	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -720,6 +721,8 @@ var fileDescriptor_e0f5d4cf0fc9e41b = []byte{
 	0xef, 0xff, 0x1e, 0x00, 0x00, 0xff, 0xff, 0xc5, 0x1d, 0x6c, 0x8e, 0x11, 0x0b, 0x00, 0x00,
 }
 
+// --- DRPC BEGIN ---
+
 type DRPCOrdersClient interface {
 	DRPCConn() drpc.Conn
 
@@ -816,106 +819,4 @@ func (x *drpcOrdersSettlementStream) Recv() (*SettlementRequest, error) {
 	return m, nil
 }
 
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// OrdersClient is the client API for Orders service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type OrdersClient interface {
-	Settlement(ctx context.Context, opts ...grpc.CallOption) (Orders_SettlementClient, error)
-}
-
-type ordersClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewOrdersClient(cc *grpc.ClientConn) OrdersClient {
-	return &ordersClient{cc}
-}
-
-func (c *ordersClient) Settlement(ctx context.Context, opts ...grpc.CallOption) (Orders_SettlementClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Orders_serviceDesc.Streams[0], "/orders.Orders/Settlement", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &ordersSettlementClient{stream}
-	return x, nil
-}
-
-type Orders_SettlementClient interface {
-	Send(*SettlementRequest) error
-	Recv() (*SettlementResponse, error)
-	grpc.ClientStream
-}
-
-type ordersSettlementClient struct {
-	grpc.ClientStream
-}
-
-func (x *ordersSettlementClient) Send(m *SettlementRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *ordersSettlementClient) Recv() (*SettlementResponse, error) {
-	m := new(SettlementResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// OrdersServer is the server API for Orders service.
-type OrdersServer interface {
-	Settlement(Orders_SettlementServer) error
-}
-
-func RegisterOrdersServer(s *grpc.Server, srv OrdersServer) {
-	s.RegisterService(&_Orders_serviceDesc, srv)
-}
-
-func _Orders_Settlement_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(OrdersServer).Settlement(&ordersSettlementServer{stream})
-}
-
-type Orders_SettlementServer interface {
-	Send(*SettlementResponse) error
-	Recv() (*SettlementRequest, error)
-	grpc.ServerStream
-}
-
-type ordersSettlementServer struct {
-	grpc.ServerStream
-}
-
-func (x *ordersSettlementServer) Send(m *SettlementResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *ordersSettlementServer) Recv() (*SettlementRequest, error) {
-	m := new(SettlementRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-var _Orders_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "orders.Orders",
-	HandlerType: (*OrdersServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Settlement",
-			Handler:       _Orders_Settlement_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-	},
-	Metadata: "orders.proto",
-}
+// --- DRPC END ---

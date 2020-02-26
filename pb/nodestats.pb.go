@@ -6,13 +6,14 @@ package pb
 import (
 	context "context"
 	fmt "fmt"
+	math "math"
+	time "time"
+
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
-	grpc "google.golang.org/grpc"
-	math "math"
+
 	drpc "storj.io/drpc"
-	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -362,6 +363,8 @@ var fileDescriptor_e0b184ee117142aa = []byte{
 	0x00, 0x00, 0xff, 0xff, 0xad, 0xd9, 0x13, 0x89, 0x80, 0x04, 0x00, 0x00,
 }
 
+// --- DRPC BEGIN ---
+
 type DRPCNodeStatsClient interface {
 	DRPCConn() drpc.Conn
 
@@ -467,107 +470,4 @@ func (x *drpcNodeStatsDailyStorageUsageStream) SendAndClose(m *DailyStorageUsage
 	return x.CloseSend()
 }
 
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// NodeStatsClient is the client API for NodeStats service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type NodeStatsClient interface {
-	GetStats(ctx context.Context, in *GetStatsRequest, opts ...grpc.CallOption) (*GetStatsResponse, error)
-	DailyStorageUsage(ctx context.Context, in *DailyStorageUsageRequest, opts ...grpc.CallOption) (*DailyStorageUsageResponse, error)
-}
-
-type nodeStatsClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewNodeStatsClient(cc *grpc.ClientConn) NodeStatsClient {
-	return &nodeStatsClient{cc}
-}
-
-func (c *nodeStatsClient) GetStats(ctx context.Context, in *GetStatsRequest, opts ...grpc.CallOption) (*GetStatsResponse, error) {
-	out := new(GetStatsResponse)
-	err := c.cc.Invoke(ctx, "/nodestats.NodeStats/GetStats", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *nodeStatsClient) DailyStorageUsage(ctx context.Context, in *DailyStorageUsageRequest, opts ...grpc.CallOption) (*DailyStorageUsageResponse, error) {
-	out := new(DailyStorageUsageResponse)
-	err := c.cc.Invoke(ctx, "/nodestats.NodeStats/DailyStorageUsage", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// NodeStatsServer is the server API for NodeStats service.
-type NodeStatsServer interface {
-	GetStats(context.Context, *GetStatsRequest) (*GetStatsResponse, error)
-	DailyStorageUsage(context.Context, *DailyStorageUsageRequest) (*DailyStorageUsageResponse, error)
-}
-
-func RegisterNodeStatsServer(s *grpc.Server, srv NodeStatsServer) {
-	s.RegisterService(&_NodeStats_serviceDesc, srv)
-}
-
-func _NodeStats_GetStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetStatsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NodeStatsServer).GetStats(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/nodestats.NodeStats/GetStats",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeStatsServer).GetStats(ctx, req.(*GetStatsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _NodeStats_DailyStorageUsage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DailyStorageUsageRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NodeStatsServer).DailyStorageUsage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/nodestats.NodeStats/DailyStorageUsage",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeStatsServer).DailyStorageUsage(ctx, req.(*DailyStorageUsageRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _NodeStats_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "nodestats.NodeStats",
-	HandlerType: (*NodeStatsServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetStats",
-			Handler:    _NodeStats_GetStats_Handler,
-		},
-		{
-			MethodName: "DailyStorageUsage",
-			Handler:    _NodeStats_DailyStorageUsage_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "nodestats.proto",
-}
+// --- DRPC END ---

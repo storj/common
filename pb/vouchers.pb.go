@@ -6,13 +6,14 @@ package pb
 import (
 	context "context"
 	fmt "fmt"
+	math "math"
+	time "time"
+
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
-	grpc "google.golang.org/grpc"
-	math "math"
+
 	drpc "storj.io/drpc"
-	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -216,6 +217,8 @@ var fileDescriptor_3659b9a115b8060d = []byte{
 	0xdd, 0x67, 0x9f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xf1, 0x1f, 0x45, 0xc2, 0x51, 0x02, 0x00, 0x00,
 }
 
+// --- DRPC BEGIN ---
+
 type DRPCVouchersClient interface {
 	DRPCConn() drpc.Conn
 
@@ -285,74 +288,4 @@ func (x *drpcVouchersRequestStream) SendAndClose(m *VoucherResponse) error {
 	return x.CloseSend()
 }
 
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// VouchersClient is the client API for Vouchers service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type VouchersClient interface {
-	Request(ctx context.Context, in *VoucherRequest, opts ...grpc.CallOption) (*VoucherResponse, error)
-}
-
-type vouchersClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewVouchersClient(cc *grpc.ClientConn) VouchersClient {
-	return &vouchersClient{cc}
-}
-
-func (c *vouchersClient) Request(ctx context.Context, in *VoucherRequest, opts ...grpc.CallOption) (*VoucherResponse, error) {
-	out := new(VoucherResponse)
-	err := c.cc.Invoke(ctx, "/vouchers.Vouchers/Request", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// VouchersServer is the server API for Vouchers service.
-type VouchersServer interface {
-	Request(context.Context, *VoucherRequest) (*VoucherResponse, error)
-}
-
-func RegisterVouchersServer(s *grpc.Server, srv VouchersServer) {
-	s.RegisterService(&_Vouchers_serviceDesc, srv)
-}
-
-func _Vouchers_Request_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VoucherRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(VouchersServer).Request(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/vouchers.Vouchers/Request",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(VouchersServer).Request(ctx, req.(*VoucherRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Vouchers_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "vouchers.Vouchers",
-	HandlerType: (*VouchersServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Request",
-			Handler:    _Vouchers_Request_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "vouchers.proto",
-}
+// --- DRPC END ---
