@@ -10,6 +10,9 @@ import (
 	"net"
 
 	"github.com/zeebo/errs"
+
+	"storj.io/common/internal/grpchook"
+	"storj.io/drpc/drpcctx"
 )
 
 // Error is the class of errors returned by this package.
@@ -35,9 +38,33 @@ func FromContext(ctx context.Context) (*Peer, error) {
 		return peer, nil
 	} else if peer, drpcErr := drpcInternalFromContext(ctx); drpcErr == nil {
 		return peer, nil
-	} else if peer, grpcErr := grpcInternalFromContext(ctx); grpcErr == nil {
-		return peer, nil
+	} else if addr, state, grpcErr := grpchook.InternalFromContext(ctx); grpcErr == nil {
+		return &Peer{Addr: addr, State: state}, nil
 	} else {
+		if grpcErr == grpchook.ErrNotHooked {
+			grpcErr = nil
+		}
 		return nil, errs.Combine(drpcErr, grpcErr)
 	}
+}
+
+// drpcInternalFromContext returns a peer from the context using drpc.
+func drpcInternalFromContext(ctx context.Context) (*Peer, error) {
+	tr, ok := drpcctx.Transport(ctx)
+	if !ok {
+		return nil, Error.New("unable to get drpc peer from context")
+	}
+
+	conn, ok := tr.(interface {
+		RemoteAddr() net.Addr
+		ConnectionState() tls.ConnectionState
+	})
+	if !ok {
+		return nil, Error.New("drpc transport does not have required methods")
+	}
+
+	return &Peer{
+		Addr:  conn.RemoteAddr(),
+		State: conn.ConnectionState(),
+	}, nil
 }

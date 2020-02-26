@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/zeebo/errs"
-	"google.golang.org/grpc"
 
+	"storj.io/common/internal/grpchook"
 	"storj.io/common/rpc/rpcstatus"
 )
 
@@ -17,7 +17,7 @@ import (
 func IsCanceled(err error) bool {
 	return errs.IsFunc(err, func(err error) bool {
 		return err == context.Canceled ||
-			err == grpc.ErrServerStopped ||
+			grpchook.IsErrServerStopped(err) ||
 			err == http.ErrServerClosed ||
 			rpcstatus.Code(err) == rpcstatus.Canceled
 	})
