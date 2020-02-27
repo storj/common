@@ -2,10 +2,8 @@ module storj.io/common
 
 go 1.13
 
-// force specific versions for minio
-require github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a
-
 require (
+	github.com/btcsuite/btcutil v1.0.1
 	github.com/calebcase/tmpfile v1.0.1
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.2.1
