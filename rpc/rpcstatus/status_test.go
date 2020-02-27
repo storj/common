@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/grpc/status"
 
 	"storj.io/drpc/drpcerr"
 )
@@ -40,7 +39,6 @@ func TestStatus(t *testing.T) {
 	for _, code := range allCodes {
 		err := Error(code, "")
 		assert.Equal(t, Code(err), code)
-		assert.Equal(t, status.Code(err), code.toGRPC())
 		assert.Equal(t, drpcerr.Code(err), uint64(code))
 	}
 

@@ -28,7 +28,7 @@ func IsErrServerStopped(err error) bool {
 	return HookedErrServerStopped == err
 }
 
-// HookedInternalFromContext is
+// HookedInternalFromContext returns grpc peer information from context.
 var HookedInternalFromContext func(ctx context.Context) (addr net.Addr, state tls.ConnectionState, err error)
 
 // InternalFromContext returns the peer that was previously associated by NewContext using grpc.
@@ -39,3 +39,13 @@ func InternalFromContext(ctx context.Context) (addr net.Addr, state tls.Connecti
 
 	return HookedInternalFromContext(ctx)
 }
+
+// StatusCode is rpcstatus.Code, however it cannot use it directly without introducing a
+// circular dependency.
+type StatusCode uint64
+
+// HookedErrorWrap is the func to wrap a status code.
+var HookedErrorWrap func(code StatusCode, err error) error
+
+// HookedConvertToStatusCode tries to convert grpc error status to rpcstatus.StatusCode
+var HookedConvertToStatusCode func(err error) (StatusCode, bool)
