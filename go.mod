@@ -5,8 +5,6 @@ go 1.13
 // force specific versions for minio
 require github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a
 
-replace google.golang.org/grpc => github.com/storj/grpc-go v1.23.1-0.20190918084400-1c4561bf5127
-
 require (
 	github.com/calebcase/tmpfile v1.0.1
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -25,7 +23,6 @@ require (
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/sys v0.0.0-20200107144601-ef85f5a75ddf
 	golang.org/x/text v0.3.2 // indirect
-	google.golang.org/genproto v0.0.0-20190716160619-c506a9f90610 // indirect
-	google.golang.org/grpc v1.23.1
+	google.golang.org/grpc v1.27.1
 	storj.io/drpc v0.0.7-0.20191115031725-2171c57838d2
 )
