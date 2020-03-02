@@ -94,6 +94,8 @@ func (cooldown *Cooldown) Run(ctx context.Context, fn func(ctx context.Context) 
 			}
 		case <-ctx.Done():
 			return ctx.Err()
+		case <-cooldown.stopping:
+			return nil
 		}
 
 	}
