@@ -6,12 +6,15 @@ package telemetry
 import (
 	"context"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/admission/v2/admmonkit"
 	"github.com/zeebo/admission/v2/admproto"
 	"go.uber.org/zap"
+
+	"storj.io/common/sync2"
 )
 
 const (
@@ -62,6 +65,10 @@ type Client struct {
 	interval time.Duration
 	opts     admmonkit.Options
 	send     func(context.Context, admmonkit.Options) error
+
+	mu      sync.Mutex
+	cancel  context.CancelFunc
+	stopped bool
 }
 
 // NewClient constructs a telemetry client that sends packets to remoteAddr
@@ -106,8 +113,18 @@ func NewClient(log *zap.Logger, remoteAddr string, opts ClientOpts) (rv *Client,
 // Run calls Report roughly every Interval
 func (c *Client) Run(ctx context.Context) {
 	c.log.Sugar().Debugf("Initialized batcher with id = %q", c.opts.InstanceId)
+
+	c.mu.Lock()
+	if c.stopped {
+		c.mu.Unlock()
+		c.log.Sugar().Error("telemetry client Run called after already stopped")
+		return
+	}
+	ctx, c.cancel = context.WithCancel(ctx)
+	c.mu.Unlock()
+
 	for {
-		time.Sleep(jitter(c.interval))
+		sync2.Sleep(ctx, jitter(c.interval))
 		if ctx.Err() != nil {
 			return
 		}
@@ -116,6 +133,17 @@ func (c *Client) Run(ctx context.Context) {
 		if err != nil {
 			c.log.Sugar().Errorf("failed sending report: %v", err)
 		}
+	}
+}
+
+// Stop stops the Run loop
+func (c *Client) Stop() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.stopped = true
+	if c.cancel != nil {
+		c.cancel()
 	}
 }
 
