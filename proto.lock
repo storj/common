@@ -2112,7 +2112,14 @@
             ]
           },
           {
-            "name": "BucketDeleteResponse"
+            "name": "BucketDeleteResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "Bucket"
+              }
+            ]
           },
           {
             "name": "BucketListRequest",
@@ -3110,6 +3117,11 @@
                     "value": "false"
                   }
                 ]
+              },
+              {
+                "id": 2,
+                "name": "object",
+                "type": "Object"
               }
             ]
           },

@@ -110,6 +110,7 @@ message BucketDeleteRequest {
 }
 
 message BucketDeleteResponse {
+    Bucket bucket = 1;
 }
 
 message BucketListRequest {
@@ -379,6 +380,7 @@ message ObjectBeginDeleteRequest {
 
 message ObjectBeginDeleteResponse {
     bytes  stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    Object object = 2;
 }
 
 message ObjectFinishDeleteRequest {
