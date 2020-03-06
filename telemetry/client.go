@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
-	"github.com/zeebo/admission/v2/admmonkit"
-	"github.com/zeebo/admission/v2/admproto"
+	"github.com/zeebo/admission/v3/admmonkit"
+	"github.com/zeebo/admission/v3/admproto"
 	"go.uber.org/zap"
 
 	"storj.io/common/sync2"
@@ -56,6 +56,10 @@ type ClientOpts struct {
 	// FloatEncoding is how floats should be encoded on the wire.
 	// Default is float16.
 	FloatEncoding admproto.FloatEncoding
+
+	// Headers allow you to set arbitrary key/value tags to be included in
+	// each packet send
+	Headers map[string]string
 }
 
 // Client is a telemetry client for sending UDP packets at a regular interval
@@ -106,6 +110,7 @@ func NewClient(log *zap.Logger, remoteAddr string, opts ClientOpts) (rv *Client,
 			PacketSize:  opts.PacketSize,
 			Registry:    opts.Registry,
 			ProtoOpts:   admproto.Options{FloatEncoding: opts.FloatEncoding},
+			Headers:     opts.Headers,
 		},
 	}, nil
 }

@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
-	"github.com/zeebo/admission/v2/admproto"
+	"github.com/zeebo/admission/v3/admproto"
 	"github.com/zeebo/errs"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
