@@ -71,7 +71,7 @@ func NewDefaultDialer(tlsOptions *tlsopts.Options) Dialer {
 	return Dialer{
 		TLSOptions:     tlsOptions,
 		DialTimeout:    20 * time.Second,
-		TCPUserTimeout: 60 * time.Second,
+		TCPUserTimeout: 15 * time.Minute,
 		PoolOptions: rpcpool.Options{
 			Capacity:       5,
 			IdleExpiration: 2 * time.Minute,
