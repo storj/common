@@ -56,6 +56,9 @@ func (opts *Options) tlsConfig(isServer bool, verificationFuncs ...peertls.PeerC
 		)
 	}
 
+	/* #nosec G402 */ // We don't use trusted root certificates, since storage
+	// nodes might not have a CA signed certificate. We use node id-s for the
+	// verification instead, that's why we enable InsecureSkipVerify
 	config := &tls.Config{
 		Certificates:                []tls.Certificate{*opts.Cert},
 		InsecureSkipVerify:          true,

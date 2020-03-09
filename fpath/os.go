@@ -72,6 +72,7 @@ func IsValidSetupDir(name string) (ok bool, err error) {
 		return false, err
 	}
 
+	/* #nosec G304 */ // The function limits later on paths having a config file
 	f, err := os.Open(name)
 	if err != nil {
 		return false, err

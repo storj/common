@@ -25,6 +25,7 @@ func TestProcessGroup(t *testing.T) {
 	require.NoError(t, err)
 
 	{
+		/* #nosec G204 */ // This is a test and both parameters' values are controlled
 		cmd := exec.Command("go", "build", "-o", binary, source)
 		cmd.Dir = ctx.Dir()
 
@@ -33,6 +34,8 @@ func TestProcessGroup(t *testing.T) {
 	}
 
 	{
+
+		/* #nosec G204 */ // This is a test and the parameter's values is controlled
 		cmd := exec.Command(binary)
 		cmd.Dir = ctx.Dir()
 		cmd.Stdout, cmd.Stderr = ioutil.Discard, ioutil.Discard

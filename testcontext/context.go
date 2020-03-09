@@ -197,9 +197,9 @@ func (ctx *Context) reportRunning() {
 	}
 
 	var message strings.Builder
-	message.WriteString("Test exceeded timeout")
+	_, _ = message.WriteString("Test exceeded timeout")
 	if len(problematic) > 0 {
-		message.WriteString("\nsome goroutines are still running, did you forget to shut them down?")
+		_, _ = message.WriteString("\nsome goroutines are still running, did you forget to shut them down?")
 		for _, caller := range problematic {
 			fnname := ""
 			if fn := runtime.FuncForPC(caller.pc); fn != nil {

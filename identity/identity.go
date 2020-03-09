@@ -219,6 +219,7 @@ func PeerIdentityFromContext(ctx context.Context) (*PeerIdentity, error) {
 
 // NodeIDFromCertPath loads a node ID from a certificate file path.
 func NodeIDFromCertPath(certPath string) (storj.NodeID, error) {
+	/* #nosec G304 */ // Subsequent calls ensure that the file is a certificate
 	certBytes, err := ioutil.ReadFile(certPath)
 	if err != nil {
 		return storj.NodeID{}, err

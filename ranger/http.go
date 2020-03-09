@@ -22,6 +22,7 @@ type httpRanger struct {
 // HTTPRanger turns an HTTP URL into a Ranger
 func HTTPRanger(ctx context.Context, url string) (_ Ranger, err error) {
 	defer mon.Task()(&ctx)(&err)
+	/* #nosec G107 */ // The callers must control the soure of the url value
 	resp, err := http.Head(url)
 	if err != nil {
 		return nil, err

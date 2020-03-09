@@ -85,13 +85,13 @@ func encryptPath(bucket string, path paths.Unencrypted, pathCipher *storj.Cipher
 	}
 
 	var builder strings.Builder
-	builder.WriteString(base.Encrypted.Raw())
+	_, _ = builder.WriteString(base.Encrypted.Raw())
 
 	if len(encrypted) > 0 {
 		if builder.Len() > 0 {
-			builder.WriteByte('/')
+			_ = builder.WriteByte('/')
 		}
-		builder.WriteString(encrypted)
+		_, _ = builder.WriteString(encrypted)
 	}
 
 	return paths.NewEncrypted(builder.String()), nil
@@ -116,9 +116,10 @@ func EncryptPathRaw(raw string, cipher storj.CipherSuite, key *storj.Key) (strin
 			return "", errs.Wrap(err)
 		}
 		if i > 0 {
-			builder.WriteByte('/')
+			_ = builder.WriteByte('/')
 		}
-		builder.WriteString(encComponent)
+
+		_, _ = builder.WriteString(encComponent)
 	}
 	return builder.String(), nil
 }
@@ -183,13 +184,14 @@ func decryptPath(bucket string, path paths.Encrypted, pathCipher *storj.CipherSu
 	}
 
 	var builder strings.Builder
-	builder.WriteString(base.Unencrypted.Raw())
+	_, _ = builder.WriteString(base.Unencrypted.Raw())
 
 	if len(decrypted) > 0 {
 		if builder.Len() > 0 {
-			builder.WriteByte('/')
+			_ = builder.WriteByte('/')
 		}
-		builder.WriteString(decrypted)
+
+		_, _ = builder.WriteString(decrypted)
 	}
 
 	return paths.NewUnencrypted(builder.String()), nil
@@ -214,9 +216,10 @@ func DecryptPathRaw(raw string, cipher storj.CipherSuite, key *storj.Key) (strin
 			return "", errs.Wrap(err)
 		}
 		if i > 0 {
-			builder.WriteByte('/')
+			_ = builder.WriteByte('/')
 		}
-		builder.WriteString(unencComponent)
+
+		_, _ = builder.WriteString(unencComponent)
 	}
 	return builder.String(), nil
 }

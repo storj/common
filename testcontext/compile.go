@@ -44,6 +44,7 @@ func (ctx *Context) Compile(pkg string, preArgs ...string) string {
 	args = append(args, "-tags=unittest")
 	args = append(args, "-o", exe, pkg)
 
+	/* #nosec G204 */ // This package is only used for test
 	cmd := exec.Command("go", args...)
 	ctx.test.Log("exec:", cmd.Args)
 
@@ -129,6 +130,7 @@ func (ctx *Context) CompileC(t *testing.T, opts CompileCOptions) string {
 	}
 	args = append(args, opts.Sources...)
 
+	/* #nosec G204 */ // This package is used for testing and the parameter's value are controlled by the above logic
 	cmd := exec.Command("gcc", args...)
 	t.Log("exec:", cmd.Args)
 

@@ -36,6 +36,7 @@ func Float64n(n int64) float64 {
 func Read(data []byte) {
 	const newSourceThreshold = 64
 	if len(data) < newSourceThreshold {
+		/* #nosec G404 */ // This package is only used for testing
 		_, _ = rand.Read(data)
 		return
 	}

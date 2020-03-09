@@ -16,6 +16,8 @@ func EditFile(fileToEdit string) error {
 	if editorPath == "" {
 		return fmt.Errorf("unable to find suitable editor for file %s", fileToEdit)
 	}
+
+	/* #nosec G204 */ // This function is used by CLI implementations for opening a configuration file
 	cmd := exec.Command(editorPath, fileToEdit)
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
@@ -39,6 +41,7 @@ func getEditorPath() string {
 	//look for a preference via 'git config'
 	git, err := exec.LookPath("git")
 	if err == nil {
+		/* #nosec G204 */ // The parameter's value is controlled
 		out, err := exec.Command(git, "config", "core.editor").Output()
 		if err == nil {
 			cmd := strings.TrimSpace(string(out))
