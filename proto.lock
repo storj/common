@@ -1400,6 +1400,297 @@
       }
     },
     {
+      "protopath": "pb:/:heldamount.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "GetHeldAmountRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "period",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "GetHeldAmountResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "period",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "node_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "NodeID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "name": "created_at",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 4,
+                "name": "codes",
+                "type": "string"
+              },
+              {
+                "id": 5,
+                "name": "usage_at_rest",
+                "type": "float"
+              },
+              {
+                "id": 6,
+                "name": "usage_get",
+                "type": "int64"
+              },
+              {
+                "id": 7,
+                "name": "usage_put",
+                "type": "int64"
+              },
+              {
+                "id": 8,
+                "name": "usage_get_repair",
+                "type": "int64"
+              },
+              {
+                "id": 9,
+                "name": "usage_put_repair",
+                "type": "int64"
+              },
+              {
+                "id": 10,
+                "name": "usage_get_audit",
+                "type": "int64"
+              },
+              {
+                "id": 11,
+                "name": "comp_at_rest",
+                "type": "int64"
+              },
+              {
+                "id": 12,
+                "name": "comp_get",
+                "type": "int64"
+              },
+              {
+                "id": 13,
+                "name": "comp_put",
+                "type": "int64"
+              },
+              {
+                "id": 14,
+                "name": "comp_get_repair",
+                "type": "int64"
+              },
+              {
+                "id": 15,
+                "name": "comp_put_repair",
+                "type": "int64"
+              },
+              {
+                "id": 16,
+                "name": "comp_get_audit",
+                "type": "int64"
+              },
+              {
+                "id": 17,
+                "name": "surge_percent",
+                "type": "int64"
+              },
+              {
+                "id": 18,
+                "name": "held",
+                "type": "int64"
+              },
+              {
+                "id": 19,
+                "name": "owed",
+                "type": "int64"
+              },
+              {
+                "id": 20,
+                "name": "disposed",
+                "type": "int64"
+              },
+              {
+                "id": 21,
+                "name": "paid",
+                "type": "int64"
+              }
+            ]
+          },
+          {
+            "name": "GetPaymentRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "period",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "GetPaymentResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "node_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "NodeID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "created_at",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "name": "period",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 4,
+                "name": "amount",
+                "type": "int64"
+              },
+              {
+                "id": 5,
+                "name": "receipt",
+                "type": "string"
+              },
+              {
+                "id": 6,
+                "name": "notes",
+                "type": "string"
+              },
+              {
+                "id": 7,
+                "name": "id",
+                "type": "int64"
+              }
+            ]
+          }
+        ],
+        "services": [
+          {
+            "name": "HeldAmount",
+            "rpcs": [
+              {
+                "name": "GetPayStub",
+                "in_type": "GetHeldAmountRequest",
+                "out_type": "GetHeldAmountResponse"
+              },
+              {
+                "name": "GetPayment",
+                "in_type": "GetPaymentRequest",
+                "out_type": "GetPaymentResponse"
+              }
+            ]
+          }
+        ],
+        "imports": [
+          {
+            "path": "gogo.proto"
+          },
+          {
+            "path": "google/protobuf/timestamp.proto"
+          }
+        ],
+        "package": {
+          "name": "heldamount"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "pb"
+          }
+        ]
+      }
+    },
+    {
       "protopath": "pb:/:inspector.proto",
       "def": {
         "messages": [
