@@ -4658,8 +4658,14 @@
               },
               {
                 "id": 14,
-                "name": "last_ip",
-                "type": "string"
+                "name": "deprecated_last_ip",
+                "type": "string",
+                "options": [
+                  {
+                    "name": "deprecated",
+                    "value": "true"
+                  }
+                ]
               }
             ],
             "reserved_ids": [
