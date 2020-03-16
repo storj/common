@@ -28,6 +28,13 @@ func TestStorjURL(t *testing.T) {
 			joint:  "suffix",
 		},
 		{
+			url:    "SJ:/mybucket",
+			bucket: "mybucket",
+			path:   "",
+			base:   "",
+			joint:  "suffix",
+		},
+		{
 			url:    "sj:/mybucket/",
 			bucket: "mybucket",
 			path:   "",
@@ -97,8 +104,15 @@ func TestStorjURL(t *testing.T) {
 			base:   "myfile",
 			joint:  "myfolder/myfile/suffix",
 		},
+		{
+			url:    "s3:/mybucket/hello? sausage/êé/Hello, 世界/ \" ' @ < > & ? + ≠/z.txt",
+			bucket: "mybucket",
+			path:   "hello? sausage/êé/Hello, 世界/ \" ' @ < > & ? + ≠/z.txt",
+			base:   "z.txt",
+			joint:  "hello? sausage/êé/Hello, 世界/ \" ' @ < > & ? + ≠/z.txt/suffix",
+		},
 	} {
-		errTag := fmt.Sprintf("Test case #%d", i)
+		errTag := fmt.Sprintf("Test case #%d (%q)", i, tt.url)
 
 		fp, err := New(tt.url)
 		assert.NoError(t, err, errTag)
@@ -119,12 +133,9 @@ func TestInvalidStorjURL(t *testing.T) {
 		"sj:bucket",
 		"sj://",
 		"sj:///",
-		"sj://mybucket:8080/",
-		"sj:///mybucket:8080/",
-		"sj:////mybucket:8080/",
 		"http://bucket/file.txt",
 	} {
-		errTag := fmt.Sprintf("Test case #%d", i)
+		errTag := fmt.Sprintf("Test case #%d (%q)", i, tt)
 		_, err := New(tt)
 		assert.Error(t, err, errTag)
 	}

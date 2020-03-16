@@ -6,19 +6,13 @@ package fpath
 import (
 	"errors"
 	"fmt"
-	"net/url"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
-// Create a set
-var storjScheme = map[string]struct{}{
-	"sj": {},
-	"s3": {},
-}
-
-// FPath is an OS independently path handling structure
+// FPath is an OS independent path handling structure.
 type FPath struct {
 	original string // the original URL or local path
 	local    bool   // if local path
@@ -26,51 +20,82 @@ type FPath struct {
 	path     string // only for Storj URL - the path within the bucket, cleaned from duplicated slashes
 }
 
+var parseSchemeRegex = regexp.MustCompile(`^([a-zA-Z][a-zA-Z0-9+.-]*):(.*)$`)
+
+func parseScheme(o string) (scheme, rest string) {
+	found := parseSchemeRegex.FindStringSubmatch(o)
+
+	switch len(found) {
+	case 2:
+		return strings.ToLower(found[1]), ""
+	case 3:
+		return strings.ToLower(found[1]), found[2]
+	}
+
+	return "", o
+}
+
+var parseBucketRegex = regexp.MustCompile(`^/{1,4}([^/]+)(/.*)?$`)
+
+func parseBucket(o string) (bucket, rest string) {
+	found := parseBucketRegex.FindStringSubmatch(o)
+
+	switch len(found) {
+	case 2:
+		return found[1], ""
+	case 3:
+		return found[1], found[2]
+	}
+
+	return "", o
+}
+
 // New creates new FPath from the given URL
 func New(p string) (FPath, error) {
 	fp := FPath{original: p}
 
+	// Skip processing further if we can determine this is an absolute
+	// path to a local file.
 	if filepath.IsAbs(p) {
 		fp.local = true
+
 		return fp, nil
 	}
 
-	var u *url.URL
-	var err error
-	// Loops to ensure URL is formatted correctly and does not get malformed during url.Parse()
-	for {
-		u, err = url.Parse(p)
-		if err != nil {
-			return fp, fmt.Errorf("malformed URL: %v, use format sj://bucket/", err)
+	// Does the path have a scheme? If not then we treat it as a local
+	// path. Otherwise we validate that the scheme is a supported one.
+	scheme, rest := parseScheme(p)
+	if scheme == "" {
+		// Forbid the use of an empty scheme.
+		if strings.HasPrefix(rest, ":") {
+			return fp, errors.New("malformed URL: missing scheme, use format sj://bucket/")
 		}
-		// no scheme means local path
-		if u.Scheme == "" {
-			fp.local = true
-			return fp, nil
-		}
-		// not a valid scheme (s3, sj)
-		if _, validScheme := storjScheme[u.Scheme]; !validScheme {
-			return fp, fmt.Errorf("unsupported URL scheme: %s, use format sj://bucket/", u.Scheme)
-		}
-		// empty url
-		if u.Host == "" && u.Path == "" {
-			return fp, errors.New("no bucket specified, use format sj://bucket/")
-		}
-		// u.host equals the bucket name, if existing url is valid
-		if u.Host != "" {
-			break
-		}
-		// remove additional / if url.Parse() corrects from sj:/bucket to sj:///bucket
-		p = strings.Replace(u.String(), ":///", "://", 1)
+
+		fp.local = true
+
+		return fp, nil
 	}
-	// port was specified but is not necessary/allowed
-	if u.Port() != "" {
-		return fp, errors.New("port in Storj URL is not supported, use format sj://bucket/")
+
+	switch scheme {
+	case "s3":
+	case "sj":
+	default:
+		return fp, fmt.Errorf("unsupported URL scheme: %s, use format sj://bucket/", scheme)
 	}
-	// set path information from url
-	fp.bucket = u.Host
-	if u.Path != "" {
-		fp.path = strings.TrimLeft(path.Clean(u.Path), "/")
+
+	// The remaining portion of the path must begin with a bucket.
+	bucket, rest := parseBucket(rest)
+	if bucket == "" {
+		return fp, errors.New("no bucket specified, use format sj://bucket/")
+	}
+
+	fp.bucket = bucket
+
+	// We only want to clean the path if it is non-empty. This is because
+	// path. Clean will turn an empty path into ".".
+	rest = strings.TrimLeft(rest, "/")
+	if rest != "" {
+		fp.path = path.Clean(rest)
 	}
 
 	return fp, nil
