@@ -29,6 +29,12 @@ func TestNewSuccessThreshold(t *testing.T) {
 			isError:          false,
 		},
 		{
+			desc:             "OK",
+			tasks:            134,
+			successThreshold: 1,
+			isError:          false,
+		},
+		{
 			desc:             "Error: invalid tasks (0)",
 			tasks:            0,
 			successThreshold: 0.75,
@@ -56,12 +62,6 @@ func TestNewSuccessThreshold(t *testing.T) {
 			desc:             "Error: invalid successThreshold (negative)",
 			tasks:            134,
 			successThreshold: -1.5,
-			isError:          true,
-		},
-		{
-			desc:             "Error: invalid successThreshold (1)",
-			tasks:            134,
-			successThreshold: 1,
 			isError:          true,
 		},
 		{
@@ -111,6 +111,9 @@ func TestSuccessThreshold_AllSuccess(t *testing.T) {
 
 	successThreshold.Wait(context.Background())
 	wg.Wait()
+
+	require.Equal(t, tasks, successThreshold.SuccessCount())
+	require.Equal(t, 0, successThreshold.FailureCount())
 }
 
 func TestSuccessThreshold_AllFailures(t *testing.T) {
@@ -135,6 +138,9 @@ func TestSuccessThreshold_AllFailures(t *testing.T) {
 
 	successThreshold.Wait(context.Background())
 	wg.Wait()
+
+	require.Equal(t, 0, successThreshold.SuccessCount())
+	require.Equal(t, tasks, successThreshold.FailureCount())
 }
 
 func TestSuccessThreshold_FailuresWithReachedSuccessThreshold(t *testing.T) {
@@ -171,6 +177,8 @@ func TestSuccessThreshold_FailuresWithReachedSuccessThreshold(t *testing.T) {
 	// Check that Wait unblocked when reached the successThreshold
 	require.Len(t, successfulTasksDone, cap(successfulTasksDone))
 
+	require.Equal(t, successfulTasks, successThreshold.SuccessCount())
+
 	// purge the rest of the goroutines
 	for i := successfulTasks; i < tasks/2; i++ {
 		<-successfulTasksDone
@@ -179,7 +187,7 @@ func TestSuccessThreshold_FailuresWithReachedSuccessThreshold(t *testing.T) {
 	wg.Wait()
 }
 
-func TestSuccessThreshold_FailuresWitouthReachedSuccessThreshold(t *testing.T) {
+func TestSuccessThreshold_FailuresWithoutReachedSuccessThreshold(t *testing.T) {
 	t.Parallel()
 
 	const (
@@ -207,6 +215,9 @@ func TestSuccessThreshold_FailuresWitouthReachedSuccessThreshold(t *testing.T) {
 
 	successThreshold.Wait(context.Background())
 	wg.Wait()
+
+	require.Equal(t, tasks/2, successThreshold.SuccessCount())
+	require.Equal(t, tasks/2, successThreshold.FailureCount())
 }
 
 func TestSuccessThreshold_ExtraTasksAreFine(t *testing.T) {
@@ -258,6 +269,7 @@ func TestSuccessThreshold_SuccessRateCloseTo0(t *testing.T) {
 		go func() {
 			completedTasks <- struct{}{}
 			successThreshold.Success()
+
 			wg.Done()
 		}()
 	}
@@ -274,12 +286,12 @@ func TestSuccessThreshold_SuccessRateCloseTo0(t *testing.T) {
 	wg.Wait()
 }
 
-func TestSuccessThreshold_SuccessThresholdCloseToNumTasks(t *testing.T) {
+func TestSuccessThreshold_SuccessThresholdNumTasks(t *testing.T) {
 	t.Parallel()
 
 	const (
 		tasks             = 2
-		threshold         = 0.99
+		threshold         = 1
 		expectedThreshold = 2
 	)
 

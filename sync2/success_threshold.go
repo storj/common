@@ -18,8 +18,12 @@ import (
 type SuccessThreshold struct {
 	toSucceed int64
 	pending   int64
-	done      chan struct{}
-	once      sync.Once
+
+	successes int64
+	failures  int64
+
+	done chan struct{}
+	once sync.Once
 }
 
 // NewSuccessThreshold creates a SuccessThreshold with the tasks number and
@@ -33,13 +37,19 @@ func NewSuccessThreshold(tasks int, successThreshold float64) (*SuccessThreshold
 		return nil, errs.New(
 			"invalid number of tasks. It must be greater than 1, got %d", tasks,
 		)
-	case successThreshold <= 0 || successThreshold >= 1:
+	case successThreshold <= 0 || successThreshold > 1:
 		return nil, errs.New(
-			"invalid successThreshold. It must be greater than 0 and less than 1, got %f", successThreshold,
+			"invalid successThreshold. It must be greater than 0 and less or equal to 1, got %f", successThreshold,
 		)
 	}
 
 	tasksToSuccess := int64(math.Ceil(float64(tasks) * successThreshold))
+
+	// just in case of floating point issues
+	if tasksToSuccess > int64(tasks) {
+		tasksToSuccess = int64(tasks)
+	}
+
 	return &SuccessThreshold{
 		toSucceed: tasksToSuccess,
 		pending:   int64(tasks),
@@ -49,6 +59,8 @@ func NewSuccessThreshold(tasks int, successThreshold float64) (*SuccessThreshold
 
 // Success tells the SuccessThreshold that one tasks was successful.
 func (threshold *SuccessThreshold) Success() {
+	atomic.AddInt64(&threshold.successes, 1)
+
 	if atomic.AddInt64(&threshold.toSucceed, -1) <= 0 {
 		threshold.markAsDone()
 	}
@@ -60,6 +72,8 @@ func (threshold *SuccessThreshold) Success() {
 
 // Failure tells the SuccessThreshold that one task was a failure.
 func (threshold *SuccessThreshold) Failure() {
+	atomic.AddInt64(&threshold.failures, 1)
+
 	if atomic.AddInt64(&threshold.pending, -1) <= 0 {
 		threshold.markAsDone()
 	}
@@ -80,4 +94,14 @@ func (threshold *SuccessThreshold) markAsDone() {
 	threshold.once.Do(func() {
 		close(threshold.done)
 	})
+}
+
+// SuccessCount returns the number of successes so far.
+func (threshold *SuccessThreshold) SuccessCount() int {
+	return int(atomic.LoadInt64(&threshold.successes))
+}
+
+// FailureCount returns the number of failures so far.
+func (threshold *SuccessThreshold) FailureCount() int {
+	return int(atomic.LoadInt64(&threshold.failures))
 }
