@@ -7,6 +7,8 @@ package uuid
 
 // To run fuzzing tests:
 //
+// clone github.com/storj/fuzz-corpus
+//
 // Install fuzzing tools:
 //   GO111MODULE=off go get github.com/dvyukov/go-fuzz/...
 //
@@ -14,7 +16,7 @@ package uuid
 //   go-fuzz-build .
 //
 // Run with test corpus:
-//   go-fuzz -bin uuid-fuzz.zip -workdir testdata
+//   go-fuzz -bin uuid-fuzz.zip -workdir $FUZZCORPUS/uuid/testdata
 
 // Fuzz implements a simple fuzz test for uuid.Parse.
 func Fuzz(data []byte) int {
