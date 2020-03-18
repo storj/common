@@ -132,6 +132,10 @@ func (d Dialer) dialContext(ctx context.Context, address string) (net.Conn, erro
 
 // DialNode creates an rpc connection to the specified node.
 func (d Dialer) DialNode(ctx context.Context, node *pb.Node) (_ *Conn, err error) {
+	if node == nil {
+		return nil, Error.New("node is nil")
+	}
+
 	defer mon.Task()(&ctx, "node: "+node.Id.String()[0:8])(&err)
 
 	if d.TLSOptions == nil {
