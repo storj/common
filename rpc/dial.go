@@ -19,6 +19,7 @@ import (
 	"storj.io/common/pb"
 	"storj.io/common/peertls/tlsopts"
 	"storj.io/common/rpc/rpcpool"
+	"storj.io/common/rpc/rpctracing"
 	"storj.io/common/storj"
 	"storj.io/drpc"
 	"storj.io/drpc/drpcconn"
@@ -246,7 +247,7 @@ func (d Dialer) dial(ctx context.Context, address string, tlsConfig *tls.Config)
 
 	return &Conn{
 		state: state,
-		raw:   pool,
+		Conn:  rpctracing.NewTracingWrapper(pool),
 	}, nil
 }
 
@@ -290,10 +291,11 @@ func (d Dialer) dialTransport(ctx context.Context, address string, tlsConfig *tl
 func (d Dialer) dialUnencrypted(ctx context.Context, address string) (_ *Conn, err error) {
 	defer mon.Task()(&ctx)(&err)
 
+	conn := rpcpool.New(d.PoolOptions, func(ctx context.Context) (drpc.Transport, error) {
+		return d.dialTransportUnencrypted(ctx, address)
+	})
 	return &Conn{
-		raw: rpcpool.New(d.PoolOptions, func(ctx context.Context) (drpc.Transport, error) {
-			return d.dialTransportUnencrypted(ctx, address)
-		}),
+		Conn: rpctracing.NewTracingWrapper(conn),
 	}, nil
 }
 
