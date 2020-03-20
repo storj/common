@@ -978,7 +978,7 @@ type DRPCPiecestoreDescription struct{}
 
 func (DRPCPiecestoreDescription) NumMethods() int { return 6 }
 
-func (DRPCPiecestoreDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCPiecestoreDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/piecestore.Piecestore/Upload",
@@ -1037,8 +1037,8 @@ func (DRPCPiecestoreDescription) Method(n int) (string, drpc.Handler, interface{
 	}
 }
 
-func DRPCRegisterPiecestore(srv drpc.Server, impl DRPCPiecestoreServer) {
-	srv.Register(impl, DRPCPiecestoreDescription{})
+func DRPCRegisterPiecestore(mux drpc.Mux, impl DRPCPiecestoreServer) error {
+	return mux.Register(impl, DRPCPiecestoreDescription{})
 }
 
 type DRPCPiecestore_UploadStream interface {

@@ -166,7 +166,7 @@ type DRPCCertificatesDescription struct{}
 
 func (DRPCCertificatesDescription) NumMethods() int { return 1 }
 
-func (DRPCCertificatesDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCCertificatesDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/node.Certificates/Sign",
@@ -182,8 +182,8 @@ func (DRPCCertificatesDescription) Method(n int) (string, drpc.Handler, interfac
 	}
 }
 
-func DRPCRegisterCertificates(srv drpc.Server, impl DRPCCertificatesServer) {
-	srv.Register(impl, DRPCCertificatesDescription{})
+func DRPCRegisterCertificates(mux drpc.Mux, impl DRPCCertificatesServer) error {
+	return mux.Register(impl, DRPCCertificatesDescription{})
 }
 
 type DRPCCertificates_SignStream interface {

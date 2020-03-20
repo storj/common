@@ -471,7 +471,7 @@ type DRPCHeldAmountDescription struct{}
 
 func (DRPCHeldAmountDescription) NumMethods() int { return 2 }
 
-func (DRPCHeldAmountDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCHeldAmountDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/heldamount.HeldAmount/GetPayStub",
@@ -496,8 +496,8 @@ func (DRPCHeldAmountDescription) Method(n int) (string, drpc.Handler, interface{
 	}
 }
 
-func DRPCRegisterHeldAmount(srv drpc.Server, impl DRPCHeldAmountServer) {
-	srv.Register(impl, DRPCHeldAmountDescription{})
+func DRPCRegisterHeldAmount(mux drpc.Mux, impl DRPCHeldAmountServer) error {
+	return mux.Register(impl, DRPCHeldAmountDescription{})
 }
 
 type DRPCHeldAmount_GetPayStubStream interface {

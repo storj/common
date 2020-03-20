@@ -408,7 +408,7 @@ type DRPCNodeStatsDescription struct{}
 
 func (DRPCNodeStatsDescription) NumMethods() int { return 2 }
 
-func (DRPCNodeStatsDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCNodeStatsDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/nodestats.NodeStats/GetStats",
@@ -433,8 +433,8 @@ func (DRPCNodeStatsDescription) Method(n int) (string, drpc.Handler, interface{}
 	}
 }
 
-func DRPCRegisterNodeStats(srv drpc.Server, impl DRPCNodeStatsServer) {
-	srv.Register(impl, DRPCNodeStatsDescription{})
+func DRPCRegisterNodeStats(mux drpc.Mux, impl DRPCNodeStatsServer) error {
+	return mux.Register(impl, DRPCNodeStatsDescription{})
 }
 
 type DRPCNodeStats_GetStatsStream interface {

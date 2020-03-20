@@ -251,7 +251,7 @@ type DRPCVouchersDescription struct{}
 
 func (DRPCVouchersDescription) NumMethods() int { return 1 }
 
-func (DRPCVouchersDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCVouchersDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/vouchers.Vouchers/Request",
@@ -267,8 +267,8 @@ func (DRPCVouchersDescription) Method(n int) (string, drpc.Handler, interface{},
 	}
 }
 
-func DRPCRegisterVouchers(srv drpc.Server, impl DRPCVouchersServer) {
-	srv.Register(impl, DRPCVouchersDescription{})
+func DRPCRegisterVouchers(mux drpc.Mux, impl DRPCVouchersServer) error {
+	return mux.Register(impl, DRPCVouchersDescription{})
 }
 
 type DRPCVouchers_RequestStream interface {

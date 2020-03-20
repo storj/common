@@ -11,7 +11,7 @@ require (
 	github.com/minio/sha256-simd v0.0.0-20190328051042-05b4dd3047e5
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/skyrings/skyring-common v0.0.0-20160929130248-d1c0bb1cbd5e
-	github.com/spacemonkeygo/monkit/v3 v3.0.4
+	github.com/spacemonkeygo/monkit/v3 v3.0.5
 	github.com/stretchr/testify v1.3.0
 	github.com/zeebo/admission/v2 v2.0.0
 	github.com/zeebo/admission/v3 v3.0.1
@@ -24,5 +24,5 @@ require (
 	golang.org/x/sys v0.0.0-20200107144601-ef85f5a75ddf
 	golang.org/x/text v0.3.2 // indirect
 	google.golang.org/grpc v1.27.1
-	storj.io/drpc v0.0.7-0.20191115031725-2171c57838d2
+	storj.io/drpc v0.0.11
 )

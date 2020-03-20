@@ -261,7 +261,7 @@ type DRPCReferralManagerDescription struct{}
 
 func (DRPCReferralManagerDescription) NumMethods() int { return 2 }
 
-func (DRPCReferralManagerDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCReferralManagerDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/referralmanager.ReferralManager/GetTokens",
@@ -286,8 +286,8 @@ func (DRPCReferralManagerDescription) Method(n int) (string, drpc.Handler, inter
 	}
 }
 
-func DRPCRegisterReferralManager(srv drpc.Server, impl DRPCReferralManagerServer) {
-	srv.Register(impl, DRPCReferralManagerDescription{})
+func DRPCRegisterReferralManager(mux drpc.Mux, impl DRPCReferralManagerServer) error {
+	return mux.Register(impl, DRPCReferralManagerDescription{})
 }
 
 type DRPCReferralManager_GetTokensStream interface {

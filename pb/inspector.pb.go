@@ -998,7 +998,7 @@ type DRPCOverlayInspectorDescription struct{}
 
 func (DRPCOverlayInspectorDescription) NumMethods() int { return 2 }
 
-func (DRPCOverlayInspectorDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCOverlayInspectorDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/inspector.OverlayInspector/CountNodes",
@@ -1023,8 +1023,8 @@ func (DRPCOverlayInspectorDescription) Method(n int) (string, drpc.Handler, inte
 	}
 }
 
-func DRPCRegisterOverlayInspector(srv drpc.Server, impl DRPCOverlayInspectorServer) {
-	srv.Register(impl, DRPCOverlayInspectorDescription{})
+func DRPCRegisterOverlayInspector(mux drpc.Mux, impl DRPCOverlayInspectorServer) error {
+	return mux.Register(impl, DRPCOverlayInspectorDescription{})
 }
 
 type DRPCOverlayInspector_CountNodesStream interface {
@@ -1107,7 +1107,7 @@ type DRPCPieceStoreInspectorDescription struct{}
 
 func (DRPCPieceStoreInspectorDescription) NumMethods() int { return 2 }
 
-func (DRPCPieceStoreInspectorDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCPieceStoreInspectorDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/inspector.PieceStoreInspector/Stats",
@@ -1132,8 +1132,8 @@ func (DRPCPieceStoreInspectorDescription) Method(n int) (string, drpc.Handler, i
 	}
 }
 
-func DRPCRegisterPieceStoreInspector(srv drpc.Server, impl DRPCPieceStoreInspectorServer) {
-	srv.Register(impl, DRPCPieceStoreInspectorDescription{})
+func DRPCRegisterPieceStoreInspector(mux drpc.Mux, impl DRPCPieceStoreInspectorServer) error {
+	return mux.Register(impl, DRPCPieceStoreInspectorDescription{})
 }
 
 type DRPCPieceStoreInspector_StatsStream interface {
@@ -1203,7 +1203,7 @@ type DRPCIrreparableInspectorDescription struct{}
 
 func (DRPCIrreparableInspectorDescription) NumMethods() int { return 1 }
 
-func (DRPCIrreparableInspectorDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCIrreparableInspectorDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/inspector.IrreparableInspector/ListIrreparableSegments",
@@ -1219,8 +1219,8 @@ func (DRPCIrreparableInspectorDescription) Method(n int) (string, drpc.Handler, 
 	}
 }
 
-func DRPCRegisterIrreparableInspector(srv drpc.Server, impl DRPCIrreparableInspectorServer) {
-	srv.Register(impl, DRPCIrreparableInspectorDescription{})
+func DRPCRegisterIrreparableInspector(mux drpc.Mux, impl DRPCIrreparableInspectorServer) error {
+	return mux.Register(impl, DRPCIrreparableInspectorDescription{})
 }
 
 type DRPCIrreparableInspector_ListIrreparableSegmentsStream interface {
@@ -1287,7 +1287,7 @@ type DRPCHealthInspectorDescription struct{}
 
 func (DRPCHealthInspectorDescription) NumMethods() int { return 2 }
 
-func (DRPCHealthInspectorDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCHealthInspectorDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/inspector.HealthInspector/ObjectHealth",
@@ -1312,8 +1312,8 @@ func (DRPCHealthInspectorDescription) Method(n int) (string, drpc.Handler, inter
 	}
 }
 
-func DRPCRegisterHealthInspector(srv drpc.Server, impl DRPCHealthInspectorServer) {
-	srv.Register(impl, DRPCHealthInspectorDescription{})
+func DRPCRegisterHealthInspector(mux drpc.Mux, impl DRPCHealthInspectorServer) error {
+	return mux.Register(impl, DRPCHealthInspectorDescription{})
 }
 
 type DRPCHealthInspector_ObjectHealthStream interface {

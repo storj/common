@@ -454,7 +454,7 @@ type DRPCPaymentsDescription struct{}
 
 func (DRPCPaymentsDescription) NumMethods() int { return 5 }
 
-func (DRPCPaymentsDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCPaymentsDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/nodestats.Payments/PrepareInvoiceRecords",
@@ -506,8 +506,8 @@ func (DRPCPaymentsDescription) Method(n int) (string, drpc.Handler, interface{},
 	}
 }
 
-func DRPCRegisterPayments(srv drpc.Server, impl DRPCPaymentsServer) {
-	srv.Register(impl, DRPCPaymentsDescription{})
+func DRPCRegisterPayments(mux drpc.Mux, impl DRPCPaymentsServer) error {
+	return mux.Register(impl, DRPCPaymentsDescription{})
 }
 
 type DRPCPayments_PrepareInvoiceRecordsStream interface {

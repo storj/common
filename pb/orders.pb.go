@@ -777,7 +777,7 @@ type DRPCOrdersDescription struct{}
 
 func (DRPCOrdersDescription) NumMethods() int { return 1 }
 
-func (DRPCOrdersDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCOrdersDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/orders.Orders/Settlement",
@@ -792,8 +792,8 @@ func (DRPCOrdersDescription) Method(n int) (string, drpc.Handler, interface{}, b
 	}
 }
 
-func DRPCRegisterOrders(srv drpc.Server, impl DRPCOrdersServer) {
-	srv.Register(impl, DRPCOrdersDescription{})
+func DRPCRegisterOrders(mux drpc.Mux, impl DRPCOrdersServer) error {
+	return mux.Register(impl, DRPCOrdersDescription{})
 }
 
 type DRPCOrders_SettlementStream interface {

@@ -1219,7 +1219,7 @@ type DRPCNodeGracefulExitDescription struct{}
 
 func (DRPCNodeGracefulExitDescription) NumMethods() int { return 3 }
 
-func (DRPCNodeGracefulExitDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCNodeGracefulExitDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/gracefulexit.NodeGracefulExit/GetNonExitingSatellites",
@@ -1253,8 +1253,8 @@ func (DRPCNodeGracefulExitDescription) Method(n int) (string, drpc.Handler, inte
 	}
 }
 
-func DRPCRegisterNodeGracefulExit(srv drpc.Server, impl DRPCNodeGracefulExitServer) {
-	srv.Register(impl, DRPCNodeGracefulExitDescription{})
+func DRPCRegisterNodeGracefulExit(mux drpc.Mux, impl DRPCNodeGracefulExitServer) error {
+	return mux.Register(impl, DRPCNodeGracefulExitDescription{})
 }
 
 type DRPCNodeGracefulExit_GetNonExitingSatellitesStream interface {
@@ -1362,7 +1362,7 @@ type DRPCSatelliteGracefulExitDescription struct{}
 
 func (DRPCSatelliteGracefulExitDescription) NumMethods() int { return 1 }
 
-func (DRPCSatelliteGracefulExitDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCSatelliteGracefulExitDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/gracefulexit.SatelliteGracefulExit/Process",
@@ -1377,8 +1377,8 @@ func (DRPCSatelliteGracefulExitDescription) Method(n int) (string, drpc.Handler,
 	}
 }
 
-func DRPCRegisterSatelliteGracefulExit(srv drpc.Server, impl DRPCSatelliteGracefulExitServer) {
-	srv.Register(impl, DRPCSatelliteGracefulExitDescription{})
+func DRPCRegisterSatelliteGracefulExit(mux drpc.Mux, impl DRPCSatelliteGracefulExitServer) error {
+	return mux.Register(impl, DRPCSatelliteGracefulExitDescription{})
 }
 
 type DRPCSatelliteGracefulExit_ProcessStream interface {

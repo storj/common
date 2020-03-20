@@ -5720,7 +5720,7 @@ type DRPCMetainfoDescription struct{}
 
 func (DRPCMetainfoDescription) NumMethods() int { return 27 }
 
-func (DRPCMetainfoDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCMetainfoDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/metainfo.Metainfo/CreateBucket",
@@ -5970,8 +5970,8 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Handler, interface{},
 	}
 }
 
-func DRPCRegisterMetainfo(srv drpc.Server, impl DRPCMetainfoServer) {
-	srv.Register(impl, DRPCMetainfoDescription{})
+func DRPCRegisterMetainfo(mux drpc.Mux, impl DRPCMetainfoServer) error {
+	return mux.Register(impl, DRPCMetainfoDescription{})
 }
 
 type DRPCMetainfo_CreateBucketStream interface {

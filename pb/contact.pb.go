@@ -339,7 +339,7 @@ type DRPCContactDescription struct{}
 
 func (DRPCContactDescription) NumMethods() int { return 1 }
 
-func (DRPCContactDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCContactDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/contact.Contact/PingNode",
@@ -355,8 +355,8 @@ func (DRPCContactDescription) Method(n int) (string, drpc.Handler, interface{}, 
 	}
 }
 
-func DRPCRegisterContact(srv drpc.Server, impl DRPCContactServer) {
-	srv.Register(impl, DRPCContactDescription{})
+func DRPCRegisterContact(mux drpc.Mux, impl DRPCContactServer) error {
+	return mux.Register(impl, DRPCContactDescription{})
 }
 
 type DRPCContact_PingNodeStream interface {
@@ -419,7 +419,7 @@ type DRPCNodeDescription struct{}
 
 func (DRPCNodeDescription) NumMethods() int { return 2 }
 
-func (DRPCNodeDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCNodeDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/contact.Node/CheckIn",
@@ -444,8 +444,8 @@ func (DRPCNodeDescription) Method(n int) (string, drpc.Handler, interface{}, boo
 	}
 }
 
-func DRPCRegisterNode(srv drpc.Server, impl DRPCNodeServer) {
-	srv.Register(impl, DRPCNodeDescription{})
+func DRPCRegisterNode(mux drpc.Mux, impl DRPCNodeServer) error {
+	return mux.Register(impl, DRPCNodeDescription{})
 }
 
 type DRPCNode_CheckInStream interface {
