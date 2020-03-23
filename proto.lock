@@ -4719,7 +4719,13 @@
               {
                 "id": 1,
                 "name": "free_bandwidth",
-                "type": "int64"
+                "type": "int64",
+                "options": [
+                  {
+                    "name": "deprecated",
+                    "value": "true"
+                  }
+                ]
               },
               {
                 "id": 2,
