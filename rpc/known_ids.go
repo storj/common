@@ -14,6 +14,12 @@ var (
 )
 
 func init() {
+	// !!!! NOTE !!!!
+	//
+	// These exist for backwards compatibility.
+	//
+	// Do not add more here, any new satellite MUST use node ID,
+	// Adding new satellites here will break forwards compatibility.
 	for _, nodeURL := range []string{
 		"12EayRS2V1kEsWESU9QMRseFhdxYxKicsiFmxrsLZHeLUtdps3S@us-central-1.tardigrade.io:7777",
 		"12EayRS2V1kEsWESU9QMRseFhdxYxKicsiFmxrsLZHeLUtdps3S@mars.tardigrade.io:7777",
