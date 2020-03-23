@@ -888,10 +888,6 @@
           {
             "name": "java_outer_classname",
             "value": "GoGoProtos"
-          },
-          {
-            "name": "go_package",
-            "value": "github.com/gogo/protobuf/gogoproto"
           }
         ]
       }
@@ -2171,14 +2167,6 @@
                 }
               }
             ]
-          }
-        ],
-        "imports": [
-          {
-            "path": "gogo.proto"
-          },
-          {
-            "path": "google/protobuf/timestamp.proto"
           }
         ],
         "package": {

@@ -6,7 +6,6 @@ package pbgrpc
 import (
 	context "context"
 
-	_ "github.com/gogo/protobuf/gogoproto"
 	grpc "google.golang.org/grpc"
 
 	. "storj.io/common/pb"

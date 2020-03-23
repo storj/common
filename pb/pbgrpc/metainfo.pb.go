@@ -6,7 +6,6 @@ package pbgrpc
 import (
 	context "context"
 
-	_ "github.com/gogo/protobuf/gogoproto"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
 	grpc "google.golang.org/grpc"
 
