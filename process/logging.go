@@ -7,7 +7,6 @@ import (
 	"flag"
 	"net/url"
 	"os"
-	"runtime"
 
 	"github.com/zeebo/errs"
 	"go.uber.org/zap"
@@ -53,11 +52,7 @@ func NewLogger() (*zap.Logger, error) {
 
 // NewLoggerWithOutputPaths is the same as NewLogger, but overrides the log output paths.
 func NewLoggerWithOutputPaths(outputPaths ...string) (*zap.Logger, error) {
-	levelEncoder := zapcore.CapitalColorLevelEncoder
-	if runtime.GOOS == "windows" {
-		levelEncoder = zapcore.CapitalLevelEncoder
-	}
-
+	levelEncoder := zapcore.CapitalLevelEncoder
 	timeKey := "T"
 	if os.Getenv("STORJ_LOG_NOTIME") != "" {
 		// using environment variable STORJ_LOG_NOTIME to avoid additional flags
