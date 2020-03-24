@@ -22,10 +22,10 @@ type streamWrapper struct {
 
 func (s *streamWrapper) Context() context.Context { return s.ctx }
 
-type handlerFunc func(traceId *int64, parentId *int64) (trace *monkit.Trace, spanId int64)
+type handlerFunc func(traceID *int64, parentID *int64) (trace *monkit.Trace, spanID int64)
 
-var defaultHandlerFunc = func(traceId *int64, parentId *int64) (*monkit.Trace, int64) {
-	return monkit.NewTrace(*traceId), monkit.NewId()
+func defaultHandlerFunc(traceID *int64, parentID *int64) (*monkit.Trace, int64) {
+	return monkit.NewTrace(*traceID), monkit.NewId()
 }
 
 // Handler implements drpc handler interface and takes in a callback function.
