@@ -4883,6 +4883,21 @@
                     "value": "true"
                   }
                 ]
+              },
+              {
+                "id": 4,
+                "name": "suspended",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "true"
+                  }
+                ]
               }
             ]
           },
