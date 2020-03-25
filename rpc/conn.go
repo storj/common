@@ -26,8 +26,3 @@ func (c *Conn) ConnectionState() tls.ConnectionState { return c.state }
 func (c *Conn) PeerIdentity() (*identity.PeerIdentity, error) {
 	return identity.PeerIdentityFromChain(c.state.PeerCertificates)
 }
-
-// Raw returns the underlying connection.
-func (c *Conn) Raw() drpc.Conn {
-	return c.Conn
-}
