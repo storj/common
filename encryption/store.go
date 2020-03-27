@@ -59,6 +59,7 @@ type Base struct {
 	Encrypted   paths.Encrypted
 	Key         storj.Key
 	PathCipher  storj.CipherSuite
+	Default     bool
 }
 
 // clone returns a copy of the Base. The implementation can be simple because the
@@ -212,7 +213,11 @@ func (s *Store) LookupEncrypted(bucket string, path paths.Encrypted) (
 }
 
 func (s *Store) defaultBase() *Base {
-	return &Base{Key: *s.defaultKey, PathCipher: s.defaultPathCipher}
+	return &Base{
+		Key:        *s.defaultKey,
+		PathCipher: s.defaultPathCipher,
+		Default:    true,
+	}
 }
 
 // lookup searches for the path in the node tree structure.

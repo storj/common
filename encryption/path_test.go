@@ -58,6 +58,52 @@ func TestStoreEncryption(t *testing.T) {
 	})
 }
 
+func TestStoreEncryption_BucketRoot(t *testing.T) {
+	forAllCiphers(func(cipher storj.CipherSuite) {
+		for i, rawPath := range []string{
+			"",
+			"/",
+			"//",
+			"file.txt",
+			"file.txt/",
+			"fold1/file.txt",
+			"fold1/fold2/file.txt",
+			"/fold1/fold2/fold3/file.txt",
+		} {
+			errTag := fmt.Sprintf("test:%d path:%q cipher:%v", i, rawPath, cipher)
+
+			dk := testrand.Key()
+			rootStore := NewStore()
+			rootStore.SetDefaultKey(&dk)
+			rootStore.SetDefaultPathCipher(cipher)
+
+			bucketStore := NewStore()
+			bucketKey, err := DerivePathKey("bucket", paths.Unencrypted{}, rootStore)
+			if !assert.NoError(t, err, errTag) {
+				continue
+			}
+			err = bucketStore.AddWithCipher("bucket", paths.Unencrypted{}, paths.Encrypted{}, *bucketKey, cipher)
+			if !assert.NoError(t, err, errTag) {
+				continue
+			}
+
+			path := paths.NewUnencrypted(rawPath)
+
+			rootEncPath, err := EncryptPathWithStoreCipher("bucket", path, rootStore)
+			if !assert.NoError(t, err, errTag) {
+				continue
+			}
+
+			bucketEncPath, err := EncryptPathWithStoreCipher("bucket", path, bucketStore)
+			if !assert.NoError(t, err, errTag) {
+				continue
+			}
+
+			assert.Equal(t, rootEncPath, bucketEncPath, errTag)
+		}
+	})
+}
+
 func forAllCiphers(test func(cipher storj.CipherSuite)) {
 	for _, cipher := range []storj.CipherSuite{
 		storj.EncNull,

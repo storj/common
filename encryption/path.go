@@ -69,10 +69,10 @@ func encryptPath(bucket string, path paths.Unencrypted, pathCipher *storj.Cipher
 		return paths.Encrypted{}, errs.New("unable to encrypt bucket path: %s/%q", bucket, path)
 	}
 
-	// if we didn't consume any path, we're at the root of the bucket, and so we have
-	// to fold the bucket name into the key.
+	// if we're using the default base (meaning the default key), we need
+	// to include the bucket name in the path derivation.
 	key := &base.Key
-	if !consumed.Valid() {
+	if base.Default {
 		key, err = derivePathKeyComponent(key, bucket)
 		if err != nil {
 			return paths.Encrypted{}, errs.Wrap(err)
@@ -168,10 +168,10 @@ func decryptPath(bucket string, path paths.Encrypted, pathCipher *storj.CipherSu
 		return paths.Unencrypted{}, errs.New("unable to decrypt bucket path: %q", path)
 	}
 
-	// if we didn't consume any path, we're at the root of the bucket, and so we have
-	// to fold the bucket name into the key.
+	// if we're using the default base (meaning the default key), we need
+	// to include the bucket name in the path derivation.
 	key := &base.Key
-	if !consumed.Valid() {
+	if base.Default {
 		key, err = derivePathKeyComponent(key, bucket)
 		if err != nil {
 			return paths.Unencrypted{}, errs.Wrap(err)
@@ -257,10 +257,10 @@ func DerivePathKey(bucket string, path paths.Unencrypted, store *Store) (key *st
 		return nil, errs.New("unable to derive path key for: %s/%q", bucket, path)
 	}
 
-	// if we didn't consume any path, we're at the root of the bucket, and so we have
-	// to fold the bucket name into the key.
+	// if we're using the default base (meaning the default key), we need
+	// to include the bucket name in the path derivation.
 	key = &base.Key
-	if !consumed.Valid() {
+	if base.Default {
 		key, err = derivePathKeyComponent(key, bucket)
 		if err != nil {
 			return nil, errs.Wrap(err)

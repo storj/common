@@ -18,8 +18,8 @@ func printLookup(revealed map[string]string, consumed interface{ Raw() string },
 	if base == nil {
 		fmt.Printf("<%q, %q, nil>\n", revealed, consumed.Raw())
 	} else {
-		fmt.Printf("<%q, %q, <%q, %q, %q>>\n",
-			revealed, consumed, base.Unencrypted, base.Encrypted, base.Key[:2])
+		fmt.Printf("<%q, %q, <%q, %q, %q, %v>>\n",
+			revealed, consumed, base.Unencrypted, base.Encrypted, base.Key[:2], base.Default)
 	}
 }
 
@@ -73,22 +73,56 @@ func ExampleStore() {
 	// output:
 	//
 	// <map["e2":"u2" "e5":"u5"], "u1", nil>
-	// <map["e4":"u4"], "u1/u2/u3", <"u1/u2/u3", "e1/e2/e3", "k3">>
-	// <map[], "u1/u2/u3/", <"u1/u2/u3", "e1/e2/e3", "k3">>
-	// <map[], "u1/u2/u3/u4", <"u1/u2/u3/u4", "e1/e2/e3/e4", "k4">>
-	// <map["e8":"u8"], "u6/", <"u6", "e6", "k6">>
-	// <map[], "u1", <"u1", "e1'", "k1">>
-	// <map[], "", <"", "", "m1">>
-	// <map[], "", <"", "", "m1">>
+	// <map["e4":"u4"], "u1/u2/u3", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], "u1/u2/u3/", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], "u1/u2/u3/u4", <"u1/u2/u3/u4", "e1/e2/e3/e4", "k4", false>>
+	// <map["e8":"u8"], "u6/", <"u6", "e6", "k6", false>>
+	// <map[], "u1", <"u1", "e1'", "k1", false>>
+	// <map[], "", <"", "", "m1", false>>
+	// <map[], "", <"", "", "m1", false>>
 	//
 	// <map["u2":"e2" "u5":"e5"], "e1", nil>
-	// <map["u4":"e4"], "e1/e2/e3", <"u1/u2/u3", "e1/e2/e3", "k3">>
-	// <map[], "e1/e2/e3/", <"u1/u2/u3", "e1/e2/e3", "k3">>
-	// <map[], "e1/e2/e3/e4", <"u1/u2/u3/u4", "e1/e2/e3/e4", "k4">>
-	// <map["u8":"e8"], "e6/", <"u6", "e6", "k6">>
-	// <map[], "e1'", <"u1", "e1'", "k1">>
-	// <map[], "", <"", "", "m1">>
-	// <map[], "", <"", "", "m1">>
+	// <map["u4":"e4"], "e1/e2/e3", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], "e1/e2/e3/", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], "e1/e2/e3/e4", <"u1/u2/u3/u4", "e1/e2/e3/e4", "k4", false>>
+	// <map["u8":"e8"], "e6/", <"u6", "e6", "k6", false>>
+	// <map[], "e1'", <"u1", "e1'", "k1", false>>
+	// <map[], "", <"", "", "m1", false>>
+	// <map[], "", <"", "", "m1", false>>
+}
+
+func ExampleStore_SetDefaultKey() {
+	s := NewStore()
+	dk := toKey("dk")
+	s.SetDefaultKey(&dk)
+	ep := paths.NewEncrypted
+	up := paths.NewUnencrypted
+
+	abortIfError(s.AddWithCipher("b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), storj.EncAESGCM))
+
+	printLookup(s.LookupUnencrypted("b1", up("u1")))
+	printLookup(s.LookupUnencrypted("b1", up("u1/u2")))
+	printLookup(s.LookupUnencrypted("b1", up("u1/u2/u3")))
+	printLookup(s.LookupUnencrypted("b1", up("u1/u2/u3/u4")))
+
+	fmt.Println()
+
+	printLookup(s.LookupEncrypted("b1", ep("e1")))
+	printLookup(s.LookupEncrypted("b1", ep("e1/e2")))
+	printLookup(s.LookupEncrypted("b1", ep("e1/e2/e3")))
+	printLookup(s.LookupEncrypted("b1", ep("e1/e2/e3/e4")))
+
+	// output:
+	//
+	// <map[], "", <"", "", "dk", true>>
+	// <map[], "", <"", "", "dk", true>>
+	// <map[], "u1/u2/u3", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], "u1/u2/u3/", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	//
+	// <map[], "", <"", "", "dk", true>>
+	// <map[], "", <"", "", "dk", true>>
+	// <map[], "e1/e2/e3", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], "e1/e2/e3/", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
 }
 
 func TestStoreErrors(t *testing.T) {
