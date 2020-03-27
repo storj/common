@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	hw "github.com/jtolds/monkit-hw/v2"
-	"github.com/spacemonkeygo/monkit/v3"
+	monkit "github.com/spacemonkeygo/monkit/v3"
 	"github.com/spacemonkeygo/monkit/v3/environment"
 	"github.com/zeebo/admission/v3/admproto"
 	"go.uber.org/zap"
@@ -24,7 +24,7 @@ import (
 
 var (
 	metricInterval       = flag.Duration("metrics.interval", telemetry.DefaultInterval, "how frequently to send up telemetry")
-	metricCollector      = flag.String("metrics.addr", flagDefault("", "collectora.storj.io:9000"), "address to send telemetry to")
+	metricCollector      = flag.String("metrics.addr", flagDefault("", "collectora.storj.io:9000"), "address(es) to send telemetry to (comma-separated)")
 	metricApp            = flag.String("metrics.app", filepath.Base(os.Args[0]), "application name for telemetry identification")
 	metricAppSuffix      = flag.String("metrics.app-suffix", flagDefault("-dev", "-release"), "application suffix")
 	metricInstancePrefix = flag.String("metrics.instance-prefix", "", "instance id prefix")
@@ -64,17 +64,20 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	if len(instanceID) > maxInstanceLength {
 		instanceID = instanceID[:maxInstanceLength]
 	}
-	c, err := telemetry.NewClient(log, *metricCollector, telemetry.ClientOpts{
-		Interval:      *metricInterval,
-		Application:   *metricApp + *metricAppSuffix,
-		Instance:      instanceID,
-		Registry:      r,
-		FloatEncoding: admproto.Float32Encoding,
-	})
-	if err != nil {
-		return err
+
+	for _, address := range strings.Split(*metricCollector, ",") {
+		c, err := telemetry.NewClient(log, address, telemetry.ClientOpts{
+			Interval:      *metricInterval,
+			Application:   *metricApp + *metricAppSuffix,
+			Instance:      instanceID,
+			Registry:      r,
+			FloatEncoding: admproto.Float32Encoding,
+		})
+		if err != nil {
+			return err
+		}
+		go c.Run(ctx)
 	}
-	go c.Run(ctx)
 	return nil
 }
 
