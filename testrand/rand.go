@@ -8,10 +8,9 @@ import (
 	"io"
 	"math/rand"
 
-	"github.com/skyrings/skyring-common/tools/uuid"
-
 	"storj.io/common/memory"
 	"storj.io/common/storj"
+	storjuuid "storj.io/common/uuid"
 )
 
 // Intn returns, as an int, a non-negative pseudo-random number in [0,n)
@@ -111,8 +110,15 @@ func SegmentID(size int) storj.SegmentID {
 }
 
 // UUID creates a random uuid.
-func UUID() uuid.UUID {
-	var uuid uuid.UUID
+func UUID() storj.DeprecatedUUID {
+	var uuid storj.DeprecatedUUID
+	Read(uuid[:])
+	return uuid
+}
+
+// UUID2 creates a random uuid.
+func UUID2() storjuuid.UUID {
+	var uuid storjuuid.UUID
 	Read(uuid[:])
 	return uuid
 }

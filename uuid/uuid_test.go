@@ -94,5 +94,4 @@ func TestJSON(t *testing.T) {
 	err = json.Unmarshal([]byte(expected), &b)
 	require.NoError(t, err)
 	require.Equal(t, x, b)
-
 }

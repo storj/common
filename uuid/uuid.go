@@ -67,6 +67,17 @@ func FromBytes(bytes []byte) (UUID, error) {
 	return uuid, nil
 }
 
+// Parse uses FromString but returns a pointer instead of a struct.
+//
+// This is to support switching to new uuid package.
+func Parse(s string) (*UUID, error) {
+	uuid, err := FromString(s)
+	if err != nil {
+		return nil, err
+	}
+	return &uuid, nil
+}
+
 // FromString parses "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" string form.
 //
 // FromString allows for any version or variant of an UUID.
@@ -131,14 +142,36 @@ func (uuid *UUID) Scan(value interface{}) error {
 	}
 }
 
-// MarshalText marshals UUID in "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" form.
+// MarshalText marshals UUID in `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` form.
 func (uuid UUID) MarshalText() ([]byte, error) {
 	return []byte(uuid.String()), nil
 }
 
-// UnmarshalText unmarshals UUID from "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".
+// UnmarshalText unmarshals UUID from `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`.
 func (uuid *UUID) UnmarshalText(b []byte) error {
 	x, err := FromString(string(b))
+	if err != nil {
+		return Error.Wrap(err)
+	}
+	*uuid = x
+	return nil
+}
+
+// MarshalJSON marshals UUID in `"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"` form.
+func (uuid UUID) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + uuid.String() + `"`), nil
+}
+
+// UnmarshalJSON unmarshals UUID from `"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"`.
+func (uuid *UUID) UnmarshalJSON(b []byte) error {
+	if len(b) != 36+2 {
+		return Error.New("bytes have wrong length %d expected %d", len(b), 36+2)
+	}
+	if b[0] != '"' && b[len(b)-1] != '"' {
+		return Error.New("expected quotes around string")
+	}
+
+	x, err := FromString(string(b[1 : len(b)-1]))
 	if err != nil {
 		return Error.Wrap(err)
 	}

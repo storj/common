@@ -23,13 +23,17 @@ var (
 
 // Bucket contains information about a specific bucket
 type Bucket struct {
-	ID                          uuid.UUID
+	ID                          DeprecatedUUID
 	Name                        string
-	ProjectID                   uuid.UUID
-	PartnerID                   uuid.UUID
+	ProjectID                   DeprecatedUUID
+	PartnerID                   DeprecatedUUID
 	Created                     time.Time
 	PathCipher                  CipherSuite
 	DefaultSegmentsSize         int64
 	DefaultRedundancyScheme     RedundancyScheme
 	DefaultEncryptionParameters EncryptionParameters
 }
+
+// DeprecatedUUID is a redirect for github.com/skyrings/skyring-common/tools/uuid.
+// This will be removed together with storj.io/storj/lib/*.
+type DeprecatedUUID = uuid.UUID
