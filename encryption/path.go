@@ -245,9 +245,14 @@ func DerivePathKey(bucket string, path paths.Unencrypted, store *Store) (key *st
 
 	// If asking for the key at the bucket, do that and return.
 	if !path.Valid() {
-		key, err = derivePathKeyComponent(&base.Key, bucket)
-		if err != nil {
-			return nil, errs.Wrap(err)
+		// if we're using the default base (meaning the default key), we need
+		// to include the bucket name in the path derivation.
+		key = &base.Key
+		if base.Default {
+			key, err = derivePathKeyComponent(&base.Key, bucket)
+			if err != nil {
+				return nil, errs.Wrap(err)
+			}
 		}
 		return key, nil
 	}
