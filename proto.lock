@@ -3117,6 +3117,16 @@
                 "id": 6,
                 "name": "encryption_parameters",
                 "type": "encryption.EncryptionParameters"
+              },
+              {
+                "id": 7,
+                "name": "max_inline_segment",
+                "type": "int64"
+              },
+              {
+                "id": 8,
+                "name": "max_segment_size",
+                "type": "int64"
               }
             ]
           },
