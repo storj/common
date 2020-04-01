@@ -3120,7 +3120,7 @@
               },
               {
                 "id": 7,
-                "name": "max_inline_segment",
+                "name": "max_inline_segment_size",
                 "type": "int64"
               },
               {

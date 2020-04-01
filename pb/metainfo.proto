@@ -309,9 +309,9 @@ message ObjectBeginResponse {
     bytes  stream_id = 4 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
 
     pointerdb.RedundancyScheme      redundancy_scheme = 5;
-    encryption.EncryptionParameters encryption_parameters = 6;
-    int64                           max_inline_segment    = 7;
-    int64                           max_segment_size      = 8;
+    encryption.EncryptionParameters encryption_parameters   = 6;
+    int64                           max_inline_segment_size = 7;
+    int64                           max_segment_size        = 8;
 }
 
 message ObjectCommitRequest {
