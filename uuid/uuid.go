@@ -6,7 +6,6 @@ package uuid
 
 import (
 	"crypto/rand"
-	"database/sql/driver"
 	"encoding/hex"
 	"io"
 
@@ -113,33 +112,6 @@ func FromString(s string) (UUID, error) {
 	}
 
 	return uuid, nil
-}
-
-// Value implements sql/driver.Valuer interface.
-func (uuid UUID) Value() (driver.Value, error) {
-	return uuid[:], nil
-}
-
-// Scan implements sql.Scanner interface.
-func (uuid *UUID) Scan(value interface{}) error {
-	switch value := value.(type) {
-	case []byte:
-		x, err := FromBytes(value)
-		if err != nil {
-			return Error.Wrap(err)
-		}
-		*uuid = x
-		return nil
-	case string:
-		x, err := FromString(value)
-		if err != nil {
-			return Error.Wrap(err)
-		}
-		*uuid = x
-		return nil
-	default:
-		return Error.New("unable to scan %T into UUID", value)
-	}
 }
 
 // MarshalText marshals UUID in `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` form.
