@@ -116,13 +116,6 @@ func UUID() uuid.UUID {
 	return uuid
 }
 
-// UUID2 creates a random uuid.
-func UUID2() uuid.UUID {
-	var uuid uuid.UUID
-	Read(uuid[:])
-	return uuid
-}
-
 // BucketName creates a random bucket name mostly confirming to the
 // restrictions of S3:
 // https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html

@@ -34,7 +34,3 @@ type Bucket struct {
 	DefaultRedundancyScheme     RedundancyScheme
 	DefaultEncryptionParameters EncryptionParameters
 }
-
-// DeprecatedUUID is a redirect for github.com/skyrings/skyring-common/tools/uuid.
-// This will be removed together with storj.io/storj/lib/*.
-type DeprecatedUUID = uuid.UUID

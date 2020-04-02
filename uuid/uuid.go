@@ -66,17 +66,6 @@ func FromBytes(bytes []byte) (UUID, error) {
 	return uuid, nil
 }
 
-// Parse uses FromString but returns a pointer instead of a struct.
-//
-// This is to support switching to new uuid package.
-func Parse(s string) (*UUID, error) {
-	uuid, err := FromString(s)
-	if err != nil {
-		return nil, err
-	}
-	return &uuid, nil
-}
-
 // FromString parses "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" string form.
 //
 // FromString allows for any version or variant of an UUID.
