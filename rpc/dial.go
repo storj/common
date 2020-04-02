@@ -86,12 +86,6 @@ func NewDefaultDialer(tlsOptions *tlsopts.Options) Dialer {
 // dialContext does a raw tcp dial to the address and wraps the connection with the
 // provided timeout.
 func (d Dialer) dialContext(ctx context.Context, address string) (net.Conn, error) {
-	if d.DialTimeout > 0 {
-		var cancel func()
-		ctx, cancel = context.WithTimeout(ctx, d.DialTimeout)
-		defer cancel()
-	}
-
 	if d.DialLatency > 0 {
 		timer := time.NewTimer(d.DialLatency)
 		select {
@@ -231,6 +225,13 @@ const drpcHeader = "DRPC!!!1"
 func (d Dialer) dial(ctx context.Context, address string, tlsConfig *tls.Config) (_ *Conn, err error) {
 	defer mon.Task()(&ctx)(&err)
 
+	// include the timeout here so that it includes all aspects of the dial
+	if d.DialTimeout > 0 {
+		var cancel func()
+		ctx, cancel = context.WithTimeout(ctx, d.DialTimeout)
+		defer cancel()
+	}
+
 	pool := rpcpool.New(d.PoolOptions, func(ctx context.Context) (drpc.Transport, error) {
 		return d.dialTransport(ctx, address, tlsConfig)
 	})
@@ -290,6 +291,13 @@ func (d Dialer) dialTransport(ctx context.Context, address string, tlsConfig *tl
 // dialUnencrypted performs dialing to the drpc endpoint with no tls.
 func (d Dialer) dialUnencrypted(ctx context.Context, address string) (_ *Conn, err error) {
 	defer mon.Task()(&ctx)(&err)
+
+	// include the timeout here so that it includes all aspects of the dial
+	if d.DialTimeout > 0 {
+		var cancel func()
+		ctx, cancel = context.WithTimeout(ctx, d.DialTimeout)
+		defer cancel()
+	}
 
 	conn := rpcpool.New(d.PoolOptions, func(ctx context.Context) (drpc.Transport, error) {
 		return d.dialTransportUnencrypted(ctx, address)
