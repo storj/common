@@ -21,11 +21,11 @@ import (
 )
 
 var (
-	tracingSamplingRate = flag.Float64("tracing.sample", 1, "how frequently to send up telemetry")
+	tracingSamplingRate = flag.Float64("tracing.sample", 0, "how frequently to send up telemetry")
 	tracingAgent        = flag.String("tracing.agent-addr", flagDefault("127.0.0.1:5775", ""), "address for jaeger agent")
 	tracingApp          = flag.String("tracing.app", filepath.Base(os.Args[0]), "application name for tracing identification")
 	tracingAppSuffix    = flag.String("tracing.app-suffix", flagDefault("-dev", "-release"), "application suffix")
-	tracingBuffer       = flag.Int("tracing.buffer-size", 1000, "buffer size for collector queue")
+	tracingBuffer       = flag.Int("tracing.buffer-size", 0, "buffer size for collector queue")
 )
 
 const (
