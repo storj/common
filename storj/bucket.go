@@ -6,8 +6,9 @@ package storj
 import (
 	"time"
 
-	"github.com/skyrings/skyring-common/tools/uuid"
 	"github.com/zeebo/errs"
+
+	"storj.io/common/uuid"
 )
 
 var (
@@ -23,10 +24,10 @@ var (
 
 // Bucket contains information about a specific bucket
 type Bucket struct {
-	ID                          DeprecatedUUID
+	ID                          uuid.UUID
 	Name                        string
-	ProjectID                   DeprecatedUUID
-	PartnerID                   DeprecatedUUID
+	ProjectID                   uuid.UUID
+	PartnerID                   uuid.UUID
 	Created                     time.Time
 	PathCipher                  CipherSuite
 	DefaultSegmentsSize         int64

@@ -10,7 +10,7 @@ import (
 
 	"storj.io/common/memory"
 	"storj.io/common/storj"
-	storjuuid "storj.io/common/uuid"
+	"storj.io/common/uuid"
 )
 
 // Intn returns, as an int, a non-negative pseudo-random number in [0,n)
@@ -110,15 +110,15 @@ func SegmentID(size int) storj.SegmentID {
 }
 
 // UUID creates a random uuid.
-func UUID() storj.DeprecatedUUID {
-	var uuid storj.DeprecatedUUID
+func UUID() uuid.UUID {
+	var uuid uuid.UUID
 	Read(uuid[:])
 	return uuid
 }
 
 // UUID2 creates a random uuid.
-func UUID2() storjuuid.UUID {
-	var uuid storjuuid.UUID
+func UUID2() uuid.UUID {
+	var uuid uuid.UUID
 	Read(uuid[:])
 	return uuid
 }
