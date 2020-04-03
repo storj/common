@@ -25,7 +25,8 @@ var (
 	tracingAgent        = flag.String("tracing.agent-addr", flagDefault("127.0.0.1:5775", ""), "address for jaeger agent")
 	tracingApp          = flag.String("tracing.app", filepath.Base(os.Args[0]), "application name for tracing identification")
 	tracingAppSuffix    = flag.String("tracing.app-suffix", flagDefault("-dev", "-release"), "application suffix")
-	tracingBuffer       = flag.Int("tracing.buffer-size", 0, "buffer size for collector queue")
+	tracingBufferSize   = flag.Int("tracing.buffer-size", 0, "buffer size for collector batch packet size")
+	tracingQueueSize    = flag.Int("tracing.queue-size", 0, "buffer size for collector queue size")
 )
 
 const (
@@ -85,11 +86,13 @@ func run(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID st
 	if len(processName) > maxInstanceLength {
 		processName = processName[:maxInstanceLength]
 	}
-	collector, err := jaeger.NewUDPCollector(*tracingAgent, *tracingBuffer, processName, processInfo)
+	collector, err := jaeger.NewUDPCollector(log, *tracingAgent, processName, processInfo, *tracingBufferSize, *tracingQueueSize)
 	if err != nil {
+
 		return err
 	}
 	jaeger.RegisterJaeger(r, collector, jaeger.Options{Fraction: *tracingSamplingRate})
+	go collector.Run(ctx)
 	return nil
 }
 
