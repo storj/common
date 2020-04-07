@@ -79,16 +79,6 @@ func EncodePieceHash(ctx context.Context, hash *pb.PieceHash) (_ []byte, err err
 	return proto.Marshal(&signing)
 }
 
-// EncodeVoucher encodes voucher into bytes for signing.
-func EncodeVoucher(ctx context.Context, voucher *pb.Voucher) (_ []byte, err error) {
-	defer mon.Task()(&ctx)(&err)
-	signature := voucher.SatelliteSignature
-	voucher.SatelliteSignature = nil
-	out, err := proto.Marshal(voucher)
-	voucher.SatelliteSignature = signature
-	return out, err
-}
-
 // EncodeStreamID encodes stream ID into bytes for signing.
 func EncodeStreamID(ctx context.Context, streamID *pb.SatStreamID) (_ []byte, err error) {
 	defer mon.Task()(&ctx)(&err)

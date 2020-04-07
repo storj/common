@@ -92,24 +92,6 @@ func SignUplinkPieceHash(ctx context.Context, privateKey storj.PiecePrivateKey, 
 	return &signed, nil
 }
 
-// SignVoucher signs the voucher using the specified signer
-// Signer is a satellite
-func SignVoucher(ctx context.Context, signer Signer, unsigned *pb.Voucher) (_ *pb.Voucher, err error) {
-	defer mon.Task()(&ctx)(&err)
-	bytes, err := EncodeVoucher(ctx, unsigned)
-	if err != nil {
-		return nil, Error.Wrap(err)
-	}
-
-	signed := *unsigned
-	signed.SatelliteSignature, err = signer.HashAndSign(ctx, bytes)
-	if err != nil {
-		return nil, Error.Wrap(err)
-	}
-
-	return &signed, nil
-}
-
 // SignStreamID signs the stream ID using the specified signer
 // Signer is a satellite
 func SignStreamID(ctx context.Context, signer Signer, unsigned *pb.SatStreamID) (_ *pb.SatStreamID, err error) {
