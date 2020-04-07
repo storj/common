@@ -4988,6 +4988,29 @@
                 ]
               }
             ]
+          },
+          {
+            "name": "PricingModelRequest"
+          },
+          {
+            "name": "PricingModelResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "egress_bandwidth_price",
+                "type": "int64"
+              },
+              {
+                "id": 2,
+                "name": "repair_bandwidth_price",
+                "type": "int64"
+              },
+              {
+                "id": 3,
+                "name": "disk_space_price",
+                "type": "int64"
+              }
+            ]
           }
         ],
         "services": [
@@ -5003,6 +5026,11 @@
                 "name": "DailyStorageUsage",
                 "in_type": "DailyStorageUsageRequest",
                 "out_type": "DailyStorageUsageResponse"
+              },
+              {
+                "name": "PricingModel",
+                "in_type": "PricingModelRequest",
+                "out_type": "PricingModelResponse"
               }
             ]
           }

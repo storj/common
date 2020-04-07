@@ -12,6 +12,7 @@ import "google/protobuf/timestamp.proto";
 service NodeStats {
     rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
     rpc DailyStorageUsage(DailyStorageUsageRequest) returns (DailyStorageUsageResponse);
+    rpc PricingModel(PricingModelRequest) returns (PricingModelResponse);
 }
 
 message ReputationStats {
@@ -46,3 +47,10 @@ message DailyStorageUsageResponse {
     repeated StorageUsage daily_storage_usage = 2;
 }
 
+message PricingModelRequest {}
+
+message PricingModelResponse {
+    int64 egress_bandwidth_price = 1;
+    int64 repair_bandwidth_price = 2;
+    int64 disk_space_price = 3;
+}
