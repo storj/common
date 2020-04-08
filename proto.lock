@@ -5009,6 +5009,11 @@
                 "id": 3,
                 "name": "disk_space_price",
                 "type": "int64"
+              },
+              {
+                "id": 4,
+                "name": "audit_bandwidth_price",
+                "type": "int64"
               }
             ]
           }
