@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -68,7 +67,7 @@ func TestOrderLimitVerification(t *testing.T) {
 		require.NoError(t, err)
 
 		orderLimit := pb.OrderLimit{}
-		err = proto.Unmarshal(signedBytes, &orderLimit)
+		err = pb.Unmarshal(signedBytes, &orderLimit)
 		require.NoError(t, err)
 
 		err = signing.VerifyOrderLimitSignature(ctx, signee, &orderLimit)
@@ -111,7 +110,7 @@ func TestOrderVerification(t *testing.T) {
 		require.NoError(t, err)
 
 		order := pb.Order{}
-		err = proto.Unmarshal(signedBytes, &order)
+		err = pb.Unmarshal(signedBytes, &order)
 		require.NoError(t, err)
 
 		err = signing.VerifyOrderSignature(ctx, signee, &order)
@@ -154,7 +153,7 @@ func TestUplinkOrderVerification(t *testing.T) {
 		require.NoError(t, err)
 
 		order := pb.Order{}
-		err = proto.Unmarshal(signedBytes, &order)
+		err = pb.Unmarshal(signedBytes, &order)
 		require.NoError(t, err)
 
 		err = signing.VerifyUplinkOrderSignature(ctx, publicKey, &order)
@@ -198,7 +197,7 @@ func TestPieceHashVerification(t *testing.T) {
 		require.NoError(t, err)
 
 		hash := pb.PieceHash{}
-		err = proto.Unmarshal(signedBytes, &hash)
+		err = pb.Unmarshal(signedBytes, &hash)
 		require.NoError(t, err)
 
 		err = signing.VerifyUplinkPieceHashSignature(ctx, publicKey, &hash)

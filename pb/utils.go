@@ -22,11 +22,11 @@ func Equal(msg1, msg2 proto.Message) bool {
 	if reflect.TypeOf(msg1) != reflect.TypeOf(msg2) {
 		return false
 	}
-	msg1Bytes, err := proto.Marshal(msg1)
+	msg1Bytes, err := Marshal(msg1)
 	if err != nil {
 		return false
 	}
-	msg2Bytes, err := proto.Marshal(msg2)
+	msg2Bytes, err := Marshal(msg2)
 	if err != nil {
 		return false
 	}

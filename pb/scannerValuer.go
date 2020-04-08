@@ -19,12 +19,12 @@ func scan(msg proto.Message, value interface{}) error {
 	if !ok {
 		return scanError.New("%t was %t, expected []bytes", msg, value)
 	}
-	return scanError.Wrap(proto.Unmarshal(bytes, msg))
+	return scanError.Wrap(Unmarshal(bytes, msg))
 }
 
 //value automatically converts proto.Messages to database []byte
 func value(msg proto.Message) (driver.Value, error) {
-	value, err := proto.Marshal(msg)
+	value, err := Marshal(msg)
 	return value, valueError.Wrap(err)
 }
 

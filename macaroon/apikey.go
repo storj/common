@@ -9,9 +9,10 @@ import (
 	"time"
 
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/gogo/protobuf/proto"
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/errs"
+
+	"storj.io/common/pb"
 )
 
 var (
@@ -112,7 +113,7 @@ func (a *APIKey) Check(ctx context.Context, secret []byte, action Action, revoke
 	caveats := a.mac.Caveats()
 	for _, cavbuf := range caveats {
 		var cav Caveat
-		err := proto.Unmarshal(cavbuf, &cav)
+		err := pb.Unmarshal(cavbuf, &cav)
 		if err != nil {
 			return ErrFormat.New("invalid caveat format")
 		}
@@ -151,7 +152,7 @@ func (a *APIKey) GetAllowedBuckets(ctx context.Context, action Action) (allowed 
 	// intersection of all of the buckets in the allowed paths.
 	for _, cavbuf := range a.mac.Caveats() {
 		var cav Caveat
-		err := proto.Unmarshal(cavbuf, &cav)
+		err := pb.Unmarshal(cavbuf, &cav)
 		if err != nil {
 			return AllowedBuckets{}, ErrFormat.New("invalid caveat format: %v", err)
 		}
@@ -189,7 +190,7 @@ func (a *APIKey) GetAllowedBuckets(ctx context.Context, action Action) (allowed 
 
 // Restrict generates a new APIKey with the provided Caveat attached.
 func (a *APIKey) Restrict(caveat Caveat) (*APIKey, error) {
-	buf, err := proto.Marshal(&caveat)
+	buf, err := pb.Marshal(&caveat)
 	if err != nil {
 		return nil, Error.Wrap(err)
 	}

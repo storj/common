@@ -6,8 +6,6 @@ package signing
 import (
 	"context"
 
-	"github.com/gogo/protobuf/proto"
-
 	"storj.io/common/pb"
 )
 
@@ -43,7 +41,7 @@ func EncodeOrderLimit(ctx context.Context, limit *pb.OrderLimit) (_ []byte, err 
 	}
 	signing.SatelliteAddress = limit.SatelliteAddress
 
-	return proto.Marshal(&signing)
+	return pb.Marshal(&signing)
 }
 
 // EncodeOrder encodes order into bytes for signing. Removes signature from serialized order.
@@ -58,7 +56,7 @@ func EncodeOrder(ctx context.Context, order *pb.Order) (_ []byte, err error) {
 	signing.SerialNumber = order.SerialNumber
 	signing.Amount = order.Amount
 
-	return proto.Marshal(&signing)
+	return pb.Marshal(&signing)
 }
 
 // EncodePieceHash encodes piece hash into bytes for signing. Removes signature from serialized hash.
@@ -76,7 +74,7 @@ func EncodePieceHash(ctx context.Context, hash *pb.PieceHash) (_ []byte, err err
 	if !hash.Timestamp.IsZero() {
 		signing.Timestamp = &hash.Timestamp
 	}
-	return proto.Marshal(&signing)
+	return pb.Marshal(&signing)
 }
 
 // EncodeStreamID encodes stream ID into bytes for signing.
@@ -84,7 +82,7 @@ func EncodeStreamID(ctx context.Context, streamID *pb.SatStreamID) (_ []byte, er
 	defer mon.Task()(&ctx)(&err)
 	signature := streamID.SatelliteSignature
 	streamID.SatelliteSignature = nil
-	out, err := proto.Marshal(streamID)
+	out, err := pb.Marshal(streamID)
 	streamID.SatelliteSignature = signature
 	return out, err
 }
@@ -94,7 +92,7 @@ func EncodeSegmentID(ctx context.Context, segmentID *pb.SatSegmentID) (_ []byte,
 	defer mon.Task()(&ctx)(&err)
 	signature := segmentID.SatelliteSignature
 	segmentID.SatelliteSignature = nil
-	out, err := proto.Marshal(segmentID)
+	out, err := pb.Marshal(segmentID)
 	segmentID.SatelliteSignature = signature
 	return out, err
 }
@@ -104,7 +102,7 @@ func EncodeExitCompleted(ctx context.Context, exitCompleted *pb.ExitCompleted) (
 	defer mon.Task()(&ctx)(&err)
 	signature := exitCompleted.ExitCompleteSignature
 	exitCompleted.ExitCompleteSignature = nil
-	out, err := proto.Marshal(exitCompleted)
+	out, err := pb.Marshal(exitCompleted)
 	exitCompleted.ExitCompleteSignature = signature
 
 	return out, err
@@ -115,7 +113,7 @@ func EncodeExitFailed(ctx context.Context, exitFailed *pb.ExitFailed) (_ []byte,
 	defer mon.Task()(&ctx)(&err)
 	signature := exitFailed.ExitFailureSignature
 	exitFailed.ExitFailureSignature = nil
-	out, err := proto.Marshal(exitFailed)
+	out, err := pb.Marshal(exitFailed)
 	exitFailed.ExitFailureSignature = signature
 
 	return out, err
