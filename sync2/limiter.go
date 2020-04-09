@@ -10,6 +10,8 @@ import (
 
 // Limiter implements concurrent goroutine limiting.
 type Limiter struct {
+	noCopy noCopy // nolint: structcheck
+
 	limit   chan struct{}
 	working sync.WaitGroup
 }

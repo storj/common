@@ -13,6 +13,8 @@ import (
 
 // pipe is a io.Reader/io.Writer pipe backed by ReadAtWriteAtCloser
 type pipe struct {
+	noCopy noCopy // nolint: structcheck
+
 	buffer ReadAtWriteAtCloser
 
 	mu     sync.Mutex

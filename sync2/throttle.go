@@ -9,6 +9,8 @@ import (
 
 // Throttle implements two-sided throttling, between a consumer and producer
 type Throttle struct {
+	noCopy noCopy // nolint: structcheck
+
 	mu       sync.Mutex
 	consumer sync.Cond
 	producer sync.Cond

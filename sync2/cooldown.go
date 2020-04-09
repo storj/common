@@ -19,6 +19,8 @@ import (
 //
 // Start or Run (only one of them, not both) must be only called once.
 type Cooldown struct {
+	noCopy noCopy // nolint: structcheck
+
 	stopsent int32
 	runexec  int32
 

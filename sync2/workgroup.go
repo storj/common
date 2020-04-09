@@ -9,6 +9,8 @@ import (
 
 // WorkGroup implements waitable and closable group of workers
 type WorkGroup struct {
+	noCopy noCopy // nolint: structcheck
+
 	mu   sync.Mutex
 	cond sync.Cond
 

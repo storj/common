@@ -12,6 +12,8 @@ import (
 )
 
 type tee struct {
+	noCopy noCopy // nolint: structcheck
+
 	buffer ReadAtWriteAtCloser
 	open   *int64
 
