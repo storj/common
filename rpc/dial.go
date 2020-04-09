@@ -195,7 +195,9 @@ func (d Dialer) DialAddressInsecureBestEffort(ctx context.Context, nodeURL strin
 		return d.dial(ctx, nodeAddress, d.TLSOptions.ClientTLSConfig(nodeID))
 	}
 
-	zap.S().Warnf("unknown node id for address %q: please specify node id in form node_id@node_host:node_port for added security", nodeAddress)
+	zap.L().Warn(`Unknown node id for address. Specify node id in the form "node_id@node_host:node_port" for added security`,
+		zap.String("Address", nodeAddress),
+	)
 	return d.dial(ctx, nodeAddress, d.TLSOptions.UnverifiedClientTLSConfig())
 }
 
