@@ -117,12 +117,12 @@ func NewClient(log *zap.Logger, remoteAddr string, opts ClientOpts) (rv *Client,
 
 // Run calls Report roughly every Interval
 func (c *Client) Run(ctx context.Context) {
-	c.log.Sugar().Debugf("Initialized batcher with id = %q", c.opts.InstanceId)
+	c.log.Debug("Initialized batcher", zap.ByteString("ID", c.opts.InstanceId))
 
 	c.mu.Lock()
 	if c.stopped {
 		c.mu.Unlock()
-		c.log.Sugar().Error("telemetry client Run called after already stopped")
+		c.log.Error("Telemetry client Run called after already stopped")
 		return
 	}
 	ctx, c.cancel = context.WithCancel(ctx)
@@ -136,7 +136,7 @@ func (c *Client) Run(ctx context.Context) {
 
 		err := c.Report(ctx)
 		if err != nil {
-			c.log.Sugar().Errorf("failed sending report: %v", err)
+			c.log.Error("Failed sending report", zap.Error(err))
 		}
 	}
 }
