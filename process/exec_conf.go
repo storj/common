@@ -266,7 +266,7 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 				logger.Debug("unable to resolve path", zap.Error(err))
 			}
 
-			logger.Sugar().Info("Configuration loaded from: ", path)
+			logger.Info("Configuration loaded", zap.String("Location", path))
 		}
 
 		defer func() { _ = logger.Sync() }()
@@ -276,11 +276,11 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 		// okay now that logging is working, inform about the broken keys
 		if cmd.Annotations["type"] != "helper" {
 			for key := range missingKeys {
-				logger.Sugar().Infof("Invalid configuration file key: %s", key)
+				logger.Info("Invalid configuration file key", zap.String("Key", key))
 			}
 		}
 		for key := range brokenKeys {
-			logger.Sugar().Infof("Invalid configuration file value for key: %s", key)
+			logger.Info("Invalid configuration file value for key", zap.String("Key", key))
 		}
 
 		if debugEnabled {

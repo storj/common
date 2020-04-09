@@ -402,7 +402,7 @@ func SetupFlag(log *zap.Logger, cmd *cobra.Command, dest *string, name, value, u
 	}
 	cmd.PersistentFlags().StringVar(dest, name, value, usage)
 	if cmd.PersistentFlags().SetAnnotation(name, "setup", []string{"true"}) != nil {
-		log.Sugar().Errorf("Failed to set 'setup' annotation for '%s'", name)
+		log.Error("Failed to set 'setup' annotation", zap.String("Flag", name))
 	}
 }
 

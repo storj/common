@@ -49,7 +49,7 @@ func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Reg
 	var processInfo []jaeger.Tag
 	hostname, err := os.Hostname()
 	if err != nil {
-		log.Sugar().Errorf("Could not read hostname for tracing setup: %v", err)
+		log.Error("Could not read hostname for tracing setup", zap.Error(err))
 	} else {
 		processInfo = append(processInfo, jaeger.Tag{
 			Key:   hostnameKey,
@@ -99,7 +99,7 @@ func run(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID st
 func nodeIDFromCertPath(ctx context.Context, log *zap.Logger, certPath string) string {
 	nodeID, err := identity.NodeIDFromCertPath(certPath)
 	if err != nil {
-		log.Sugar().Errorf("Could not read identity for tracing setup: %v", err)
+		log.Error("Could not read identity for tracing setup", zap.Error(err))
 		return ""
 	}
 

@@ -184,6 +184,6 @@ func (handler *versionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 
 	_, err = w.Write(append(j, '\n'))
 	if err != nil {
-		handler.log.Sugar().Errorf("error writing data to client: %w", err)
+		handler.log.Error("Error writing data to client", zap.Error(err))
 	}
 }

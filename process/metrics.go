@@ -87,7 +87,7 @@ func InitMetricsWithCertPath(ctx context.Context, log *zap.Logger, r *monkit.Reg
 	var metricsID string
 	nodeID, err := identity.NodeIDFromCertPath(certPath)
 	if err != nil {
-		log.Sugar().Errorf("Could not read identity for telemetry setup: %v", err)
+		log.Error("Could not read identity for telemetry setup", zap.Error(err))
 		metricsID = "" // InitMetrics() will fill in a default value
 	} else {
 		metricsID = nodeID.String()
@@ -100,7 +100,7 @@ func InitMetricsWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Reg
 	var metricsID string
 	hostname, err := os.Hostname()
 	if err != nil {
-		log.Sugar().Errorf("Could not read hostname for telemetry setup: %v", err)
+		log.Error("Could not read hostname for telemetry setup", zap.Error(err))
 		metricsID = "" // InitMetrics() will fill in a default value
 	} else {
 		metricsID = strings.ReplaceAll(hostname, ".", "_")
