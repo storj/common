@@ -47,6 +47,49 @@ func TestStoreEncryption(t *testing.T) {
 			if !assert.NoError(t, err, errTag) {
 				continue
 			}
+			if cipher != storj.EncNull {
+				if !assert.True(t, !strings.HasSuffix(encPath.Raw(), "/"), errTag) {
+					continue
+				}
+			}
+
+			decPath, err := DecryptPathWithStoreCipher("bucket", encPath, store)
+			if !assert.NoError(t, err, errTag) {
+				continue
+			}
+
+			assert.Equal(t, rawPath, decPath.Raw(), errTag)
+		}
+	})
+}
+
+func TestStorePrefixEncryption(t *testing.T) {
+	forAllCiphers(func(cipher storj.CipherSuite) {
+		for i, rawPath := range []string{
+			"",
+			"/",
+			"//",
+			"file.txt",
+			"file.txt/",
+			"fold1/file.txt",
+			"fold1/fold2/file.txt",
+			"/fold1/fold2/fold3/file.txt",
+		} {
+			errTag := fmt.Sprintf("test:%d path:%q cipher:%v", i, rawPath, cipher)
+
+			store := newStore(testrand.Key(), cipher)
+			path := paths.NewUnencrypted(rawPath)
+
+			encPath, err := EncryptPrefixWithStoreCipher("bucket", path, store)
+			if !assert.NoError(t, err, errTag) {
+				continue
+			}
+			if !assert.Equal(t,
+				strings.HasSuffix(path.Raw(), "/"),
+				strings.HasSuffix(encPath.Raw(), "/"),
+				errTag) {
+				continue
+			}
 
 			decPath, err := DecryptPathWithStoreCipher("bucket", encPath, store)
 			if !assert.NoError(t, err, errTag) {

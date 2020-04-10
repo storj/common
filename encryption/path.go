@@ -33,6 +33,27 @@ func EncryptPathWithStoreCipher(bucket string, path paths.Unencrypted, store *St
 	return encryptPath(bucket, path, nil, store)
 }
 
+// EncryptPrefixWithStoreCipher encrypts the prefix using the provided cipher and looking up keys from the
+// provided store and bucket. Because it is a prefix, it does not assume there is an empty component
+// at the end of a path like "foo/bar/".
+func EncryptPrefixWithStoreCipher(bucket string, path paths.Unencrypted, store *Store) (
+	encPath paths.Encrypted, err error) {
+
+	raw := path.Raw()
+	hasTrailing := strings.HasSuffix(raw, "/")
+	if hasTrailing {
+		path = paths.NewUnencrypted(raw[:len(raw)-1])
+	}
+	encPath, err = encryptPath(bucket, path, nil, store)
+	if err != nil {
+		return encPath, err
+	}
+	if hasTrailing {
+		encPath = paths.NewEncrypted(encPath.Raw() + "/")
+	}
+	return encPath, nil
+}
+
 // EncryptPath encrypts the path using the provided cipher and looking up keys from the
 // provided store and bucket.
 func EncryptPath(bucket string, path paths.Unencrypted, pathCipher storj.CipherSuite, store *Store) (
