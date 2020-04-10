@@ -10,7 +10,6 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/binary"
-	"encoding/gob"
 	"time"
 
 	"github.com/zeebo/errs"
@@ -164,23 +163,15 @@ func (r *Revocation) Sign(key crypto.PrivateKey) error {
 
 // Marshal serializes a revocation to bytes
 func (r Revocation) Marshal() ([]byte, error) {
-	data := new(bytes.Buffer)
-	// NB: using gob instead of asn1 because we plan to leave tls and asn1 is meh
-	encoder := gob.NewEncoder(data)
-	err := encoder.Encode(r)
-	if err != nil {
-		return nil, err
-	}
-
-	return data.Bytes(), nil
+	return (&revocationEncoder{}).encode(r)
 }
 
 // Unmarshal deserializes a revocation from bytes
 func (r *Revocation) Unmarshal(data []byte) error {
-	// NB: using gob instead of asn1 because we plan to leave tls and asn1 is meh
-	decoder := gob.NewDecoder(bytes.NewBuffer(data))
-	if err := decoder.Decode(r); err != nil {
+	revocation, err := (&revocationDecoder{}).decode(data)
+	if err != nil {
 		return err
 	}
+	*r = revocation
 	return nil
 }
