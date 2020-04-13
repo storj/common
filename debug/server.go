@@ -73,9 +73,9 @@ func NewServer(log *zap.Logger, listener net.Listener, registry *monkit.Registry
 	server.mux.HandleFunc("/debug/run/trace/db", server.collectTraces)
 
 	server.mux.Handle("/mon/", http.StripPrefix("/mon", present.HTTP(server.registry)))
-	server.mux.HandleFunc("/metrics", server.metrics)
+	server.mux.HandleFunc("/metrics", server.prometheusMetrics)
 
-	server.mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	server.mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = fmt.Fprintln(w, "OK")
 	})
 
@@ -106,23 +106,40 @@ func (server *Server) Close() error {
 	return Error.Wrap(server.server.Close())
 }
 
-// metrics writes https://prometheus.io/docs/instrumenting/exposition_formats/
-func (server *Server) metrics(w http.ResponseWriter, r *http.Request) {
-	// writes https://prometheus.io/docs/instrumenting/exposition_formats/
-	// (https://prometheus.io/docs/concepts/metric_types/)
-	server.registry.Stats(func(key monkit.SeriesKey, field string, val float64) {
-		measurement := sanitize(key.Measurement)
-		var metrics []string
-		for tag, tagVal := range key.Tags.All() {
-			metric := sanitize(tag) + "=\"" + sanitize(tagVal) + "\""
-			metrics = append(metrics, metric)
-		}
-		fieldMetric := "field=\"" + sanitize(field) + "\""
-		metrics = append(metrics, fieldMetric)
+// prometheusMetrics writes https://prometheus.io/docs/instrumenting/exposition_formats/
+func (server *Server) prometheusMetrics(w http.ResponseWriter, r *http.Request) {
+	// We have to collect all of the metrics before we write. This is because we do not
+	// get all of the metrics from the registry sorted by measurement, and from the docs:
+	//
+	//     All lines for a given metric must be provided as one single group, with the
+	//     optional HELP and TYPE lines first (in no particular order). Beyond that,
+	//     reproducible sorting in repeated expositions is preferred but not required,
+	//     i.e. do not sort if the computational cost is prohibitive.
 
-		_, _ = fmt.Fprintf(w, "# TYPE %s gauge\n%s{"+
-			strings.Join(metrics, ",")+"} %g\n", measurement, measurement, val)
+	data := make(map[string][]string)
+	var components []string
+
+	server.registry.Stats(func(key monkit.SeriesKey, field string, val float64) {
+		components = components[:0]
+
+		measurement := sanitize(key.Measurement)
+		for tag, tagVal := range key.Tags.All() {
+			components = append(components,
+				fmt.Sprintf("%s=%q", sanitize(tag), sanitize(tagVal)))
+		}
+		components = append(components,
+			fmt.Sprintf("field=%q", sanitize(field)))
+
+		data[measurement] = append(data[measurement],
+			fmt.Sprintf("{%s} %g", strings.Join(components, ","), val))
 	})
+
+	for measurement, samples := range data {
+		_, _ = fmt.Fprintln(w, "# TYPE", measurement, "gauge")
+		for _, sample := range samples {
+			_, _ = fmt.Fprintf(w, "%s%s\n", measurement, sample)
+		}
+	}
 }
 
 // collectTraces collects traces until request is canceled.
