@@ -6,7 +6,9 @@
 package netutil
 
 import (
+	"errors"
 	"net"
+	"syscall"
 	"time"
 
 	"golang.org/x/sys/unix"
@@ -34,8 +36,21 @@ func SetUserTimeout(conn *net.TCPConn, timeout time.Duration) error {
 	if controlErr != nil {
 		return controlErr
 	}
-	if err != nil {
+	if ignoreProtocolNotAvailable(err) != nil {
 		return err
 	}
 	return nil
+}
+
+// ignoreProtocolNotAvailable ignores the "protocol not available" error that
+// is returned when netutil.SetUserTimeout is called if running on the Windows
+// Subsystem for Linux (see Jira issue COM-23).
+func ignoreProtocolNotAvailable(err error) error {
+	var errno syscall.Errno
+	if errors.As(err, &errno) {
+		if errno == syscall.ENOPROTOOPT {
+			return nil
+		}
+	}
+	return err
 }
