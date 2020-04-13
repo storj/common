@@ -25,5 +25,5 @@ require (
 	google.golang.org/grpc v1.27.1
 	gopkg.in/yaml.v2 v2.2.4
 	storj.io/common v0.0.0-20200402141523-7780ee0cca0d
-	storj.io/monkit-jaeger v0.0.0-20200403204040-f5a746eeacca
+	storj.io/monkit-jaeger v0.0.0-20200413224934-fd179ae55ed8
 )

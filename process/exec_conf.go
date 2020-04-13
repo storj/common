@@ -26,7 +26,9 @@ import (
 	"github.com/zeebo/errs"
 	"github.com/zeebo/structs"
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 
+	"storj.io/common/context2"
 	"storj.io/private/cfgstruct"
 	"storj.io/private/version"
 )
@@ -181,7 +183,6 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) (err error) {
 		ctx := context.Background()
-		defer mon.TaskNamed("root")(&ctx)(&err)
 
 		vip, err := ViperWithCustomConfig(cmd, loadConfig)
 		if err != nil {
@@ -282,6 +283,37 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 		for key := range brokenKeys {
 			logger.Info("Invalid configuration file value for key", zap.String("Key", key))
 		}
+
+		var certPath string
+		certPathFlag := cmd.Flags().Lookup("identity.cert-path")
+		if certPathFlag != nil {
+			certPath = certPathFlag.Value.String()
+		}
+		collector, unregister, err := InitTracingWithHostname(ctx, logger, nil, certPath)
+		if err != nil {
+			logger.Debug("failed to initialize tracing collector", zap.Error(err))
+			err = nil
+		} else if collector != nil {
+			var eg errgroup.Group
+			eg.Go(func() error {
+				collector.Run(ctx)
+				return nil
+			})
+			defer func() {
+				collector.Stop()
+				unregister()
+				err := eg.Wait()
+				if err != nil {
+					logger.Debug("failed to shut down tracing collector", zap.Error(err))
+				}
+				err = collector.Send(context2.WithoutCancellation(ctx))
+				if err != nil {
+					logger.Debug("failed to flush tracing collector", zap.Error(err))
+				}
+			}()
+		}
+		// we need to register observer onto monkit registry before calling mon.Task
+		defer mon.TaskNamed("root")(&ctx)(&err)
 
 		if debugEnabled {
 			err = initDebug(logger, monkit.Default)

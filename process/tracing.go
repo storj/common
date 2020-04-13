@@ -22,11 +22,12 @@ import (
 
 var (
 	tracingSamplingRate = flag.Float64("tracing.sample", 0, "how frequently to send up telemetry")
-	tracingAgent        = flag.String("tracing.agent-addr", flagDefault("127.0.0.1:5775", ""), "address for jaeger agent")
+	tracingAgent        = flag.String("tracing.agent-addr", flagDefault("", "agent.tracing.datasci.storj.io"), "address for jaeger agent")
 	tracingApp          = flag.String("tracing.app", filepath.Base(os.Args[0]), "application name for tracing identification")
 	tracingAppSuffix    = flag.String("tracing.app-suffix", flagDefault("-dev", "-release"), "application suffix")
 	tracingBufferSize   = flag.Int("tracing.buffer-size", 0, "buffer size for collector batch packet size")
 	tracingQueueSize    = flag.Int("tracing.queue-size", 0, "buffer size for collector queue size")
+	tracingInterval     = flag.Duration("tracing.interval", 0, "how frequently to send up telemetry")
 )
 
 const (
@@ -35,17 +36,17 @@ const (
 )
 
 // InitTracing initializes distributed tracing with an instance ID.
-func InitTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string) error {
+func InitTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string) (*jaeger.UDPCollector, func(), error) {
 	return run(ctx, log, r, instanceID, []jaeger.Tag{})
 }
 
 // InitTracingWithCertPath initializes distributed tracing with certificate path.
-func InitTracingWithCertPath(ctx context.Context, log *zap.Logger, r *monkit.Registry, certPath string) error {
-	return run(ctx, log, r, nodeIDFromCertPath(ctx, log, certPath), []jaeger.Tag{})
+func InitTracingWithCertPath(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (*jaeger.UDPCollector, func(), error) {
+	return run(ctx, log, r, nodeIDFromCertPath(ctx, log, certDir), []jaeger.Tag{})
 }
 
 // InitTracingWithHostname initializes distributed tracing with nodeID and hostname.
-func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Registry, certPath string) error {
+func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (*jaeger.UDPCollector, func(), error) {
 	var processInfo []jaeger.Tag
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -57,10 +58,10 @@ func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Reg
 		})
 	}
 
-	return run(ctx, log, r, nodeIDFromCertPath(ctx, log, certPath), processInfo)
+	return run(ctx, log, r, nodeIDFromCertPath(ctx, log, certDir), processInfo)
 }
 
-func run(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string, processInfo []jaeger.Tag) (err error) {
+func run(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string, processInfo []jaeger.Tag) (collector *jaeger.UDPCollector, cancel func(), err error) {
 	if r == nil {
 		r = monkit.Default
 	}
@@ -71,7 +72,7 @@ func run(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID st
 	log = log.Named("tracing")
 	if *tracingAgent == "" || *tracingSamplingRate == 0 {
 		log.Info("disabled")
-		return nil
+		return nil, nil, nil
 	}
 
 	if len(instanceID) == 0 {
@@ -86,20 +87,21 @@ func run(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID st
 	if len(processName) > maxInstanceLength {
 		processName = processName[:maxInstanceLength]
 	}
-	collector, err := jaeger.NewUDPCollector(log, *tracingAgent, processName, processInfo, *tracingBufferSize, *tracingQueueSize)
+	collector, err = jaeger.NewUDPCollector(log, *tracingAgent, processName, processInfo, *tracingBufferSize, *tracingQueueSize, *tracingInterval)
 	if err != nil {
-
-		return err
+		return nil, nil, err
 	}
-	jaeger.RegisterJaeger(r, collector, jaeger.Options{Fraction: *tracingSamplingRate})
-	go collector.Run(ctx)
-	return nil
+	cancel = jaeger.RegisterJaeger(r, collector, jaeger.Options{Fraction: *tracingSamplingRate})
+	return collector, cancel, nil
 }
 
 func nodeIDFromCertPath(ctx context.Context, log *zap.Logger, certPath string) string {
+	if certPath == "" {
+		return ""
+	}
 	nodeID, err := identity.NodeIDFromCertPath(certPath)
 	if err != nil {
-		log.Error("Could not read identity for tracing setup", zap.Error(err))
+		log.Debug("Could not read identity for tracing setup", zap.Error(err))
 		return ""
 	}
 
