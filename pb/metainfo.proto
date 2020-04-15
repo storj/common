@@ -61,14 +61,14 @@ message RequestHeader {
 
 message Bucket {
     bytes                  name = 1;
-    encryption.CipherSuite path_cipher = 2;
+    encryption.CipherSuite path_cipher = 2 [deprecated=true];
 
     google.protobuf.Timestamp created_at = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 
-    int64                           default_segment_size = 4;
-    pointerdb.RedundancyScheme      default_redundancy_scheme = 5;
-    encryption.EncryptionParameters default_encryption_parameters = 6;
-    bytes                           partner_id = 7;
+    int64                           default_segment_size = 4 [deprecated=true];
+    pointerdb.RedundancyScheme      default_redundancy_scheme = 5 [deprecated=true];
+    encryption.EncryptionParameters default_encryption_parameters = 6 [deprecated=true];
+    bytes                           partner_id = 7 [deprecated=true];
 }
 
 message BucketListItem {
@@ -81,12 +81,12 @@ message BucketCreateRequest {
     RequestHeader header = 15;
 
     bytes                  name = 1;
-    encryption.CipherSuite path_cipher = 2;
+    encryption.CipherSuite path_cipher = 2 [deprecated=true];
 
-    int64                           default_segment_size = 3;
-    pointerdb.RedundancyScheme      default_redundancy_scheme = 4;
-    encryption.EncryptionParameters default_encryption_parameters = 5;
-    bytes                           partner_id = 6;
+    int64                           default_segment_size = 3 [deprecated=true];
+    pointerdb.RedundancyScheme      default_redundancy_scheme = 4 [deprecated=true];
+    encryption.EncryptionParameters default_encryption_parameters = 5 [deprecated=true];
+    bytes                           partner_id = 6 [deprecated=true];
 }
 
 message BucketCreateResponse {
