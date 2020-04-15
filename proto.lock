@@ -5016,6 +5016,29 @@
                 "type": "int64"
               }
             ]
+          },
+          {
+            "name": "NodeJoinedAtRequest"
+          },
+          {
+            "name": "NodeJoinedAtResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "joined",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
           }
         ],
         "services": [
@@ -5036,6 +5059,11 @@
                 "name": "PricingModel",
                 "in_type": "PricingModelRequest",
                 "out_type": "PricingModelResponse"
+              },
+              {
+                "name": "NodeJoinedAt",
+                "in_type": "NodeJoinedAtRequest",
+                "out_type": "NodeJoinedAtResponse"
               }
             ]
           }
