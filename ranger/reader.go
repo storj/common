@@ -9,12 +9,8 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/spacemonkeygo/monkit/v3"
-
 	"storj.io/common/readcloser"
 )
-
-var mon = monkit.Package()
 
 // A Ranger is a flexible data stream type that allows for more effective
 // pipelining during seeking. A Ranger can return multiple parallel Readers for

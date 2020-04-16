@@ -5,7 +5,7 @@
 // This file was lifted wholesale from the Go standard library with
 // very minor tweaks by Storj Labs, Inc., 2018
 
-package ranger
+package httpranger
 
 import (
 	"context"
@@ -22,11 +22,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"storj.io/common/ranger"
 )
 
 // ServeContent is the Go standard library's http.ServeContent but modified to
 // work with Rangers.
-func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, name string, modtime time.Time, content Ranger) {
+func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, name string, modtime time.Time, content ranger.Ranger) {
 	defer mon.Task()(&ctx)(nil)
 	setLastModified(w, modtime)
 	done, rangeReq := checkPreconditions(w, r, modtime)

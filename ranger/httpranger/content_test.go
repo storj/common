@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-package ranger
+package httpranger
 
 import (
 	"context"
@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+
+	"storj.io/common/ranger"
 )
 
 func TestServeContent(t *testing.T) {
@@ -21,7 +23,7 @@ func TestServeContent(t *testing.T) {
 		writerHeaderMap  map[string]string
 		name             string
 		modtime          time.Time
-		content          Ranger
+		content          ranger.Ranger
 	}{
 		{
 			name:             "True preconditions",
@@ -45,7 +47,7 @@ func TestServeContent(t *testing.T) {
 func TestServeContentContentSize(t *testing.T) {
 	req := httptest.NewRequest("", "/", nil)
 	writer := httptest.NewRecorder()
-	ranger := ByteRanger([]byte(""))
+	ranger := ranger.ByteRanger([]byte(""))
 
 	ServeContent(context.Background(), writer, req, "", time.Now().UTC(), ranger)
 
@@ -62,7 +64,7 @@ func TestServeContentParseRange(t *testing.T) {
 	for k, v := range map[string]string{"Etag": "\"abcde\""} {
 		writer.Header().Add(k, v)
 	}
-	ranger := ByteRanger([]byte("bytes=1-5/0,bytes=1-5/8"))
+	ranger := ranger.ByteRanger([]byte("bytes=1-5/0,bytes=1-5/8"))
 
 	ServeContent(context.Background(), writer, req, "", time.Now().UTC(), ranger)
 

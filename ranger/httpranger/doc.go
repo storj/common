@@ -1,7 +1,8 @@
-// Copyright (C) 2019 Storj Labs, Inc.
+// Copyright (C) 2020 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-package ranger
+// Package httpranger implements lazy io.Reader and io.Writer interfaces.
+package httpranger
 
 import (
 	"github.com/spacemonkeygo/monkit/v3"

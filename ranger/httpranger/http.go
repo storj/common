@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-package ranger
+package httpranger
 
 import (
 	"bytes"
@@ -12,6 +12,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+
+	"storj.io/common/ranger"
 )
 
 type httpRanger struct {
@@ -20,7 +22,7 @@ type httpRanger struct {
 }
 
 // HTTPRanger turns an HTTP URL into a Ranger
-func HTTPRanger(ctx context.Context, url string) (_ Ranger, err error) {
+func HTTPRanger(ctx context.Context, url string) (_ ranger.Ranger, err error) {
 	defer mon.Task()(&ctx)(&err)
 	/* #nosec G107 */ // The callers must control the soure of the url value
 	resp, err := http.Head(url)
@@ -52,7 +54,7 @@ func HTTPRanger(ctx context.Context, url string) (_ Ranger, err error) {
 // HTTPRangerSize creates an HTTPRanger with known size.
 // Use it if you know the content size. This will safe the extra HEAD request
 // for retrieving the content size.
-func HTTPRangerSize(url string, size int64) Ranger {
+func HTTPRangerSize(url string, size int64) ranger.Ranger { // nolint:golint
 	return &httpRanger{
 		URL:  url,
 		size: size,
