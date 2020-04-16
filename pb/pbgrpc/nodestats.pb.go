@@ -27,7 +27,6 @@ type NodeStatsClient interface {
 	GetStats(ctx context.Context, in *GetStatsRequest, opts ...grpc.CallOption) (*GetStatsResponse, error)
 	DailyStorageUsage(ctx context.Context, in *DailyStorageUsageRequest, opts ...grpc.CallOption) (*DailyStorageUsageResponse, error)
 	PricingModel(ctx context.Context, in *PricingModelRequest, opts ...grpc.CallOption) (*PricingModelResponse, error)
-	NodeJoinedAt(ctx context.Context, in *NodeJoinedAtRequest, opts ...grpc.CallOption) (*NodeJoinedAtResponse, error)
 }
 
 type nodeStatsClient struct {
@@ -65,21 +64,11 @@ func (c *nodeStatsClient) PricingModel(ctx context.Context, in *PricingModelRequ
 	return out, nil
 }
 
-func (c *nodeStatsClient) NodeJoinedAt(ctx context.Context, in *NodeJoinedAtRequest, opts ...grpc.CallOption) (*NodeJoinedAtResponse, error) {
-	out := new(NodeJoinedAtResponse)
-	err := c.cc.Invoke(ctx, "/nodestats.NodeStats/NodeJoinedAt", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // NodeStatsServer is the server API for NodeStats service.
 type NodeStatsServer interface {
 	GetStats(context.Context, *GetStatsRequest) (*GetStatsResponse, error)
 	DailyStorageUsage(context.Context, *DailyStorageUsageRequest) (*DailyStorageUsageResponse, error)
 	PricingModel(context.Context, *PricingModelRequest) (*PricingModelResponse, error)
-	NodeJoinedAt(context.Context, *NodeJoinedAtRequest) (*NodeJoinedAtResponse, error)
 }
 
 func RegisterNodeStatsServer(s *grpc.Server, srv NodeStatsServer) {
@@ -140,24 +129,6 @@ func _NodeStats_PricingModel_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _NodeStats_NodeJoinedAt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NodeJoinedAtRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(NodeStatsServer).NodeJoinedAt(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/nodestats.NodeStats/NodeJoinedAt",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodeStatsServer).NodeJoinedAt(ctx, req.(*NodeJoinedAtRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _NodeStats_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "nodestats.NodeStats",
 	HandlerType: (*NodeStatsServer)(nil),
@@ -173,10 +144,6 @@ var _NodeStats_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PricingModel",
 			Handler:    _NodeStats_PricingModel_Handler,
-		},
-		{
-			MethodName: "NodeJoinedAt",
-			Handler:    _NodeStats_NodeJoinedAt_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

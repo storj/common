@@ -13,7 +13,6 @@ service NodeStats {
     rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
     rpc DailyStorageUsage(DailyStorageUsageRequest) returns (DailyStorageUsageResponse);
     rpc PricingModel(PricingModelRequest) returns (PricingModelResponse);
-    rpc NodeJoinedAt(NodeJoinedAtRequest) returns (NodeJoinedAtResponse);
 }
 
 message ReputationStats {
@@ -31,6 +30,7 @@ message GetStatsResponse {
     ReputationStats audit_check = 2;
     google.protobuf.Timestamp disqualified = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
     google.protobuf.Timestamp suspended = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
+    google.protobuf.Timestamp joined_at = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
 message DailyStorageUsageRequest {
@@ -55,10 +55,4 @@ message PricingModelResponse {
     int64 repair_bandwidth_price = 2;
     int64 disk_space_price = 3;
     int64 audit_bandwidth_price = 4;
-}
-
-message NodeJoinedAtRequest {}
-
-message NodeJoinedAtResponse {
-    google.protobuf.Timestamp joined = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
