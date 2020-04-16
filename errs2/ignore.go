@@ -5,7 +5,6 @@ package errs2
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/zeebo/errs"
 
@@ -18,7 +17,6 @@ func IsCanceled(err error) bool {
 	return errs.IsFunc(err, func(err error) bool {
 		return err == context.Canceled ||
 			grpchook.IsErrServerStopped(err) ||
-			err == http.ErrServerClosed ||
 			rpcstatus.Code(err) == rpcstatus.Canceled
 	})
 }
