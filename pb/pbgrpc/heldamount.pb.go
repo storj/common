@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type HeldAmountClient interface {
 	GetPayStub(ctx context.Context, in *GetHeldAmountRequest, opts ...grpc.CallOption) (*GetHeldAmountResponse, error)
+	GetAllPaystubs(ctx context.Context, in *GetAllPaystubsRequest, opts ...grpc.CallOption) (*GetAllPaystubsResponse, error)
 	GetPayment(ctx context.Context, in *GetPaymentRequest, opts ...grpc.CallOption) (*GetPaymentResponse, error)
 }
 
@@ -45,6 +46,15 @@ func (c *heldAmountClient) GetPayStub(ctx context.Context, in *GetHeldAmountRequ
 	return out, nil
 }
 
+func (c *heldAmountClient) GetAllPaystubs(ctx context.Context, in *GetAllPaystubsRequest, opts ...grpc.CallOption) (*GetAllPaystubsResponse, error) {
+	out := new(GetAllPaystubsResponse)
+	err := c.cc.Invoke(ctx, "/heldamount.HeldAmount/GetAllPaystubs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *heldAmountClient) GetPayment(ctx context.Context, in *GetPaymentRequest, opts ...grpc.CallOption) (*GetPaymentResponse, error) {
 	out := new(GetPaymentResponse)
 	err := c.cc.Invoke(ctx, "/heldamount.HeldAmount/GetPayment", in, out, opts...)
@@ -57,6 +67,7 @@ func (c *heldAmountClient) GetPayment(ctx context.Context, in *GetPaymentRequest
 // HeldAmountServer is the server API for HeldAmount service.
 type HeldAmountServer interface {
 	GetPayStub(context.Context, *GetHeldAmountRequest) (*GetHeldAmountResponse, error)
+	GetAllPaystubs(context.Context, *GetAllPaystubsRequest) (*GetAllPaystubsResponse, error)
 	GetPayment(context.Context, *GetPaymentRequest) (*GetPaymentResponse, error)
 }
 
@@ -78,6 +89,24 @@ func _HeldAmount_GetPayStub_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(HeldAmountServer).GetPayStub(ctx, req.(*GetHeldAmountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HeldAmount_GetAllPaystubs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllPaystubsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HeldAmountServer).GetAllPaystubs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/heldamount.HeldAmount/GetAllPaystubs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HeldAmountServer).GetAllPaystubs(ctx, req.(*GetAllPaystubsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -107,6 +136,10 @@ var _HeldAmount_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPayStub",
 			Handler:    _HeldAmount_GetPayStub_Handler,
+		},
+		{
+			MethodName: "GetAllPaystubs",
+			Handler:    _HeldAmount_GetAllPaystubs_Handler,
 		},
 		{
 			MethodName: "GetPayment",

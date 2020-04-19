@@ -11,6 +11,7 @@ package heldamount;
 
 service HeldAmount {
     rpc GetPayStub(GetHeldAmountRequest) returns (GetHeldAmountResponse);
+    rpc GetAllPaystubs(GetAllPaystubsRequest) returns (GetAllPaystubsResponse);
     rpc GetPayment(GetPaymentRequest) returns (GetPaymentResponse);
 }
 
@@ -54,4 +55,10 @@ message GetPaymentResponse {
     string receipt = 5;
     string notes = 6;
     int64 id = 7;
+}
+
+message GetAllPaystubsRequest {}
+
+message GetAllPaystubsResponse {
+    repeated GetHeldAmountResponse paystub = 1;
 }
