@@ -123,12 +123,14 @@ func TestShouldUpdate(t *testing.T) {
 			Seed:   version.RolloutBytes{},
 			Cursor: cursor,
 		}
-		rand.Read(rollout.Seed[:])
+		/* #nosec G404 */ // using weak random number generator is fine in tests
+		_, _ = rand.Read(rollout.Seed[:])
 
 		for i := 0; i < total; i++ {
 			var nodeID storj.NodeID
-			_, err := rand.Read(nodeID[:])
-			require.NoError(t, err)
+
+			/* #nosec G404 */ // using weak random number generator is fine in tests
+			_, _ = rand.Read(nodeID[:])
 
 			if version.ShouldUpdate(rollout, nodeID) {
 				rollouts++

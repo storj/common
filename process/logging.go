@@ -35,7 +35,7 @@ var (
 func init() {
 	winFileSink := func(u *url.URL) (zap.Sink, error) {
 		// Remove leading slash left by url.Parse()
-		return os.OpenFile(u.Path[1:], os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+		return os.OpenFile(u.Path[1:], os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
 	}
 	err := zap.RegisterSink("winfile", winFileSink)
 	if err != nil {
