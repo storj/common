@@ -183,6 +183,7 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) (err error) {
 		ctx := context.Background()
+		defer mon.TaskNamed("root")(&ctx)(&err)
 
 		vip, err := ViperWithCustomConfig(cmd, loadConfig)
 		if err != nil {
@@ -312,8 +313,6 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 				}
 			}()
 		}
-		// we need to register observer onto monkit registry before calling mon.Task
-		defer mon.TaskNamed("root")(&ctx)(&err)
 
 		if debugEnabled {
 			err = initDebug(logger, monkit.Default)

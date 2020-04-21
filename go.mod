@@ -9,7 +9,7 @@ require (
 	github.com/jtolds/monkit-hw/v2 v2.0.0-20191108235325-141a0da276b3
 	github.com/jtolds/tracetagger/v2 v2.0.0-rc5
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/spacemonkeygo/monkit/v3 v3.0.6-0.20200327233048-76480079049a
+	github.com/spacemonkeygo/monkit/v3 v3.0.6-0.20200417171149-7f4a2b305c34
 	github.com/spf13/cast v1.3.0
 	github.com/spf13/cobra v0.0.6
 	github.com/spf13/pflag v1.0.5
@@ -20,10 +20,10 @@ require (
 	github.com/zeebo/structs v1.0.2
 	go.uber.org/zap v1.14.1
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
+	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
 	google.golang.org/api v0.20.0 // indirect
 	google.golang.org/grpc v1.27.1
 	gopkg.in/yaml.v2 v2.2.4
-	storj.io/common v0.0.0-20200402141523-7780ee0cca0d
-	storj.io/monkit-jaeger v0.0.0-20200413224934-fd179ae55ed8
+	storj.io/common v0.0.0-20200420155406-c7673e5d3216
+	storj.io/monkit-jaeger v0.0.0-20200421202833-be94db601895
 )
