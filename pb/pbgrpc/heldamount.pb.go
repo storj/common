@@ -26,7 +26,6 @@ const _ = grpc.SupportPackageIsVersion4
 type HeldAmountClient interface {
 	GetPayStub(ctx context.Context, in *GetHeldAmountRequest, opts ...grpc.CallOption) (*GetHeldAmountResponse, error)
 	GetAllPaystubs(ctx context.Context, in *GetAllPaystubsRequest, opts ...grpc.CallOption) (*GetAllPaystubsResponse, error)
-	GetPayment(ctx context.Context, in *GetPaymentRequest, opts ...grpc.CallOption) (*GetPaymentResponse, error)
 }
 
 type heldAmountClient struct {
@@ -55,20 +54,10 @@ func (c *heldAmountClient) GetAllPaystubs(ctx context.Context, in *GetAllPaystub
 	return out, nil
 }
 
-func (c *heldAmountClient) GetPayment(ctx context.Context, in *GetPaymentRequest, opts ...grpc.CallOption) (*GetPaymentResponse, error) {
-	out := new(GetPaymentResponse)
-	err := c.cc.Invoke(ctx, "/heldamount.HeldAmount/GetPayment", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // HeldAmountServer is the server API for HeldAmount service.
 type HeldAmountServer interface {
 	GetPayStub(context.Context, *GetHeldAmountRequest) (*GetHeldAmountResponse, error)
 	GetAllPaystubs(context.Context, *GetAllPaystubsRequest) (*GetAllPaystubsResponse, error)
-	GetPayment(context.Context, *GetPaymentRequest) (*GetPaymentResponse, error)
 }
 
 func RegisterHeldAmountServer(s *grpc.Server, srv HeldAmountServer) {
@@ -111,24 +100,6 @@ func _HeldAmount_GetAllPaystubs_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _HeldAmount_GetPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPaymentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(HeldAmountServer).GetPayment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/heldamount.HeldAmount/GetPayment",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HeldAmountServer).GetPayment(ctx, req.(*GetPaymentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _HeldAmount_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "heldamount.HeldAmount",
 	HandlerType: (*HeldAmountServer)(nil),
@@ -140,10 +111,6 @@ var _HeldAmount_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllPaystubs",
 			Handler:    _HeldAmount_GetAllPaystubs_Handler,
-		},
-		{
-			MethodName: "GetPayment",
-			Handler:    _HeldAmount_GetPayment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
