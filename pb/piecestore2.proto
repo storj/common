@@ -95,6 +95,7 @@ message DeletePiecesRequest {
 }
 
 message DeletePiecesResponse {
+    int64 unhandled_count = 1;
 }
 
 message RetainRequest {

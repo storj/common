@@ -5971,7 +5971,14 @@
             ]
           },
           {
-            "name": "DeletePiecesResponse"
+            "name": "DeletePiecesResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "unhandled_count",
+                "type": "int64"
+              }
+            ]
           },
           {
             "name": "RetainRequest",
