@@ -142,7 +142,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -265,7 +265,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -320,7 +320,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -373,7 +373,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -457,7 +457,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -1390,7 +1390,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -1605,7 +1605,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -2063,7 +2063,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -2099,7 +2099,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -4496,7 +4496,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -4738,7 +4738,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -4993,7 +4993,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -5580,7 +5580,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -5684,7 +5684,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -5787,7 +5787,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -6117,7 +6117,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -6394,7 +6394,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -6501,7 +6501,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -6542,7 +6542,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -6628,7 +6628,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }
@@ -6755,7 +6755,7 @@
         "options": [
           {
             "name": "go_package",
-            "value": "pb"
+            "value": "storj.io/common/pb"
           }
         ]
       }

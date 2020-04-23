@@ -71,7 +71,7 @@ func main() {
 		protofiles = ignore(protofiles)
 
 		args := []string{
-			"--drpc_out=plugins=grpc+drpc:.",
+			"--drpc_out=plugins=grpc+drpc,paths=source_relative:.",
 			"-I=.",
 		}
 		args = append(args, protofiles...)
@@ -89,7 +89,7 @@ func main() {
 		files, err := filepath.Glob("*.pb.go")
 		check(err)
 		for _, file := range files {
-			split(file)
+			process(file)
 		}
 	}
 
@@ -103,12 +103,16 @@ func main() {
 
 const drpcEndTag = "// --- DRPC END ---\n"
 
-// split moves grpc part of the code to grpcdir folder.
-func split(file string) {
+// process moves grpc part of the code to grpcdir folder.
+func process(file string) {
 	data, err := ioutil.ReadFile(file)
 	check(err)
 
 	source := string(data)
+
+	// When generating code to the same path as proto, it will
+	// end up generating an `import _ "."`, the following replace removes it.
+	source = strings.Replace(source, `_ "."`, "", -1)
 
 	// first ')' is the closing of import block
 	importEnd := strings.IndexByte(source, ')')
@@ -116,7 +120,8 @@ func split(file string) {
 	// find drpc tag
 	drpcEnd := strings.Index(source, drpcEndTag)
 	if drpcEnd < 0 {
-		// no service code
+		err = ioutil.WriteFile(file, []byte(source), 0644)
+		check(err)
 		return
 	}
 	drpcEnd += len(drpcEndTag)

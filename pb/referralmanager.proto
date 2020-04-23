@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package = "pb";
+option go_package = "storj.io/common/pb";
 
 import "gogo.proto";
 
