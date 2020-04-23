@@ -2160,13 +2160,7 @@
               {
                 "id": 2,
                 "name": "path_cipher",
-                "type": "encryption.CipherSuite",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "type": "encryption.CipherSuite"
               },
               {
                 "id": 3,
@@ -2186,46 +2180,22 @@
               {
                 "id": 4,
                 "name": "default_segment_size",
-                "type": "int64",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "type": "int64"
               },
               {
                 "id": 5,
                 "name": "default_redundancy_scheme",
-                "type": "pointerdb.RedundancyScheme",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "type": "pointerdb.RedundancyScheme"
               },
               {
                 "id": 6,
                 "name": "default_encryption_parameters",
-                "type": "encryption.EncryptionParameters",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "type": "encryption.EncryptionParameters"
               },
               {
                 "id": 7,
                 "name": "partner_id",
-                "type": "bytes",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "type": "bytes"
               }
             ]
           },
@@ -2270,57 +2240,27 @@
               {
                 "id": 2,
                 "name": "path_cipher",
-                "type": "encryption.CipherSuite",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "type": "encryption.CipherSuite"
               },
               {
                 "id": 3,
                 "name": "default_segment_size",
-                "type": "int64",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "type": "int64"
               },
               {
                 "id": 4,
                 "name": "default_redundancy_scheme",
-                "type": "pointerdb.RedundancyScheme",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "type": "pointerdb.RedundancyScheme"
               },
               {
                 "id": 5,
                 "name": "default_encryption_parameters",
-                "type": "encryption.EncryptionParameters",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "type": "encryption.EncryptionParameters"
               },
               {
                 "id": 6,
                 "name": "partner_id",
-                "type": "bytes",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "type": "bytes"
               }
             ]
           },
