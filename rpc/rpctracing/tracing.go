@@ -28,13 +28,11 @@ func NewTracingWrapper(conn drpc.Conn) *TracingWrapper {
 
 // Invoke implements drpc.Conn's Invoke method with tracing information injected into the context.
 func (c *TracingWrapper) Invoke(ctx context.Context, rpc string, in drpc.Message, out drpc.Message) (err error) {
-	defer mon.Task()(&ctx)(&err)
 	return c.Conn.Invoke(c.trace(ctx), rpc, in, out)
 }
 
 // NewStream implements drpc.Conn's NewStream method with tracing information injected into the context.
 func (c *TracingWrapper) NewStream(ctx context.Context, rpc string) (_ drpc.Stream, err error) {
-	defer mon.Task()(&ctx)(&err)
 	return c.Conn.NewStream(c.trace(ctx), rpc)
 }
 
@@ -45,9 +43,16 @@ func (c *TracingWrapper) trace(ctx context.Context) context.Context {
 		return ctx
 	}
 
+	sampled, exist := span.Trace().Get(Sampled).(bool)
+	if !exist || !sampled {
+		return ctx
+	}
+
 	data := map[string]string{
 		TraceID:  strconv.FormatInt(span.Trace().Id(), 10),
-		ParentID: strconv.FormatInt(span.Parent().Id(), 10),
+		ParentID: strconv.FormatInt(span.Id(), 10),
+		Sampled:  strconv.FormatBool(sampled),
 	}
+
 	return drpcmetadata.AddPairs(ctx, data)
 }

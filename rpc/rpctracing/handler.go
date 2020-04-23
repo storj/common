@@ -6,7 +6,6 @@ package rpctracing
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/spacemonkeygo/monkit/v3"
 
@@ -22,10 +21,10 @@ type streamWrapper struct {
 
 func (s *streamWrapper) Context() context.Context { return s.ctx }
 
-type handlerFunc func(traceID *int64, parentID *int64) (trace *monkit.Trace, spanID int64)
+type handlerFunc func(metadata map[string]string) (trace *monkit.Trace, spanID int64)
 
-func defaultHandlerFunc(traceID *int64, parentID *int64) (*monkit.Trace, int64) {
-	return monkit.NewTrace(*traceID), monkit.NewId()
+func defaultHandlerFunc(metadata map[string]string) (*monkit.Trace, int64) {
+	return monkit.NewTrace(monkit.NewId()), monkit.NewId()
 }
 
 // Handler implements drpc handler interface and takes in a callback function.
@@ -50,16 +49,7 @@ func (handler *Handler) HandleRPC(stream drpc.Stream, rpc string) (err error) {
 	streamCtx := stream.Context()
 	metadata, ok := drpcmetadata.Get(streamCtx)
 	if ok {
-		parentID, err := strconv.ParseInt(metadata[ParentID], 10, 64)
-		if err != nil {
-			return handler.mux.HandleRPC(stream, rpc)
-		}
-
-		traceID, err := strconv.ParseInt(metadata[TraceID], 10, 64)
-		if err != nil {
-			return handler.mux.HandleRPC(stream, rpc)
-		}
-		trace, spanID := handler.cb(&traceID, &parentID)
+		trace, spanID := handler.cb(metadata)
 		defer mon.FuncNamed(rpc).RemoteTrace(&streamCtx, spanID, trace)(&err)
 	}
 
