@@ -1795,7 +1795,7 @@
               {
                 "id": 8,
                 "name": "uptime",
-                "type": "google.protobuf.Duration"
+                "type": "string"
               },
               {
                 "id": 9,
@@ -2049,9 +2049,6 @@
           },
           {
             "path": "pointerdb.proto"
-          },
-          {
-            "path": "google/protobuf/duration.proto"
           },
           {
             "path": "google/protobuf/timestamp.proto"

@@ -7,7 +7,6 @@ option go_package = "storj.io/common/pb";
 import "gogo.proto";
 import "node.proto";
 import "pointerdb.proto";
-import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
 package inspector;
@@ -92,7 +91,7 @@ message DashboardResponse {
   string external_address = 5;
   string dashboard_address = 6;
   StatSummaryResponse stats = 7;
-  google.protobuf.Duration uptime = 8;
+  string uptime = 8;
   google.protobuf.Timestamp last_pinged = 9 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
   google.protobuf.Timestamp last_queried = 10 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
   bytes last_ping_from_id = 11 [(gogoproto.customtype) = "NodeID"];

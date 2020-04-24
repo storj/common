@@ -10,7 +10,6 @@ import (
 	time "time"
 
 	proto "github.com/gogo/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
 
 	drpc "storj.io/drpc"
 )

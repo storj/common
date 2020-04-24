@@ -70,8 +70,9 @@ func main() {
 
 		protofiles = ignore(protofiles)
 
+		overrideImports := ",Mgoogle/protobuf/timestamp.proto=storj.io/common/pb"
 		args := []string{
-			"--drpc_out=plugins=grpc+drpc,paths=source_relative:.",
+			"--drpc_out=plugins=grpc+drpc,paths=source_relative" + overrideImports + ":.",
 			"-I=.",
 		}
 		args = append(args, protofiles...)
