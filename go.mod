@@ -24,6 +24,6 @@ require (
 	google.golang.org/api v0.20.0 // indirect
 	google.golang.org/grpc v1.27.1
 	gopkg.in/yaml.v2 v2.2.4
-	storj.io/common v0.0.0-20200420155406-c7673e5d3216
-	storj.io/monkit-jaeger v0.0.0-20200421202833-be94db601895
+	storj.io/common v0.0.0-20200424175742-65ac59022f4f
+	storj.io/monkit-jaeger v0.0.0-20200424180155-d5f5530ea079
 )
