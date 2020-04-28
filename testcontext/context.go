@@ -29,6 +29,7 @@ type Context struct {
 
 	timedctx context.Context
 	cancel   context.CancelFunc
+	cleaning chan struct{}
 
 	group *errgroup.Group
 	test  TB
@@ -36,8 +37,9 @@ type Context struct {
 	once      sync.Once
 	directory string
 
-	mu      sync.Mutex
-	running []caller
+	mu       sync.Mutex
+	running  []caller
+	reported bool
 }
 
 type caller struct {
@@ -69,14 +71,40 @@ func NewWithTimeout(test TB, timeout time.Duration) *Context {
 	group, errctx := errgroup.WithContext(timedctx)
 
 	ctx := &Context{
-		Context:  errctx,
+		Context: errctx,
+
 		timedctx: timedctx,
 		cancel:   cancel,
-		group:    group,
-		test:     test,
+		cleaning: make(chan struct{}),
+
+		group: group,
+		test:  test,
 	}
 
+	go ctx.monitorSlowShutdown()
+
 	return ctx
+}
+
+func (ctx *Context) monitorSlowShutdown() {
+	// Wait for either the timeout to trigger on an explicit call to Cleanup.
+	select {
+	case <-ctx.timedctx.Done():
+	case <-ctx.cleaning:
+		return
+	}
+
+	// Let's give everything 30s to shutdown.
+	t := time.NewTimer(30 * time.Second)
+	defer t.Stop()
+
+	select {
+	case <-t.C:
+		ctx.reportRunning()
+	case <-ctx.cleaning:
+		// Managed to do it in time.
+		return
+	}
 }
 
 // Go runs fn in a goroutine.
@@ -165,6 +193,7 @@ func (ctx *Context) File(elem ...string) string {
 // directories
 func (ctx *Context) Cleanup() {
 	ctx.test.Helper()
+	close(ctx.cleaning)
 
 	defer ctx.deleteTemporary()
 	defer ctx.cancel()
@@ -188,6 +217,11 @@ func (ctx *Context) Cleanup() {
 func (ctx *Context) reportRunning() {
 	ctx.mu.Lock()
 	defer ctx.mu.Unlock()
+
+	if ctx.reported {
+		return
+	}
+	ctx.reported = true
 
 	var problematic []caller
 	for _, caller := range ctx.running {
