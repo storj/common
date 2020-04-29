@@ -95,7 +95,7 @@ func New(opts Options) *Cache {
 }
 
 //
-// helpers'
+// helpers
 //
 
 // closeEntry ensures the timer and connection are closed, returning
