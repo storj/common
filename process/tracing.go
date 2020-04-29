@@ -70,11 +70,12 @@ func run(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID st
 	hw.Register(r)
 	r.ScopeNamed("env").Chain(monkit.StatSourceFunc(version.Build.Stats))
 
-	log = log.Named("tracing")
 	if !*tracingEnabled {
-		log.Info("disabled")
+		log.Debug("Anonymized tracing disabled")
 		return nil, nil, nil
 	}
+
+	log.Info("Anonymized tracing enabled")
 
 	if len(instanceID) == 0 {
 		instanceID = telemetry.DefaultInstanceID()

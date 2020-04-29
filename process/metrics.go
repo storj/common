@@ -51,11 +51,12 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	hw.Register(r)
 	r.ScopeNamed("env").Chain(monkit.StatSourceFunc(version.Build.Stats))
 
-	log = log.Named("telemetry")
 	if *metricCollector == "" || *metricInterval == 0 {
-		log.Info("disabled")
+		log.Debug("Telemetry disabled")
 		return nil
 	}
+
+	log.Info("Telemetry enabled")
 
 	if instanceID == "" {
 		instanceID = telemetry.DefaultInstanceID()
