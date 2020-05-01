@@ -20,7 +20,7 @@ var (
 	DebugAddrFlag = flag.String("debug.addr", "127.0.0.1:0", "address to listen on for debug endpoints")
 )
 
-func initDebug(log *zap.Logger, r *monkit.Registry) (err error) {
+func initDebug(log *zap.Logger, r *monkit.Registry, atomicLevel *zap.AtomicLevel) (err error) {
 	if *DebugAddrFlag == "" {
 		return nil
 	}
@@ -31,9 +31,9 @@ func initDebug(log *zap.Logger, r *monkit.Registry) (err error) {
 	}
 
 	go func() {
-		server := debug.NewServer(log, ln, r, debug.Config{
+		server := debug.NewServerWithAtomicLevel(log, ln, r, debug.Config{
 			Address: *DebugAddrFlag,
-		})
+		}, atomicLevel)
 		log.Debug(fmt.Sprintf("debug server listening on %s", ln.Addr().String()))
 		err := server.Run(context.TODO())
 		if err != nil {

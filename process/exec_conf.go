@@ -40,11 +40,12 @@ const DefaultCfgFilename = "config.yaml"
 var (
 	mon = monkit.Package()
 
-	commandMtx sync.Mutex
-	contexts   = map[*cobra.Command]context.Context{}
-	cancels    = map[*cobra.Command]context.CancelFunc{}
-	configs    = map[*cobra.Command][]interface{}{}
-	vipers     = map[*cobra.Command]*viper.Viper{}
+	commandMtx   sync.Mutex
+	contexts     = map[*cobra.Command]context.Context{}
+	cancels      = map[*cobra.Command]context.CancelFunc{}
+	configs      = map[*cobra.Command][]interface{}{}
+	vipers       = map[*cobra.Command]*viper.Viper{}
+	atomicLevels = map[*cobra.Command]*zap.AtomicLevel{}
 )
 
 // Bind sets flags on a command that match the configuration struct
@@ -85,6 +86,7 @@ func ExecWithCustomConfig(cmd *cobra.Command, debugEnabled bool, loadConfig func
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	cleanup(cmd, debugEnabled, loadConfig)
 	err = cmd.Execute()
+
 	if err != nil {
 		os.Exit(1)
 	}
@@ -118,6 +120,16 @@ func Ctx(cmd *cobra.Command) (context.Context, context.CancelFunc) {
 	}
 
 	return ctx, cancel
+}
+
+// AtomicLevel returns the appropriate zap.AtomicLevel for ExecuteWithConfig commands
+func AtomicLevel(cmd *cobra.Command) *zap.AtomicLevel {
+	commandMtx.Lock()
+	defer commandMtx.Unlock()
+
+	atomicLevel := atomicLevels[cmd]
+
+	return atomicLevel
 }
 
 // Viper returns the appropriate *viper.Viper for the command, creating if necessary.
@@ -257,10 +269,13 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 			}
 		}
 
-		logger, err := NewLogger()
+		logger, atomicLevel, err := NewLogger()
 		if err != nil {
 			return err
 		}
+		commandMtx.Lock()
+		atomicLevels[cmd] = atomicLevel
+		commandMtx.Unlock()
 
 		if vip.ConfigFileUsed() != "" {
 			path, err := filepath.Abs(vip.ConfigFileUsed())
@@ -316,7 +331,7 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 		}
 
 		if debugEnabled {
-			err = initDebug(logger, monkit.Default)
+			err = initDebug(logger, monkit.Default, atomicLevel)
 			if err != nil {
 				withoutStack := errors.New(err.Error())
 				logger.Debug("failed to start debug endpoints", zap.Error(withoutStack))

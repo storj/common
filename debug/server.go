@@ -51,6 +51,11 @@ type Server struct {
 
 // NewServer returns a new debug.Server.
 func NewServer(log *zap.Logger, listener net.Listener, registry *monkit.Registry, config Config) *Server {
+	return NewServerWithAtomicLevel(log, listener, registry, config, nil)
+}
+
+// NewServerWithAtomicLevel returns a new debug.Server with logging endpoint enabled.
+func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *monkit.Registry, config Config, atomicLevel *zap.AtomicLevel) *Server {
 	server := &Server{log: log}
 
 	server.listener = listener
@@ -78,6 +83,10 @@ func NewServer(log *zap.Logger, listener net.Listener, registry *monkit.Registry
 	server.mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = fmt.Fprintln(w, "OK")
 	})
+
+	if atomicLevel != nil {
+		server.mux.HandleFunc("/logging", atomicLevel.ServeHTTP)
+	}
 
 	return server
 }

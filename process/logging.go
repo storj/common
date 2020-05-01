@@ -46,12 +46,19 @@ func init() {
 func isDev() bool { return cfgstruct.DefaultsType() != "release" }
 
 // NewLogger creates new logger configured by the process flags.
-func NewLogger() (*zap.Logger, error) {
-	return NewLoggerWithOutputPaths(*logOutput)
+func NewLogger() (*zap.Logger, *zap.AtomicLevel, error) {
+	return NewLoggerWithOutputPathsAndAtomicLevel(*logOutput)
 }
 
 // NewLoggerWithOutputPaths is the same as NewLogger, but overrides the log output paths.
 func NewLoggerWithOutputPaths(outputPaths ...string) (*zap.Logger, error) {
+	logger, _, err := NewLoggerWithOutputPathsAndAtomicLevel(outputPaths...)
+	return logger, err
+}
+
+// NewLoggerWithOutputPathsAndAtomicLevel is the same as NewLoggerWithOutputPaths, but overrides the log output paths
+// and returns the AtomicLevel
+func NewLoggerWithOutputPathsAndAtomicLevel(outputPaths ...string) (*zap.Logger, *zap.AtomicLevel, error) {
 	levelEncoder := zapcore.CapitalLevelEncoder
 	timeKey := "T"
 	if os.Getenv("STORJ_LOG_NOTIME") != "" {
@@ -59,8 +66,9 @@ func NewLoggerWithOutputPaths(outputPaths ...string) (*zap.Logger, error) {
 		timeKey = ""
 	}
 
-	return zap.Config{
-		Level:             zap.NewAtomicLevelAt(*logLevel),
+	atomicLevel := zap.NewAtomicLevelAt(*logLevel)
+	logger, err := zap.Config{
+		Level:             atomicLevel,
 		Development:       *logDev,
 		DisableCaller:     !*logCaller,
 		DisableStacktrace: !*logStack,
@@ -81,4 +89,6 @@ func NewLoggerWithOutputPaths(outputPaths ...string) (*zap.Logger, error) {
 		OutputPaths:      outputPaths,
 		ErrorOutputPaths: outputPaths,
 	}.Build()
+
+	return logger, &atomicLevel, err
 }
