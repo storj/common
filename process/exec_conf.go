@@ -26,6 +26,7 @@ import (
 	"github.com/zeebo/errs"
 	"github.com/zeebo/structs"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"golang.org/x/sync/errgroup"
 
 	"storj.io/common/context2"
@@ -363,9 +364,22 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 
 		err = workErr
 		if err != nil {
-			logger.Debug("Unrecoverable error", zap.Error(err))
-			fmt.Println("Error:", err.Error())
-			os.Exit(1)
+			// If our log output is stdout or stderr, we should log at the debug
+			// level so that the stack trace is available for debugging, but
+			// if debug is not enabled, print a nice error for the user to read.
+			// If it's going anywhere else then we want to be very loud, so use Fatal.
+
+			switch *logOutput {
+			case "stdout", "stderr":
+				if logger.Core().Enabled(zapcore.DebugLevel) {
+					logger.Debug("Unrecoverable error", zap.Error(err))
+				} else {
+					fmt.Fprintln(os.Stderr, "Error:", err.Error())
+				}
+				os.Exit(1)
+			default:
+				logger.Fatal("Unrecoverable error", zap.Error(err))
+			}
 		}
 
 		return nil
