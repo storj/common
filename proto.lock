@@ -4771,6 +4771,16 @@
                 "id": 5,
                 "name": "reputation_score",
                 "type": "double"
+              },
+              {
+                "id": 6,
+                "name": "unknown_reputation_alpha",
+                "type": "double"
+              },
+              {
+                "id": 7,
+                "name": "unknown_reputation_beta",
+                "type": "double"
               }
             ]
           },
