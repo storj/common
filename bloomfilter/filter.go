@@ -20,10 +20,10 @@ const (
 )
 
 // rangeOffsets contains offsets for selecting subranges
-// that minimize overlap in the first hash functions
+// that minimize overlap in the first hash functions.
 var rangeOffsets = [...]byte{9, 13, 19, 23}
 
-// Filter is a bloom filter implementation
+// Filter is a bloom filter implementation.
 type Filter struct {
 	seed      byte
 	hashCount byte
@@ -47,7 +47,7 @@ func NewOptimal(expectedElements int, falsePositiveRate float64) *Filter {
 	return newExplicit(seed, byte(hashCount), sizeInBytes)
 }
 
-// NewOptimalMaxSize returns a filter based on expected element count and false positive rate, capped at a maximum size in bytes
+// NewOptimalMaxSize returns a filter based on expected element count and false positive rate, capped at a maximum size in bytes.
 func NewOptimalMaxSize(expectedElements int, falsePositiveRate float64, maxSize memory.Size) *Filter {
 	hashCount, sizeInBytes := getHashCountAndSize(expectedElements, falsePositiveRate)
 	seed := byte(rand.Intn(255))
@@ -77,7 +77,7 @@ func (filter *Filter) Parameters() (hashCount, size int) {
 	return int(filter.hashCount), len(filter.table)
 }
 
-// Add adds an element to the bloom filter
+// Add adds an element to the bloom filter.
 func (filter *Filter) Add(pieceID storj.PieceID) {
 	offset, rangeOffset := initialConditions(filter.seed)
 
@@ -94,7 +94,7 @@ func (filter *Filter) Add(pieceID storj.PieceID) {
 	}
 }
 
-// Contains return true if pieceID may be in the set
+// Contains return true if pieceID may be in the set.
 func (filter *Filter) Contains(pieceID storj.PieceID) bool {
 	offset, rangeOffset := initialConditions(filter.seed)
 

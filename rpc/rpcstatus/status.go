@@ -95,7 +95,7 @@ func Error(code StatusCode, msg string) error {
 	return Wrap(code, errs.New("%s", msg))
 }
 
-// Errorf : Error :: fmt.Sprintf : fmt.Sprint
+// Errorf : Error :: fmt.Sprintf : fmt.Sprint.
 func Errorf(code StatusCode, format string, a ...interface{}) error {
 	return Wrap(code, errs.New(format, a...))
 }

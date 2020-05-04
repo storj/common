@@ -23,7 +23,7 @@ type IdentityTest func(*testing.T, storj.IDVersion, *identity.FullIdentity)
 type SignerTest func(*testing.T, storj.IDVersion, *identity.FullCertificateAuthority)
 
 // NewTestIdentity is a helper function to generate new node identities with
-// correct difficulty and concurrency
+// correct difficulty and concurrency.
 func NewTestIdentity(ctx context.Context) (*identity.FullIdentity, error) {
 	ca, err := NewTestCA(ctx)
 	if err != nil {
@@ -32,7 +32,7 @@ func NewTestIdentity(ctx context.Context) (*identity.FullIdentity, error) {
 	return ca.NewIdentity()
 }
 
-// NewTestCA returns a ca with a default difficulty and concurrency for use in tests
+// NewTestCA returns a ca with a default difficulty and concurrency for use in tests.
 func NewTestCA(ctx context.Context) (*identity.FullCertificateAuthority, error) {
 	return identity.NewCA(ctx, identity.NewCAOptions{
 		VersionNumber: storj.LatestIDVersion().Number,

@@ -23,12 +23,12 @@ var (
 	float64Type = reflect.TypeOf((*float64)(nil)).Elem()
 )
 
-// Marshaler is used to implement customized CSV field marshaling
+// Marshaler is used to implement customized CSV field marshaling.
 type Marshaler interface {
 	MarshalCSV() (string, error)
 }
 
-// Marshal marshals an object into CSV and returns the bytes
+// Marshal marshals an object into CSV and returns the bytes.
 func Marshal(obj interface{}) ([]byte, error) {
 	buf := new(bytes.Buffer)
 	if err := Write(buf, obj); err != nil {
@@ -37,7 +37,7 @@ func Marshal(obj interface{}) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// MarshalString marshals an object into CSV and returns a string
+// MarshalString marshals an object into CSV and returns a string.
 func MarshalString(obj interface{}) (string, error) {
 	buf := new(bytes.Buffer)
 	if err := Write(buf, obj); err != nil {
@@ -46,7 +46,7 @@ func MarshalString(obj interface{}) (string, error) {
 	return buf.String(), nil
 }
 
-// Write marshals an object into CSV and writes it to the writer
+// Write marshals an object into CSV and writes it to the writer.
 func Write(w io.Writer, obj interface{}) error {
 	if obj == nil {
 		return Error.New("source (%T) cannot be nil", obj)

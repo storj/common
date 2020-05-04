@@ -62,7 +62,7 @@ func TestBytes_Failing(t *testing.T) {
 	}
 }
 
-// generateTestIDs generates n piece ids
+// generateTestIDs generates n piece ids.
 func generateTestIDs(n int) []storj.PieceID {
 	ids := make([]storj.PieceID, n)
 	for i := range ids {
@@ -128,7 +128,7 @@ type stats struct {
 	avg, min, mean, max, mse float64
 }
 
-// calculates average, minimum, maximum and mean squared error
+// summarize calculates average, minimum, maximum and mean squared error.
 func summarize(expected float64, values []float64) (r stats) {
 	sort.Float64s(values)
 

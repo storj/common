@@ -19,22 +19,22 @@ var (
 	unmarshalTextType = reflect.TypeOf((*encoding.TextUnmarshaler)(nil)).Elem()
 )
 
-// Unmarshaler is used to implement customized CSV field unmarshaling
+// Unmarshaler is used to implement customized CSV field unmarshaling.
 type Unmarshaler interface {
 	UnmarshalCSV(s string) error
 }
 
-// Unmarshal unmarshals an object from CSV bytes
+// Unmarshal unmarshals an object from CSV bytes.
 func Unmarshal(b []byte, obj interface{}) error {
 	return Read(bytes.NewReader(b), obj)
 }
 
-// UnmarshalString unmarshals an object from a CSV string
+// UnmarshalString unmarshals an object from a CSV string.
 func UnmarshalString(s string, obj interface{}) error {
 	return Read(strings.NewReader(s), obj)
 }
 
-// Read unmarshals an object from a CSV reader
+// Read unmarshals an object from a CSV reader.
 func Read(r io.Reader, obj interface{}) error {
 	pv := reflect.ValueOf(obj)
 	switch {

@@ -54,7 +54,7 @@ func NewIdentities(list ...*identity.FullIdentity) *Identities {
 	}
 }
 
-// MustPregeneratedIdentity returns a pregenerated identity or panics
+// MustPregeneratedIdentity returns a pregenerated identity or panics.
 func MustPregeneratedIdentity(index int, version storj.IDVersion) *identity.FullIdentity {
 	identity, err := PregeneratedIdentity(index, version)
 	if err != nil {
@@ -63,7 +63,7 @@ func MustPregeneratedIdentity(index int, version storj.IDVersion) *identity.Full
 	return identity
 }
 
-// MustPregeneratedSignedIdentity returns a pregenerated identity or panics
+// MustPregeneratedSignedIdentity returns a pregenerated identity or panics.
 func MustPregeneratedSignedIdentity(index int, version storj.IDVersion) *identity.FullIdentity {
 	identity, err := PregeneratedSignedIdentity(index, version)
 	if err != nil {
@@ -72,7 +72,7 @@ func MustPregeneratedSignedIdentity(index int, version storj.IDVersion) *identit
 	return identity
 }
 
-// PregeneratedIdentity returns a pregenerated identity from a list
+// PregeneratedIdentity returns a pregenerated identity from a list.
 func PregeneratedIdentity(index int, version storj.IDVersion) (*identity.FullIdentity, error) {
 	pregeneratedIdentities := IdentityVersions[version.Number]
 
@@ -82,7 +82,7 @@ func PregeneratedIdentity(index int, version storj.IDVersion) (*identity.FullIde
 	return pregeneratedIdentities.list[index], nil
 }
 
-// PregeneratedSignedIdentity returns a signed pregenerated identity from a list
+// PregeneratedSignedIdentity returns a signed pregenerated identity from a list.
 func PregeneratedSignedIdentity(index int, version storj.IDVersion) (*identity.FullIdentity, error) {
 	pregeneratedSignedIdentities := SignedIdentityVersions[version.Number]
 
@@ -102,7 +102,7 @@ func NewPregeneratedSignedIdentities(version storj.IDVersion) *Identities {
 	return SignedIdentityVersions[version.Number].Clone()
 }
 
-// NewPregeneratedSigner returns the signer for all pregenerated, signed identities
+// NewPregeneratedSigner returns the signer for all pregenerated, signed identities.
 func NewPregeneratedSigner(version storj.IDVersion) *identity.FullCertificateAuthority {
 	return SignerVersions[version.Number]
 }

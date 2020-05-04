@@ -20,7 +20,7 @@ import (
 	"storj.io/common/memory"
 )
 
-// DefaultTimeout is the default timeout used by new context
+// DefaultTimeout is the default timeout used by new context.
 const DefaultTimeout = 3 * time.Minute
 
 // Context is a context that has utility methods for testing and waiting for asynchronous errors.
@@ -50,7 +50,7 @@ type caller struct {
 	done bool
 }
 
-// TB is a subset of testing.TB methods
+// TB is a subset of testing.TB methods.
 type TB interface {
 	Name() string
 	Helper()
@@ -60,12 +60,12 @@ type TB interface {
 	Fatal(args ...interface{})
 }
 
-// New creates a new test context with default timeout
+// New creates a new test context with default timeout.
 func New(test TB) *Context {
 	return NewWithTimeout(test, DefaultTimeout)
 }
 
-// NewWithTimeout creates a new test context with a given timeout
+// NewWithTimeout creates a new test context with a given timeout.
 func NewWithTimeout(test TB, timeout time.Duration) *Context {
 	timedctx, cancel := context.WithTimeout(context.Background(), timeout)
 	group, errctx := errgroup.WithContext(timedctx)
@@ -108,7 +108,7 @@ func (ctx *Context) monitorSlowShutdown() {
 }
 
 // Go runs fn in a goroutine.
-// Call Wait to check the result
+// Call Wait to check the result.
 func (ctx *Context) Go(fn func() error) {
 	ctx.test.Helper()
 
@@ -138,7 +138,7 @@ func (ctx *Context) Wait() {
 	}
 }
 
-// Check calls fn and checks result
+// Check calls fn and checks result.
 func (ctx *Context) Check(fn func() error) {
 	ctx.test.Helper()
 	err := fn()
@@ -190,7 +190,7 @@ func (ctx *Context) File(elem ...string) string {
 
 // Cleanup waits everything to be completed,
 // checks errors and goroutines which haven't ended and tries to cleanup
-// directories
+// directories.
 func (ctx *Context) Cleanup() {
 	ctx.test.Helper()
 	close(ctx.cleaning)
@@ -251,7 +251,7 @@ func (ctx *Context) reportRunning() {
 	ctx.test.Error("Full Stack Trace:\n", string(stack))
 }
 
-// deleteTemporary tries to delete temporary directory
+// deleteTemporary tries to delete temporary directory.
 func (ctx *Context) deleteTemporary() {
 	if ctx.directory == "" {
 		return

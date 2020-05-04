@@ -31,7 +31,7 @@ func (noCancelContext) Done() <-chan struct{} {
 	return nil
 }
 
-// Err always returns nil
+// Err always returns nil.
 func (noCancelContext) Err() error {
 	return nil
 }

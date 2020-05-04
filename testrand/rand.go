@@ -26,7 +26,7 @@ func Int63n(n int64) int64 {
 }
 
 // Float64n returns floating point pseudo-random number in [-n,0] || [0,n]
-// based on the sign of the input
+// based on the sign of the input.
 func Float64n(n int64) float64 {
 	return rand.Float64() * float64(n)
 }
@@ -99,12 +99,12 @@ func SerialNumber() storj.SerialNumber {
 	return serial
 }
 
-// StreamID creates a random stream ID
+// StreamID creates a random stream ID.
 func StreamID(size int) storj.StreamID {
 	return storj.StreamID(BytesInt(size))
 }
 
-// SegmentID creates a random segment ID
+// SegmentID creates a random segment ID.
 func SegmentID(size int) storj.SegmentID {
 	return storj.SegmentID(BytesInt(size))
 }

@@ -12,14 +12,14 @@ import (
 	"syscall"
 )
 
-// Setup sets up exec.Cmd such that it can be properly terminated
+// Setup sets up exec.Cmd such that it can be properly terminated.
 func Setup(c *exec.Cmd) {
 	c.SysProcAttr = &syscall.SysProcAttr{
 		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
 	}
 }
 
-// Kill tries to forcefully kill the process
+// Kill tries to forcefully kill the process.
 func Kill(cmd *exec.Cmd) {
 	proc := cmd.Process
 	if proc == nil {

@@ -18,7 +18,7 @@ import (
 	"storj.io/common/telemetry"
 )
 
-// Example is an example of a receiver and sender
+// Example is an example of a receiver and sender.
 func Example() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

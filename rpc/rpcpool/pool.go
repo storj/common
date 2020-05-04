@@ -23,7 +23,7 @@ var mon = monkit.Package()
 // we may want to keep. that adds quite a bit of complexity because channels
 // do not support removing buffered elements, so it didn't seem worth it.
 
-// expiringConn wraps a connection
+// expiringConn wraps a connection.
 type expiringConn struct {
 	conn  *drpcconn.Conn
 	timer *time.Timer

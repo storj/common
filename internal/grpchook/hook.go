@@ -47,5 +47,5 @@ type StatusCode uint64
 // HookedErrorWrap is the func to wrap a status code.
 var HookedErrorWrap func(code StatusCode, err error) error
 
-// HookedConvertToStatusCode tries to convert grpc error status to rpcstatus.StatusCode
+// HookedConvertToStatusCode tries to convert grpc error status to rpcstatus.StatusCode.
 var HookedConvertToStatusCode func(err error) (StatusCode, bool)

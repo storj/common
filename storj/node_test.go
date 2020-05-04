@@ -57,7 +57,7 @@ func TestNodeID_Difficulty(t *testing.T) {
 	}
 }
 
-// TestNodeScan tests (*NodeID).Scan()
+// TestNodeScan tests (*NodeID).Scan().
 func TestNodeScan(t *testing.T) {
 	tmpID := &storj.NodeID{}
 	require.Error(t, tmpID.Scan(32))
@@ -66,7 +66,7 @@ func TestNodeScan(t *testing.T) {
 	require.NoError(t, tmpID.Scan(tmpID.Bytes()))
 }
 
-// TestNodeValue tests NodeID.Value()
+// TestNodeValue tests NodeID.Value().
 func TestNodeValue(t *testing.T) {
 	tmpID := storj.NodeID{}
 	v, err := tmpID.Value()

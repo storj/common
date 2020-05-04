@@ -18,39 +18,39 @@ import (
 )
 
 const (
-	// DefaultInterval is the default amount of time between metric payload sends
+	// DefaultInterval is the default amount of time between metric payload sends.
 	DefaultInterval = time.Minute
 
 	// DefaultPacketSize sets the target packet size. MTUs are often 1500,
-	// though a good argument could be made for 512
+	// though a good argument could be made for 512.
 	DefaultPacketSize = 1000
 
 	// DefaultApplication is the default values for application name. Should be used
-	// when value in ClientOpts.Application is not set and len(os.Args) == 0
+	// when value in ClientOpts.Application is not set and len(os.Args) == 0.
 	DefaultApplication = "unknown"
 )
 
-// ClientOpts allows you to set Client Options
+// ClientOpts allows you to set Client Options.
 type ClientOpts struct {
 	// Interval is how frequently stats from the provided Registry will be
 	// sent up. Note that this interval is "jittered", so the actual interval
 	// is taken from a normal distribution with a mean of Interval and a
-	// variance of Interval/4. Defaults to DefaultInterval
+	// variance of Interval/4. Defaults to DefaultInterval.
 	Interval time.Duration
 
 	// Application is the application name, usually prepended to metric names.
-	// By default it will be os.Args[0]
+	// By default it will be os.Args[0].
 	Application string
 
 	// Instance is a string that identifies this particular server. Could be a
-	// node id, but defaults to the result of DefaultInstanceId()
+	// node id, but defaults to the result of DefaultInstanceId().
 	Instance string
 
 	// PacketSize controls how we fragment the data as it goes out in UDP
-	// packets. Defaults to DefaultPacketSize
+	// packets. Defaults to DefaultPacketSize.
 	PacketSize int
 
-	// Registry is where to get stats from. Defaults to monkit.Default
+	// Registry is where to get stats from. Defaults to monkit.Default.
 	Registry *monkit.Registry
 
 	// FloatEncoding is how floats should be encoded on the wire.
@@ -58,12 +58,12 @@ type ClientOpts struct {
 	FloatEncoding admproto.FloatEncoding
 
 	// Headers allow you to set arbitrary key/value tags to be included in
-	// each packet send
+	// each packet send.
 	Headers map[string]string
 }
 
 // Client is a telemetry client for sending UDP packets at a regular interval
-// from a monkit.Registry
+// from a monkit.Registry.
 type Client struct {
 	log      *zap.Logger
 	interval time.Duration
@@ -115,7 +115,7 @@ func NewClient(log *zap.Logger, remoteAddr string, opts ClientOpts) (rv *Client,
 	}, nil
 }
 
-// Run calls Report roughly every Interval
+// Run calls Report roughly every Interval.
 func (c *Client) Run(ctx context.Context) {
 	c.log.Debug("Initialized batcher", zap.ByteString("ID", c.opts.InstanceId))
 
@@ -141,7 +141,7 @@ func (c *Client) Run(ctx context.Context) {
 	}
 }
 
-// Stop stops the Run loop
+// Stop stops the Run loop.
 func (c *Client) Stop() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -152,7 +152,7 @@ func (c *Client) Stop() {
 	}
 }
 
-// Report bundles up all the current stats and writes them out as UDP packets
+// Report bundles up all the current stats and writes them out as UDP packets.
 func (c *Client) Report(ctx context.Context) (err error) {
 	defer mon.Task()(&ctx)(&err)
 	return c.send(ctx, c.opts)

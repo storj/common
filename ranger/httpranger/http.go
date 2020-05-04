@@ -21,7 +21,7 @@ type httpRanger struct {
 	size int64
 }
 
-// HTTPRanger turns an HTTP URL into a Ranger
+// HTTPRanger turns an HTTP URL into a Ranger.
 func HTTPRanger(ctx context.Context, url string) (_ ranger.Ranger, err error) {
 	defer mon.Task()(&ctx)(&err)
 	/* #nosec G107 */ // The callers must control the soure of the url value
@@ -61,12 +61,12 @@ func HTTPRangerSize(url string, size int64) ranger.Ranger { // nolint:golint
 	}
 }
 
-// Size implements Ranger.Size
+// Size implements Ranger.Size.
 func (r *httpRanger) Size() int64 {
 	return r.size
 }
 
-// Range implements Ranger.Range
+// Range implements Ranger.Range.
 func (r *httpRanger) Range(ctx context.Context, offset, length int64) (_ io.ReadCloser, err error) {
 	defer mon.Task()(&ctx)(&err)
 	if offset < 0 {

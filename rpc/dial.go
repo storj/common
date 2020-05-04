@@ -330,7 +330,7 @@ type tlsConnWrapper struct {
 	underlying net.Conn
 }
 
-// Close closes the underlying connection
+// Close closes the underlying connection.
 func (t *tlsConnWrapper) Close() error { return t.underlying.Close() }
 
 // drpcHeaderConn fulfills the net.Conn interface. On the first call to Write
@@ -340,7 +340,7 @@ type drpcHeaderConn struct {
 	once sync.Once
 }
 
-// newDrpcHeaderConn returns a new *drpcHeaderConn
+// newDrpcHeaderConn returns a new *drpcHeaderConn.
 func newDrpcHeaderConn(conn net.Conn) *drpcHeaderConn {
 	return &drpcHeaderConn{
 		Conn: conn,

@@ -7,5 +7,5 @@ import (
 	"github.com/zeebo/errs"
 )
 
-// Error is the default telemetry errs class
+// Error is the default telemetry errs class.
 var Error = errs.Class("telemetry error")
