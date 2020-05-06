@@ -16,7 +16,6 @@ import (
 )
 
 var (
-	grpcdir = flag.String("grpc-dir", "pbgrpc", "directory for grpc client and servers")
 	mainpkg = flag.String("pkg", "storj.io/common/pb", "main package name")
 	protoc  = flag.String("protoc", "protoc", "protoc compiler")
 )
@@ -46,18 +45,12 @@ func main() {
 		check(err)
 	}
 
-	// create grpcdir if it doesn't exist
-	_ = os.Mkdir(*grpcdir, 0644)
-
 	{
 		// cleanup previous files
-		grpcfiles, err := filepath.Glob(filepath.Join(*grpcdir, "*.pb.go"))
-		check(err)
 		localfiles, err := filepath.Glob("*.pb.go")
 		check(err)
 
 		all := []string{}
-		all = append(all, grpcfiles...)
 		all = append(all, localfiles...)
 		for _, match := range all {
 			_ = os.Remove(match)
@@ -72,7 +65,7 @@ func main() {
 
 		overrideImports := ",Mgoogle/protobuf/timestamp.proto=storj.io/common/pb"
 		args := []string{
-			"--drpc_out=plugins=grpc+drpc,paths=source_relative" + overrideImports + ":.",
+			"--drpc_out=plugins=drpc,paths=source_relative" + overrideImports + ":.",
 			"-I=.",
 		}
 		args = append(args, protofiles...)
@@ -86,7 +79,6 @@ func main() {
 	}
 
 	{
-		// split generated files
 		files, err := filepath.Glob("*.pb.go")
 		check(err)
 		for _, file := range files {
@@ -102,9 +94,6 @@ func main() {
 	}
 }
 
-const drpcEndTag = "// --- DRPC END ---\n"
-
-// process moves grpc part of the code to grpcdir folder.
 func process(file string) {
 	data, err := ioutil.ReadFile(file)
 	check(err)
@@ -115,30 +104,7 @@ func process(file string) {
 	// end up generating an `import _ "."`, the following replace removes it.
 	source = strings.Replace(source, `_ "."`, "", -1)
 
-	// first ')' is the closing of import block
-	importEnd := strings.IndexByte(source, ')')
-
-	// find drpc tag
-	drpcEnd := strings.Index(source, drpcEndTag)
-	if drpcEnd < 0 {
-		err = ioutil.WriteFile(file, []byte(source), 0644)
-		check(err)
-		return
-	}
-	drpcEnd += len(drpcEndTag)
-
-	// create source for grpc
-	grpc := ""
-	grpc += source[:importEnd] + fmt.Sprintf("\t. %q\n)\n", *mainpkg)
-	grpc += source[drpcEnd:]
-
-	grpc = strings.Replace(grpc, "package pb", "package "+*grpcdir, -1)
-
-	err = ioutil.WriteFile(filepath.Join(*grpcdir, file), []byte(grpc), 0644)
-	check(err)
-
-	// rewrite original file without grpc
-	err = ioutil.WriteFile(file, []byte(source[:drpcEnd]), 0644)
+	err = ioutil.WriteFile(file, []byte(source), 0644)
 	check(err)
 }
 

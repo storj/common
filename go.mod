@@ -20,7 +20,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/sys v0.0.0-20200107144601-ef85f5a75ddf
-	golang.org/x/text v0.3.2 // indirect
-	google.golang.org/grpc v1.27.1
 	storj.io/drpc v0.0.12
 )
