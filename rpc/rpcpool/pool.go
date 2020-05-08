@@ -39,6 +39,11 @@ func newExpiringConn(conn *drpcconn.Conn, dur time.Duration) *expiringConn {
 	return ex
 }
 
+// Closed returns true if the connection is already closed.
+func (ex *expiringConn) Closed() bool {
+	return ex.conn.Closed()
+}
+
 // Cancel attempts to cancel the expiration timer and returns true if the
 // timer will not close the connection.
 func (ex *expiringConn) Cancel() bool {
@@ -105,6 +110,16 @@ func (c *Conn) Close() (err error) {
 
 	<-c.done
 	return err
+}
+
+// Closed returns true if the connection is already closed.
+func (c *Conn) Closed() bool {
+	select {
+	case <-c.done:
+		return true
+	default:
+		return false
+	}
 }
 
 // newConn creates a new connection using the dialer.

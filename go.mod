@@ -22,5 +22,5 @@ require (
 	golang.org/x/sys v0.0.0-20200107144601-ef85f5a75ddf
 	golang.org/x/text v0.3.2 // indirect
 	google.golang.org/grpc v1.27.1
-	storj.io/drpc v0.0.11
+	storj.io/drpc v0.0.12
 )
