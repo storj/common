@@ -33,7 +33,6 @@ message GetStatsResponse {
     google.protobuf.Timestamp disqualified = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
     google.protobuf.Timestamp suspended = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
     google.protobuf.Timestamp joined_at = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    ReputationStats unknown_audit_check = 6;
 }
 
 message DailyStorageUsageRequest {
