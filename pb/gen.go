@@ -34,16 +34,16 @@ func ignore(files []string) []string {
 	return xs
 }
 
+// Programs needed for code generation:
+//
+// github.com/ckaznocha/protoc-gen-lint
+// storj.io/drpc/cmd/protoc-gen-drpc
+// github.com/nilslice/protolock/cmd/protolock
+
 func main() {
 	flag.Parse()
 
 	// TODO: protolock
-
-	{
-		out, err := exec.Command("go", "run", "../scripts/protobuf.go", "lint").CombinedOutput()
-		fmt.Println(string(out))
-		check(err)
-	}
 
 	{
 		// cleanup previous files
@@ -65,6 +65,7 @@ func main() {
 
 		overrideImports := ",Mgoogle/protobuf/timestamp.proto=storj.io/common/pb"
 		args := []string{
+			"--lint_out=.",
 			"--drpc_out=plugins=drpc,paths=source_relative" + overrideImports + ":.",
 			"-I=.",
 		}
