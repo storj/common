@@ -37,6 +37,13 @@ func NewDefaultManagerOptions() drpcmanager.Options {
 	}
 }
 
+// Transport is a type that creates net.Conns, given an address.
+// net.Dialer implements this interface and is used by default.
+type Transport interface {
+	// DialContext is called to establish a connection.
+	DialContext(ctx context.Context, network, address string) (net.Conn, error)
+}
+
 // Dialer holds configuration for dialing.
 type Dialer struct {
 	// TLSOptions controls the tls options for dialing. If it is nil, only
@@ -65,6 +72,9 @@ type Dialer struct {
 	// socket option on dialed connections. Only valid on linux. Only set
 	// if positive.
 	TCPUserTimeout time.Duration
+
+	// Transport is how sockets are opened. If nil, net.Dialer is used.
+	Transport Transport
 }
 
 // NewDefaultDialer returns a Dialer with default timeouts set.
@@ -96,7 +106,12 @@ func (d Dialer) dialContext(ctx context.Context, address string) (net.Conn, erro
 		}
 	}
 
-	conn, err := new(net.Dialer).DialContext(ctx, "tcp", address)
+	dialer := d.Transport
+	if dialer == nil {
+		dialer = new(net.Dialer)
+	}
+
+	conn, err := dialer.DialContext(ctx, "tcp", address)
 	if err != nil {
 		// N.B. this error is not wrapped on purpose! grpc code cares about inspecting
 		// it and it's not smart enough to attempt to do any unwrapping. :( Additionally
