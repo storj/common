@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/spacemonkeygo/monkit/v3"
-	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
 )
 
@@ -26,11 +25,19 @@ func TestServer_PrometheusMetrics(t *testing.T) {
 	rec := httptest.NewRecorder()
 	srv.prometheusMetrics(rec, nil)
 
-	require.Equal(t, rec.Body.String(), `
-# TYPE m1 gauge
+	const (
+		m1 = `# TYPE m1 gauge
 m1{scope="test",field="f1"} 1
 m1{scope="test",field="f3"} 3
-# TYPE m2 gauge
+`
+		m2 = `# TYPE m2 gauge
 m2{scope="test",field="f2"} 2
-`[1:])
+`
+	)
+
+	body := rec.Body.String()
+	if body != m1+m2 && body != m2+m1 {
+		t.Fatalf("string mismatch:\nbody:%q\nexp1:%q\nexp2:%q",
+			body, m1+m2, m2+m1)
+	}
 }
