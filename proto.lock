@@ -5724,25 +5724,93 @@
             "name": "PrepareInvoiceRecordsResponse"
           },
           {
-            "name": "ApplyInvoiceRecordsRequest"
+            "name": "ApplyInvoiceRecordsRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "period",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
           },
           {
             "name": "ApplyInvoiceRecordsResponse"
           },
           {
-            "name": "ApplyInvoiceCouponsRequest"
+            "name": "ApplyInvoiceCouponsRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "period",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
           },
           {
             "name": "ApplyInvoiceCouponsResponse"
           },
           {
-            "name": "ApplyInvoiceCreditsRequest"
+            "name": "ApplyInvoiceCreditsRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "period",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
           },
           {
             "name": "ApplyInvoiceCreditsResponse"
           },
           {
-            "name": "CreateInvoicesRequest"
+            "name": "CreateInvoicesRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "period",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
           },
           {
             "name": "CreateInvoicesResponse"
