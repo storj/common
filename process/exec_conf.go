@@ -311,11 +311,15 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 				unregister()
 				err := eg.Wait()
 				if err != nil {
-					logger.Debug("failed to shut down tracing collector", zap.Error(err))
+					logger.Debug("failed to stop tracing collector", zap.Error(err))
 				}
 				err = collector.Send(context2.WithoutCancellation(ctx))
 				if err != nil {
 					logger.Debug("failed to flush tracing collector", zap.Error(err))
+				}
+				err = collector.Close()
+				if err != nil {
+					logger.Debug("failed to close tracing collector", zap.Error(err))
 				}
 			}()
 		}
