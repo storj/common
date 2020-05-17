@@ -4781,6 +4781,11 @@
                 "id": 7,
                 "name": "unknown_reputation_beta",
                 "type": "double"
+              },
+              {
+                "id": 8,
+                "name": "unknown_reputation_score",
+                "type": "double"
               }
             ]
           },
