@@ -9,7 +9,7 @@ require (
 	github.com/jtolds/monkit-hw/v2 v2.0.0-20191108235325-141a0da276b3
 	github.com/jtolds/tracetagger/v2 v2.0.0-rc5
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/spacemonkeygo/monkit/v3 v3.0.6-0.20200417171149-7f4a2b305c34
+	github.com/spacemonkeygo/monkit/v3 v3.0.7-0.20200515175308-072401d8c752
 	github.com/spf13/cast v1.3.0
 	github.com/spf13/cobra v0.0.6
 	github.com/spf13/pflag v1.0.5
@@ -25,5 +25,5 @@ require (
 	google.golang.org/grpc v1.27.1
 	gopkg.in/yaml.v2 v2.2.4
 	storj.io/common v0.0.0-20200424175742-65ac59022f4f
-	storj.io/monkit-jaeger v0.0.0-20200424180155-d5f5530ea079
+	storj.io/monkit-jaeger v0.0.0-20200518165323-80778fc3f91b
 )
