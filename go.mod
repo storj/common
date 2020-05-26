@@ -11,7 +11,6 @@ require (
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/spacemonkeygo/monkit/v3 v3.0.5
 	github.com/stretchr/testify v1.3.0
-	github.com/zeebo/admission/v2 v2.0.0
 	github.com/zeebo/admission/v3 v3.0.1
 	github.com/zeebo/errs v1.2.2
 	go.uber.org/atomic v1.4.0 // indirect

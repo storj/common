@@ -10,8 +10,8 @@ import (
 	"syscall"
 
 	"github.com/spacemonkeygo/monkit/v3"
-	"github.com/zeebo/admission/v2"
-	"github.com/zeebo/admission/v2/admproto"
+	"github.com/zeebo/admission/v3"
+	"github.com/zeebo/admission/v3/admproto"
 )
 
 var (
@@ -101,11 +101,22 @@ func (h handlerWrapper) Handle(ctx context.Context, m *admission.Message) {
 		return
 	}
 	r := admproto.NewReaderWith(m.Scratch[:])
-	data, applicationB, instanceB, err := r.Begin(data)
+	data, applicationB, instanceB, numHeaders, err := r.Begin(data)
 	if err != nil {
 		finish(&err)
 		return
 	}
+
+	// Even though we don't use the headers, if they exist on the buffer we
+	// need to read them off.
+	for i := 0; i < numHeaders; i++ {
+		data, _, _, err = r.NextHeader(data)
+		if err != nil {
+			finish(&err)
+			return
+		}
+	}
+
 	application, instance := string(applicationB), string(instanceB)
 	var key []byte
 	var value float64
