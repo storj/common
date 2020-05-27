@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	hw "github.com/jtolds/monkit-hw/v2"
 	monkit "github.com/spacemonkeygo/monkit/v3"
 	"github.com/spacemonkeygo/monkit/v3/environment"
 	"github.com/zeebo/admission/v3/admproto"
@@ -48,7 +47,6 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 		r = monkit.Default
 	}
 	environment.Register(r)
-	hw.Register(r)
 	r.ScopeNamed("env").Chain(monkit.StatSourceFunc(version.Build.Stats))
 
 	if *metricCollector == "" || *metricInterval == 0 {
