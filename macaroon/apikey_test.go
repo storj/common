@@ -12,6 +12,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/zeebo/errs"
+
+	"storj.io/common/testcontext"
 )
 
 func TestSerializeParseRestrictAndCheck(t *testing.T) {
@@ -64,16 +66,11 @@ func TestSerializeParseRestrictAndCheck(t *testing.T) {
 }
 
 func TestRevocation(t *testing.T) {
-	ctx := context.Background()
+	ctx := testcontext.New(t)
 
 	secret, err := NewSecret()
 	require.NoError(t, err)
 	key, err := NewAPIKey(secret)
-	require.NoError(t, err)
-
-	restricted, err := key.Restrict(Caveat{
-		DisallowReads: true,
-	})
 	require.NoError(t, err)
 
 	now := time.Now()
@@ -82,11 +79,20 @@ func TestRevocation(t *testing.T) {
 		Time: now,
 	}
 
+	// Nil revoker should not revoke anything
 	require.NoError(t, key.Check(ctx, secret, action, nil))
-	require.NoError(t, restricted.Check(ctx, secret, action, nil))
 
-	require.True(t, ErrRevoked.Has(key.Check(ctx, secret, action, [][]byte{restricted.Head()})))
-	require.True(t, ErrRevoked.Has(restricted.Check(ctx, secret, action, [][]byte{restricted.Head()})))
+	// No error returned when nothing is revoked
+	nothingRevoked := testRevoker{}
+	require.NoError(t, key.Check(ctx, secret, action, nothingRevoked))
+
+	// Check that revoked results in a ErrRevoked error
+	revoked := testRevoker{revoked: true}
+	require.True(t, ErrRevoked.Has(key.Check(ctx, secret, action, revoked)))
+
+	// Check that an error while checking revocations results in an ErrRevoked err
+	revokeErr := testRevoker{revoked: false, err: errs.New("some revoke err")}
+	require.True(t, ErrRevoked.Has(key.Check(ctx, secret, action, revokeErr)))
 }
 
 func TestExpiration(t *testing.T) {
@@ -185,4 +191,13 @@ func TestGetAllowedBuckets(t *testing.T) {
 		All:     false,
 		Buckets: map[string]struct{}{"test1": {}},
 	})
+}
+
+type testRevoker struct {
+	revoked bool
+	err     error
+}
+
+func (tr testRevoker) Check(ctx context.Context, tails [][]byte) (bool, error) {
+	return tr.revoked, tr.err
 }
