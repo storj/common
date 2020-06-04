@@ -935,6 +935,26 @@
         ],
         "messages": [
           {
+            "name": "GracefulExitFeasibilityNodeRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "node_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "NodeID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "name": "GetNonExitingSatellitesRequest"
           },
           {
@@ -1013,39 +1033,6 @@
             ]
           },
           {
-            "name": "GracefulExitFeasibilityRequest"
-          },
-          {
-            "name": "GracefulExitFeasibilityResponse",
-            "fields": [
-              {
-                "id": 1,
-                "name": "joined_at",
-                "type": "google.protobuf.Timestamp",
-                "options": [
-                  {
-                    "name": "(gogoproto.stdtime)",
-                    "value": "true"
-                  },
-                  {
-                    "name": "(gogoproto.nullable)",
-                    "value": "false"
-                  }
-                ]
-              },
-              {
-                "id": 2,
-                "name": "months_required",
-                "type": "int64"
-              },
-              {
-                "id": 3,
-                "name": "is_allowed",
-                "type": "bool"
-              }
-            ]
-          },
-          {
             "name": "ExitProgress",
             "fields": [
               {
@@ -1082,6 +1069,39 @@
                 "id": 5,
                 "name": "completion_receipt",
                 "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "GracefulExitFeasibilityRequest"
+          },
+          {
+            "name": "GracefulExitFeasibilityResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "joined_at",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "months_required",
+                "type": "int32"
+              },
+              {
+                "id": 3,
+                "name": "is_allowed",
+                "type": "bool"
               }
             ]
           },
@@ -1390,7 +1410,7 @@
               },
               {
                 "name": "GracefulExitFeasibility",
-                "in_type": "GracefulExitFeasibilityRequest",
+                "in_type": "GracefulExitFeasibilityNodeRequest",
                 "out_type": "GracefulExitFeasibilityResponse"
               }
             ]
@@ -1404,6 +1424,11 @@
                 "out_type": "SatelliteMessage",
                 "in_streamed": true,
                 "out_streamed": true
+              },
+              {
+                "name": "GracefulExitFeasibility",
+                "in_type": "GracefulExitFeasibilityRequest",
+                "out_type": "GracefulExitFeasibilityResponse"
               }
             ]
           }
