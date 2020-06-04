@@ -19,6 +19,8 @@ service NodeGracefulExit {
   rpc InitiateGracefulExit(InitiateGracefulExitRequest) returns (ExitProgress);
   // GetExitProgress returns graceful exit status on each satellite for a given storagenode.
   rpc GetExitProgress(GetExitProgressRequest) returns (GetExitProgressResponse);
+  // GracefulExitFeasibility returns node's join date and satellites config's amount of months required for graceful exit to be allowed.
+  rpc GracefulExitFeasibility(GracefulExitFeasibilityRequest) returns (GracefulExitFeasibilityResponse);
 }
 
 message GetNonExitingSatellitesRequest{}
@@ -42,6 +44,14 @@ message GetExitProgressRequest {}
 
 message GetExitProgressResponse {
  repeated ExitProgress progress = 1;
+}
+
+message GracefulExitFeasibilityRequest {}
+
+message GracefulExitFeasibilityResponse {
+    google.protobuf.Timestamp joined_at = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    int64 months_required = 2;
+    bool is_allowed = 3;
 }
 
 message ExitProgress {

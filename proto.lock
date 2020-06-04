@@ -1013,6 +1013,39 @@
             ]
           },
           {
+            "name": "GracefulExitFeasibilityRequest"
+          },
+          {
+            "name": "GracefulExitFeasibilityResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "joined_at",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "months_required",
+                "type": "int64"
+              },
+              {
+                "id": 3,
+                "name": "is_allowed",
+                "type": "bool"
+              }
+            ]
+          },
+          {
             "name": "ExitProgress",
             "fields": [
               {
@@ -1354,6 +1387,11 @@
                 "name": "GetExitProgress",
                 "in_type": "GetExitProgressRequest",
                 "out_type": "GetExitProgressResponse"
+              },
+              {
+                "name": "GracefulExitFeasibility",
+                "in_type": "GracefulExitFeasibilityRequest",
+                "out_type": "GracefulExitFeasibilityResponse"
               }
             ]
           },
