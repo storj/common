@@ -234,13 +234,50 @@ func PercentageToCursor(pct int) RolloutBytes {
 }
 
 // ShouldUpdate checks if for the the given rollout state, a user with the given nodeID should update.
+// Deprecated and should eventually be unexported. Please use ShouldUpdateVersion instead.
 func ShouldUpdate(rollout Rollout, nodeID storj.NodeID) bool {
+	return isRolloutCandidate(nodeID, rollout)
+}
+
+func isRolloutCandidate(nodeID storj.NodeID, rollout Rollout) bool {
 	hash := hmac.New(sha256.New, rollout.Seed[:])
 	_, err := hash.Write(nodeID[:])
 	if err != nil {
 		panic(err)
 	}
 	return bytes.Compare(hash.Sum(nil), rollout.Cursor[:]) <= 0
+}
+
+// ShouldUpdateVersion determines if, given a current version and data from the version server, if
+// the current version should be updated.
+func ShouldUpdateVersion(currentVersion SemVer, nodeID storj.NodeID, requested Process) (shouldUpdate bool, reason string, err error) {
+	// first, confirm if an update is even necessary
+	suggestedVersion, err := requested.Suggested.SemVer()
+	if err != nil {
+		return false, "", err
+	}
+	if currentVersion.Compare(suggestedVersion) >= 0 {
+		return false, "Version is up to date", nil
+	}
+
+	// next, make sure we're at least running the minimum version. See
+	// https://github.com/storj/storj/pull/2677#pullrequestreview-270882629
+	// and storj/docs/blueprints/storage-node-automatic-updater.md
+	minimumVersion, err := requested.Minimum.SemVer()
+	if err != nil {
+		return false, "", err
+	}
+	if currentVersion.Compare(minimumVersion) < 0 {
+		return true, "Version is below minimum allowed", nil
+	}
+
+	// Okay, now consider the rollout
+	rollout := isRolloutCandidate(nodeID, requested.Rollout)
+	if rollout {
+		return true, "New version is being rolled out and this node is a candidate", nil
+	}
+
+	return false, "New version is being rolled out but hasn't made it to this node yet", nil
 }
 
 func init() {
