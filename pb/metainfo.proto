@@ -52,6 +52,7 @@ service Metainfo {
     rpc SetAttributionOld(SetAttributionRequestOld) returns (SetAttributionResponseOld);
 
     rpc ProjectInfo(ProjectInfoRequest) returns (ProjectInfoResponse);
+    rpc RevokeAPIKey(RevokeAPIKeyRequest) returns (RevokeAPIKeyResponse);
 }
 
 message RequestHeader {
@@ -633,3 +634,11 @@ message BatchResponseItem {
         SegmentDownloadResponse segment_download = 18;
     }
 }
+
+message RevokeAPIKeyRequest {
+    RequestHeader header = 15;
+
+    bytes api_key = 1;
+}
+
+message RevokeAPIKeyResponse { }

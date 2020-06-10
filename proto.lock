@@ -4386,6 +4386,24 @@
                 "type": "SegmentDownloadResponse"
               }
             ]
+          },
+          {
+            "name": "RevokeAPIKeyRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "api_key",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "RevokeAPIKeyResponse"
           }
         ],
         "services": [
@@ -4526,6 +4544,11 @@
                 "name": "ProjectInfo",
                 "in_type": "ProjectInfoRequest",
                 "out_type": "ProjectInfoResponse"
+              },
+              {
+                "name": "RevokeAPIKey",
+                "in_type": "RevokeAPIKeyRequest",
+                "out_type": "RevokeAPIKeyResponse"
               }
             ]
           }
