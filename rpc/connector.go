@@ -120,9 +120,87 @@ func (t *TCPConnector) DialContextUnencryptedUnprefixed(ctx context.Context, add
 		return nil, Error.Wrap(err)
 	}
 
-	if tcpconn, ok := conn.(*net.TCPConn); t.TCPUserTimeout > 0 && ok {
-		if err := netutil.SetUserTimeout(tcpconn, t.TCPUserTimeout); err != nil {
+	if tcpconn, ok := conn.(*net.TCPConn); ok {
+		/*
+			The normal TCP termination sequence looks like this (simplified):
+
+			We have two peers: A and B
+
+			 1. A calls close()
+				* A sends FIN to B
+				* A goes into FIN_WAIT_1 state
+			 2. B receives FIN
+				* B sends ACK to A
+				* B goes into CLOSE_WAIT state
+			 3. A receives ACK
+				* A goes into FIN_WAIT_2 state
+			 4. B calls close()
+				* B sends FIN to A
+				* B goes into LAST_ACK state
+			 5. A receives FIN
+				* A sends ACK to B
+				* A goes into TIME_WAIT state
+			 6. B receives ACK
+				* B goes to CLOSED state – i.e. is removed from the socket tables
+
+			(From https://stackoverflow.com/a/13088864)
+
+			Note that A doesn't leave TIME_WAIT! This is the normal operation of TCP connections,
+			and indeed can be validated by building a toy client and server that do a small
+			data exchange and then close their connections cleanly. The client will enter
+			TIME_WAIT.
+
+			What happens with TLS and Go (most times):
+
+			However, this is not what happens with TLS and Go. The TLS spec mandates that
+			close-notify messages are sent by both the client and the server upon closing
+			the write side of the socket. https://www.rfc-editor.org/rfc/rfc5246#section-7.2.1
+			Unfortunately, common usage of Go + TLS involves invoking Close, which closes
+			both the read and the write side of the socket. The client OS puts this
+			socket into TIME_WAIT.
+
+			When Close is called on a TLS-using Go connection, it sends a close-notify
+			message, then closes both the read and write sides of its socket. The server
+			will receive the close notify, close its read side, then send a close-notify
+			of its own, closing its write side.
+
+			The client operating system receives the unexpected-to-it close-notify and
+			freaks out, sending a RST packet, which then ends the socket's TIME_WAIT
+			state.
+
+			How this pertains to Storj:
+
+			The Go + TLS situation has been the most common situation for us for
+			some time, and so as a result, we have not been running our connections
+			with clean TCP shut down. One side effect is we've been sending more
+			connection teardown messages than we need (RST and abortive close),
+			but the other side effect is that we haven't had many TIME_WAIT
+			connections. Switching to a protocol with clean shutdown suddenly balloons
+			the number of TIME_WAIT connections.
+
+			We can fix this three ways:
+
+			 (a) Make it so protocols continue to behave like TLS - e.g., continue
+			     to have the server send a close notify, even though we know
+			     the client has already shut down its read side, guaranteeing
+			     an abortive close RST packet. This seems wasteful.
+			 (b) Just tell the kernel that we mean to do an abortive close like
+			     we've been doing, but without the additional packet waste.
+			 (c) Make our firewalls and app servers okay with clean TCP shutdown.
+			     Keeping track of a connection in TIME_WAIT should not require
+			     many resources. We likely have something gravely misconfigured
+			     that we can't handle clean connection closes.
+
+			Setting SetLinger(0) is option b.
+		*/
+		if err := tcpconn.SetLinger(0); err != nil {
 			return nil, errs.Combine(Error.Wrap(err), Error.Wrap(conn.Close()))
+		}
+
+		if t.TCPUserTimeout > 0 {
+			if err := netutil.SetUserTimeout(tcpconn, t.TCPUserTimeout); err != nil {
+				return nil, errs.Combine(Error.Wrap(err), Error.Wrap(conn.Close()))
+			}
 		}
 	}
 
