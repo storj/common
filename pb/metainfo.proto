@@ -45,11 +45,28 @@ service Metainfo {
 
     rpc ProjectInfo(ProjectInfoRequest) returns (ProjectInfoResponse);
     rpc RevokeAPIKey(RevokeAPIKeyRequest) returns (RevokeAPIKeyResponse);
+    rpc GetObjectLocation(ObjectLocationRequest) returns (ObjectLocationResponse);
 }
 
 message RequestHeader {
     bytes api_key = 1;
     bytes user_agent = 2;
+}
+
+message ObjectLocationRequest {
+    RequestHeader header = 15;
+
+    bytes     bucket = 1;
+    bytes     encrypted_prefix = 2;
+}
+
+message ObjectLocationResponse {
+    repeated LocationCoordinates location_coordinates = 1;
+}
+
+message LocationCoordinates {
+    float latitude = 1;
+    float longitude = 2;
 }
 
 message Bucket {
