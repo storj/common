@@ -489,6 +489,9 @@ message BatchRequestItem {
 
         SegmentListRequest     segment_list = 17;
         SegmentDownloadRequest segment_download = 18;
+
+        RevokeAPIKeyRequest revoke_api_key = 19;
+
     }
 }
 
@@ -519,6 +522,8 @@ message BatchResponseItem {
 
         SegmentListResponse     segment_list = 17;
         SegmentDownloadResponse segment_download = 18;
+
+        RevokeAPIKeyResponse revoke_api_key = 19;
     }
 }
 

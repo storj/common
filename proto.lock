@@ -3882,6 +3882,11 @@
                 "id": 18,
                 "name": "segment_download",
                 "type": "SegmentDownloadRequest"
+              },
+              {
+                "id": 19,
+                "name": "revoke_api_key",
+                "type": "RevokeAPIKeyRequest"
               }
             ]
           },
@@ -3983,6 +3988,11 @@
                 "id": 18,
                 "name": "segment_download",
                 "type": "SegmentDownloadResponse"
+              },
+              {
+                "id": 19,
+                "name": "revoke_api_key",
+                "type": "RevokeAPIKeyResponse"
               }
             ]
           },
