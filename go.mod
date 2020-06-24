@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/btcsuite/btcutil v1.0.1
-	github.com/calebcase/tmpfile v1.0.1
+	github.com/calebcase/tmpfile v1.0.2-0.20200602150926-3af473ef8439
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.2.1
 	github.com/minio/sha256-simd v0.1.1
@@ -19,5 +19,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
 	golang.org/x/sys v0.0.0-20200610111108-226ff32320da
-	storj.io/drpc v0.0.12
+	storj.io/drpc v0.0.13
 )
