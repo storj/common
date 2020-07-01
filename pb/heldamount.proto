@@ -12,6 +12,8 @@ package heldamount;
 service HeldAmount {
     rpc GetPayStub(GetHeldAmountRequest) returns (GetHeldAmountResponse);
     rpc GetAllPaystubs(GetAllPaystubsRequest) returns (GetAllPaystubsResponse);
+    rpc GetPayment(GetPaymentRequest) returns (GetPaymentResponse);
+    rpc GetAllPayments(GetAllPaymentsRequest) returns (GetAllPaymentsResponse);
 }
 
 message GetHeldAmountRequest {
@@ -46,4 +48,24 @@ message GetAllPaystubsRequest {}
 
 message GetAllPaystubsResponse {
     repeated GetHeldAmountResponse paystub = 1;
+}
+
+message GetPaymentRequest {
+    google.protobuf.Timestamp period = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+}
+
+message GetPaymentResponse {
+    bytes node_id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    google.protobuf.Timestamp created_at = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp period = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    int64 amount = 4;
+    string receipt = 5;
+    string notes = 6;
+    int64 id = 7;
+}
+
+message GetAllPaymentsRequest {}
+
+message GetAllPaymentsResponse {
+    repeated GetPaymentResponse payment = 1;
 }

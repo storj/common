@@ -1635,6 +1635,110 @@
                 "is_repeated": true
               }
             ]
+          },
+          {
+            "name": "GetPaymentRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "period",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "GetPaymentResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "node_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "NodeID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "created_at",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "name": "period",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 4,
+                "name": "amount",
+                "type": "int64"
+              },
+              {
+                "id": 5,
+                "name": "receipt",
+                "type": "string"
+              },
+              {
+                "id": 6,
+                "name": "notes",
+                "type": "string"
+              },
+              {
+                "id": 7,
+                "name": "id",
+                "type": "int64"
+              }
+            ]
+          },
+          {
+            "name": "GetAllPaymentsRequest"
+          },
+          {
+            "name": "GetAllPaymentsResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "payment",
+                "type": "GetPaymentResponse",
+                "is_repeated": true
+              }
+            ]
           }
         ],
         "services": [
@@ -1650,6 +1754,16 @@
                 "name": "GetAllPaystubs",
                 "in_type": "GetAllPaystubsRequest",
                 "out_type": "GetAllPaystubsResponse"
+              },
+              {
+                "name": "GetPayment",
+                "in_type": "GetPaymentRequest",
+                "out_type": "GetPaymentResponse"
+              },
+              {
+                "name": "GetAllPayments",
+                "in_type": "GetAllPaymentsRequest",
+                "out_type": "GetAllPaymentsResponse"
               }
             ]
           }
