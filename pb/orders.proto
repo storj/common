@@ -144,6 +144,7 @@ message PieceHashSigning {
 
 service Orders {
     rpc Settlement(stream SettlementRequest) returns (stream SettlementResponse) {}
+    rpc SettlementWithWindow(stream SettlementRequest) returns (SettlementWithWindowResponse) {}
 }
 
 // Expected order of messages from storagenode:
@@ -165,4 +166,26 @@ message SettlementResponse {
 
     bytes  serial_number = 1 [(gogoproto.customtype) = "SerialNumber", (gogoproto.nullable) = false];
     Status status = 2;
+}
+
+message SettlementWithWindowResponse {
+    enum Status {
+        INVALID  = 0;
+        ACCEPTED = 1;
+        REJECTED = 2;
+    }
+    Status status = 2;
+
+    enum Error {
+        UNKNOWN                      = 100;
+        INVALID_EXPIRED              = 102;
+        INVALID_SIGNATURE_SATELLITE  = 103;
+        INVALID_SIGNATURE_UPLINK     = 104;
+        INVALID_SERIALNUM_MISMATCH   = 105;
+        NO_ORDERS                    = 106;
+        MANY_STORAGENODE_IDS         = 107;
+        MANY_WINDOWS                 = 108;
+        PROCESSING_ORDERS            = 109;
+    }
+    Error error = 100;
 }
