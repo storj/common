@@ -4,14 +4,17 @@
 package debug
 
 import (
+	"fmt"
+
 	"github.com/spacemonkeygo/monkit/v3"
-	"google.golang.org/grpc/status"
+
+	"storj.io/drpc/drpcerr"
 )
 
 func init() {
 	monkit.AddErrorNameHandler(func(err error) (string, bool) {
-		if s, ok := status.FromError(err); ok {
-			return "grpc_" + s.Code().String(), true
+		if code := drpcerr.Code(err); code != 0 {
+			return fmt.Sprintf("drpc_%d", code), true
 		}
 		return "", false
 	})
