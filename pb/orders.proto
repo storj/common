@@ -177,15 +177,15 @@ message SettlementWithWindowResponse {
     Status status = 2;
 
     enum Error {
-        UNKNOWN                      = 100;
-        INVALID_EXPIRED              = 102;
-        INVALID_SIGNATURE_SATELLITE  = 103;
-        INVALID_SIGNATURE_UPLINK     = 104;
-        INVALID_SERIALNUM_MISMATCH   = 105;
-        NO_ORDERS                    = 106;
-        MANY_STORAGENODE_IDS         = 107;
-        MANY_WINDOWS                 = 108;
-        PROCESSING_ORDERS            = 109;
+        UNKNOWN                      = 0;
+        INVALID_EXPIRED              = 1;
+        INVALID_SIGNATURE_SATELLITE  = 2;
+        INVALID_SIGNATURE_UPLINK     = 3;
+        INVALID_SERIALNUM_MISMATCH   = 4;
+        NO_ORDERS                    = 5;
+        MANY_STORAGENODE_IDS         = 6;
+        MANY_WINDOWS                 = 7;
+        PROCESSING_ORDERS            = 8;
     }
-    Error error = 100;
+    Error error = 10;
 }
