@@ -168,24 +168,18 @@ message SettlementResponse {
     Status status = 2;
 }
 
+// SettlementWithWindowResponse returns the status and the amounts
+// settled summed by piece action.
+// Accepted status means that the orders were successfully processed
+// (or they were previously processed)
+// Rejected status means that the orders were previously processed and
+// the summed settled amounts don't match
 message SettlementWithWindowResponse {
     enum Status {
-        INVALID  = 0;
-        ACCEPTED = 1;
-        REJECTED = 2;
+        ACCEPTED = 0;
+        REJECTED = 1;
     }
-    Status status = 2;
+    Status status = 1;
 
-    enum Error {
-        UNKNOWN                      = 0;
-        INVALID_EXPIRED              = 1;
-        INVALID_SIGNATURE_SATELLITE  = 2;
-        INVALID_SIGNATURE_UPLINK     = 3;
-        INVALID_SERIALNUM_MISMATCH   = 4;
-        NO_ORDERS                    = 5;
-        MANY_STORAGENODE_IDS         = 6;
-        MANY_WINDOWS                 = 7;
-        PROCESSING_ORDERS            = 8;
-    }
-    Error error = 10;
+    map<int32, int64> action_amount = 2;
 }
