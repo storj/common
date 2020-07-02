@@ -181,5 +181,5 @@ message SettlementWithWindowResponse {
     }
     Status status = 1;
 
-    map<int32, int64> action_amount = 2;
+    map<int32, int64> action_settled = 2;
 }
