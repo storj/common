@@ -40,6 +40,7 @@ func EncodeOrderLimit(ctx context.Context, limit *pb.OrderLimit) (_ []byte, err 
 		signing.OrderCreation = &limit.OrderCreation
 	}
 	signing.SatelliteAddress = limit.SatelliteAddress
+	signing.XXX_unrecognized = limit.XXX_unrecognized
 
 	return pb.Marshal(&signing)
 }
@@ -55,6 +56,7 @@ func EncodeOrder(ctx context.Context, order *pb.Order) (_ []byte, err error) {
 	signing := pb.OrderSigning{}
 	signing.SerialNumber = order.SerialNumber
 	signing.Amount = order.Amount
+	signing.XXX_unrecognized = order.XXX_unrecognized
 
 	return pb.Marshal(&signing)
 }
@@ -74,6 +76,8 @@ func EncodePieceHash(ctx context.Context, hash *pb.PieceHash) (_ []byte, err err
 	if !hash.Timestamp.IsZero() {
 		signing.Timestamp = &hash.Timestamp
 	}
+	signing.XXX_unrecognized = hash.XXX_unrecognized
+
 	return pb.Marshal(&signing)
 }
 
