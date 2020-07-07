@@ -144,6 +144,7 @@ message PieceHashSigning {
 
 service Orders {
     rpc Settlement(stream SettlementRequest) returns (stream SettlementResponse) {}
+    rpc SettlementWithWindow(stream SettlementRequest) returns (SettlementWithWindowResponse) {}
 }
 
 // Expected order of messages from storagenode:
@@ -165,4 +166,20 @@ message SettlementResponse {
 
     bytes  serial_number = 1 [(gogoproto.customtype) = "SerialNumber", (gogoproto.nullable) = false];
     Status status = 2;
+}
+
+// SettlementWithWindowResponse returns the status and the amounts
+// settled summed by piece action.
+// Accepted status means that the orders were successfully processed
+// (or they were previously processed)
+// Rejected status means that the orders were previously processed and
+// the summed settled amounts don't match
+message SettlementWithWindowResponse {
+    enum Status {
+        ACCEPTED = 0;
+        REJECTED = 1;
+    }
+    Status status = 1;
+
+    map<int32, int64> action_settled = 2;
 }

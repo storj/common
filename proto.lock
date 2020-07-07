@@ -4834,6 +4834,18 @@
                 "integer": 2
               }
             ]
+          },
+          {
+            "name": "SettlementWithWindowResponse.Status",
+            "enum_fields": [
+              {
+                "name": "ACCEPTED"
+              },
+              {
+                "name": "REJECTED",
+                "integer": 1
+              }
+            ]
           }
         ],
         "messages": [
@@ -5328,6 +5340,26 @@
                 "type": "Status"
               }
             ]
+          },
+          {
+            "name": "SettlementWithWindowResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "status",
+                "type": "Status"
+              }
+            ],
+            "maps": [
+              {
+                "key_type": "int32",
+                "field": {
+                  "id": 2,
+                  "name": "action_settled",
+                  "type": "int64"
+                }
+              }
+            ]
           }
         ],
         "services": [
@@ -5340,6 +5372,12 @@
                 "out_type": "SettlementResponse",
                 "in_streamed": true,
                 "out_streamed": true
+              },
+              {
+                "name": "SettlementWithWindow",
+                "in_type": "SettlementRequest",
+                "out_type": "SettlementWithWindowResponse",
+                "in_streamed": true
               }
             ]
           }
