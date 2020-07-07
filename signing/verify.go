@@ -19,6 +19,7 @@ type Signee interface {
 // VerifyOrderLimitSignature verifies that the signature inside order limit is valid and  belongs to the satellite.
 func VerifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb.OrderLimit) (err error) {
 	defer mon.Task()(&ctx)(&err)
+
 	bytes, err := EncodeOrderLimit(ctx, signed)
 	if err != nil {
 		return Error.Wrap(err)
@@ -30,6 +31,11 @@ func VerifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb
 // VerifyOrderSignature verifies that the signature inside order is valid and belongs to the uplink.
 func VerifyOrderSignature(ctx context.Context, uplink Signee, signed *pb.Order) (err error) {
 	defer mon.Task()(&ctx)(&err)
+
+	if len(signed.XXX_unrecognized) > 0 {
+		return Error.New("unrecognized fields are not allowed")
+	}
+
 	bytes, err := EncodeOrder(ctx, signed)
 	if err != nil {
 		return Error.Wrap(err)
@@ -41,6 +47,11 @@ func VerifyOrderSignature(ctx context.Context, uplink Signee, signed *pb.Order) 
 // VerifyUplinkOrderSignature verifies that the signature inside order is valid and belongs to the uplink.
 func VerifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.Order) (err error) {
 	defer mon.Task()(&ctx)(&err)
+
+	if len(signed.XXX_unrecognized) > 0 {
+		return Error.New("unrecognized fields are not allowed")
+	}
+
 	bytes, err := EncodeOrder(ctx, signed)
 	if err != nil {
 		return Error.Wrap(err)
@@ -52,6 +63,11 @@ func VerifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublic
 // VerifyPieceHashSignature verifies that the signature inside piece hash is valid and belongs to the signer, which is either uplink or storage node.
 func VerifyPieceHashSignature(ctx context.Context, signee Signee, signed *pb.PieceHash) (err error) {
 	defer mon.Task()(&ctx)(&err)
+
+	if len(signed.XXX_unrecognized) > 0 {
+		return Error.New("unrecognized fields are not allowed")
+	}
+
 	bytes, err := EncodePieceHash(ctx, signed)
 	if err != nil {
 		return Error.Wrap(err)
@@ -63,6 +79,10 @@ func VerifyPieceHashSignature(ctx context.Context, signee Signee, signed *pb.Pie
 // VerifyUplinkPieceHashSignature verifies that the signature inside piece hash is valid and belongs to the signer, which is either uplink or storage node.
 func VerifyUplinkPieceHashSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.PieceHash) (err error) {
 	defer mon.Task()(&ctx)(&err)
+
+	if len(signed.XXX_unrecognized) > 0 {
+		return Error.New("unrecognized fields are not allowed")
+	}
 
 	bytes, err := EncodePieceHash(ctx, signed)
 	if err != nil {

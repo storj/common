@@ -20,6 +20,9 @@ import (
 	"storj.io/common/testrand"
 )
 
+// printNewSigned, use when you need to generate a valid signature for tests.
+const printNewSigned = false
+
 func TestOrderLimitVerification(t *testing.T) {
 	ctx := testcontext.New(t)
 	defer ctx.Cleanup()
@@ -58,11 +61,30 @@ func TestOrderLimitVerification(t *testing.T) {
 			Unsigned: "0a1052fdfc072182654f163f5f0f9a621d7212200ed28abb2813e184a1e98b0f6605c4911ea468c7e8433eb583e0fca7ceac300022209566c74d10037c4d7bbb0407d1e2c64981855ad8681d0d86d1e91e00167939002a206694d2c422acd208a0072939487f6999eb9d18a44784045d87f3c67cf22746e930904e38024a0c0899eea2e9051090b98af6025a1f121d68747470733a2f2f736174656c6c6974652e6578616d706c652e636f6d6a20fd302f9f1acd1f90f5b59d8fb5d5b2d8d3d62210d4efa8647bb7a177ece96dcc",
 			Signed:   "0a1052fdfc072182654f163f5f0f9a621d7212200ed28abb2813e184a1e98b0f6605c4911ea468c7e8433eb583e0fca7ceac300022209566c74d10037c4d7bbb0407d1e2c64981855ad8681d0d86d1e91e00167939002a206694d2c422acd208a0072939487f6999eb9d18a44784045d87f3c67cf22746e930904e3802420b088092b8c398feffffff014a0c0899eea2e9051090b98af602524630440220751ae9aa91e78cf5fc858419675cb1148886acfd313c4126870d86c938675e2002206bf29b5efe3752a348446d54d3f10273bc1d582b54cbc2341db7e11508e522085a1f121d68747470733a2f2f736174656c6c6974652e6578616d706c652e636f6d620b088092b8c398feffffff016a20fd302f9f1acd1f90f5b59d8fb5d5b2d8d3d62210d4efa8647bb7a177ece96dcc",
 		},
+		{ // future compatibility, "c03e01" at the end is an extra field
+			Unsigned: "0a1052fdfc072182654f163f5f0f9a621d7212200ed28abb2813e184a1e98b0f6605c4911ea468c7e8433eb583e0fca7ceac300022209566c74d10037c4d7bbb0407d1e2c64981855ad8681d0d86d1e91e00167939002a206694d2c422acd208a0072939487f6999eb9d18a44784045d87f3c67cf22746e930904e38024a0c0899eea2e9051090b98af6025a1f121d68747470733a2f2f736174656c6c6974652e6578616d706c652e636f6d6a20fd302f9f1acd1f90f5b59d8fb5d5b2d8d3d62210d4efa8647bb7a177ece96dccc03e01",
+			Signed:   "0a1052fdfc072182654f163f5f0f9a621d7212200ed28abb2813e184a1e98b0f6605c4911ea468c7e8433eb583e0fca7ceac300022209566c74d10037c4d7bbb0407d1e2c64981855ad8681d0d86d1e91e00167939002a206694d2c422acd208a0072939487f6999eb9d18a44784045d87f3c67cf22746e930904e3802420b088092b8c398feffffff014a0c0899eea2e9051090b98af60252483046022100cf538a3f81f9030786bfd6d810be8b5a3c50efdfbe79ca1ce720b0a9d1359625022100e3841b64fbff97cfa8e13d9044a9b6d059b5d0914abbd1f5c792d66a5b6a50fd5a1f121d68747470733a2f2f736174656c6c6974652e6578616d706c652e636f6d620b088092b8c398feffffff016a20fd302f9f1acd1f90f5b59d8fb5d5b2d8d3d62210d4efa8647bb7a177ece96dccc03e01",
+		},
 	}
 
 	for _, test := range hexes {
 		unsignedBytes, err := hex.DecodeString(test.Unsigned)
 		require.NoError(t, err)
+
+		if printNewSigned {
+			orderLimit := pb.OrderLimit{}
+			err = pb.Unmarshal(unsignedBytes, &orderLimit)
+			require.NoError(t, err)
+
+			signed, err := signing.SignOrderLimit(ctx, signee, &orderLimit)
+			require.NoError(t, err)
+
+			signedBytes, err := pb.Marshal(signed)
+			require.NoError(t, err)
+
+			t.Log(hex.EncodeToString(signedBytes))
+		}
+
 		signedBytes, err := hex.DecodeString(test.Signed)
 		require.NoError(t, err)
 
@@ -97,7 +119,7 @@ func TestOrderVerification(t *testing.T) {
 	}
 
 	hexes := []Hex{
-		{ // commmit 385c0467
+		{ // commit 385c0467
 			Unsigned: "0a1068d2d6c52f5054e2d0836bf84c7174cb10e807",
 			Signed:   "0a1068d2d6c52f5054e2d0836bf84c7174cb10e8071a473045022007800e9843f6ac56ae0a136406b8c685c552c7280e45761492ab521e1a27a984022100a535e3d9de1ba7778148186b319bd2857d8e2a7037a75db99b8c62eb18ed7646",
 		},
@@ -106,6 +128,7 @@ func TestOrderVerification(t *testing.T) {
 	for _, test := range hexes {
 		unsignedBytes, err := hex.DecodeString(test.Unsigned)
 		require.NoError(t, err)
+
 		signedBytes, err := hex.DecodeString(test.Signed)
 		require.NoError(t, err)
 
@@ -121,6 +144,7 @@ func TestOrderVerification(t *testing.T) {
 		assert.Equal(t, unsignedBytes, encoded)
 	}
 }
+
 func TestUplinkOrderVerification(t *testing.T) {
 	ctx := testcontext.New(t)
 	defer ctx.Cleanup()
@@ -137,6 +161,7 @@ func TestUplinkOrderVerification(t *testing.T) {
 	type Hex struct {
 		Unsigned string
 		Signed   string
+		Invalid  bool
 	}
 
 	hexes := []Hex{
@@ -144,11 +169,31 @@ func TestUplinkOrderVerification(t *testing.T) {
 			Unsigned: "0a1052fdfc072182654f163f5f0f9a621d7210e807",
 			Signed:   "0a1052fdfc072182654f163f5f0f9a621d7210e8071a4017871739c3d458737bf24bf214a7387552b18ad75afc3636974cb0d768901a85446954d59a291dde7fde0c648a242863891f543121d4633778c5b6057e62e607",
 		},
+		{ // future compatibility, "c03e01" at the end is an extra field
+			Unsigned: "0a1052fdfc072182654f163f5f0f9a621d7210e807c03e01",
+			Signed:   "0a1052fdfc072182654f163f5f0f9a621d7210e8071a40d684bccfb6494e9228cd564241183956af36af6c0ce0f49ec115bb15deaf1300f01cbbe6b3894a0b37e0c5fdd28c973d33579b0209650aa0eb80431bfd164f0dc03e01",
+			Invalid:  true,
+		},
 	}
 
 	for _, test := range hexes {
 		unsignedBytes, err := hex.DecodeString(test.Unsigned)
 		require.NoError(t, err)
+
+		if printNewSigned {
+			order := pb.Order{}
+			err = pb.Unmarshal(unsignedBytes, &order)
+			require.NoError(t, err)
+
+			signed, err := signing.SignUplinkOrder(ctx, privateKey, &order)
+			require.NoError(t, err)
+
+			signedBytes, err := pb.Marshal(signed)
+			require.NoError(t, err)
+
+			t.Log(hex.EncodeToString(signedBytes))
+		}
+
 		signedBytes, err := hex.DecodeString(test.Signed)
 		require.NoError(t, err)
 
@@ -157,7 +202,11 @@ func TestUplinkOrderVerification(t *testing.T) {
 		require.NoError(t, err)
 
 		err = signing.VerifyUplinkOrderSignature(ctx, publicKey, &order)
-		assert.NoError(t, err)
+		if test.Invalid {
+			assert.Error(t, err)
+		} else {
+			assert.NoError(t, err)
+		}
 
 		encoded, err := signing.EncodeOrder(ctx, &order)
 		require.NoError(t, err)
@@ -181,6 +230,7 @@ func TestPieceHashVerification(t *testing.T) {
 	type Hex struct {
 		Unsigned string
 		Signed   string
+		Invalid  bool
 	}
 
 	hexes := []Hex{
@@ -188,11 +238,31 @@ func TestPieceHashVerification(t *testing.T) {
 			Unsigned: "0a2052fdfc072182654f163f5f0f9a621d729566c74d10037c4d7bbb0407d1e2c649122081855ad8681d0d86d1e91e00167939cb6694d2c422acd208a0072939487f699920e8072a0c08ba92a3e90510c89afe8202",
 			Signed:   "0a2052fdfc072182654f163f5f0f9a621d729566c74d10037c4d7bbb0407d1e2c649122081855ad8681d0d86d1e91e00167939cb6694d2c422acd208a0072939487f69991a40757ff5203925e02c246babdd91c9321265a158d19c99258493fe5cb6482d4bbbb97dea35227ba7b693a3c878e47d8392fc78388e225b541b98c799be7fce3c0720e8072a0c08ba92a3e90510c89afe8202",
 		},
+		{ // future compatibility, "c03e01" at the end is an extra field
+			Unsigned: "0a2052fdfc072182654f163f5f0f9a621d729566c74d10037c4d7bbb0407d1e2c649122081855ad8681d0d86d1e91e00167939cb6694d2c422acd208a0072939487f699920e8072a0c08ba92a3e90510c89afe8202c03e01",
+			Signed:   "0a2052fdfc072182654f163f5f0f9a621d729566c74d10037c4d7bbb0407d1e2c649122081855ad8681d0d86d1e91e00167939cb6694d2c422acd208a0072939487f69991a40e624c2fb12d7d3aa9869ba14a6f0c9fe0edefa046eada2126d61d6d3915515fcfe47763fb9a29575997949d2b824e079bc91d88d56a89b963381cf176d00500e20e8072a0c08ba92a3e90510c89afe8202c03e01",
+			Invalid:  true,
+		},
 	}
 
 	for _, test := range hexes {
 		unsignedBytes, err := hex.DecodeString(test.Unsigned)
 		require.NoError(t, err)
+
+		if printNewSigned {
+			hash := pb.PieceHash{}
+			err = pb.Unmarshal(unsignedBytes, &hash)
+			require.NoError(t, err)
+
+			signed, err := signing.SignUplinkPieceHash(ctx, privateKey, &hash)
+			require.NoError(t, err)
+
+			signedBytes, err := pb.Marshal(signed)
+			require.NoError(t, err)
+
+			t.Log(hex.EncodeToString(signedBytes))
+		}
+
 		signedBytes, err := hex.DecodeString(test.Signed)
 		require.NoError(t, err)
 
@@ -201,7 +271,11 @@ func TestPieceHashVerification(t *testing.T) {
 		require.NoError(t, err)
 
 		err = signing.VerifyUplinkPieceHashSignature(ctx, publicKey, &hash)
-		assert.NoError(t, err)
+		if test.Invalid {
+			assert.Error(t, err)
+		} else {
+			assert.NoError(t, err)
+		}
 
 		encoded, err := signing.EncodePieceHash(ctx, &hash)
 		require.NoError(t, err)
