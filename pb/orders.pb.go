@@ -4,13 +4,14 @@
 package pb
 
 import (
-	_ "."
 	context "context"
 	fmt "fmt"
-	proto "github.com/gogo/protobuf/proto"
 	math "math"
-	drpc "storj.io/drpc"
 	time "time"
+
+	proto "github.com/gogo/protobuf/proto"
+
+	drpc "storj.io/drpc"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
