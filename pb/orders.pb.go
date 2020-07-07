@@ -807,6 +807,8 @@ var fileDescriptor_e0f5d4cf0fc9e41b = []byte{
 	0xff, 0xff, 0xad, 0xc5, 0xa0, 0x0a, 0xad, 0x0c, 0x00, 0x00,
 }
 
+// --- DRPC BEGIN ---
+
 type DRPCOrdersClient interface {
 	DRPCConn() drpc.Conn
 
@@ -898,7 +900,7 @@ type DRPCOrdersDescription struct{}
 
 func (DRPCOrdersDescription) NumMethods() int { return 2 }
 
-func (DRPCOrdersDescription) Method(n int) (string, drpc.Handler, interface{}, bool) {
+func (DRPCOrdersDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
 		return "/orders.Orders/Settlement",
@@ -921,8 +923,8 @@ func (DRPCOrdersDescription) Method(n int) (string, drpc.Handler, interface{}, b
 	}
 }
 
-func DRPCRegisterOrders(srv drpc.Server, impl DRPCOrdersServer) {
-	srv.Register(impl, DRPCOrdersDescription{})
+func DRPCRegisterOrders(mux drpc.Mux, impl DRPCOrdersServer) error {
+	return mux.Register(impl, DRPCOrdersDescription{})
 }
 
 type DRPCOrders_SettlementStream interface {
@@ -971,3 +973,5 @@ func (x *drpcOrdersSettlementWithWindowStream) Recv() (*SettlementRequest, error
 	}
 	return m, nil
 }
+
+// --- DRPC END ---
