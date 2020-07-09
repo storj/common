@@ -40,7 +40,7 @@ var (
 	}
 )
 
-// BindOpt is an option for the Bind method
+// BindOpt is an option for the Bind method.
 type BindOpt struct {
 	isDev   *bool
 	isSetup *bool
@@ -73,7 +73,7 @@ func SetupMode() BindOpt {
 // UseDevDefaults forces the bind call to use development defaults unless
 // UseReleaseDefaults is provided as a subsequent option.
 // Without either, Bind will default to determining which defaults to use
-// based on version.Build.Release
+// based on version.Build.Release.
 func UseDevDefaults() BindOpt {
 	dev := true
 	return BindOpt{isDev: &dev}
@@ -82,7 +82,7 @@ func UseDevDefaults() BindOpt {
 // UseReleaseDefaults forces the bind call to use release defaults unless
 // UseDevDefaults is provided as a subsequent option.
 // Without either, Bind will default to determining which defaults to use
-// based on version.Build.Release
+// based on version.Build.Release.
 func UseReleaseDefaults() BindOpt {
 	dev := false
 	return BindOpt{isDev: &dev}
@@ -367,22 +367,22 @@ func expand(vars map[string]string, val string) string {
 	return os.Expand(val, func(key string) string { return vars[key] })
 }
 
-// FindConfigDirParam returns '--config-dir' param from os.Args (if exists)
+// FindConfigDirParam returns '--config-dir' param from os.Args (if exists).
 func FindConfigDirParam() string {
 	return FindFlagEarly("config-dir")
 }
 
-// FindIdentityDirParam returns '--identity-dir' param from os.Args (if exists)
+// FindIdentityDirParam returns '--identity-dir' param from os.Args (if exists).
 func FindIdentityDirParam() string {
 	return FindFlagEarly("identity-dir")
 }
 
-// FindDefaultsParam returns '--defaults' param from os.Args (if it exists)
+// FindDefaultsParam returns '--defaults' param from os.Args (if it exists).
 func FindDefaultsParam() string {
 	return FindFlagEarly("defaults")
 }
 
-// FindFlagEarly retrieves the value of a flag before `flag.Parse` has been called
+// FindFlagEarly retrieves the value of a flag before `flag.Parse` has been called.
 func FindFlagEarly(flagName string) string {
 	// workaround to have early access to 'dir' param
 	for i, arg := range os.Args {
@@ -395,7 +395,7 @@ func FindFlagEarly(flagName string) string {
 	return ""
 }
 
-// SetupFlag sets up flags that are needed before `flag.Parse` has been called
+// SetupFlag sets up flags that are needed before `flag.Parse` has been called.
 func SetupFlag(log *zap.Logger, cmd *cobra.Command, dest *string, name, value, usage string) {
 	if foundValue := FindFlagEarly(name); foundValue != "" {
 		value = foundValue
@@ -406,7 +406,7 @@ func SetupFlag(log *zap.Logger, cmd *cobra.Command, dest *string, name, value, u
 	}
 }
 
-// DefaultsType returns the type of defaults (release/dev) this binary should use
+// DefaultsType returns the type of defaults (release/dev) this binary should use.
 func DefaultsType() string {
 	// define a flag so that the flag parsing system will be happy.
 	defaults := strings.ToLower(FindDefaultsParam())
@@ -420,7 +420,7 @@ func DefaultsType() string {
 }
 
 // DefaultsFlag sets up the defaults=dev/release flag options, which is needed
-// before `flag.Parse` has been called
+// before `flag.Parse` has been called.
 func DefaultsFlag(cmd *cobra.Command) BindOpt {
 	// define a flag so that the flag parsing system will be happy.
 	defaults := DefaultsType()

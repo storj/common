@@ -16,12 +16,12 @@ import (
 )
 
 var (
-	// TagDB tags a trace as hitting the database
+	// TagDB tags a trace as hitting the database.
 	TagDB = tracetagger.NewTagRef()
 )
 
-// CollectTraces starts storing all known tagged traces on disk, until cancel
-// is called
+// CollectTraces starts storing all known tagged traces on disk,
+// until cancel is called.
 func CollectTraces() (cancel func()) {
 	path := filepath.Join(os.TempDir(), "storj-traces", fmt.Sprint(os.Getpid()))
 	disable := TagDB.Enable()
@@ -43,12 +43,12 @@ func CollectTraces() (cancel func()) {
 	}
 }
 
-// Tag tags a trace with the given tag
+// Tag tags a trace with the given tag.
 func Tag(ctx context.Context, tag *tracetagger.TagRef) {
 	tracetagger.Tag(ctx, tag)
 }
 
-// TagScope tags all functions on an entire monkit Scope with a given tag
+// TagScope tags all functions on an entire monkit Scope with a given tag.
 func TagScope(tag *tracetagger.TagRef, scope *monkit.Scope) {
 	tracetagger.TagScope(tag, scope)
 }

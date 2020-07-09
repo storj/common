@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// FlagSet is an interface that matches *pflag.FlagSet
+// FlagSet is an interface that matches *pflag.FlagSet.
 type FlagSet interface {
 	BoolVar(p *bool, name string, value bool, usage string)
 	IntVar(p *int, name string, value int, usage string)

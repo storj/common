@@ -26,7 +26,7 @@ func init() {
 	}
 }
 
-// check if file exists, handle error correctly if it doesn't
+// fileExists checks whether file exists, handle error correctly if it doesn't.
 func fileExists(path string) bool {
 	_, err := os.Stat(path)
 	if err != nil {

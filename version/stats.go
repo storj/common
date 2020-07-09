@@ -10,7 +10,7 @@ import (
 	"github.com/spacemonkeygo/monkit/v3"
 )
 
-// Stats implements the monkit.StatSource interface
+// Stats implements the monkit.StatSource interface.
 func (info *Info) Stats(cb func(key monkit.SeriesKey, field string, val float64)) {
 	key := monkit.NewSeriesKey("version_info")
 

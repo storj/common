@@ -30,17 +30,17 @@ var (
 	VerError = errs.Class("version error")
 
 	// the following fields are set by linker flags. if any of them
-	// are set and fail to parse, the program will fail to start
+	// are set and fail to parse, the program will fail to start.
 	buildTimestamp  string // unix seconds since epoch
 	buildCommitHash string
 	buildVersion    string // semantic version format
 	buildRelease    string // true/false
 
-	// Build is a struct containing all relevant build information associated with the binary
+	// Build is a struct containing all relevant build information associated with the binary.
 	Build Info
 )
 
-// Info is the versioning information for a binary
+// Info is the versioning information for a binary.
 type Info struct {
 	// sync/atomic cache
 	commitHashCRC uint32
@@ -52,7 +52,7 @@ type Info struct {
 }
 
 // SemVer represents a semantic version.
-// TODO: replace with semver.Version
+// TODO: replace with semver.Version.
 type SemVer struct {
 	semver.Version
 }
@@ -165,7 +165,7 @@ func (sem *SemVer) Compare(version SemVer) int {
 	return sem.Version.Compare(version.Version)
 }
 
-// String converts the SemVer struct to a more easy to handle string
+// String converts the SemVer struct to a more easy to handle string.
 func (sem *SemVer) String() (version string) {
 	return fmt.Sprintf("v%d.%d.%d", sem.Major, sem.Minor, sem.Patch)
 }
@@ -184,7 +184,7 @@ func (ver *Version) SemVer() (SemVer, error) {
 	return NewSemVer(ver.Version)
 }
 
-// New creates Version_Info from a json byte array
+// New creates Version_Info from a json byte array.
 func New(data []byte) (v Info, err error) {
 	err = json.Unmarshal(data, &v)
 	return v, VerError.Wrap(err)
@@ -195,7 +195,7 @@ func (info Info) IsZero() bool {
 	return reflect.ValueOf(info).IsZero()
 }
 
-// Marshal converts the existing Version Info to any json byte array
+// Marshal converts the existing Version Info to any json byte array.
 func (info Info) Marshal() ([]byte, error) {
 	data, err := json.Marshal(info)
 	if err != nil {

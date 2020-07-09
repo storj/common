@@ -92,7 +92,7 @@ func ExecWithCustomConfig(cmd *cobra.Command, debugEnabled bool, loadConfig func
 	}
 }
 
-// Ctx returns the appropriate context.Context for ExecuteWithConfig commands
+// Ctx returns the appropriate context.Context for ExecuteWithConfig commands.
 func Ctx(cmd *cobra.Command) (context.Context, context.CancelFunc) {
 	commandMtx.Lock()
 	defer commandMtx.Unlock()
@@ -122,7 +122,7 @@ func Ctx(cmd *cobra.Command) (context.Context, context.CancelFunc) {
 	return ctx, cancel
 }
 
-// AtomicLevel returns the appropriate zap.AtomicLevel for ExecuteWithConfig commands
+// AtomicLevel returns the appropriate zap.AtomicLevel for ExecuteWithConfig commands.
 func AtomicLevel(cmd *cobra.Command) *zap.AtomicLevel {
 	commandMtx.Lock()
 	defer commandMtx.Unlock()

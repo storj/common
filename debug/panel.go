@@ -148,7 +148,7 @@ var buttonsTemplate = template.Must(template.New("").Parse(`<!DOCTYPE html>
 </body>
 </html>`))
 
-// slugify converts text to a slug
+// slugify converts text to a slug.
 func slugify(s string) string {
 	return strings.Map(func(r rune) rune {
 		switch {
@@ -164,7 +164,7 @@ func slugify(s string) string {
 	}, s)
 }
 
-// Cycle returns button group for a cycle
+// Cycle returns button group for a cycle.
 func Cycle(name string, cycle *sync2.Cycle) *ButtonGroup {
 	return &ButtonGroup{
 		Name: name,

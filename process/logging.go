@@ -57,7 +57,7 @@ func NewLoggerWithOutputPaths(outputPaths ...string) (*zap.Logger, error) {
 }
 
 // NewLoggerWithOutputPathsAndAtomicLevel is the same as NewLoggerWithOutputPaths, but overrides the log output paths
-// and returns the AtomicLevel
+// and returns the AtomicLevel.
 func NewLoggerWithOutputPathsAndAtomicLevel(outputPaths ...string) (*zap.Logger, *zap.AtomicLevel, error) {
 	levelEncoder := zapcore.CapitalLevelEncoder
 	timeKey := "T"
