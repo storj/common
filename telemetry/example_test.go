@@ -5,6 +5,7 @@ package telemetry_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -38,7 +39,7 @@ func Example() {
 				fmt.Printf("receive %s %s %s %v\n", application, instance, string(key), val)
 			},
 		))
-		if err == context.Canceled {
+		if errors.Is(err, context.Canceled) {
 			err = nil
 		}
 		return err

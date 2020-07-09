@@ -455,11 +455,11 @@ func decodeSegment(segment []byte) ([]byte, error) {
 }
 
 // validateEncodedSegment checks if:
-// * The last byte/sequence is not in {escape1, escape2, escape3}
-// * Any byte after an escape character is \x01 or \x02
-// * It does not contain any characters in {\x00, \xff, \x2f}
-// * It is non-empty
-// * It begins with a character in {\x01, \x02}
+// * The last byte/sequence is not in {escape1, escape2, escape3}.
+// * Any byte after an escape character is \x01 or \x02.
+// * It does not contain any characters in {\x00, \xff, \x2f}.
+// * It is non-empty.
+// * It begins with a character in {\x01, \x02}.
 func validateEncodedSegment(segment []byte) error {
 	switch {
 	case len(segment) == 0:

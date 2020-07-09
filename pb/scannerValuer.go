@@ -13,7 +13,7 @@ import (
 var scanError = errs.Class("Protobuf Scanner")
 var valueError = errs.Class("Protobuf Valuer")
 
-//scan automatically converts database []byte to proto.Messages
+// scan automatically converts database []byte to proto.Messages.
 func scan(msg proto.Message, value interface{}) error {
 	bytes, ok := value.([]byte)
 	if !ok {
@@ -22,7 +22,7 @@ func scan(msg proto.Message, value interface{}) error {
 	return scanError.Wrap(Unmarshal(bytes, msg))
 }
 
-//value automatically converts proto.Messages to database []byte
+// value automatically converts proto.Messages to database []byte.
 func value(msg proto.Message) (driver.Value, error) {
 	value, err := Marshal(msg)
 	return value, valueError.Wrap(err)

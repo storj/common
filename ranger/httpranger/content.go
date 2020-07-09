@@ -53,7 +53,7 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 
 	ranges, err := parseRange(rangeReq, size)
 	if err != nil {
-		if err == errNoOverlap {
+		if errors.Is(err, errNoOverlap) {
 			w.Header().Set("Content-Range", fmt.Sprintf("bytes */%d", size))
 		}
 		http.Error(w, err.Error(), http.StatusRequestedRangeNotSatisfiable)

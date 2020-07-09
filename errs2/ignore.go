@@ -14,7 +14,7 @@ import (
 // IsCanceled returns true, when the error is a cancellation.
 func IsCanceled(err error) bool {
 	return errs.IsFunc(err, func(err error) bool {
-		return err == context.Canceled ||
+		return err == context.Canceled || //nolint: goerr113
 			rpcstatus.Code(err) == rpcstatus.Canceled
 	})
 }
