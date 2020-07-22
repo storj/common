@@ -5125,6 +5125,16 @@
                 ]
               },
               {
+                "id": 14,
+                "name": "encrypted_metadata_key_id",
+                "type": "bytes"
+              },
+              {
+                "id": 15,
+                "name": "encrypted_metadata",
+                "type": "bytes"
+              },
+              {
                 "id": 10,
                 "name": "satellite_signature",
                 "type": "bytes"
@@ -5133,6 +5143,16 @@
                 "id": 11,
                 "name": "satellite_address",
                 "type": "node.NodeAddress"
+              }
+            ]
+          },
+          {
+            "name": "OrderLimitMetadata",
+            "fields": [
+              {
+                "id": 1,
+                "name": "bucket_id",
+                "type": "bytes"
               }
             ]
           },
@@ -5263,6 +5283,16 @@
                     "value": "true"
                   }
                 ]
+              },
+              {
+                "id": 14,
+                "name": "encrypted_metadata_key_id",
+                "type": "bytes"
+              },
+              {
+                "id": 15,
+                "name": "encrypted_metadata",
+                "type": "bytes"
               },
               {
                 "id": 10,

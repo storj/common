@@ -39,6 +39,10 @@ func EncodeOrderLimit(ctx context.Context, limit *pb.OrderLimit) (_ []byte, err 
 	if !limit.OrderCreation.IsZero() {
 		signing.OrderCreation = &limit.OrderCreation
 	}
+
+	signing.EncryptedMetadataKeyId = limit.EncryptedMetadataKeyId
+	signing.EncryptedMetadata = limit.EncryptedMetadata
+
 	signing.SatelliteAddress = limit.SatelliteAddress
 	signing.XXX_unrecognized = limit.XXX_unrecognized
 
