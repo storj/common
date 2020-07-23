@@ -158,7 +158,8 @@ func BucketName() string {
 // created.
 func Metadata() map[string]string {
 	const (
-		max = 2 * 1024
+		// The actual limit is 2KiB, but there are overheads to encoding and encryption.
+		max = 1 * 1024
 	)
 
 	total := rand.Intn(max)
