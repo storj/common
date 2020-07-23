@@ -33,6 +33,17 @@ const (
 	maxInstanceLength = 52
 )
 
+var (
+	hardcodedAppName string
+)
+
+// SetHardcodedApplicationName configures telemetry to use the given application
+// name, followed by -dev/-release depending on build settings, instead of
+// os.Args[0]. Disables configuration of metrics.app and metrics.app-suffix.
+func SetHardcodedApplicationName(name string) {
+	hardcodedAppName = name
+}
+
 func flagDefault(dev, release string) string {
 	if cfgstruct.DefaultsType() == "release" {
 		return release
@@ -64,10 +75,17 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 		instanceID = instanceID[:maxInstanceLength]
 	}
 
+	appName := hardcodedAppName
+	if appName != "" {
+		appName += flagDefault("-dev", "-release")
+	} else {
+		appName = *metricApp + *metricAppSuffix
+	}
+
 	for _, address := range strings.Split(*metricCollector, ",") {
 		c, err := telemetry.NewClient(log, address, telemetry.ClientOpts{
 			Interval:      *metricInterval,
-			Application:   *metricApp + *metricAppSuffix,
+			Application:   appName,
 			Instance:      instanceID,
 			Registry:      r,
 			FloatEncoding: admproto.Float32Encoding,
