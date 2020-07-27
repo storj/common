@@ -29,8 +29,7 @@ func BackgroundDialer() *net.Dialer {
 			var eg errs.Group
 			eg.Add(c.Control(func(fd uintptr) {
 				eg.Add(setLowPrioCongestionController(int(fd)))
-				eg.Add(syscall.SetsockoptByte(
-					int(fd), syscall.SOL_IP, syscall.IP_TOS, byte(dscpLE)<<2))
+				eg.Add(setLowEffortQoS(int(fd)))
 			}))
 			err := eg.Err()
 			if err != nil {

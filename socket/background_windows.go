@@ -8,3 +8,8 @@ func setLowPrioCongestionController(fd int) error {
 	// https://deploymentresearch.com/setup-low-extra-delay-background-transport-ledbat-for-configmgr/
 	return nil
 }
+
+func setLowEffortQoS(fd int) error {
+	// TODO
+	return nil
+}

@@ -14,3 +14,7 @@ const linuxLowPrioCongController = "ledbat"
 func setLowPrioCongestionController(fd int) error {
 	return syscall.SetsockoptString(fd, syscall.IPPROTO_TCP, syscall.TCP_CONGESTION, linuxLowPrioCongController)
 }
+
+func setLowEffortQoS(fd int) error {
+	return syscall.SetsockoptByte(fd, syscall.SOL_IP, syscall.IP_TOS, byte(dscpLE)<<2)
+}

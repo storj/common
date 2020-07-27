@@ -8,3 +8,5 @@
 package socket
 
 func setLowPrioCongestionController(fd int) error { return nil }
+
+func setLowEffortQoS(fd int) error { return nil }
