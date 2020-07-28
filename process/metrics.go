@@ -14,6 +14,7 @@ import (
 	"github.com/spacemonkeygo/monkit/v3/environment"
 	"github.com/zeebo/admission/v3/admproto"
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 
 	"storj.io/common/identity"
 	"storj.io/common/telemetry"
@@ -35,6 +36,7 @@ const (
 
 var (
 	hardcodedAppName string
+	clients          []*telemetry.Client
 )
 
 // SetHardcodedApplicationName configures telemetry to use the given application
@@ -93,6 +95,7 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 		if err != nil {
 			return err
 		}
+		clients = append(clients, c)
 		go c.Run(ctx)
 	}
 	return nil
@@ -123,4 +126,16 @@ func InitMetricsWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Reg
 		metricsID = strings.ReplaceAll(hostname, ".", "_")
 	}
 	return InitMetrics(ctx, log, r, metricsID)
+}
+
+// Report triggers each telemetry client to send data to its collection endpoint.
+func Report(ctx context.Context) error {
+	var group *errgroup.Group
+	for _, c := range clients {
+		c := c
+		group.Go(func() error {
+			return c.Report(ctx)
+		})
+	}
+	return group.Wait()
 }
