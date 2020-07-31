@@ -80,16 +80,16 @@ func TestBase10Size(t *testing.T) {
 		text string
 	}{
 		// basics
-		{1 * pb, "1.0 PB"},
-		{1 * eb, "1.0 EB"},
-		{1 * tb, "1.0 TB"},
-		{1 * gb, "1.0 GB"},
-		{1 * mb, "1.0 MB"},
-		{1 * kb, "1.0 KB"},
+		{1 * pb, "1.00 PB"},
+		{1 * eb, "1.00 EB"},
+		{1 * tb, "1.00 TB"},
+		{1 * gb, "1.00 GB"},
+		{1 * mb, "1.00 MB"},
+		{1 * kb, "1.00 KB"},
 		{1, "1 B"},
 		// complicated
-		{68 * tb, "68.0 TB"},
-		{256 * mb, "256.0 MB"},
+		{68 * tb, "68.00 TB"},
+		{256 * mb, "256.00 MB"},
 		{500, "500 B"},
 		{5, "5 B"},
 		{1, "1 B"},

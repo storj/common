@@ -131,17 +131,17 @@ func (size Size) Base10String() string {
 
 	switch {
 	case abs(size) >= EB*2/3:
-		return fmt.Sprintf("%.1f EB", size.EB())
+		return fmt.Sprintf("%.2f EB", size.EB())
 	case abs(size) >= PB*2/3:
-		return fmt.Sprintf("%.1f PB", size.PB())
+		return fmt.Sprintf("%.2f PB", size.PB())
 	case abs(size) >= TB*2/3:
-		return fmt.Sprintf("%.1f TB", size.TB())
+		return fmt.Sprintf("%.2f TB", size.TB())
 	case abs(size) >= GB*2/3:
-		return fmt.Sprintf("%.1f GB", size.GB())
+		return fmt.Sprintf("%.2f GB", size.GB())
 	case abs(size) >= MB*2/3:
-		return fmt.Sprintf("%.1f MB", size.MB())
+		return fmt.Sprintf("%.2f MB", size.MB())
 	case abs(size) >= KB*2/3:
-		return fmt.Sprintf("%.1f KB", size.KB())
+		return fmt.Sprintf("%.2f KB", size.KB())
 	}
 
 	return strconv.FormatInt(size.Int64(), 10) + " B"
