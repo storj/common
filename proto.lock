@@ -396,6 +396,181 @@
       }
     },
     {
+      "protopath": "pb:/:delegated_repair.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "RepairJobRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "last_job_result",
+                "type": "RepairJobResult"
+              }
+            ]
+          },
+          {
+            "name": "RepairJobResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "new_job",
+                "type": "RepairJobDefinition"
+              },
+              {
+                "id": 2,
+                "name": "come_back_in_millis",
+                "type": "int32"
+              }
+            ]
+          },
+          {
+            "name": "RepairJobDefinition",
+            "fields": [
+              {
+                "id": 1,
+                "name": "job_id",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "get_orders",
+                "type": "metainfo.AddressedOrderLimit",
+                "is_repeated": true
+              },
+              {
+                "id": 3,
+                "name": "private_key_for_get",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "put_orders",
+                "type": "metainfo.AddressedOrderLimit",
+                "is_repeated": true
+              },
+              {
+                "id": 5,
+                "name": "private_key_for_put",
+                "type": "bytes"
+              },
+              {
+                "id": 6,
+                "name": "redundancy",
+                "type": "pointerdb.RedundancyScheme"
+              },
+              {
+                "id": 7,
+                "name": "segment_size",
+                "type": "int64"
+              },
+              {
+                "id": 8,
+                "name": "desired_piece_count",
+                "type": "int32"
+              },
+              {
+                "id": 9,
+                "name": "expiration_time",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "RepairJobResult",
+            "fields": [
+              {
+                "id": 1,
+                "name": "job_id",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "irreparable_pieces_retrieved",
+                "type": "int32"
+              },
+              {
+                "id": 3,
+                "name": "reconstruct_error",
+                "type": "string"
+              },
+              {
+                "id": 4,
+                "name": "store_error",
+                "type": "string"
+              },
+              {
+                "id": 5,
+                "name": "new_pieces_stored",
+                "type": "orders.PieceHash",
+                "is_repeated": true
+              },
+              {
+                "id": 6,
+                "name": "put_orders",
+                "type": "metainfo.AddressedOrderLimit",
+                "is_repeated": true
+              },
+              {
+                "id": 7,
+                "name": "delete_piece_nums",
+                "type": "int32",
+                "is_repeated": true
+              }
+            ]
+          }
+        ],
+        "services": [
+          {
+            "name": "RepairCoordinator",
+            "rpcs": [
+              {
+                "name": "RepairJob",
+                "in_type": "RepairJobRequest",
+                "out_type": "RepairJobResponse"
+              }
+            ]
+          }
+        ],
+        "imports": [
+          {
+            "path": "gogo.proto"
+          },
+          {
+            "path": "google/protobuf/timestamp.proto"
+          },
+          {
+            "path": "metainfo.proto"
+          },
+          {
+            "path": "orders.proto"
+          },
+          {
+            "path": "pointerdb.proto"
+          }
+        ],
+        "package": {
+          "name": "delegated_repair"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
+          }
+        ]
+      }
+    },
+    {
       "protopath": "pb:/:encryption.proto",
       "def": {
         "enums": [
