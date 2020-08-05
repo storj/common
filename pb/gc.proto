@@ -1,0 +1,59 @@
+// Copyright (C) 2020 Storj Labs, Inc.
+// See LICENSE for copying information.
+
+syntax = "proto3";
+option go_package = "storj.io/common/pb";
+
+package gc;
+
+import "gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+service GarbageCollection {
+    rpc Ping(PingRequest) returns (PingResponse) {}
+    // StartSession begins a new garbage collection session
+    rpc StartSession(StartSessionRequest) returns (StartSessionResponse) {}
+    // AddPiece adds a piece ID for a specifc storage node along with a 
+    // sequence number that helps ensuring no pieces were missed
+    rpc AddPiece(AddPieceRequest) returns (AddPieceResponse) {}
+    // EndSession ends the garbage collection session indicating how many pieces
+    // should have been processed for each storage node
+    rpc EndSession(EndSessionRequest) returns (EndSessionResponse) {}
+}
+
+message PingRequest {
+}
+message PingResponse {
+}
+
+message StartSessionRequest {
+    google.protobuf.Timestamp session_id = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+}
+message StartSessionResponse {
+}
+
+message AddPieceRequest {
+    // session_id indicates which GC session this piece ID belongs to
+    google.protobuf.Timestamp session_id = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+
+    // piece is the piece_id that should be added to the bloom filter
+    bytes piece_id = 2 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+
+    // sequence_number is the ordered number assigned to this request so the worker can confirm they received all the correct pieces
+    int64  sequence_number = 3;
+
+    // storage_node_id is the id of the storage node this piece is stored on
+    bytes storage_node_id = 4 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+}
+message AddPieceResponse {
+}
+
+message EndSessionRequest {
+    // session_id indicates which session to end
+    google.protobuf.Timestamp session_id = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+
+    // node_ending_sequence is a map of storage node ID to its corresponding ending sequence number for how many pieces it should have processed
+    map<string, int64> node_ending_sequence = 2;
+}
+message EndSessionResponse {
+}
