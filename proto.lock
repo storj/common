@@ -94,6 +94,76 @@
       }
     },
     {
+      "protopath": "pb:/:audithistory.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "AuditHistory",
+            "fields": [
+              {
+                "id": 1,
+                "name": "windows",
+                "type": "AuditWindow",
+                "is_repeated": true
+              },
+              {
+                "id": 2,
+                "name": "score",
+                "type": "double"
+              }
+            ]
+          },
+          {
+            "name": "AuditWindow",
+            "fields": [
+              {
+                "id": 1,
+                "name": "window_start",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "online_count",
+                "type": "int32"
+              },
+              {
+                "id": 3,
+                "name": "total_count",
+                "type": "int32"
+              }
+            ]
+          }
+        ],
+        "imports": [
+          {
+            "path": "gogo.proto"
+          },
+          {
+            "path": "google/protobuf/timestamp.proto"
+          }
+        ],
+        "package": {
+          "name": "audithistory"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
+          }
+        ]
+      }
+    },
+    {
       "protopath": "pb:/:certificate.proto",
       "def": {
         "messages": [
