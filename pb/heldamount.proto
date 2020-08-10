@@ -25,7 +25,7 @@ message GetHeldAmountResponse {
     bytes node_id = 2 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
     google.protobuf.Timestamp created_at = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     string  codes = 4;
-    float   usage_at_rest = 5;
+    double  usage_at_rest = 5;
     int64   usage_get = 6;
     int64   usage_put = 7;
     int64   usage_get_repair = 8;

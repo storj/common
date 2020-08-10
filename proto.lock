@@ -1608,7 +1608,7 @@
               {
                 "id": 5,
                 "name": "usage_at_rest",
-                "type": "float"
+                "type": "double"
               },
               {
                 "id": 6,
