@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	// DebugAddrFlag for --debug.addr
+	// DebugAddrFlag for --debug.addr.
 	DebugAddrFlag = flag.String("debug.addr", "127.0.0.1:0", "address to listen on for debug endpoints")
 )
 

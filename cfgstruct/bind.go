@@ -25,7 +25,7 @@ const (
 	AnySource = "any"
 
 	// FlagSource is a source annotation for config values that just come from
-	// flags (i.e. are never persisted to file)
+	// flags (i.e. are never persisted to file).
 	FlagSource = "flag"
 
 	// BasicHelpAnnotationName is the name of the annotation used to indicate
