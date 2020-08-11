@@ -3210,6 +3210,42 @@
             "name": "ObjectFinishDeleteResponse"
           },
           {
+            "name": "ObjectGetIPsRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_path",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "version",
+                "type": "int32"
+              }
+            ]
+          },
+          {
+            "name": "ObjectGetIPsResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "ips",
+                "type": "bytes",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
             "name": "SatStreamID",
             "fields": [
               {
@@ -4033,6 +4069,11 @@
                 "type": "ObjectFinishDeleteRequest"
               },
               {
+                "id": 20,
+                "name": "object_get_ips",
+                "type": "ObjectGetIPsRequest"
+              },
+              {
                 "id": 12,
                 "name": "segment_begin",
                 "type": "SegmentBeginRequest"
@@ -4137,6 +4178,11 @@
                 "id": 11,
                 "name": "object_finish_delete",
                 "type": "ObjectFinishDeleteResponse"
+              },
+              {
+                "id": 20,
+                "name": "object_get_ips",
+                "type": "ObjectGetIPsResponse"
               },
               {
                 "id": 12,
@@ -4252,6 +4298,11 @@
                 "name": "FinishDeleteObject",
                 "in_type": "ObjectFinishDeleteRequest",
                 "out_type": "ObjectFinishDeleteResponse"
+              },
+              {
+                "name": "GetObjectIPs",
+                "in_type": "ObjectGetIPsRequest",
+                "out_type": "ObjectGetIPsResponse"
               },
               {
                 "name": "BeginSegment",
