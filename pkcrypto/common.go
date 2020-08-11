@@ -18,9 +18,9 @@ const (
 	// BlockLabelPublicKey is the value to define a block label of general public key
 	// (used for PKIX-encoded public keys of type RSA, ECDSA, and others).
 	BlockLabelPublicKey = "PUBLIC KEY"
-	// BlockLabelCertificate is the value to define a block label of certificates
+	// BlockLabelCertificate is the value to define a block label of certificates.
 	BlockLabelCertificate = "CERTIFICATE"
-	// BlockLabelExtension is the value to define a block label of certificate extensions
+	// BlockLabelExtension is the value to define a block label of certificate extensions.
 	BlockLabelExtension = "EXTENSION"
 )
 
@@ -33,6 +33,6 @@ var (
 	ErrSign = errs.Class("unable to generate signature")
 	// ErrVerifySignature is used when a signature verification error occurs.
 	ErrVerifySignature = errs.Class("signature verification error")
-	// ErrChainLength is used when the length of a cert chain isn't what was expected
+	// ErrChainLength is used when the length of a cert chain isn't what was expected.
 	ErrChainLength = errs.Class("cert chain length error")
 )

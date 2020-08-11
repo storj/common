@@ -11,6 +11,6 @@ import (
 var (
 	mon = monkit.Package()
 
-	// Error is a pkg/identity error
+	// Error is a identity error.
 	Error = errs.Class("identity error")
 )

@@ -11,7 +11,7 @@ const (
 	TraceID = "trace-id"
 	// ParentID is the key we use to store parent's span id value into context.
 	ParentID = "parent-id"
-	// Sampled is the key we use to store sampled flag into context
+	// Sampled is the key we use to store sampled flag into context.
 	Sampled = "sampled"
 )
 

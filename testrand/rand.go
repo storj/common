@@ -185,7 +185,7 @@ const (
 	numbers    = "0123456789"
 	safepath   = "-_."
 	unsafepath = "[]()^ #%&!@:+={}'~"
-	// things that are non-printable and isn't special for path component encoding
+	// things that are non-printable and isn't special for path component encoding.
 	nonprintable = "\x03\xfd\xf0\x2d\x30"
 )
 

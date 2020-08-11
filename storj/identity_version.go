@@ -22,7 +22,7 @@ const (
 )
 
 var (
-	// IDVersions is a map of all identity versions
+	// IDVersions is a map of all identity versions.
 	IDVersions = map[IDVersionNumber]IDVersion{
 		V0: {
 			Number:        V0,

@@ -17,9 +17,9 @@ import (
 )
 
 const (
-	// LeafIndex is the index of the leaf certificate in a cert chain (0)
+	// LeafIndex is the index of the leaf certificate in a cert chain (0).
 	LeafIndex = iota
-	// CAIndex is the index of the CA certificate in a cert chain (1)
+	// CAIndex is the index of the CA certificate in a cert chain (1).
 	CAIndex
 )
 

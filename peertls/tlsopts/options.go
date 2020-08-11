@@ -20,7 +20,7 @@ import (
 
 var (
 	mon = monkit.Package()
-	// Error is error for tlsopts
+	// Error is error for tlsopts.
 	Error = errs.Class("tlsopts error")
 )
 

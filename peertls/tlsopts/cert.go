@@ -4,7 +4,7 @@
 package tlsopts
 
 const (
-	// DefaultPeerCAWhitelist includes the production Storj network CAs
+	// DefaultPeerCAWhitelist includes the production Storj network CAs.
 	DefaultPeerCAWhitelist = `-----BEGIN CERTIFICATE-----
 MIIBWzCCAQGgAwIBAgIRAK7f/E+PDEvB/TrUSaHxOEYwCgYIKoZIzj0EAwIwEDEO
 MAwGA1UEChMFU3RvcmowIhgPMDAwMTAxMDEwMDAwMDBaGA8wMDAxMDEwMTAwMDAw

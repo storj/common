@@ -19,8 +19,8 @@ var (
 		storj.V0: pregeneratedV0Identities,
 	}
 
-	// SignedIdentityVersions holds pregenerated, signed identities for each.
-	// identity version
+	// SignedIdentityVersions holds pregenerated, signed identities for each
+	// identity version.
 	SignedIdentityVersions = VersionedIdentitiesMap{
 		storj.V0: pregeneratedV0SignedIdentities,
 	}

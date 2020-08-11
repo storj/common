@@ -37,7 +37,7 @@ type Cycle struct {
 }
 
 type (
-	// cycle control messages
+	// cycle control messages.
 	cyclePause          struct{}
 	cycleContinue       struct{}
 	cycleChangeInterval struct{ Interval time.Duration }
