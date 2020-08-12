@@ -2555,6 +2555,11 @@
                 "id": 1,
                 "name": "name",
                 "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "delete_all",
+                "type": "bool"
               }
             ]
           },
@@ -2565,6 +2570,11 @@
                 "id": 1,
                 "name": "bucket",
                 "type": "Bucket"
+              },
+              {
+                "id": 2,
+                "name": "deleted_objects_count",
+                "type": "int64"
               }
             ]
           },
