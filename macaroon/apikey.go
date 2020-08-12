@@ -45,11 +45,11 @@ const (
 
 	// ActionRead specifies a read operation.
 	ActionRead ActionType = 1
-	// ActionWrite specifies a read operation.
+	// ActionWrite specifies a write operation.
 	ActionWrite ActionType = 2
-	// ActionList specifies a read operation.
+	// ActionList specifies a list operation.
 	ActionList ActionType = 3
-	// ActionDelete specifies a read operation.
+	// ActionDelete specifies a delete operation.
 	ActionDelete ActionType = 4
 	// ActionProjectInfo requests project-level information.
 	ActionProjectInfo ActionType = 5
