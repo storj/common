@@ -104,6 +104,9 @@ func (ctx *Context) CompileC(t *testing.T, opts CompileCOptions) string {
 	var args = []string{}
 	if !opts.NoWarn {
 		args = append(args, "-Wall")
+		args = append(args, "-Wextra")
+		args = append(args, "-Wpedantic")
+		args = append(args, "-Werror")
 	}
 	args = append(args, "-ggdb")
 	args = append(args, "-o", exe)
