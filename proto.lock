@@ -4749,6 +4749,26 @@
                     "value": "false"
                   }
                 ]
+              },
+              {
+                "id": 6,
+                "name": "offline_suspended",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "id": 7,
+                "name": "online_score",
+                "type": "double"
               }
             ]
           },
