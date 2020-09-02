@@ -4769,6 +4769,21 @@
                 "id": 7,
                 "name": "online_score",
                 "type": "double"
+              },
+              {
+                "id": 8,
+                "name": "offline_under_review",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "true"
+                  }
+                ]
               }
             ]
           },

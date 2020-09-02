@@ -36,6 +36,7 @@ message GetStatsResponse {
     google.protobuf.Timestamp joined_at = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     google.protobuf.Timestamp offline_suspended = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
     double online_score = 7;
+    google.protobuf.Timestamp offline_under_review = 8 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
 }
 
 message DailyStorageUsageRequest {
