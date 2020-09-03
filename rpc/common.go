@@ -23,7 +23,7 @@ const (
 var mon = monkit.Package()
 
 // Error wraps all of the errors returned by this package.
-var Error = errs.Class("rpccompat")
+var Error = errs.Class("rpc")
 
 // timedConn wraps a net.Conn so that all reads and writes get the specified timeout and
 // return bytes no faster than the rate. If the timeout or rate are zero, they are
