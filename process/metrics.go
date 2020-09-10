@@ -130,7 +130,7 @@ func InitMetricsWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Reg
 
 // Report triggers each telemetry client to send data to its collection endpoint.
 func Report(ctx context.Context) error {
-	var group *errgroup.Group
+	var group errgroup.Group
 	for _, c := range clients {
 		c := c
 		group.Go(func() error {
