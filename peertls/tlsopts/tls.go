@@ -12,6 +12,9 @@ import (
 	"storj.io/common/storj"
 )
 
+// StorjApplicationProtocol defines storj's application protocol.
+const StorjApplicationProtocol = "storj"
+
 // ServerTLSConfig returns a TSLConfig for use as a server in handshaking with a peer.
 func (opts *Options) ServerTLSConfig() *tls.Config {
 	return opts.tlsConfig(true)
@@ -42,6 +45,7 @@ func (opts *Options) tlsConfig(isServer bool, verificationFuncs ...peertls.PeerC
 			verificationFuncs,
 			opts.VerificationFuncs.server...,
 		)
+
 	case false:
 		verificationFuncs = append(
 			verificationFuncs,
