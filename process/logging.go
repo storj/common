@@ -32,8 +32,12 @@ var (
 	logDev      = flag.Bool("log.development", isDev(), "if true, set logging to development mode")
 	logCaller   = flag.Bool("log.caller", isDev(), "if true, log function filename and line number")
 	logStack    = flag.Bool("log.stack", isDev(), "if true, log stack traces")
-	logEncoding = flag.String("log.encoding", "console", "configures log encoding. can either be 'console', 'json', or 'pretty'")
+	logEncoding = flag.String("log.encoding", "", "configures log encoding. can either be 'console', 'json', or 'pretty'.")
 	logOutput   = flag.String("log.output", "stderr", "can be stdout, stderr, or a filename")
+
+	defaultLogEncoding = map[string]string{
+		"uplink": "pretty",
+	}
 )
 
 func init() {
@@ -57,24 +61,32 @@ func init() {
 func isDev() bool { return cfgstruct.DefaultsType() != "release" }
 
 // NewLogger creates new logger configured by the process flags.
-func NewLogger() (*zap.Logger, *zap.AtomicLevel, error) {
-	return NewLoggerWithOutputPathsAndAtomicLevel(*logOutput)
+func NewLogger(processName string) (*zap.Logger, *zap.AtomicLevel, error) {
+	return NewLoggerWithOutputPathsAndAtomicLevel(processName, *logOutput)
 }
 
 // NewLoggerWithOutputPaths is the same as NewLogger, but overrides the log output paths.
-func NewLoggerWithOutputPaths(outputPaths ...string) (*zap.Logger, error) {
-	logger, _, err := NewLoggerWithOutputPathsAndAtomicLevel(outputPaths...)
+func NewLoggerWithOutputPaths(processName string, outputPaths ...string) (*zap.Logger, error) {
+	logger, _, err := NewLoggerWithOutputPathsAndAtomicLevel(processName, outputPaths...)
 	return logger, err
 }
 
 // NewLoggerWithOutputPathsAndAtomicLevel is the same as NewLoggerWithOutputPaths, but overrides the log output paths
 // and returns the AtomicLevel.
-func NewLoggerWithOutputPathsAndAtomicLevel(outputPaths ...string) (*zap.Logger, *zap.AtomicLevel, error) {
+func NewLoggerWithOutputPathsAndAtomicLevel(processName string, outputPaths ...string) (*zap.Logger, *zap.AtomicLevel, error) {
 	levelEncoder := zapcore.CapitalLevelEncoder
 	timeKey := "T"
 	if os.Getenv("STORJ_LOG_NOTIME") != "" {
 		// using environment variable STORJ_LOG_NOTIME to avoid additional flags
 		timeKey = ""
+	}
+
+	encoding := *logEncoding
+	if encoding == "" {
+		encoding = defaultLogEncoding[processName]
+		if encoding == "" {
+			encoding = "console"
+		}
 	}
 
 	atomicLevel := zap.NewAtomicLevelAt(*logLevel)
@@ -83,7 +95,7 @@ func NewLoggerWithOutputPathsAndAtomicLevel(outputPaths ...string) (*zap.Logger,
 		Development:       *logDev,
 		DisableCaller:     !*logCaller,
 		DisableStacktrace: !*logStack,
-		Encoding:          *logEncoding,
+		Encoding:          encoding,
 		EncoderConfig: zapcore.EncoderConfig{
 			TimeKey:        timeKey,
 			LevelKey:       "L",

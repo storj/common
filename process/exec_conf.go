@@ -182,6 +182,13 @@ func LoadConfig(cmd *cobra.Command, vip *viper.Viper) error {
 
 var traceOut = flag.String("debug.trace-out", "", "If set, a path to write a process trace SVG to")
 
+func getRoot(cmd *cobra.Command) *cobra.Command {
+	if cmd.HasParent() {
+		return getRoot(cmd.Parent())
+	}
+	return cmd
+}
+
 func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.Command, vip *viper.Viper) error) {
 	for _, ccmd := range cmd.Commands() {
 		cleanup(ccmd, debugEnabled, loadConfig)
@@ -259,7 +266,7 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 			}
 		}
 
-		logger, atomicLevel, err := NewLogger()
+		logger, atomicLevel, err := NewLogger(getRoot(cmd).Use)
 		if err != nil {
 			return err
 		}
