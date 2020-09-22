@@ -5,11 +5,15 @@ package process
 
 import (
 	"flag"
+	"fmt"
 	"net/url"
 	"os"
+	"sort"
+	"strings"
 
 	"github.com/zeebo/errs"
 	"go.uber.org/zap"
+	"go.uber.org/zap/buffer"
 	"go.uber.org/zap/zapcore"
 
 	"storj.io/private/cfgstruct"
@@ -28,7 +32,7 @@ var (
 	logDev      = flag.Bool("log.development", isDev(), "if true, set logging to development mode")
 	logCaller   = flag.Bool("log.caller", isDev(), "if true, log function filename and line number")
 	logStack    = flag.Bool("log.stack", isDev(), "if true, log stack traces")
-	logEncoding = flag.String("log.encoding", "console", "configures log encoding. can either be 'console' or 'json'")
+	logEncoding = flag.String("log.encoding", "console", "configures log encoding. can either be 'console', 'json', or 'pretty'")
 	logOutput   = flag.String("log.output", "stderr", "can be stdout, stderr, or a filename")
 )
 
@@ -40,6 +44,13 @@ func init() {
 	err := zap.RegisterSink("winfile", winFileSink)
 	if err != nil {
 		panic("Unable to register winfile sink: " + err.Error())
+	}
+
+	err = zap.RegisterEncoder("pretty", func(config zapcore.EncoderConfig) (zapcore.Encoder, error) {
+		return newPrettyEncoder(config), nil
+	})
+	if err != nil {
+		panic("Unable to register pretty encoder: " + err.Error())
 	}
 }
 
@@ -91,4 +102,59 @@ func NewLoggerWithOutputPathsAndAtomicLevel(outputPaths ...string) (*zap.Logger,
 	}.Build()
 
 	return logger, &atomicLevel, err
+}
+
+type prettyEncoder struct {
+	*zapcore.MapObjectEncoder
+	config zapcore.EncoderConfig
+	pool   buffer.Pool
+}
+
+func newPrettyEncoder(config zapcore.EncoderConfig) *prettyEncoder {
+	return &prettyEncoder{
+		MapObjectEncoder: zapcore.NewMapObjectEncoder(),
+		config:           config,
+		pool:             buffer.NewPool(),
+	}
+}
+
+func (p *prettyEncoder) Clone() zapcore.Encoder {
+	rv := newPrettyEncoder(p.config)
+	for key, val := range p.MapObjectEncoder.Fields {
+		rv.MapObjectEncoder.Fields[key] = val
+	}
+	return rv
+}
+
+func sortedKeys(m map[string]interface{}) []string {
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func (p *prettyEncoder) EncodeEntry(entry zapcore.Entry, fields []zapcore.Field) (*buffer.Buffer, error) {
+	b := p.pool.Get()
+
+	fmt.Fprintf(b, "%s\t%s\t%s\n",
+		entry.Time.Format("15:04:05.000"),
+		levelDecorate(entry.Level, entry.Level.CapitalString()),
+		entry.Message)
+
+	for _, field := range fields {
+		m := zapcore.NewMapObjectEncoder()
+		field.AddTo(m)
+		for _, key := range sortedKeys(m.Fields) {
+			if key == "errorVerbose" && !*logDev {
+				continue
+			}
+			fmt.Fprintf(b, "\t%s: %s\n",
+				key,
+				strings.Replace(fmt.Sprint(m.Fields[key]), "\n", "\n\t", -1))
+		}
+	}
+
+	return b, nil
 }
