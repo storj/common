@@ -79,7 +79,7 @@ func ExecWithCustomConfig(cmd *cobra.Command, debugEnabled bool, loadConfig func
 		Annotations: map[string]string{"type": "setup"}})
 
 	exe, err := os.Executable()
-	if err == nil {
+	if err == nil && cmd.Use == "" {
 		cmd.Use = exe
 	}
 
