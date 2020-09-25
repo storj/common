@@ -4,29 +4,17 @@
 package process
 
 import (
-	"flag"
-
-	"cloud.google.com/go/profiler"
-	"github.com/zeebo/errs"
 	"go.uber.org/zap"
 )
 
-var (
-	initProfilerError = errs.Class("initializing profiler")
+var initProfiler func(log *zap.Logger) error
 
-	debugProfilerName = flag.String("debug.profilername", "", "provide the name of the peer to enable continuous cpu/mem profiling for")
-)
-
-func initProfiler(log *zap.Logger) error {
-	name := *debugProfilerName
-	if name != "" {
-		if err := profiler.Start(profiler.Config{
-			Service:        name,
-			ServiceVersion: "",
-		}); err != nil {
-			return initProfilerError.Wrap(err)
-		}
-		log.Debug("success debug profiler init")
+// SetProfiler sets the profiler for process package.
+//
+// It panics on multiple calls.
+func SetProfiler(fn func(log *zap.Logger) error) {
+	if initProfiler != nil {
+		panic("profiler already set")
 	}
-	return nil
+	initProfiler = fn
 }

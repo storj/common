@@ -340,9 +340,11 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 			}
 		}
 
-		if err = initProfiler(logger); err != nil {
-			logger.Debug("failed to init debug profiler", zap.Error(err))
-			err = nil
+		if initProfiler != nil {
+			profilerErr := initProfiler(logger)
+			if profilerErr != nil {
+				logger.Debug("failed to init debug profiler", zap.Error(profilerErr))
+			}
 		}
 
 		var workErr error
