@@ -258,3 +258,13 @@ func (n NodeIDList) Swap(i, j int) { n[i], n[j] = n[j], n[i] }
 
 // Less implements sort.Interface.Less().
 func (n NodeIDList) Less(i, j int) bool { return n[i].Less(n[j]) }
+
+// Contains tests if the node IDs contain id.
+func (n NodeIDList) Contains(id NodeID) bool {
+	for _, nid := range n {
+		if nid == id {
+			return true
+		}
+	}
+	return false
+}

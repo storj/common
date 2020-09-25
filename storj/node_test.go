@@ -169,3 +169,24 @@ func TestNewVersionedID(t *testing.T) {
 		assert.Equal(t, versionNumber, storj.IDVersionNumber(versionedNodeID[storj.NodeIDSize-1]))
 	}
 }
+
+func TestNodeIDList_Contains(t *testing.T) {
+	nodes := storj.NodeIDList{testrand.NodeID(), testrand.NodeID(), testrand.NodeID()}
+
+	for _, testcase := range []struct {
+		list     storj.NodeIDList
+		id       storj.NodeID
+		contains bool
+	}{
+		{storj.NodeIDList{}, storj.NodeID{}, false},
+		{storj.NodeIDList{}, nodes[0], false},
+		{nodes, storj.NodeID{}, false},
+		{nodes, nodes[0], true},
+		{nodes, nodes[1], true},
+		{nodes, nodes[2], true},
+		{nodes[0:1], nodes[0], true},
+		{nodes[0:1], nodes[2], false},
+	} {
+		assert.Equal(t, testcase.contains, testcase.list.Contains(testcase.id))
+	}
+}
