@@ -9,7 +9,6 @@ import (
 	"net"
 	"time"
 
-	"storj.io/common/memory"
 	"storj.io/common/peertls/tlsopts"
 	"storj.io/common/rpc/rpcpool"
 	"storj.io/common/rpc/rpctracing"
@@ -39,10 +38,6 @@ type Dialer struct {
 	// DialTimeout causes all the tcp dials to error if they take longer
 	// than it if it is non-zero.
 	DialTimeout time.Duration
-
-	// TransferRate limits all read/write operations to go slower than
-	// the size per second if it is non-zero.
-	TransferRate memory.Size
 
 	// DialLatency sleeps this amount if it is non-zero before every dial.
 	// The timeout runs while the sleep is happening.
