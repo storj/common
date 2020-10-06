@@ -804,3 +804,88 @@ func Test_sumRangesSize(t *testing.T) {
 		assert.Equal(t, tt.expectedSize, gotSize, fmt.Sprintf("%+v", tt.ranges))
 	}
 }
+
+func Test_contentType_detection(t *testing.T) {
+	for _, tt := range []struct {
+		name     string
+		expected []string
+	}{
+		{
+			name:     "file.css",
+			expected: []string{"text/css; charset=utf-8"},
+		},
+		{
+			name:     "file.gif",
+			expected: []string{"image/gif"},
+		},
+		{
+			name:     "file.htm",
+			expected: []string{"text/html; charset=utf-8"},
+		},
+		{
+			name:     "file.html",
+			expected: []string{"text/html; charset=utf-8"},
+		},
+		{
+			name:     "file.jpg",
+			expected: []string{"image/jpeg"},
+		},
+		{
+			name:     "file.jpeg",
+			expected: []string{"image/jpeg"},
+		},
+		{
+			name:     "file.js",
+			expected: []string{"application/x-javascript", "application/javascript"},
+		},
+		{
+			name:     "file.json",
+			expected: []string{"application/json"},
+		},
+		{
+			name:     "file.mjs",
+			expected: []string{"text/javascript; charset=utf-8"},
+		},
+		{
+			name:     "file.pdf",
+			expected: []string{"application/pdf"},
+		},
+		{
+			name:     "file.png",
+			expected: []string{"image/png"},
+		},
+		{
+			name:     "file.svg",
+			expected: []string{"image/svg+xml"},
+		},
+		{
+			name:     "file.wasm",
+			expected: []string{"application/wasm"},
+		},
+		{
+			name:     "file.webp",
+			expected: []string{"image/webp"},
+		},
+		{
+			name:     "file.xml",
+			expected: []string{"application/xml"},
+		},
+		{
+			name:     "file.m3u8",
+			expected: []string{"application/x-mpegURL"},
+		},
+	} {
+		req := httptest.NewRequest("", "/"+tt.name, nil)
+		writer := httptest.NewRecorder()
+		ranger := ranger.ByteRanger([]byte(""))
+
+		ServeContent(context.Background(), writer, req, tt.name, time.Now().UTC(), ranger)
+
+		assert.Equal(t, http.StatusOK, writer.Code)
+
+		result := writer.Result()
+		assert.NoError(t, result.Body.Close())
+
+		assert.Contains(t, tt.expected, result.Header.Get("Content-Type"))
+	}
+}

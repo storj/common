@@ -30,6 +30,22 @@ import (
 // work with Rangers.
 func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, name string, modtime time.Time, content ranger.Ranger) {
 	defer mon.Task()(&ctx)(nil)
+
+	// If the Content-Type is specified, use it, otherwise do the cheap
+	// heuristic using the suffix lookup.
+	ctypes, haveType := w.Header()["Content-Type"]
+
+	var ctype string
+	if !haveType {
+		ctype = mime.TypeByExtension(filepath.Ext(name))
+	} else if len(ctypes) > 0 {
+		ctype = ctypes[0]
+	}
+
+	if ctype != "" {
+		w.Header().Set("Content-Type", ctype)
+	}
+
 	setLastModified(w, modtime)
 	done, rangeReq := checkPreconditions(w, r, modtime)
 	if done {
@@ -85,43 +101,6 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 		code = http.StatusPartialContent
 		w.Header().Set("Content-Range", ra.contentRange(size))
 	case len(ranges) > 1:
-		// If Content-Type isn't set, use the file's extension to find it, but
-		// if the Content-Type is unset explicitly, do not sniff the type.
-		ctypes, haveType := w.Header()["Content-Type"]
-		var ctype string
-		if !haveType {
-			ctype = mime.TypeByExtension(filepath.Ext(name))
-			if ctype == "" {
-				// read a chunk to decide between utf-8 text and binary
-				var buf [sniffLen]byte
-				amount := content.Size()
-				if amount > sniffLen {
-					amount = sniffLen
-				}
-				// TODO: cache this somewhere so we don't have to pull it out again
-				r, err := content.Range(ctx, 0, amount)
-				if err == nil {
-					defer func() {
-						if err := r.Close(); err != nil {
-							log.Printf("Error Closing ranger: %s", err)
-						}
-					}()
-
-					n, err := io.ReadFull(r, buf[:])
-					if err != nil {
-						log.Printf("Error Reading full: %s", err)
-					}
-
-					ctype = http.DetectContentType(buf[:n])
-				}
-			}
-			if ctype != "" {
-				w.Header().Set("Content-Type", ctype)
-			}
-		} else if len(ctypes) > 0 {
-			ctype = ctypes[0]
-		}
-
 		sendSize = rangesMIMESize(ranges, ctype, size)
 		code = http.StatusPartialContent
 
@@ -445,9 +424,6 @@ func etagStrongMatch(a, b string) bool {
 func etagWeakMatch(a, b string) bool {
 	return strings.TrimPrefix(a, "W/") == strings.TrimPrefix(b, "W/")
 }
-
-// The algorithm uses at most sniffLen bytes to make its decision.
-const sniffLen = 512
 
 // httpRange specifies the byte range to be sent to the client.
 type httpRange struct {
