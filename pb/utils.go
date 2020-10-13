@@ -14,8 +14,8 @@ import (
 
 // Equal compares two Protobuf messages via serialization.
 func Equal(msg1, msg2 proto.Message) bool {
-	//reflect.DeepEqual and proto.Equal don't seem work in all cases
-	//todo:  see how slow this is compared to custom equality checks
+	// reflect.DeepEqual and proto.Equal don't seem work in all cases
+	// todo:  see how slow this is compared to custom equality checks
 	if msg1 == nil {
 		return msg2 == nil
 	}

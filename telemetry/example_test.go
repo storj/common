@@ -28,7 +28,8 @@ func Example() {
 
 	receiver, err := telemetry.Listen("127.0.0.1:0")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	// receiver

@@ -30,7 +30,7 @@ func getEditorPath() string {
 	// we could consider using https://github.com/mattn/go-isatty
 	// alongside "start" / "open" / "xdg-open"
 
-	//look for a preference in environment variables
+	// look for a preference in environment variables
 	for _, eVar := range [...]string{"EDITOR", "VISUAL", "GIT_EDITOR"} {
 		path := os.Getenv(eVar)
 		_, err := os.Stat(path)
@@ -38,7 +38,8 @@ func getEditorPath() string {
 			return path
 		}
 	}
-	//look for a preference via 'git config'
+
+	// look for a preference via 'git config'
 	git, err := exec.LookPath("git")
 	if err == nil {
 		/* #nosec G204 */ // The parameter's value is controlled
@@ -51,7 +52,8 @@ func getEditorPath() string {
 			}
 		}
 	}
-	//heck, just try a bunch of options
+
+	// heck, just try a bunch of options
 	for _, exe := range [...]string{"nvim", "vim", "vi", "emacs", "nano", "pico"} {
 		path, err := exec.LookPath(exe)
 		if err == nil {

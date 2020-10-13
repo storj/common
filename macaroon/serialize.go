@@ -32,7 +32,7 @@ func (m *Macaroon) Serialize() (data []byte) {
 	// Start data from version int
 	data = append(data, version)
 
-	// Serilize Identity
+	// Serialize Identity
 	data = serializePacket(data, packet{
 		fieldType: fieldIdentifier,
 		data:      m.head,
@@ -118,9 +118,9 @@ func ParseMacaroon(data []byte) (_ *Macaroon, err error) {
 		section = section[1:]
 		if len(section) == 0 {
 			// First party caveat.
-			//if cav.Location != "" {
-			//	return nil, errors.New("location not allowed in first party caveat")
-			//}
+			// if cav.Location != "" {
+			//     return nil, errors.New("location not allowed in first party caveat")
+			// }
 			mac.caveats = append(mac.caveats, cav)
 			continue
 		}
@@ -130,7 +130,7 @@ func ParseMacaroon(data []byte) (_ *Macaroon, err error) {
 		if section[0].fieldType != fieldVerificationID {
 			return nil, errors.New("invalid field found in caveat")
 		}
-		//cav.VerificationId = section[0].data
+		// cav.VerificationId = section[0].data
 		mac.caveats = append(mac.caveats, cav)
 	}
 	_, sig, err := parsePacket(data)
@@ -145,10 +145,10 @@ func ParseMacaroon(data []byte) (_ *Macaroon, err error) {
 	}
 	mac.tail = make([]byte, 32)
 	copy(mac.tail, sig.data)
-	//return data, nil
-	// Parse Identity
-	// Parse caveats
-	// Parse tail
+	// return data, nil
+	//    Parse Identity
+	//    Parse caveats
+	//    Parse tail
 	return &mac, nil
 }
 

@@ -140,7 +140,7 @@ func Test_checkPreconditions(t *testing.T) {
 			expectedRangeHeader: "",
 		}, {
 			name:                "Any If-Match header with GET request",
-			requestMethod:       http.MethodGet, //By default method is GET. Wrote for clarity
+			requestMethod:       http.MethodGet, // By default method is GET. Wrote for clarity
 			requestHeaderMap:    map[string]string{"If-None-Match": "*"},
 			expectedDone:        true,
 			expectedRangeHeader: "",
