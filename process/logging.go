@@ -164,7 +164,7 @@ func (p *prettyEncoder) EncodeEntry(entry zapcore.Entry, fields []zapcore.Field)
 			}
 			fmt.Fprintf(b, "\t%s: %s\n",
 				key,
-				strings.Replace(fmt.Sprint(m.Fields[key]), "\n", "\n\t", -1))
+				strings.ReplaceAll(fmt.Sprint(m.Fields[key]), "\n", "\n\t"))
 		}
 	}
 

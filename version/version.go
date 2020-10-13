@@ -58,7 +58,8 @@ type SemVer struct {
 }
 
 // OldSemVer represents a semantic version.
-// NB: this will be deprecated in favor of `SemVer`; these structs marshal to JSON differently.
+//
+// Note: use `SemVer` in newer code; these structs marshal to JSON differently.
 type OldSemVer struct {
 	Major int64 `json:"major"`
 	Minor int64 `json:"minor"`

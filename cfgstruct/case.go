@@ -9,7 +9,7 @@ import (
 )
 
 func hyphenate(val string) string {
-	return strings.Replace(val, "_", "-", -1)
+	return strings.ReplaceAll(val, "_", "-")
 }
 
 func snakeCase(val string) string {

@@ -130,7 +130,7 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 	typ := val.Type()
 	resolvedVars := make(map[string]string, len(vars))
 	{
-		structpath := strings.Replace(prefix, ".", string(filepath.Separator), -1)
+		structpath := strings.ReplaceAll(prefix, ".", string(filepath.Separator))
 		for k, v := range vars {
 			if !v.nested {
 				resolvedVars[k] = v.val
