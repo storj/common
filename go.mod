@@ -7,7 +7,6 @@ require (
 	github.com/calebcase/tmpfile v1.0.2-0.20200602150926-3af473ef8439
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.2.1
-	github.com/minio/sha256-simd v0.1.1
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/spacemonkeygo/monkit/v3 v3.0.5
 	github.com/stretchr/testify v1.3.0
