@@ -12,7 +12,6 @@ import (
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/admission/v3/admmonkit"
 	"github.com/zeebo/admission/v3/admproto"
-	"go.uber.org/zap"
 
 	"storj.io/common/sync2"
 )
@@ -65,7 +64,6 @@ type ClientOpts struct {
 // Client is a telemetry client for sending UDP packets at a regular interval
 // from a monkit.Registry.
 type Client struct {
-	log      *zap.Logger
 	interval time.Duration
 	opts     admmonkit.Options
 	send     func(context.Context, admmonkit.Options) error
@@ -77,7 +75,7 @@ type Client struct {
 
 // NewClient constructs a telemetry client that sends packets to remoteAddr
 // over UDP.
-func NewClient(log *zap.Logger, remoteAddr string, opts ClientOpts) (rv *Client, err error) {
+func NewClient(remoteAddr string, opts ClientOpts) (rv *Client, err error) {
 	if opts.Interval == 0 {
 		opts.Interval = DefaultInterval
 	}
@@ -100,7 +98,6 @@ func NewClient(log *zap.Logger, remoteAddr string, opts ClientOpts) (rv *Client,
 	}
 
 	return &Client{
-		log:      log,
 		interval: opts.Interval,
 		send:     admmonkit.Send,
 		opts: admmonkit.Options{
@@ -117,12 +114,9 @@ func NewClient(log *zap.Logger, remoteAddr string, opts ClientOpts) (rv *Client,
 
 // Run calls Report roughly every Interval.
 func (c *Client) Run(ctx context.Context) {
-	c.log.Debug("Initialized batcher", zap.ByteString("ID", c.opts.InstanceId))
-
 	c.mu.Lock()
 	if c.stopped {
 		c.mu.Unlock()
-		c.log.Error("Telemetry client Run called after already stopped")
 		return
 	}
 	ctx, c.cancel = context.WithCancel(ctx)
@@ -134,10 +128,7 @@ func (c *Client) Run(ctx context.Context) {
 			return
 		}
 
-		err := c.Report(ctx)
-		if err != nil {
-			c.log.Error("Failed sending report", zap.Error(err))
-		}
+		_ = c.Report(ctx)
 	}
 }
 

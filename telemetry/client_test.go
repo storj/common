@@ -11,7 +11,6 @@ import (
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/zeebo/admission/v3/admmonkit"
-	"go.uber.org/zap/zaptest"
 )
 
 func TestNewClient_IntervalIsZero(t *testing.T) {
@@ -19,7 +18,7 @@ func TestNewClient_IntervalIsZero(t *testing.T) {
 	assert.NoError(t, err)
 	defer func() { assert.NoError(t, s.Close()) }()
 
-	client, err := NewClient(zaptest.NewLogger(t), s.Addr(), ClientOpts{
+	client, err := NewClient(s.Addr(), ClientOpts{
 		Application: "testapp",
 		Instance:    "testinst",
 		Interval:    0,
@@ -42,7 +41,7 @@ func TestNewClient_ApplicationAndArgsAreEmpty(t *testing.T) {
 
 	os.Args = nil
 
-	client, err := NewClient(zaptest.NewLogger(t), s.Addr(), ClientOpts{
+	client, err := NewClient(s.Addr(), ClientOpts{
 		Application: "",
 		Instance:    "testinst",
 		Interval:    0,
@@ -58,7 +57,7 @@ func TestNewClient_ApplicationIsEmpty(t *testing.T) {
 	assert.NoError(t, err)
 	defer func() { assert.NoError(t, s.Close()) }()
 
-	client, err := NewClient(zaptest.NewLogger(t), s.Addr(), ClientOpts{
+	client, err := NewClient(s.Addr(), ClientOpts{
 		Application: "",
 		Instance:    "testinst",
 		Interval:    0,
@@ -74,7 +73,7 @@ func TestNewClient_InstanceIsEmpty(t *testing.T) {
 	assert.NoError(t, err)
 	defer func() { assert.NoError(t, s.Close()) }()
 
-	client, err := NewClient(zaptest.NewLogger(t), s.Addr(), ClientOpts{
+	client, err := NewClient(s.Addr(), ClientOpts{
 		Application: "qwe",
 		Instance:    "",
 		Interval:    0,
@@ -93,7 +92,7 @@ func TestNewClient_RegistryIsNil(t *testing.T) {
 	assert.NoError(t, err)
 	defer func() { assert.NoError(t, s.Close()) }()
 
-	client, err := NewClient(zaptest.NewLogger(t), s.Addr(), ClientOpts{
+	client, err := NewClient(s.Addr(), ClientOpts{
 		Application: "qwe",
 		Instance:    "",
 		Interval:    0,
@@ -112,7 +111,7 @@ func TestNewClient_PacketSizeIsZero(t *testing.T) {
 	assert.NoError(t, err)
 	defer func() { assert.NoError(t, s.Close()) }()
 
-	client, err := NewClient(zaptest.NewLogger(t), s.Addr(), ClientOpts{
+	client, err := NewClient(s.Addr(), ClientOpts{
 		Application: "qwe",
 		Instance:    "",
 		Interval:    0,
@@ -130,7 +129,7 @@ func TestNewClient_PacketSizeIsZero(t *testing.T) {
 }
 
 func TestRun_ReportNoCalled(t *testing.T) {
-	client, err := NewClient(zaptest.NewLogger(t), "127.0.0.1:0", ClientOpts{
+	client, err := NewClient("127.0.0.1:0", ClientOpts{
 		Application: "qwe",
 		Instance:    "",
 		Interval:    time.Millisecond,
