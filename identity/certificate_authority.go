@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"sync"
 	"sync/atomic"
 
@@ -115,10 +114,7 @@ func NewCA(ctx context.Context, opts NewCAOptions) (_ *FullCertificateAuthority,
 		if opts.Logger != nil {
 			count := atomic.LoadUint32(i)
 			hs := atomic.LoadUint32(highscore)
-			_, err := fmt.Fprintf(opts.Logger, "\rGenerated %d keys; best difficulty so far: %d", count, hs)
-			if err != nil {
-				log.Print(errs.Wrap(err))
-			}
+			_, _ = fmt.Fprintf(opts.Logger, "\rGenerated %d keys; best difficulty so far: %d", count, hs)
 		}
 	}
 	err = GenerateKeys(ctx, minimumLoggableDifficulty, int(opts.Concurrency), version,
@@ -144,10 +140,7 @@ func NewCA(ctx context.Context, opts NewCAOptions) (_ *FullCertificateAuthority,
 				if opts.Logger != nil {
 					atomic.SwapUint32(highscore, uint32(difficulty))
 					updateStatus()
-					_, err := fmt.Fprintf(opts.Logger, "\nFound a key with difficulty %d!\n", difficulty)
-					if err != nil {
-						log.Print(errs.Wrap(err))
-					}
+					_, _ = fmt.Fprintf(opts.Logger, "\nFound a key with difficulty %d!\n", difficulty)
 				}
 				return true, nil
 			}
