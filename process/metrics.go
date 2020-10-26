@@ -67,8 +67,6 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 		return nil
 	}
 
-	log.Info("Telemetry enabled")
-
 	if instanceID == "" {
 		instanceID = telemetry.DefaultInstanceID()
 	}
@@ -76,6 +74,8 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	if len(instanceID) > maxInstanceLength {
 		instanceID = instanceID[:maxInstanceLength]
 	}
+
+	log.Info("Telemetry enabled", zap.String("instance ID", instanceID))
 
 	appName := hardcodedAppName
 	if appName != "" {
@@ -85,7 +85,7 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	}
 
 	for _, address := range strings.Split(*metricCollector, ",") {
-		c, err := telemetry.NewClient(log, address, telemetry.ClientOpts{
+		c, err := telemetry.NewClient(address, telemetry.ClientOpts{
 			Interval:      *metricInterval,
 			Application:   appName,
 			Instance:      instanceID,
