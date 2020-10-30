@@ -3434,26 +3434,6 @@
             "name": "SatStreamID",
             "fields": [
               {
-                "id": 1,
-                "name": "bucket",
-                "type": "bytes"
-              },
-              {
-                "id": 2,
-                "name": "encrypted_path",
-                "type": "bytes"
-              },
-              {
-                "id": 3,
-                "name": "version",
-                "type": "int32"
-              },
-              {
-                "id": 4,
-                "name": "redundancy",
-                "type": "pointerdb.RedundancyScheme"
-              },
-              {
                 "id": 5,
                 "name": "creation_date",
                 "type": "google.protobuf.Timestamp",
@@ -3467,26 +3447,6 @@
                     "value": "false"
                   }
                 ]
-              },
-              {
-                "id": 6,
-                "name": "expiration_date",
-                "type": "google.protobuf.Timestamp",
-                "options": [
-                  {
-                    "name": "(gogoproto.stdtime)",
-                    "value": "true"
-                  },
-                  {
-                    "name": "(gogoproto.nullable)",
-                    "value": "false"
-                  }
-                ]
-              },
-              {
-                "id": 9,
-                "name": "satellite_signature",
-                "type": "bytes"
               }
             ]
           },
@@ -3750,67 +3710,6 @@
                 "id": 3,
                 "name": "hash",
                 "type": "orders.PieceHash"
-              }
-            ]
-          },
-          {
-            "name": "SatSegmentID",
-            "fields": [
-              {
-                "id": 1,
-                "name": "stream_id",
-                "type": "SatStreamID"
-              },
-              {
-                "id": 2,
-                "name": "part_number",
-                "type": "int32"
-              },
-              {
-                "id": 3,
-                "name": "index",
-                "type": "int32"
-              },
-              {
-                "id": 5,
-                "name": "root_piece_id",
-                "type": "bytes",
-                "options": [
-                  {
-                    "name": "(gogoproto.customtype)",
-                    "value": "PieceID"
-                  },
-                  {
-                    "name": "(gogoproto.nullable)",
-                    "value": "false"
-                  }
-                ]
-              },
-              {
-                "id": 6,
-                "name": "original_order_limits",
-                "type": "AddressedOrderLimit",
-                "is_repeated": true
-              },
-              {
-                "id": 7,
-                "name": "creation_date",
-                "type": "google.protobuf.Timestamp",
-                "options": [
-                  {
-                    "name": "(gogoproto.stdtime)",
-                    "value": "true"
-                  },
-                  {
-                    "name": "(gogoproto.nullable)",
-                    "value": "false"
-                  }
-                ]
-              },
-              {
-                "id": 8,
-                "name": "satellite_signature",
-                "type": "bytes"
               }
             ]
           },

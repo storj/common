@@ -301,18 +301,10 @@ message ObjectGetIPsResponse {
 //
 // Only for satellite use
 //
-
+// TODO this needs to be removed BUT unfortunately libuplink is using it and
+// we need to keep this for backward compatibility 
 message SatStreamID {
-    bytes  bucket = 1;
-    bytes  encrypted_path = 2;
-    int32  version = 3;
-
-    pointerdb.RedundancyScheme redundancy = 4;
-
     google.protobuf.Timestamp creation_date = 5  [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    google.protobuf.Timestamp expiration_date = 6  [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-
-    bytes satellite_signature = 9;
 }
 
 //---------------------------
@@ -374,21 +366,6 @@ message SegmentPieceUploadResult {
     int32               piece_num = 1;
     bytes               node_id = 2 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
     orders.PieceHash    hash = 3;
-}
-
-// only for satellite use
-message SatSegmentID {
-    SatStreamID stream_id = 1;
-    int32    part_number = 2;
-    int32    index = 3;
-
-    // TODO we have redundancy in SatStreamID, do we need it here?
-    // pointerdb.RedundancyScheme redundancy = 4;
-    bytes root_piece_id = 5 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
-    repeated AddressedOrderLimit original_order_limits = 6;
-    google.protobuf.Timestamp creation_date = 7  [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-
-    bytes satellite_signature = 8;
 }
 
 message SegmentCommitResponse {
