@@ -11,7 +11,6 @@ import (
 
 	"storj.io/drpc"
 	"storj.io/drpc/drpcmetadata"
-	"storj.io/drpc/drpcmux"
 )
 
 type streamWrapper struct {
@@ -21,26 +20,29 @@ type streamWrapper struct {
 
 func (s *streamWrapper) Context() context.Context { return s.ctx }
 
-type handlerFunc func(metadata map[string]string) (trace *monkit.Trace, spanID int64)
+// ExtractorFunc extracts from some metadata the trace information.
+type ExtractorFunc func(metadata map[string]string) (trace *monkit.Trace, spanID int64)
 
-func defaultHandlerFunc(metadata map[string]string) (*monkit.Trace, int64) {
+func defaultExtractorFunc(metadata map[string]string) (*monkit.Trace, int64) {
 	return monkit.NewTrace(monkit.NewId()), monkit.NewId()
 }
 
-// Handler implements drpc handler interface and takes in a callback function.
+// Handler implements drpc handler interface and takes in a callback function
+// to extract the trace information from some metadata.
 type Handler struct {
-	mux *drpcmux.Mux
-	cb  handlerFunc
+	handler drpc.Handler
+	cb      ExtractorFunc
 }
 
-// NewHandler returns a new instance of Handler.
-func NewHandler(mux *drpcmux.Mux, cb handlerFunc) *Handler {
+// NewHandler returns a new instance of Handler. If the callback is nil, a default
+// one is used.
+func NewHandler(handler drpc.Handler, cb ExtractorFunc) *Handler {
 	if cb == nil {
-		cb = defaultHandlerFunc
+		cb = defaultExtractorFunc
 	}
 	return &Handler{
-		mux: mux,
-		cb:  cb,
+		handler: handler,
+		cb:      cb,
 	}
 }
 
@@ -53,5 +55,5 @@ func (handler *Handler) HandleRPC(stream drpc.Stream, rpc string) (err error) {
 		defer mon.FuncNamed(rpc).RemoteTrace(&streamCtx, spanID, trace)(&err)
 	}
 
-	return handler.mux.HandleRPC(&streamWrapper{Stream: stream, ctx: streamCtx}, rpc)
+	return handler.handler.HandleRPC(&streamWrapper{Stream: stream, ctx: streamCtx}, rpc)
 }
