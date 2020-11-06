@@ -18,6 +18,7 @@ pipeline {
                 checkout scm
 
                 sh 'mkdir -p .build'
+                sh 'cp go.mod .build/go.mod.orig'
             }
         }
 
@@ -37,6 +38,7 @@ pipeline {
                         sh './scripts/check-dependencies.sh'
                         sh 'staticcheck ./...'
                         sh 'golangci-lint --config /go/ci/.golangci.yml -j=2 run'
+                        sh 'check-mod-tidy -mod .build/go.mod.orig'
                         sh 'go-licenses check ./...'
                     }
                 }
