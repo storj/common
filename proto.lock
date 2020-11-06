@@ -2706,6 +2706,11 @@
                     "value": "false"
                   }
                 ]
+              },
+              {
+                "id": 4,
+                "name": "redundancy_scheme",
+                "type": "pointerdb.RedundancyScheme"
               }
             ]
           },
