@@ -2763,6 +2763,11 @@
                 "type": "int64"
               },
               {
+                "id": 6,
+                "name": "plain_size",
+                "type": "int64"
+              },
+              {
                 "id": 5,
                 "name": "upload_result",
                 "type": "SegmentPieceUploadResult",
@@ -3061,6 +3066,11 @@
                 "id": 1,
                 "name": "position",
                 "type": "SegmentPosition"
+              },
+              {
+                "id": 2,
+                "name": "plain_size",
+                "type": "int64"
               }
             ]
           },
