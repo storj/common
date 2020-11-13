@@ -9,7 +9,7 @@ require (
 	github.com/lucas-clemente/quic-go v0.7.1-0.20201102053916-272229abf044
 	github.com/spacemonkeygo/monkit/v3 v3.0.7
 	github.com/stretchr/testify v1.4.0
-	github.com/zeebo/admission/v3 v3.0.1
+	github.com/zeebo/admission/v3 v3.0.2
 	github.com/zeebo/errs v1.2.2
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
