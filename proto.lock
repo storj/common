@@ -2281,6 +2281,11 @@
                 "type": "int32"
               },
               {
+                "id": 7,
+                "name": "status",
+                "type": "Object.Status"
+              },
+              {
                 "id": 6,
                 "name": "object_includes",
                 "type": "ObjectListItemIncludes"

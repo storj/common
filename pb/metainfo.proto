@@ -233,11 +233,12 @@ message ObjectGetResponse {
 message ObjectListRequest {
     RequestHeader header = 15;
 
-    bytes     bucket = 1;
-    bytes     encrypted_prefix = 2;
-    bytes     encrypted_cursor = 3;
-    bool      recursive = 4;
-    int32     limit = 5;
+    bytes  bucket           = 1;
+    bytes  encrypted_prefix = 2;
+    bytes  encrypted_cursor = 3;
+    bool   recursive        = 4;
+    int32  limit            = 5;
+    Object.Status status    = 7;
 
     ObjectListItemIncludes object_includes = 6;
 }
