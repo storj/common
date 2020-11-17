@@ -2038,6 +2038,11 @@
                 "type": "bytes"
               },
               {
+                "id": 17,
+                "name": "encrypted_metadata_encrypted_key",
+                "type": "bytes"
+              },
+              {
                 "id": 11,
                 "name": "fixed_segment_size",
                 "type": "int64"
@@ -2205,6 +2210,11 @@
               {
                 "id": 3,
                 "name": "encrypted_metadata",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "encrypted_metadata_encrypted_key",
                 "type": "bytes"
               }
             ]
