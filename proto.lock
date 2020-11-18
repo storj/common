@@ -2400,6 +2400,17 @@
                 "id": 8,
                 "name": "encrypted_metadata",
                 "type": "bytes"
+              },
+              {
+                "id": 9,
+                "name": "stream_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "StreamID"
+                  }
+                ]
               }
             ]
           },
