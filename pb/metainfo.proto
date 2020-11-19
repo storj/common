@@ -389,6 +389,7 @@ message SegmentMakeInlineRequest {
     bytes encrypted_key = 4;
 
     bytes encrypted_inline_data = 5;
+    int64 plain_size = 6;
 }
 
 message SegmentMakeInlineResponse {}

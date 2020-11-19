@@ -2893,6 +2893,11 @@
                 "id": 5,
                 "name": "encrypted_inline_data",
                 "type": "bytes"
+              },
+              {
+                "id": 6,
+                "name": "plain_size",
+                "type": "int64"
               }
             ]
           },
