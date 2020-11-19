@@ -25,6 +25,7 @@ type ListOptions struct {
 	Recursive bool
 	Direction ListDirection
 	Limit     int
+	Status    int32
 }
 
 // ObjectList is a list of objects.
