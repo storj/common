@@ -17,5 +17,6 @@ type ObjectListItem struct {
 	ExpiresAt              time.Time
 	EncryptedMetadataNonce Nonce
 	EncryptedMetadata      []byte
+	StreamID               StreamID
 	IsPrefix               bool
 }
