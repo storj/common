@@ -58,6 +58,7 @@ message OrderLimit {
 // This data will be encrypted.
 message OrderLimitMetadata {
     bytes bucket_id = 1;
+    bytes project_bucket_prefix = 2;
 }
 
 // OrderLimitSigning provides OrderLimit signing serialization.
