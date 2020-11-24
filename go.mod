@@ -3,7 +3,7 @@ module storj.io/common
 go 1.13
 
 require (
-	github.com/btcsuite/btcutil v1.0.1
+	github.com/btcsuite/btcutil v1.0.3-0.20201124182144-4031bdc69ded
 	github.com/calebcase/tmpfile v1.0.2-0.20200602150926-3af473ef8439
 	github.com/gogo/protobuf v1.2.1
 	github.com/lucas-clemente/quic-go v0.7.1-0.20201102053916-272229abf044
