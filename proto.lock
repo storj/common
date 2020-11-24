@@ -2071,6 +2071,11 @@
                 "id": 16,
                 "name": "remote_size",
                 "type": "int64"
+              },
+              {
+                "id": 18,
+                "name": "plain_size",
+                "type": "int64"
               }
             ]
           },
@@ -2400,6 +2405,11 @@
                 "id": 8,
                 "name": "encrypted_metadata",
                 "type": "bytes"
+              },
+              {
+                "id": 10,
+                "name": "plain_size",
+                "type": "int64"
               },
               {
                 "id": 9,
