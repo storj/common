@@ -308,13 +308,14 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 			logger.Debug("failed to initialize tracing collector", zap.Error(err))
 			err = nil
 		} else if collector != nil {
+			ctx, cancel := context.WithCancel(ctx)
 			var eg errgroup.Group
 			eg.Go(func() error {
 				collector.Run(ctx)
 				return nil
 			})
 			defer func() {
-				collector.Stop()
+				cancel()
 				unregister()
 				err := eg.Wait()
 				if err != nil {

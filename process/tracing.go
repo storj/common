@@ -38,12 +38,12 @@ const (
 
 // InitTracing initializes distributed tracing with an instance ID.
 func InitTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string) (*jaeger.UDPCollector, func(), error) {
-	return run(ctx, log, r, instanceID, []jaeger.Tag{})
+	return initTracing(ctx, log, r, instanceID, []jaeger.Tag{})
 }
 
 // InitTracingWithCertPath initializes distributed tracing with certificate path.
 func InitTracingWithCertPath(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (*jaeger.UDPCollector, func(), error) {
-	return run(ctx, log, r, nodeIDFromCertPath(ctx, log, certDir), []jaeger.Tag{})
+	return initTracing(ctx, log, r, nodeIDFromCertPath(ctx, log, certDir), []jaeger.Tag{})
 }
 
 // InitTracingWithHostname initializes distributed tracing with nodeID and hostname.
@@ -59,10 +59,10 @@ func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Reg
 		})
 	}
 
-	return run(ctx, log, r, nodeIDFromCertPath(ctx, log, certDir), processInfo)
+	return initTracing(ctx, log, r, nodeIDFromCertPath(ctx, log, certDir), processInfo)
 }
 
-func run(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string, processInfo []jaeger.Tag) (collector *jaeger.UDPCollector, cancel func(), err error) {
+func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string, processInfo []jaeger.Tag) (collector *jaeger.UDPCollector, cancel func(), err error) {
 	if r == nil {
 		r = monkit.Default
 	}
