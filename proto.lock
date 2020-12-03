@@ -2456,6 +2456,26 @@
                 "id": 3,
                 "name": "version",
                 "type": "int32"
+              },
+              {
+                "id": 4,
+                "name": "status",
+                "type": "int32"
+              },
+              {
+                "id": 5,
+                "name": "stream_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "StreamID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "true"
+                  }
+                ]
               }
             ]
           },

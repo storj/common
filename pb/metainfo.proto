@@ -278,6 +278,8 @@ message ObjectBeginDeleteRequest {
     bytes  bucket = 1;
     bytes  encrypted_path = 2;
     int32  version = 3;
+    int32  status = 4;
+    bytes  stream_id = 5 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = true];
 }
 
 message ObjectBeginDeleteResponse {
@@ -310,7 +312,7 @@ message ObjectGetIPsResponse {
 // Only for satellite use
 //
 // TODO this needs to be removed BUT unfortunately libuplink is using it and
-// we need to keep this for backward compatibility 
+// we need to keep this for backward compatibility
 message SatStreamID {
     google.protobuf.Timestamp creation_date = 5  [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
