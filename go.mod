@@ -6,7 +6,6 @@ require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201124182144-4031bdc69ded
 	github.com/calebcase/tmpfile v1.0.2-0.20200602150926-3af473ef8439
 	github.com/gogo/protobuf v1.2.1
-	github.com/lucas-clemente/quic-go v0.7.1-0.20201102053916-272229abf044
 	github.com/spacemonkeygo/monkit/v3 v3.0.7
 	github.com/stretchr/testify v1.4.0
 	github.com/zeebo/admission/v3 v3.0.2
