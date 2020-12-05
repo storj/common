@@ -265,23 +265,23 @@ func requireWhitespace(data []byte, from int) (next int, ok bool) {
 	return next, true
 }
 
-// tchar           = "!" / "#" / "$" / "%" / "&" / "'" / "*"
-//                 / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
-//                 / DIGIT / ALPHA
-//                 ; any VCHAR, except delimiters
+// tchar           = "!" / "#" / "$" / "%" / "&" / "'" / "*",
+//                 / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~",
+//                 / DIGIT / ALPHA,
+//                 ; any VCHAR, except delimiters.
 func istchar(b byte) bool {
-	// DIGIT / ALPHA
+	// DIGIT / ALPHA.
 	if '0' <= b && b <= '9' || 'a' <= b && b <= 'z' || 'A' <= b && b <= 'Z' {
 		return true
 	}
 
 	switch b {
-	// the set of symbols allowed
+	// the set of symbols allowed.
 	case '!', '#', '$', '%', '&', '\'', '*', '+', '-', '.', '^', '_', '`', '|', '~':
 		return true
 	}
 
-	// otherwise, just verify that it is visible
+	// otherwise, just verify that it is visible.
 	return isvchar(b) && !isdelim(b)
 }
 
