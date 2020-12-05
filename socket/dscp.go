@@ -9,7 +9,7 @@ package socket
 type dscp byte
 
 // See https://tools.ietf.org/html/rfc4594#section-2.3 for the definitions
-// of the below Differentiated Services Code Points
+// of the below Differentiated Services Code Points.
 //
 // nolint: deadcode,varcheck,unused
 const (

@@ -71,8 +71,9 @@ func (ctx *Context) CompileWithLDFlagsX(pkg string, ldFlagsX map[string]string) 
 }
 
 // CompileShared compiles pkg as c-shared.
-// TODO: support inclusion from other directories
-//  (cgo header paths are currently relative to package root)
+//
+// Note: cgo header paths are currently relative to package root.
+// TODO: support inclusion from other directories.
 func (ctx *Context) CompileShared(t *testing.T, name string, pkg string) Include {
 	t.Helper()
 

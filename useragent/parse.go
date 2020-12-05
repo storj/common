@@ -265,7 +265,7 @@ func requireWhitespace(data []byte, from int) (next int, ok bool) {
 	return next, true
 }
 
-// tchar           = "!" / "#" / "$" / "%" / "&" / "'" / "*"
+//   tchar         = "!" / "#" / "$" / "%" / "&" / "'" / "*"
 //                 / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
 //                 / DIGIT / ALPHA
 //                 ; any VCHAR, except delimiters
