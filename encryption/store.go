@@ -23,7 +23,7 @@ import (
 //    b1, u6/u7/u8    => <e6/e7/e8, k8>
 //    b2, u1          => <e1', k1'>
 //
-// then the following lookups have outputs.
+// then the following lookups have outputs:
 //
 //    b1, u1          => <{e2:u2, e5:u5}, u1, nil>
 //    b1, u1/u2/u3    => <{e4:u4}, u1/u2/u3, <u1/u2/u3, e1/e2/e3, k3>>
