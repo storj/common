@@ -72,12 +72,17 @@ func NewDefaultDialer(tlsOptions *tlsopts.Options) Dialer {
 // lived processes with more resources.
 func NewDefaultPooledDialer(tlsOptions *tlsopts.Options) Dialer {
 	dialer := NewDefaultDialer(tlsOptions)
-	dialer.Pool = rpcpool.New(rpcpool.Options{
+	dialer.Pool = NewDefaultConnectionPool()
+	return dialer
+}
+
+// NewDefaultConnectionPool returns a rpc Pool with default options set.
+func NewDefaultConnectionPool() *rpcpool.Pool {
+	return rpcpool.New(rpcpool.Options{
 		Capacity:       100,
 		KeyCapacity:    5,
 		IdleExpiration: 2 * time.Minute,
 	})
-	return dialer
 }
 
 //
