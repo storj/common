@@ -6,6 +6,7 @@ package debug
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -105,7 +106,13 @@ func (server *Server) Run(ctx context.Context) error {
 	})
 	group.Go(func() error {
 		defer cancel()
-		return Error.Wrap(server.server.Serve(server.listener))
+
+		err := server.server.Serve(server.listener)
+		if errors.Is(err, http.ErrServerClosed) {
+			err = nil
+		}
+
+		return Error.Wrap(err)
 	})
 	return group.Wait()
 }
