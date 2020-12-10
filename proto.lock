@@ -4016,6 +4016,11 @@
                     "value": "true"
                   }
                 ]
+              },
+              {
+                "id": 9,
+                "name": "audit_history",
+                "type": "AuditHistory"
               }
             ]
           },
@@ -4132,6 +4137,52 @@
                 "id": 4,
                 "name": "audit_bandwidth_price",
                 "type": "int64"
+              }
+            ]
+          },
+          {
+            "name": "AuditHistory",
+            "fields": [
+              {
+                "id": 1,
+                "name": "windows",
+                "type": "AuditWindow",
+                "is_repeated": true
+              },
+              {
+                "id": 2,
+                "name": "score",
+                "type": "double"
+              }
+            ]
+          },
+          {
+            "name": "AuditWindow",
+            "fields": [
+              {
+                "id": 1,
+                "name": "window_start",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "online_count",
+                "type": "int32"
+              },
+              {
+                "id": 3,
+                "name": "total_count",
+                "type": "int32"
               }
             ]
           }
