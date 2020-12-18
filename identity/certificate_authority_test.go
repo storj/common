@@ -48,7 +48,6 @@ func TestNewCA(t *testing.T) {
 
 func TestFullCertificateAuthority_NewIdentity(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	ca, err := identity.NewCA(ctx, identity.NewCAOptions{
 		Difficulty:  12,
@@ -72,7 +71,6 @@ func TestFullCertificateAuthority_NewIdentity(t *testing.T) {
 
 func TestFullCertificateAuthority_Sign(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	caOpts := identity.NewCAOptions{
 		Difficulty:  12,
@@ -108,7 +106,6 @@ func TestFullCAConfig_Save(t *testing.T) {
 
 func TestFullCAConfig_Load_extensions(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	for versionNumber, version := range storj.IDVersions {
 		caCfg := identity.CASetupConfig{
@@ -158,7 +155,6 @@ func BenchmarkNewCA(b *testing.B) {
 
 func TestFullCertificateAuthority_AddExtension(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	ca, err := testidentity.NewTestCA(ctx)
 	require.NoError(t, err)
@@ -190,7 +186,6 @@ func TestFullCertificateAuthority_AddExtension(t *testing.T) {
 
 func TestFullCertificateAuthority_Revoke(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	ca, err := testidentity.NewTestCA(ctx)
 	require.NoError(t, err)

@@ -119,10 +119,8 @@ func revocationChecker(opts *Options) HandlerFunc {
 
 func revocationUpdater(opts *Options) HandlerFunc {
 	return func(ext pkix.Extension, chains [][]*x509.Certificate) error {
-		if err := opts.RevocationDB.Put(context.TODO(), chains[0], ext); err != nil {
-			return err
-		}
-		return nil
+		err := opts.RevocationDB.Put(context.TODO(), chains[0], ext)
+		return err
 	}
 }
 
@@ -134,10 +132,8 @@ func (r Revocation) Verify(signingCert *x509.Certificate) error {
 	}
 
 	data := r.TBSBytes()
-	if err := pkcrypto.HashAndVerifySignature(pubKey, data, r.Signature); err != nil {
-		return err
-	}
-	return nil
+	err := pkcrypto.HashAndVerifySignature(pubKey, data, r.Signature)
+	return err
 }
 
 // TBSBytes (ToBeSigned) returns the hash of the revoked certificate key hash

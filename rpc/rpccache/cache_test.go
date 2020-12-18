@@ -18,7 +18,6 @@ import (
 // TestCache_Expiration checks that inserted entries expire eventually.
 func TestCache_Expiration(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	called := make(chan struct{})
 
@@ -44,7 +43,6 @@ func TestCache_Expiration(t *testing.T) {
 // even if they have an expiration.
 func TestCache_Expiration_Evicted(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	called := make(chan struct{})
 
@@ -85,7 +83,6 @@ func TestCache_Stale(t *testing.T) {
 // TestCache_Capacity checks that total capacity limits are enforced.
 func TestCache_Capacity(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	called := make(chan struct{})
 
@@ -111,7 +108,6 @@ func TestCache_Capacity(t *testing.T) {
 // TestCache_Capacity_Negative checks that negative capacities cache nothing.
 func TestCache_Capacity_Negative(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	called := make(chan struct{})
 
@@ -136,7 +132,6 @@ func TestCache_Capacity_Negative(t *testing.T) {
 // TestCache_KeyCapacity checks that per-key capacity limits are enforced.
 func TestCache_KeyCapacity(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	called := make(chan struct{})
 
@@ -163,7 +158,6 @@ func TestCache_KeyCapacity(t *testing.T) {
 // TestCache_KeyCapacity_Negative checks that negative per-key capacities cache nothing.
 func TestCache_KeyCapacity_Negative(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	called := make(chan struct{})
 

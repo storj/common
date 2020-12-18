@@ -15,7 +15,6 @@ import (
 
 func TestBasic(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	ctx.Go(func() error {
 		time.Sleep(time.Millisecond)
@@ -48,8 +47,9 @@ type test struct {
 	fatals []string
 }
 
-func (t *test) Name() string { return "Example" }
-func (t *test) Helper()      {}
+func (t *test) Name() string      { return "Example" }
+func (t *test) Helper()           {}
+func (t *test) Cleanup(fn func()) {}
 
 func (t *test) Log(args ...interface{})   { t.logs = append(t.logs, fmt.Sprint(args...)) }
 func (t *test) Error(args ...interface{}) { t.errors = append(t.errors, fmt.Sprint(args...)) }

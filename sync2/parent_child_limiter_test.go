@@ -24,7 +24,6 @@ func TestParentLimiterLimiting(t *testing.T) {
 	child2 := parent.Child()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	counter := int32(0)
 	limitChecker := int32(0)
@@ -105,7 +104,6 @@ func TestChildLimiter_Wait(t *testing.T) {
 	child2 := parent.Child()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	waitForFinishing := make(chan struct{})
 

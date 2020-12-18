@@ -15,7 +15,6 @@ import (
 
 func TestWithoutCancellation(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	parent, cancel := context.WithCancel(ctx)
 	cancel()

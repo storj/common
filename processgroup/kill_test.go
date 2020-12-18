@@ -17,7 +17,6 @@ import (
 
 func TestProcessGroup(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	source := ctx.File("main.go")
 	binary := ctx.File("main.exe")

@@ -24,8 +24,7 @@ const (
 )
 
 func TestCalcEncryptedSize(t *testing.T) {
-	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
+	_ = testcontext.New(t)
 
 	forAllCiphers(func(cipher storj.CipherSuite) {
 		for i, dataSize := range []int64{

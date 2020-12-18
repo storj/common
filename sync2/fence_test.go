@@ -20,7 +20,6 @@ func TestFence(t *testing.T) {
 	t.Parallel()
 
 	ctx := testcontext.NewWithTimeout(t, 30*time.Second)
-	defer ctx.Cleanup()
 
 	var group errgroup.Group
 	var fence sync2.Fence
@@ -58,8 +57,6 @@ func TestFence_ContextCancel(t *testing.T) {
 	t.Parallel()
 
 	tctx := testcontext.NewWithTimeout(t, 30*time.Second)
-	defer tctx.Cleanup()
-
 	ctx, cancel := context.WithCancel(tctx)
 
 	var group errgroup.Group

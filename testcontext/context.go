@@ -40,6 +40,8 @@ type Context struct {
 	mu       sync.Mutex
 	running  []caller
 	reported bool
+
+	cleanupOnce sync.Once
 }
 
 type caller struct {
@@ -54,6 +56,8 @@ type caller struct {
 type TB interface {
 	Name() string
 	Helper()
+
+	Cleanup(f func())
 
 	Log(args ...interface{})
 	Error(args ...interface{})
@@ -82,6 +86,8 @@ func NewWithTimeout(test TB, timeout time.Duration) *Context {
 	}
 
 	go ctx.monitorSlowShutdown()
+
+	test.Cleanup(ctx.Cleanup)
 
 	return ctx
 }
@@ -193,25 +199,27 @@ func (ctx *Context) File(elem ...string) string {
 // directories.
 func (ctx *Context) Cleanup() {
 	ctx.test.Helper()
-	close(ctx.cleaning)
+	ctx.cleanupOnce.Do(func() {
+		close(ctx.cleaning)
 
-	defer ctx.deleteTemporary()
-	defer ctx.cancel()
+		defer ctx.deleteTemporary()
+		defer ctx.cancel()
 
-	alldone := make(chan error, 1)
-	go func() {
-		alldone <- ctx.group.Wait()
-		defer close(alldone)
-	}()
+		alldone := make(chan error, 1)
+		go func() {
+			alldone <- ctx.group.Wait()
+			defer close(alldone)
+		}()
 
-	select {
-	case <-ctx.timedctx.Done():
-		ctx.reportRunning()
-	case err := <-alldone:
-		if err != nil {
-			ctx.test.Fatal(err)
+		select {
+		case <-ctx.timedctx.Done():
+			ctx.reportRunning()
+		case err := <-alldone:
+			if err != nil {
+				ctx.test.Fatal(err)
+			}
 		}
-	}
+	})
 }
 
 func (ctx *Context) reportRunning() {

@@ -35,7 +35,6 @@ func TestLookupNodeAddress_HostAndPort(t *testing.T) {
 
 func TestLookupNodeAddress_IP(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	tests := []string{
 		"8.8.8.8",

@@ -1,6 +1,6 @@
 module storj.io/common
 
-go 1.13
+go 1.14
 
 require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201124182144-4031bdc69ded

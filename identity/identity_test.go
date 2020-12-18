@@ -98,7 +98,6 @@ func TestFullIdentityFromPEM(t *testing.T) {
 
 func TestConfig_Save_with_extension(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	testidentity.CompleteIdentityVersionsTest(t, func(t *testing.T, version storj.IDVersion, ident *identity.FullIdentity) {
 		identCfg := &identity.Config{
@@ -160,7 +159,6 @@ func TestConfig_Save_with_extension(t *testing.T) {
 
 func TestConfig_Save(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	testidentity.IdentityVersionsTest(t, func(t *testing.T, version storj.IDVersion, ident *identity.FullIdentity) {
 		identCfg := &identity.Config{
@@ -241,7 +239,6 @@ func TestVerifyPeer(t *testing.T) {
 
 func TestManageablePeerIdentity_AddExtension(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	manageablePeerIdentity, err := testidentity.NewTestManageablePeerIdentity(ctx)
 	require.NoError(t, err)
@@ -276,7 +273,6 @@ func TestManageablePeerIdentity_AddExtension(t *testing.T) {
 
 func TestManageableFullIdentity_Revoke(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	manageableFullIdentity, err := testidentity.NewTestManageableFullIdentity(ctx)
 	require.NoError(t, err)
@@ -311,7 +307,6 @@ func TestManageableFullIdentity_Revoke(t *testing.T) {
 
 func TestEncodeDecodePeerIdentity(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	peerID, err := testidentity.NewTestIdentity(ctx)
 	require.NoError(t, err)

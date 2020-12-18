@@ -14,7 +14,6 @@ import (
 func TestCompile(t *testing.T) {
 	t.Skip("temporarily disabled")
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	exe := ctx.Compile("storj.io/storj/examples/grpc-debug")
 	assert.NotEmpty(t, exe)

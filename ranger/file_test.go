@@ -16,7 +16,6 @@ import (
 
 func TestFileRanger(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	for i, example := range []struct {
 		data                 string

@@ -20,7 +20,6 @@ func TestCooldown_Basic(t *testing.T) {
 	t.Parallel()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	cooldown := sync2.NewCooldown(10 * time.Second)
 	defer cooldown.Close()
@@ -62,7 +61,6 @@ func TestCooldown_MultipleStops(t *testing.T) {
 	defer cooldown.Close()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	var group errgroup.Group
 	var count int64
@@ -83,8 +81,6 @@ func TestCooldown_StopCancelled(t *testing.T) {
 	defer cooldown.Close()
 
 	testCtx := testcontext.New(t)
-	defer testCtx.Cleanup()
-
 	ctx, cancel := context.WithCancel(testCtx)
 	cancel()
 
@@ -104,7 +100,6 @@ func TestCooldown_Stop_EnsureLoopIsFinished(t *testing.T) {
 	defer cooldown.Close()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	var completed int64
 	started := make(chan int)
