@@ -2228,6 +2228,47 @@
             "name": "ObjectCommitResponse"
           },
           {
+            "name": "GetPendingObjectsRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_path",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "limit",
+                "type": "int32"
+              }
+            ]
+          },
+          {
+            "name": "GetPendingObjectsResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "items",
+                "type": "ObjectListItem",
+                "is_repeated": true
+              },
+              {
+                "id": 2,
+                "name": "more",
+                "type": "bool"
+              }
+            ]
+          },
+          {
             "name": "ObjectGetRequest",
             "fields": [
               {
@@ -3316,6 +3357,11 @@
                 "type": "ObjectGetIPsRequest"
               },
               {
+                "id": 21,
+                "name": "pending_objects",
+                "type": "GetPendingObjectsRequest"
+              },
+              {
                 "id": 12,
                 "name": "segment_begin",
                 "type": "SegmentBeginRequest"
@@ -3427,6 +3473,11 @@
                 "type": "ObjectGetIPsResponse"
               },
               {
+                "id": 21,
+                "name": "pending_objects",
+                "type": "GetPendingObjectsResponse"
+              },
+              {
                 "id": 12,
                 "name": "segment_begin",
                 "type": "SegmentBeginResponse"
@@ -3525,6 +3576,11 @@
                 "name": "GetObject",
                 "in_type": "ObjectGetRequest",
                 "out_type": "ObjectGetResponse"
+              },
+              {
+                "name": "GetPendingObjects",
+                "in_type": "GetPendingObjectsRequest",
+                "out_type": "GetPendingObjectsResponse"
               },
               {
                 "name": "ListObjects",
