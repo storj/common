@@ -4521,21 +4521,6 @@
             ]
           },
           {
-            "name": "OrderLimitMetadata",
-            "fields": [
-              {
-                "id": 1,
-                "name": "bucket_id",
-                "type": "bytes"
-              },
-              {
-                "id": 2,
-                "name": "project_bucket_prefix",
-                "type": "bytes"
-              }
-            ]
-          },
-          {
             "name": "OrderLimitSigning",
             "fields": [
               {

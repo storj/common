@@ -46,19 +46,12 @@ message OrderLimit {
     google.protobuf.Timestamp order_creation = 12 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 
     bytes encrypted_metadata_key_id = 14;
-    bytes encrypted_metadata = 15;
+    bytes encrypted_metadata = 15; // This refers to satellite/internalpb.OrderLimitMetadata
 
     bytes satellite_signature = 10;
 
     // this allows a storage node to find a satellite and handshake with it to get its key.
     node.NodeAddress satellite_address = 11;
-}
-
-// OrderLimitMetadata is used to transmit meta information about an order limit.
-// This data will be encrypted.
-message OrderLimitMetadata {
-    bytes bucket_id = 1;
-    bytes project_bucket_prefix = 2;
 }
 
 // OrderLimitSigning provides OrderLimit signing serialization.
