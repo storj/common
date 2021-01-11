@@ -43,7 +43,7 @@ func EncodeOrderLimit(ctx context.Context, limit *pb.OrderLimit) (_ []byte, err 
 	signing.EncryptedMetadataKeyId = limit.EncryptedMetadataKeyId
 	signing.EncryptedMetadata = limit.EncryptedMetadata
 
-	signing.SatelliteAddress = limit.SatelliteAddress
+	signing.DeprecatedSatelliteAddress = limit.DeprecatedSatelliteAddress
 	signing.XXX_unrecognized = limit.XXX_unrecognized
 
 	return pb.Marshal(&signing)

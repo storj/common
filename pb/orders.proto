@@ -51,7 +51,7 @@ message OrderLimit {
     bytes satellite_signature = 10;
 
     // this allows a storage node to find a satellite and handshake with it to get its key.
-    node.NodeAddress satellite_address = 11;
+    node.NodeAddress deprecated_satellite_address = 11;
 }
 
 // OrderLimitSigning provides OrderLimit signing serialization.
@@ -88,7 +88,7 @@ message OrderLimitSigning {
     bytes satellite_signature = 10;
 
     // this allows a storage node to find a satellite and handshake with it to get its key.
-    node.NodeAddress satellite_address = 11;
+    node.NodeAddress deprecated_satellite_address = 11;
 }
 
 // Order is a one step of fullfilling Amount number of bytes from an OrderLimit with SerialNumber.

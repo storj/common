@@ -4515,7 +4515,7 @@
               },
               {
                 "id": 11,
-                "name": "satellite_address",
+                "name": "deprecated_satellite_address",
                 "type": "node.NodeAddress"
               }
             ]
@@ -4665,7 +4665,7 @@
               },
               {
                 "id": 11,
-                "name": "satellite_address",
+                "name": "deprecated_satellite_address",
                 "type": "node.NodeAddress"
               }
             ]
