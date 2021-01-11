@@ -7,8 +7,11 @@ import (
 	"crypto"
 	"crypto/ecdsa"
 	"crypto/elliptic"
+	"crypto/hmac"
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha256"
+	"crypto/x509"
 	"math/big"
 	"reflect"
 )
@@ -112,6 +115,41 @@ func SignWithoutHashing(privKey crypto.PrivateKey, digest []byte) ([]byte, error
 		return signRSAWithoutHashing(key, digest)
 	}
 	return nil, ErrUnsupportedKey.New("%T", privKey)
+}
+
+// SignHMACSHA256 signs the given data with HMAC-SHA256 using privKey as the secret.
+func SignHMACSHA256(privKey crypto.PrivateKey, data []byte) ([]byte, error) {
+	var secret []byte
+	switch key := privKey.(type) {
+	case *ecdsa.PrivateKey:
+		var err error
+		secret, err = x509.MarshalECPrivateKey(key)
+		if err != nil {
+			return nil, ErrSign.Wrap(err)
+		}
+	case *rsa.PrivateKey:
+		secret = x509.MarshalPKCS1PrivateKey(key)
+	default:
+		return nil, ErrUnsupportedKey.New("%T", privKey)
+	}
+
+	mac := hmac.New(sha256.New, secret)
+	_, _ = mac.Write(data)
+
+	return mac.Sum(nil), nil
+}
+
+// VerifyHMACSHA256 checks that signature matches the HMAC-SHA256 of data using privKey as the secret.
+func VerifyHMACSHA256(privKey crypto.PrivateKey, data, signature []byte) error {
+	newSignature, err := SignHMACSHA256(privKey, data)
+	if err != nil {
+		return err
+	}
+
+	if !hmac.Equal(newSignature, signature) {
+		return ErrVerifySignature.New("signature is not valid")
+	}
+	return nil
 }
 
 func signECDSAWithoutHashing(privKey *ecdsa.PrivateKey, digest []byte) ([]byte, error) {

@@ -20,6 +20,8 @@ type Signer interface {
 	ID() storj.NodeID
 	HashAndSign(ctx context.Context, data []byte) ([]byte, error)
 	HashAndVerifySignature(ctx context.Context, data, signature []byte) error
+	SignHMACSHA256(ctx context.Context, data []byte) ([]byte, error)
+	VerifyHMACSHA256(ctx context.Context, data, signature []byte) error
 }
 
 // SignOrderLimit signs the order limit using the specified signer.

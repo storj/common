@@ -50,6 +50,18 @@ func (private *PrivateKey) HashAndVerifySignature(ctx context.Context, data, sig
 	return pkcrypto.HashAndVerifySignature(pub, data, signature)
 }
 
+// SignHMACSHA256 signs the given data with HMAC-SHA256 using the key as the secret.
+func (private *PrivateKey) SignHMACSHA256(ctx context.Context, data []byte) (_ []byte, err error) {
+	defer mon.Task()(&ctx)(&err)
+	return pkcrypto.SignHMACSHA256(private.Key, data)
+}
+
+// VerifyHMACSHA256 checks that signature matches the HMAC-SHA256 of data using the key as the secret.
+func (private *PrivateKey) VerifyHMACSHA256(ctx context.Context, data, signature []byte) (err error) {
+	defer mon.Task()(&ctx)(&err)
+	return pkcrypto.VerifyHMACSHA256(private.Key, data, signature)
+}
+
 // PublicKey implements a signee using crypto.PublicKey.
 type PublicKey struct {
 	Self storj.NodeID
