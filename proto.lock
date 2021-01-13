@@ -2606,6 +2606,21 @@
                 "name": "ips",
                 "type": "bytes",
                 "is_repeated": true
+              },
+              {
+                "id": 2,
+                "name": "segment_count",
+                "type": "int64"
+              },
+              {
+                "id": 3,
+                "name": "piece_count",
+                "type": "int64"
+              },
+              {
+                "id": 4,
+                "name": "reliable_piece_count",
+                "type": "int64"
               }
             ]
           },

@@ -319,6 +319,9 @@ message ObjectGetIPsRequest {
 
 message ObjectGetIPsResponse {
     repeated bytes ips = 1;
+    int64 segment_count = 2;
+    int64 piece_count = 3;
+    int64 reliable_piece_count = 4;
 }
 
 //
