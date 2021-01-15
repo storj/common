@@ -15,8 +15,6 @@ import (
 	"storj.io/common/memory"
 )
 
-//go:generate go run gen.go ../pb drpc alias.go
-
 const (
 	// IsDRPC is true if drpc is being used.
 	IsDRPC = true
