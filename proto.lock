@@ -1401,6 +1401,11 @@
                 "id": 21,
                 "name": "paid",
                 "type": "int64"
+              },
+              {
+                "id": 22,
+                "name": "distributed",
+                "type": "int64"
               }
             ]
           },

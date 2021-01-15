@@ -42,6 +42,7 @@ message GetHeldAmountResponse {
     int64   owed = 19;
     int64   disposed = 20;
     int64   paid = 21;
+    int64   distributed = 22;
 }
 
 message GetAllPaystubsRequest {}
