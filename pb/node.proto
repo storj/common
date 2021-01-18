@@ -43,6 +43,7 @@ enum NodeTransport {
 message NodeOperator {
     string email = 1;
     string wallet = 2;
+    repeated string wallet_features = 3;
 }
 
 // NodeCapacity contains all relevant data about a nodes ability to store data.

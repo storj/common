@@ -3834,6 +3834,12 @@
                 "id": 2,
                 "name": "wallet",
                 "type": "string"
+              },
+              {
+                "id": 3,
+                "name": "wallet_features",
+                "type": "string",
+                "is_repeated": true
               }
             ]
           },
