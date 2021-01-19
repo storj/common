@@ -2274,6 +2274,52 @@
             ]
           },
           {
+            "name": "ObjectListPendingStreamsRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_path",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "stream_id_cursor",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "limit",
+                "type": "int32"
+              }
+            ]
+          },
+          {
+            "name": "ObjectListPendingStreamsResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "items",
+                "type": "ObjectListItem",
+                "is_repeated": true
+              },
+              {
+                "id": 2,
+                "name": "more",
+                "type": "bool"
+              }
+            ]
+          },
+          {
             "name": "ObjectGetRequest",
             "fields": [
               {
@@ -3382,6 +3428,11 @@
                 "type": "GetPendingObjectsRequest"
               },
               {
+                "id": 22,
+                "name": "pending_streams",
+                "type": "ObjectListPendingStreamsRequest"
+              },
+              {
                 "id": 12,
                 "name": "segment_begin",
                 "type": "SegmentBeginRequest"
@@ -3496,6 +3547,11 @@
                 "id": 21,
                 "name": "pending_objects",
                 "type": "GetPendingObjectsResponse"
+              },
+              {
+                "id": 22,
+                "name": "pending_streams",
+                "type": "ObjectListPendingStreamsResponse"
               },
               {
                 "id": 12,
@@ -3621,6 +3677,11 @@
                 "name": "GetObjectIPs",
                 "in_type": "ObjectGetIPsRequest",
                 "out_type": "ObjectGetIPsResponse"
+              },
+              {
+                "name": "ListPendingObjectStreams",
+                "in_type": "ObjectListPendingStreamsRequest",
+                "out_type": "ObjectListPendingStreamsResponse"
               },
               {
                 "name": "BeginSegment",
