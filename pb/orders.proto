@@ -149,7 +149,6 @@ message PieceHashSigning {
 }
 
 service Orders {
-    rpc Settlement(stream SettlementRequest) returns (stream SettlementResponse) {}
     rpc SettlementWithWindow(stream SettlementRequest) returns (SettlementWithWindowResponse) {}
 }
 
@@ -159,19 +158,9 @@ service Orders {
 //   go repeated
 //      <- SettlementResponse
 message SettlementRequest {
+    option deprecated = true;
     OrderLimit limit = 1;
     Order      order = 2;
-}
-
-message SettlementResponse {
-    enum Status {
-        INVALID  = 0;
-        ACCEPTED = 1;
-        REJECTED = 2;
-    }
-
-    bytes  serial_number = 1 [(gogoproto.customtype) = "SerialNumber", (gogoproto.nullable) = false];
-    Status status = 2;
 }
 
 // SettlementWithWindowResponse returns the status and the amounts

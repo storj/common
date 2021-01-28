@@ -4412,22 +4412,6 @@
             ]
           },
           {
-            "name": "SettlementResponse.Status",
-            "enum_fields": [
-              {
-                "name": "INVALID"
-              },
-              {
-                "name": "ACCEPTED",
-                "integer": 1
-              },
-              {
-                "name": "REJECTED",
-                "integer": 2
-              }
-            ]
-          },
-          {
             "name": "SettlementWithWindowResponse.Status",
             "enum_fields": [
               {
@@ -4926,30 +4910,11 @@
                 "name": "order",
                 "type": "Order"
               }
-            ]
-          },
-          {
-            "name": "SettlementResponse",
-            "fields": [
+            ],
+            "options": [
               {
-                "id": 1,
-                "name": "serial_number",
-                "type": "bytes",
-                "options": [
-                  {
-                    "name": "(gogoproto.customtype)",
-                    "value": "SerialNumber"
-                  },
-                  {
-                    "name": "(gogoproto.nullable)",
-                    "value": "false"
-                  }
-                ]
-              },
-              {
-                "id": 2,
-                "name": "status",
-                "type": "Status"
+                "name": "deprecated",
+                "value": "true"
               }
             ]
           },
@@ -4978,13 +4943,6 @@
           {
             "name": "Orders",
             "rpcs": [
-              {
-                "name": "Settlement",
-                "in_type": "SettlementRequest",
-                "out_type": "SettlementResponse",
-                "in_streamed": true,
-                "out_streamed": true
-              },
               {
                 "name": "SettlementWithWindow",
                 "in_type": "SettlementRequest",
