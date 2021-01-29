@@ -77,6 +77,12 @@ func TestMacaroon(t *testing.T) {
 	t.Run("Successful Unpack", func(t *testing.T) {
 		ok := mac.Validate(secret)
 		assert.True(t, ok)
+
+		expectedTails := mac.Tails(secret)
+		ok, tails := mac.ValidateAndTails(secret)
+		assert.True(t, ok)
+		assert.EqualValues(t, expectedTails, tails)
+
 		c := mac.Caveats()
 		assert.NotNil(t, c)
 		assert.NotEmpty(t, c)

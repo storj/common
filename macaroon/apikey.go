@@ -107,7 +107,9 @@ func NewAPIKey(secret []byte) (*APIKey, error) {
 // is not authorized. 'revoked' is a list of revoked heads.
 func (a *APIKey) Check(ctx context.Context, secret []byte, action Action, revoker revoker) (err error) {
 	defer mon.Task()(&ctx)(&err)
-	if !a.mac.Validate(secret) {
+
+	ok, tails := a.mac.ValidateAndTails(secret)
+	if !ok {
 		return ErrInvalid.New("macaroon unauthorized")
 	}
 
@@ -129,7 +131,7 @@ func (a *APIKey) Check(ctx context.Context, secret []byte, action Action, revoke
 	}
 
 	if revoker != nil {
-		revoked, err := revoker.Check(ctx, a.mac.Tails(secret))
+		revoked, err := revoker.Check(ctx, tails)
 		if err != nil {
 			return ErrRevoked.Wrap(err)
 		}

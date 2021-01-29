@@ -193,6 +193,44 @@ func TestGetAllowedBuckets(t *testing.T) {
 	})
 }
 
+func BenchmarkAPIKey_Check(b *testing.B) {
+	ctx := context.Background()
+
+	secret, err := NewSecret()
+	require.NoError(b, err)
+
+	key, err := NewAPIKey(secret)
+	require.NoError(b, err)
+
+	now := time.Now()
+	denyBefore := now.Add(-10 * time.Hour)
+	denyAfter := now.Add(10 * time.Hour)
+
+	key2, err := key.Restrict(Caveat{
+		NotBefore: &denyBefore,
+		AllowedPaths: []*Caveat_Path{
+			{Bucket: []byte("test1")},
+			{Bucket: []byte("test3")},
+		},
+	})
+	require.NoError(b, err)
+
+	key3, err := key2.Restrict(Caveat{
+		NotAfter: &denyAfter,
+	})
+	require.NoError(b, err)
+
+	b.ResetTimer()
+
+	revoker := &testRevoker{}
+	for i := 0; i < b.N; i++ {
+		err := key3.Check(ctx, secret, Action{Bucket: []byte("test1"), Op: ActionRead, Time: now}, revoker)
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 type testRevoker struct {
 	revoked bool
 	err     error

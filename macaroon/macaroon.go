@@ -85,6 +85,18 @@ func (m *Macaroon) Tails(secret []byte) [][]byte {
 	return tails
 }
 
+// ValidateAndTails combines Validate and Tails to a single method.
+func (m *Macaroon) ValidateAndTails(secret []byte) (bool, [][]byte) {
+	tails := make([][]byte, 0, len(m.caveats)+1)
+	tail := sign(secret, m.head)
+	tails = append(tails, tail)
+	for _, cav := range m.caveats {
+		tail = sign(tail, cav)
+		tails = append(tails, tail)
+	}
+	return subtle.ConstantTimeCompare(tail, m.tail) == 1, tails
+}
+
 // Head returns copy of macaroon head.
 func (m *Macaroon) Head() (head []byte) {
 	if len(m.head) == 0 {
