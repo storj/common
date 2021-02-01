@@ -23,6 +23,14 @@ var (
 	escapeSlash = byte('\x2e')
 	escapeFF    = byte('\xfe')
 	escape01    = byte('\x01')
+
+	// ErrMissingEncryptionBase is caused by trying to encrypt a path without
+	// having the appropriate root in the encryption store.
+	ErrMissingEncryptionBase = errs.Class("missing encryption base")
+
+	// ErrMissingDecryptionBase is caused by trying to decrypt a path without
+	// having the appropriate root in the encryption store.
+	ErrMissingDecryptionBase = errs.Class("missing decryption base")
 )
 
 // EncryptPathWithStoreCipher encrypts the path looking up keys and the cipher from the
@@ -72,7 +80,7 @@ func encryptPath(bucket string, path paths.Unencrypted, pathCipher *storj.Cipher
 
 	_, consumed, base := store.LookupUnencrypted(bucket, path)
 	if base == nil {
-		return paths.Encrypted{}, errs.New("unable to find encryption base for: %s/%q", bucket, path)
+		return paths.Encrypted{}, ErrMissingEncryptionBase.New("%q/%q", bucket, path)
 	}
 
 	if pathCipher == nil {
@@ -171,7 +179,7 @@ func decryptPath(bucket string, path paths.Encrypted, pathCipher *storj.CipherSu
 
 	_, consumed, base := store.LookupEncrypted(bucket, path)
 	if base == nil {
-		return paths.Unencrypted{}, errs.New("unable to find decryption base for: %q", path)
+		return paths.Unencrypted{}, ErrMissingDecryptionBase.New("%q/%q", bucket, path)
 	}
 
 	if pathCipher == nil {
@@ -261,7 +269,7 @@ func DeriveContentKey(bucket string, path paths.Unencrypted, store *Store) (key 
 func DerivePathKey(bucket string, path paths.Unencrypted, store *Store) (key *storj.Key, err error) {
 	_, consumed, base := store.LookupUnencrypted(bucket, path)
 	if base == nil {
-		return nil, errs.New("unable to find encryption base for: %s/%q", bucket, path)
+		return nil, ErrMissingEncryptionBase.New("%q/%q", bucket, path)
 	}
 
 	// If asking for the key at the bucket, do that and return.
