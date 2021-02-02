@@ -149,10 +149,6 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 			flagname = prefix + flagname
 		}
 
-		if field.Tag.Get("internal") == "true" {
-			continue
-		}
-
 		onlyForSetup := (field.Tag.Get("setup") == "true") || setupStruct
 		// ignore setup params for non setup commands
 		if !setupCommand && onlyForSetup {
@@ -176,6 +172,10 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 				def = getDefault(field.Tag, "devDefault", "releaseDefault", "default", flagname)
 			} else {
 				def = getDefault(field.Tag, "releaseDefault", "devDefault", "default", flagname)
+			}
+
+			if def != "" && field.Tag.Get("internal") == "true" {
+				panic(fmt.Sprintf("unapplicable default value set for internal flag: %s", flagname))
 			}
 
 			err := fieldvalue.Set(def)
@@ -232,6 +232,11 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 			} else {
 				def = getDefault(field.Tag, "releaseDefault", "devDefault", "default", flagname)
 			}
+
+			if def != "" && field.Tag.Get("internal") == "true" {
+				panic(fmt.Sprintf("unapplicable default value set for internal flag: %s", flagname))
+			}
+
 			fieldaddr := fieldval.Addr().Interface()
 			check := func(err error) {
 				if err != nil {
