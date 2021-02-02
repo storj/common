@@ -4,18 +4,29 @@
 package macaroon
 
 import (
-	"crypto/rand"
+	crand "crypto/rand"
+	"encoding/binary"
 	"encoding/json"
+	mrand "math/rand"
+	"time"
 
 	"storj.io/common/encryption"
 	"storj.io/common/storj"
 )
 
-// NewCaveat returns a Caveat with a random generated nonce.
-func NewCaveat() (Caveat, error) {
-	var buf [8]byte
-	_, err := rand.Read(buf[:])
-	return Caveat{Nonce: buf[:]}, err
+// WithNonce returns a Caveat with the nonce set to a random value.
+// Note: This does a shallow copy the provided Caveat.
+func WithNonce(in Caveat) Caveat {
+	var buf [4]byte
+
+	if n, _ := crand.Read(buf[:]); n != len(buf) {
+		rng := mrand.New(mrand.NewSource(time.Now().UnixNano()))
+		binary.LittleEndian.PutUint32(buf[:], rng.Uint32())
+	}
+
+	in.Nonce = buf[:]
+
+	return in
 }
 
 type caveatPathMarshal struct {

@@ -30,12 +30,12 @@ func TestSerializeParseRestrictAndCheck(t *testing.T) {
 	require.True(t, bytes.Equal(key.Head(), parsedKey.Head()))
 	require.True(t, bytes.Equal(key.Tail(), parsedKey.Tail()))
 
-	restricted, err := key.Restrict(Caveat{
+	restricted, err := key.Restrict(WithNonce(Caveat{
 		AllowedPaths: []*Caveat_Path{{
 			Bucket:              []byte("a-test-bucket"),
 			EncryptedPathPrefix: []byte("a-test-path"),
 		}},
-	})
+	}))
 	require.NoError(t, err)
 
 	serialized = restricted.Serialize()
@@ -109,13 +109,13 @@ func TestExpiration(t *testing.T) {
 	twoMinutesAgo := now.Add(-2 * time.Minute)
 	twoMinutesFromNow := now.Add(2 * time.Minute)
 
-	notBeforeMinuteFromNow, err := key.Restrict(Caveat{
+	notBeforeMinuteFromNow, err := key.Restrict(WithNonce(Caveat{
 		NotBefore: &minuteFromNow,
-	})
+	}))
 	require.NoError(t, err)
-	notAfterMinuteAgo, err := key.Restrict(Caveat{
+	notAfterMinuteAgo, err := key.Restrict(WithNonce(Caveat{
 		NotAfter: &minuteAgo,
-	})
+	}))
 	require.NoError(t, err)
 
 	for i, test := range []struct {
@@ -159,14 +159,14 @@ func TestGetAllowedBuckets(t *testing.T) {
 	key, err := NewAPIKey(secret)
 	require.NoError(t, err)
 
-	restricted, err := key.Restrict(Caveat{
+	restricted, err := key.Restrict(WithNonce(Caveat{
 		AllowedPaths: []*Caveat_Path{{Bucket: []byte("test1")}, {Bucket: []byte("test2")}},
-	})
+	}))
 	require.NoError(t, err)
 
-	restricted, err = restricted.Restrict(Caveat{
+	restricted, err = restricted.Restrict(WithNonce(Caveat{
 		AllowedPaths: []*Caveat_Path{{Bucket: []byte("test1")}, {Bucket: []byte("test3")}},
-	})
+	}))
 	require.NoError(t, err)
 
 	now := time.Now()
@@ -182,7 +182,7 @@ func TestGetAllowedBuckets(t *testing.T) {
 		Buckets: map[string]struct{}{"test1": {}},
 	})
 
-	restricted, err = restricted.Restrict(Caveat{DisallowWrites: true})
+	restricted, err = restricted.Restrict(WithNonce(Caveat{DisallowWrites: true}))
 	require.NoError(t, err)
 
 	allowed, err = restricted.GetAllowedBuckets(ctx, action)
@@ -190,6 +190,51 @@ func TestGetAllowedBuckets(t *testing.T) {
 	require.Equal(t, allowed, AllowedBuckets{
 		All:     false,
 		Buckets: map[string]struct{}{"test1": {}},
+	})
+}
+
+func TestNonce(t *testing.T) {
+	secret, err := NewSecret()
+	require.NoError(t, err)
+
+	key1, err := NewAPIKey(secret)
+	require.NoError(t, err)
+
+	key2, err := ParseAPIKey(key1.Serialize())
+	require.NoError(t, err)
+
+	// Key 1 and 2 should be exactly equal.
+	require.True(t, bytes.Equal(key1.Head(), key2.Head()))
+	require.True(t, bytes.Equal(key1.Tail(), key2.Tail()))
+
+	caveat := Caveat{
+		DisallowReads: true,
+	}
+
+	t.Run("WithoutNonce", func(t *testing.T) {
+		key1r, err := key1.Restrict(caveat)
+		require.NoError(t, err)
+
+		key2r, err := key2.Restrict(caveat)
+		require.NoError(t, err)
+
+		// Key 1 and 2 should be exactly equal when the caveat does not have a
+		// nonce.
+		require.True(t, bytes.Equal(key1r.Head(), key2r.Head()))
+		require.True(t, bytes.Equal(key1r.Tail(), key2r.Tail()))
+	})
+
+	t.Run("WithNonce", func(t *testing.T) {
+		key1r, err := key1.Restrict(WithNonce(caveat))
+		require.NoError(t, err)
+
+		key2r, err := key2.Restrict(WithNonce(caveat))
+		require.NoError(t, err)
+
+		// Key 1 and 2 should share the same head, but have different
+		// tails when the caveats have a nonce.
+		require.True(t, bytes.Equal(key1r.Head(), key2r.Head()))
+		require.False(t, bytes.Equal(key1r.Tail(), key2r.Tail()))
 	})
 }
 
@@ -206,18 +251,18 @@ func BenchmarkAPIKey_Check(b *testing.B) {
 	denyBefore := now.Add(-10 * time.Hour)
 	denyAfter := now.Add(10 * time.Hour)
 
-	key2, err := key.Restrict(Caveat{
+	key2, err := key.Restrict(WithNonce(Caveat{
 		NotBefore: &denyBefore,
 		AllowedPaths: []*Caveat_Path{
 			{Bucket: []byte("test1")},
 			{Bucket: []byte("test3")},
 		},
-	})
+	}))
 	require.NoError(b, err)
 
-	key3, err := key2.Restrict(Caveat{
+	key3, err := key2.Restrict(WithNonce(Caveat{
 		NotAfter: &denyAfter,
-	})
+	}))
 	require.NoError(b, err)
 
 	b.ResetTimer()
