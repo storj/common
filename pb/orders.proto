@@ -158,7 +158,6 @@ service Orders {
 //   go repeated
 //      <- SettlementResponse
 message SettlementRequest {
-    option deprecated = true;
     OrderLimit limit = 1;
     Order      order = 2;
 }

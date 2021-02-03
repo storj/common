@@ -4910,12 +4910,6 @@
                 "name": "order",
                 "type": "Order"
               }
-            ],
-            "options": [
-              {
-                "name": "deprecated",
-                "value": "true"
-              }
             ]
           },
           {
