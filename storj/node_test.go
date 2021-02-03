@@ -190,3 +190,12 @@ func TestNodeIDList_Contains(t *testing.T) {
 		assert.Equal(t, testcase.contains, testcase.list.Contains(testcase.id))
 	}
 }
+
+func TestUniqueNodeIDs(t *testing.T) {
+	var IDs storj.NodeIDList
+	id := testrand.NodeID()
+	IDs = append(IDs, testrand.NodeID(), id, testrand.NodeID(), id, testrand.NodeID(), id, testrand.NodeID(), id, id)
+
+	list := IDs.Unique()
+	assert.Equal(t, len(list), 5)
+}

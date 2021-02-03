@@ -268,3 +268,19 @@ func (n NodeIDList) Contains(id NodeID) bool {
 	}
 	return false
 }
+
+// Unique returns slice of the unique node IDs.
+func (n NodeIDList) Unique() NodeIDList {
+	var result []NodeID
+next:
+	for _, id := range n {
+		for _, added := range result {
+			if added == id {
+				continue next
+			}
+		}
+		result = append(result, id)
+	}
+
+	return result
+}
