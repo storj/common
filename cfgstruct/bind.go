@@ -174,8 +174,11 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 				def = getDefault(field.Tag, "releaseDefault", "devDefault", "default", flagname)
 			}
 
-			if def != "" && field.Tag.Get("internal") == "true" {
-				panic(fmt.Sprintf("unapplicable default value set for internal flag: %s", flagname))
+			if field.Tag.Get("internal") == "true" {
+				if def != "" {
+					panic(fmt.Sprintf("unapplicable default value set for internal flag: %s", flagname))
+				}
+				continue
 			}
 
 			err := fieldvalue.Set(def)
@@ -233,8 +236,11 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 				def = getDefault(field.Tag, "releaseDefault", "devDefault", "default", flagname)
 			}
 
-			if def != "" && field.Tag.Get("internal") == "true" {
-				panic(fmt.Sprintf("unapplicable default value set for internal flag: %s", flagname))
+			if field.Tag.Get("internal") == "true" {
+				if def != "" {
+					panic(fmt.Sprintf("unapplicable default value set for internal flag: %s", flagname))
+				}
+				continue
 			}
 
 			fieldaddr := fieldval.Addr().Interface()
