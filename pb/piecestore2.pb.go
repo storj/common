@@ -5,6 +5,7 @@ package pb
 
 import (
 	context "context"
+	errors "errors"
 	fmt "fmt"
 	math "math"
 	time "time"
@@ -12,6 +13,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 
 	drpc "storj.io/drpc"
+	drpcerr "storj.io/drpc/drpcerr"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -981,6 +983,33 @@ type DRPCPiecestoreServer interface {
 	DeletePieces(context.Context, *DeletePiecesRequest) (*DeletePiecesResponse, error)
 	Retain(context.Context, *RetainRequest) (*RetainResponse, error)
 	RestoreTrash(context.Context, *RestoreTrashRequest) (*RestoreTrashResponse, error)
+}
+
+type DRPCPiecestoreUnimplementedServer struct{}
+
+func (s *DRPCPiecestoreUnimplementedServer) Upload(DRPCPiecestore_UploadStream) error {
+	return drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCPiecestoreUnimplementedServer) Download(DRPCPiecestore_DownloadStream) error {
+	return drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCPiecestoreUnimplementedServer) Delete(context.Context, *PieceDeleteRequest) (*PieceDeleteResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+// DeletePieces deletes a set of pieces on satellite request
+func (s *DRPCPiecestoreUnimplementedServer) DeletePieces(context.Context, *DeletePiecesRequest) (*DeletePiecesResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCPiecestoreUnimplementedServer) Retain(context.Context, *RetainRequest) (*RetainResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCPiecestoreUnimplementedServer) RestoreTrash(context.Context, *RestoreTrashRequest) (*RestoreTrashResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
 type DRPCPiecestoreDescription struct{}

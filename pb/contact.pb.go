@@ -5,6 +5,7 @@ package pb
 
 import (
 	context "context"
+	errors "errors"
 	fmt "fmt"
 	math "math"
 	time "time"
@@ -12,6 +13,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 
 	drpc "storj.io/drpc"
+	drpcerr "storj.io/drpc/drpcerr"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -335,6 +337,12 @@ type DRPCContactServer interface {
 	PingNode(context.Context, *ContactPingRequest) (*ContactPingResponse, error)
 }
 
+type DRPCContactUnimplementedServer struct{}
+
+func (s *DRPCContactUnimplementedServer) PingNode(context.Context, *ContactPingRequest) (*ContactPingResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
 type DRPCContactDescription struct{}
 
 func (DRPCContactDescription) NumMethods() int { return 1 }
@@ -413,6 +421,16 @@ func (c *drpcNodeClient) GetTime(ctx context.Context, in *GetTimeRequest) (*GetT
 type DRPCNodeServer interface {
 	CheckIn(context.Context, *CheckInRequest) (*CheckInResponse, error)
 	GetTime(context.Context, *GetTimeRequest) (*GetTimeResponse, error)
+}
+
+type DRPCNodeUnimplementedServer struct{}
+
+func (s *DRPCNodeUnimplementedServer) CheckIn(context.Context, *CheckInRequest) (*CheckInResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCNodeUnimplementedServer) GetTime(context.Context, *GetTimeRequest) (*GetTimeResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
 type DRPCNodeDescription struct{}

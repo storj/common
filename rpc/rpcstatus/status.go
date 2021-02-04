@@ -19,23 +19,23 @@ type StatusCode uint64
 // These constants are all the rpc error codes. It is important that
 // their numerical values do not change.
 const (
-	Unknown StatusCode = iota
-	OK
-	Canceled
-	InvalidArgument
-	DeadlineExceeded
-	NotFound
-	AlreadyExists
-	PermissionDenied
-	ResourceExhausted
-	FailedPrecondition
-	Aborted
-	OutOfRange
-	Unimplemented
-	Internal
-	Unavailable
-	DataLoss
-	Unauthenticated
+	Unknown            StatusCode = 0
+	OK                 StatusCode = 1
+	Canceled           StatusCode = 2
+	InvalidArgument    StatusCode = 3
+	DeadlineExceeded   StatusCode = 4
+	NotFound           StatusCode = 5
+	AlreadyExists      StatusCode = 6
+	PermissionDenied   StatusCode = 7
+	ResourceExhausted  StatusCode = 8
+	FailedPrecondition StatusCode = 9
+	Aborted            StatusCode = 10
+	OutOfRange         StatusCode = 11
+	Unimplemented      StatusCode = 12
+	Internal           StatusCode = 13
+	Unavailable        StatusCode = 14
+	DataLoss           StatusCode = 15
+	Unauthenticated    StatusCode = 16
 )
 
 // Code returns the status code associated with the error.

@@ -5,6 +5,7 @@ package pb
 
 import (
 	context "context"
+	errors "errors"
 	fmt "fmt"
 	math "math"
 	time "time"
@@ -12,6 +13,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 
 	drpc "storj.io/drpc"
+	drpcerr "storj.io/drpc/drpcerr"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -4581,6 +4583,102 @@ type DRPCMetainfoServer interface {
 	Batch(context.Context, *BatchRequest) (*BatchResponse, error)
 	ProjectInfo(context.Context, *ProjectInfoRequest) (*ProjectInfoResponse, error)
 	RevokeAPIKey(context.Context, *RevokeAPIKeyRequest) (*RevokeAPIKeyResponse, error)
+}
+
+type DRPCMetainfoUnimplementedServer struct{}
+
+// Bucket
+func (s *DRPCMetainfoUnimplementedServer) CreateBucket(context.Context, *BucketCreateRequest) (*BucketCreateResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) GetBucket(context.Context, *BucketGetRequest) (*BucketGetResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) DeleteBucket(context.Context, *BucketDeleteRequest) (*BucketDeleteResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) ListBuckets(context.Context, *BucketListRequest) (*BucketListResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+// Object
+func (s *DRPCMetainfoUnimplementedServer) BeginObject(context.Context, *ObjectBeginRequest) (*ObjectBeginResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) CommitObject(context.Context, *ObjectCommitRequest) (*ObjectCommitResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) GetObject(context.Context, *ObjectGetRequest) (*ObjectGetResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) GetPendingObjects(context.Context, *GetPendingObjectsRequest) (*GetPendingObjectsResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) ListObjects(context.Context, *ObjectListRequest) (*ObjectListResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) BeginDeleteObject(context.Context, *ObjectBeginDeleteRequest) (*ObjectBeginDeleteResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) FinishDeleteObject(context.Context, *ObjectFinishDeleteRequest) (*ObjectFinishDeleteResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) GetObjectIPs(context.Context, *ObjectGetIPsRequest) (*ObjectGetIPsResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) ListPendingObjectStreams(context.Context, *ObjectListPendingStreamsRequest) (*ObjectListPendingStreamsResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) BeginSegment(context.Context, *SegmentBeginRequest) (*SegmentBeginResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) CommitSegment(context.Context, *SegmentCommitRequest) (*SegmentCommitResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) MakeInlineSegment(context.Context, *SegmentMakeInlineRequest) (*SegmentMakeInlineResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) BeginDeleteSegment(context.Context, *SegmentBeginDeleteRequest) (*SegmentBeginDeleteResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) FinishDeleteSegment(context.Context, *SegmentFinishDeleteRequest) (*SegmentFinishDeleteResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) ListSegments(context.Context, *SegmentListRequest) (*SegmentListResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) DownloadSegment(context.Context, *SegmentDownloadRequest) (*SegmentDownloadResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) Batch(context.Context, *BatchRequest) (*BatchResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) ProjectInfo(context.Context, *ProjectInfoRequest) (*ProjectInfoResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) RevokeAPIKey(context.Context, *RevokeAPIKeyRequest) (*RevokeAPIKeyResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
 type DRPCMetainfoDescription struct{}

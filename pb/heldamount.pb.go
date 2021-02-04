@@ -5,6 +5,7 @@ package pb
 
 import (
 	context "context"
+	errors "errors"
 	fmt "fmt"
 	math "math"
 	time "time"
@@ -12,6 +13,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 
 	drpc "storj.io/drpc"
+	drpcerr "storj.io/drpc/drpcerr"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -641,6 +643,24 @@ type DRPCHeldAmountServer interface {
 	GetAllPaystubs(context.Context, *GetAllPaystubsRequest) (*GetAllPaystubsResponse, error)
 	GetPayment(context.Context, *GetPaymentRequest) (*GetPaymentResponse, error)
 	GetAllPayments(context.Context, *GetAllPaymentsRequest) (*GetAllPaymentsResponse, error)
+}
+
+type DRPCHeldAmountUnimplementedServer struct{}
+
+func (s *DRPCHeldAmountUnimplementedServer) GetPayStub(context.Context, *GetHeldAmountRequest) (*GetHeldAmountResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCHeldAmountUnimplementedServer) GetAllPaystubs(context.Context, *GetAllPaystubsRequest) (*GetAllPaystubsResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCHeldAmountUnimplementedServer) GetPayment(context.Context, *GetPaymentRequest) (*GetPaymentResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCHeldAmountUnimplementedServer) GetAllPayments(context.Context, *GetAllPaymentsRequest) (*GetAllPaymentsResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
 type DRPCHeldAmountDescription struct{}

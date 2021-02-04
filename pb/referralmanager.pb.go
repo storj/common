@@ -5,12 +5,14 @@ package pb
 
 import (
 	context "context"
+	errors "errors"
 	fmt "fmt"
 	math "math"
 
 	proto "github.com/gogo/protobuf/proto"
 
 	drpc "storj.io/drpc"
+	drpcerr "storj.io/drpc/drpcerr"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -256,6 +258,18 @@ type DRPCReferralManagerServer interface {
 	GetTokens(context.Context, *GetTokensRequest) (*GetTokensResponse, error)
 	// RedeemToken saves newly created user info in referral manager
 	RedeemToken(context.Context, *RedeemTokenRequest) (*RedeemTokenResponse, error)
+}
+
+type DRPCReferralManagerUnimplementedServer struct{}
+
+// GetTokens retrieves a list of unredeemed tokens for a user
+func (s *DRPCReferralManagerUnimplementedServer) GetTokens(context.Context, *GetTokensRequest) (*GetTokensResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+// RedeemToken saves newly created user info in referral manager
+func (s *DRPCReferralManagerUnimplementedServer) RedeemToken(context.Context, *RedeemTokenRequest) (*RedeemTokenResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
 type DRPCReferralManagerDescription struct{}

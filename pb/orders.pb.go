@@ -5,6 +5,7 @@ package pb
 
 import (
 	context "context"
+	errors "errors"
 	fmt "fmt"
 	math "math"
 	time "time"
@@ -12,6 +13,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 
 	drpc "storj.io/drpc"
+	drpcerr "storj.io/drpc/drpcerr"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -824,6 +826,12 @@ func (x *drpcOrdersSettlementWithWindowClient) CloseAndRecv() (*SettlementWithWi
 
 type DRPCOrdersServer interface {
 	SettlementWithWindow(DRPCOrders_SettlementWithWindowStream) error
+}
+
+type DRPCOrdersUnimplementedServer struct{}
+
+func (s *DRPCOrdersUnimplementedServer) SettlementWithWindow(DRPCOrders_SettlementWithWindowStream) error {
+	return drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
 type DRPCOrdersDescription struct{}

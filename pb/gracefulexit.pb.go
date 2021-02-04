@@ -5,6 +5,7 @@ package pb
 
 import (
 	context "context"
+	errors "errors"
 	fmt "fmt"
 	math "math"
 	time "time"
@@ -12,6 +13,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 
 	drpc "storj.io/drpc"
+	drpcerr "storj.io/drpc/drpcerr"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -826,6 +828,18 @@ type DRPCSatelliteGracefulExitServer interface {
 	Process(DRPCSatelliteGracefulExit_ProcessStream) error
 	// GracefulExitFeasibility returns node's join date and satellites config's amount of months required for graceful exit to be allowed.
 	GracefulExitFeasibility(context.Context, *GracefulExitFeasibilityRequest) (*GracefulExitFeasibilityResponse, error)
+}
+
+type DRPCSatelliteGracefulExitUnimplementedServer struct{}
+
+// Process is called by storage nodes to initiate the graceful exit, get pieces to transfer, and receive exit status.
+func (s *DRPCSatelliteGracefulExitUnimplementedServer) Process(DRPCSatelliteGracefulExit_ProcessStream) error {
+	return drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+// GracefulExitFeasibility returns node's join date and satellites config's amount of months required for graceful exit to be allowed.
+func (s *DRPCSatelliteGracefulExitUnimplementedServer) GracefulExitFeasibility(context.Context, *GracefulExitFeasibilityRequest) (*GracefulExitFeasibilityResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
 type DRPCSatelliteGracefulExitDescription struct{}

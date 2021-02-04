@@ -5,6 +5,7 @@ package pb
 
 import (
 	context "context"
+	errors "errors"
 	fmt "fmt"
 	math "math"
 	time "time"
@@ -12,6 +13,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 
 	drpc "storj.io/drpc"
+	drpcerr "storj.io/drpc/drpcerr"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -704,6 +706,20 @@ type DRPCNodeStatsServer interface {
 	GetStats(context.Context, *GetStatsRequest) (*GetStatsResponse, error)
 	DailyStorageUsage(context.Context, *DailyStorageUsageRequest) (*DailyStorageUsageResponse, error)
 	PricingModel(context.Context, *PricingModelRequest) (*PricingModelResponse, error)
+}
+
+type DRPCNodeStatsUnimplementedServer struct{}
+
+func (s *DRPCNodeStatsUnimplementedServer) GetStats(context.Context, *GetStatsRequest) (*GetStatsResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCNodeStatsUnimplementedServer) DailyStorageUsage(context.Context, *DailyStorageUsageRequest) (*DailyStorageUsageResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCNodeStatsUnimplementedServer) PricingModel(context.Context, *PricingModelRequest) (*PricingModelResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
 type DRPCNodeStatsDescription struct{}

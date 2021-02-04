@@ -5,12 +5,14 @@ package pb
 
 import (
 	context "context"
+	errors "errors"
 	fmt "fmt"
 	math "math"
 
 	proto "github.com/gogo/protobuf/proto"
 
 	drpc "storj.io/drpc"
+	drpcerr "storj.io/drpc/drpcerr"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -161,6 +163,12 @@ func (c *drpcCertificatesClient) Sign(ctx context.Context, in *SigningRequest) (
 
 type DRPCCertificatesServer interface {
 	Sign(context.Context, *SigningRequest) (*SigningResponse, error)
+}
+
+type DRPCCertificatesUnimplementedServer struct{}
+
+func (s *DRPCCertificatesUnimplementedServer) Sign(context.Context, *SigningRequest) (*SigningResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
 type DRPCCertificatesDescription struct{}
