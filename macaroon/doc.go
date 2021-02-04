@@ -3,3 +3,6 @@
 
 // Package macaroon implements contextual caveats and authorization.
 package macaroon
+
+//go:generate protoc -I=../pb --lint_out=. --drpc_out=pluings=drpc,paths=source_relative,Mgoogle/protobuf/timestamp.proto=storj.io/common/pb:. -I=. types.proto
+//go:generate goimports -local storj.io -w .

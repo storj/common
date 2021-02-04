@@ -9,6 +9,8 @@ import (
 	time "time"
 
 	proto "github.com/gogo/protobuf/proto"
+
+	_ "storj.io/common/pb"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -21,7 +23,7 @@ var _ = time.Kitchen
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Caveat struct {
 	// if any of these three are set, disallow that type of access

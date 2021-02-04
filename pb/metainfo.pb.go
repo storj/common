@@ -24,7 +24,7 @@ var _ = time.Kitchen
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Object_Status int32
 
@@ -3309,67 +3309,67 @@ type isBatchRequestItem_Request interface {
 }
 
 type BatchRequestItem_BucketCreate struct {
-	BucketCreate *BucketCreateRequest `protobuf:"bytes,1,opt,name=bucket_create,json=bucketCreate,proto3,oneof"`
+	BucketCreate *BucketCreateRequest `protobuf:"bytes,1,opt,name=bucket_create,json=bucketCreate,proto3,oneof" json:"bucket_create,omitempty"`
 }
 type BatchRequestItem_BucketGet struct {
-	BucketGet *BucketGetRequest `protobuf:"bytes,2,opt,name=bucket_get,json=bucketGet,proto3,oneof"`
+	BucketGet *BucketGetRequest `protobuf:"bytes,2,opt,name=bucket_get,json=bucketGet,proto3,oneof" json:"bucket_get,omitempty"`
 }
 type BatchRequestItem_BucketDelete struct {
-	BucketDelete *BucketDeleteRequest `protobuf:"bytes,3,opt,name=bucket_delete,json=bucketDelete,proto3,oneof"`
+	BucketDelete *BucketDeleteRequest `protobuf:"bytes,3,opt,name=bucket_delete,json=bucketDelete,proto3,oneof" json:"bucket_delete,omitempty"`
 }
 type BatchRequestItem_BucketList struct {
-	BucketList *BucketListRequest `protobuf:"bytes,4,opt,name=bucket_list,json=bucketList,proto3,oneof"`
+	BucketList *BucketListRequest `protobuf:"bytes,4,opt,name=bucket_list,json=bucketList,proto3,oneof" json:"bucket_list,omitempty"`
 }
 type BatchRequestItem_ObjectBegin struct {
-	ObjectBegin *ObjectBeginRequest `protobuf:"bytes,6,opt,name=object_begin,json=objectBegin,proto3,oneof"`
+	ObjectBegin *ObjectBeginRequest `protobuf:"bytes,6,opt,name=object_begin,json=objectBegin,proto3,oneof" json:"object_begin,omitempty"`
 }
 type BatchRequestItem_ObjectCommit struct {
-	ObjectCommit *ObjectCommitRequest `protobuf:"bytes,7,opt,name=object_commit,json=objectCommit,proto3,oneof"`
+	ObjectCommit *ObjectCommitRequest `protobuf:"bytes,7,opt,name=object_commit,json=objectCommit,proto3,oneof" json:"object_commit,omitempty"`
 }
 type BatchRequestItem_ObjectGet struct {
-	ObjectGet *ObjectGetRequest `protobuf:"bytes,8,opt,name=object_get,json=objectGet,proto3,oneof"`
+	ObjectGet *ObjectGetRequest `protobuf:"bytes,8,opt,name=object_get,json=objectGet,proto3,oneof" json:"object_get,omitempty"`
 }
 type BatchRequestItem_ObjectList struct {
-	ObjectList *ObjectListRequest `protobuf:"bytes,9,opt,name=object_list,json=objectList,proto3,oneof"`
+	ObjectList *ObjectListRequest `protobuf:"bytes,9,opt,name=object_list,json=objectList,proto3,oneof" json:"object_list,omitempty"`
 }
 type BatchRequestItem_ObjectBeginDelete struct {
-	ObjectBeginDelete *ObjectBeginDeleteRequest `protobuf:"bytes,10,opt,name=object_begin_delete,json=objectBeginDelete,proto3,oneof"`
+	ObjectBeginDelete *ObjectBeginDeleteRequest `protobuf:"bytes,10,opt,name=object_begin_delete,json=objectBeginDelete,proto3,oneof" json:"object_begin_delete,omitempty"`
 }
 type BatchRequestItem_ObjectFinishDelete struct {
-	ObjectFinishDelete *ObjectFinishDeleteRequest `protobuf:"bytes,11,opt,name=object_finish_delete,json=objectFinishDelete,proto3,oneof"`
+	ObjectFinishDelete *ObjectFinishDeleteRequest `protobuf:"bytes,11,opt,name=object_finish_delete,json=objectFinishDelete,proto3,oneof" json:"object_finish_delete,omitempty"`
 }
 type BatchRequestItem_ObjectGetIps struct {
-	ObjectGetIps *ObjectGetIPsRequest `protobuf:"bytes,20,opt,name=object_get_ips,json=objectGetIps,proto3,oneof"`
+	ObjectGetIps *ObjectGetIPsRequest `protobuf:"bytes,20,opt,name=object_get_ips,json=objectGetIps,proto3,oneof" json:"object_get_ips,omitempty"`
 }
 type BatchRequestItem_PendingObjects struct {
-	PendingObjects *GetPendingObjectsRequest `protobuf:"bytes,21,opt,name=pending_objects,json=pendingObjects,proto3,oneof"`
+	PendingObjects *GetPendingObjectsRequest `protobuf:"bytes,21,opt,name=pending_objects,json=pendingObjects,proto3,oneof" json:"pending_objects,omitempty"`
 }
 type BatchRequestItem_PendingStreams struct {
-	PendingStreams *ObjectListPendingStreamsRequest `protobuf:"bytes,22,opt,name=pending_streams,json=pendingStreams,proto3,oneof"`
+	PendingStreams *ObjectListPendingStreamsRequest `protobuf:"bytes,22,opt,name=pending_streams,json=pendingStreams,proto3,oneof" json:"pending_streams,omitempty"`
 }
 type BatchRequestItem_SegmentBegin struct {
-	SegmentBegin *SegmentBeginRequest `protobuf:"bytes,12,opt,name=segment_begin,json=segmentBegin,proto3,oneof"`
+	SegmentBegin *SegmentBeginRequest `protobuf:"bytes,12,opt,name=segment_begin,json=segmentBegin,proto3,oneof" json:"segment_begin,omitempty"`
 }
 type BatchRequestItem_SegmentCommit struct {
-	SegmentCommit *SegmentCommitRequest `protobuf:"bytes,13,opt,name=segment_commit,json=segmentCommit,proto3,oneof"`
+	SegmentCommit *SegmentCommitRequest `protobuf:"bytes,13,opt,name=segment_commit,json=segmentCommit,proto3,oneof" json:"segment_commit,omitempty"`
 }
 type BatchRequestItem_SegmentMakeInline struct {
-	SegmentMakeInline *SegmentMakeInlineRequest `protobuf:"bytes,14,opt,name=segment_make_inline,json=segmentMakeInline,proto3,oneof"`
+	SegmentMakeInline *SegmentMakeInlineRequest `protobuf:"bytes,14,opt,name=segment_make_inline,json=segmentMakeInline,proto3,oneof" json:"segment_make_inline,omitempty"`
 }
 type BatchRequestItem_SegmentBeginDelete struct {
-	SegmentBeginDelete *SegmentBeginDeleteRequest `protobuf:"bytes,15,opt,name=segment_begin_delete,json=segmentBeginDelete,proto3,oneof"`
+	SegmentBeginDelete *SegmentBeginDeleteRequest `protobuf:"bytes,15,opt,name=segment_begin_delete,json=segmentBeginDelete,proto3,oneof" json:"segment_begin_delete,omitempty"`
 }
 type BatchRequestItem_SegmentFinishDelete struct {
-	SegmentFinishDelete *SegmentFinishDeleteRequest `protobuf:"bytes,16,opt,name=segment_finish_delete,json=segmentFinishDelete,proto3,oneof"`
+	SegmentFinishDelete *SegmentFinishDeleteRequest `protobuf:"bytes,16,opt,name=segment_finish_delete,json=segmentFinishDelete,proto3,oneof" json:"segment_finish_delete,omitempty"`
 }
 type BatchRequestItem_SegmentList struct {
-	SegmentList *SegmentListRequest `protobuf:"bytes,17,opt,name=segment_list,json=segmentList,proto3,oneof"`
+	SegmentList *SegmentListRequest `protobuf:"bytes,17,opt,name=segment_list,json=segmentList,proto3,oneof" json:"segment_list,omitempty"`
 }
 type BatchRequestItem_SegmentDownload struct {
-	SegmentDownload *SegmentDownloadRequest `protobuf:"bytes,18,opt,name=segment_download,json=segmentDownload,proto3,oneof"`
+	SegmentDownload *SegmentDownloadRequest `protobuf:"bytes,18,opt,name=segment_download,json=segmentDownload,proto3,oneof" json:"segment_download,omitempty"`
 }
 type BatchRequestItem_RevokeApiKey struct {
-	RevokeApiKey *RevokeAPIKeyRequest `protobuf:"bytes,19,opt,name=revoke_api_key,json=revokeApiKey,proto3,oneof"`
+	RevokeApiKey *RevokeAPIKeyRequest `protobuf:"bytes,19,opt,name=revoke_api_key,json=revokeApiKey,proto3,oneof" json:"revoke_api_key,omitempty"`
 }
 
 func (*BatchRequestItem_BucketCreate) isBatchRequestItem_Request()        {}
@@ -3548,9 +3548,9 @@ func (m *BatchRequestItem) GetRevokeApiKey() *RevokeAPIKeyRequest {
 	return nil
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*BatchRequestItem) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _BatchRequestItem_OneofMarshaler, _BatchRequestItem_OneofUnmarshaler, _BatchRequestItem_OneofSizer, []interface{}{
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*BatchRequestItem) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
 		(*BatchRequestItem_BucketCreate)(nil),
 		(*BatchRequestItem_BucketGet)(nil),
 		(*BatchRequestItem_BucketDelete)(nil),
@@ -3573,414 +3573,6 @@ func (*BatchRequestItem) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buff
 		(*BatchRequestItem_SegmentDownload)(nil),
 		(*BatchRequestItem_RevokeApiKey)(nil),
 	}
-}
-
-func _BatchRequestItem_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*BatchRequestItem)
-	// Request
-	switch x := m.Request.(type) {
-	case *BatchRequestItem_BucketCreate:
-		_ = b.EncodeVarint(1<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.BucketCreate); err != nil {
-			return err
-		}
-	case *BatchRequestItem_BucketGet:
-		_ = b.EncodeVarint(2<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.BucketGet); err != nil {
-			return err
-		}
-	case *BatchRequestItem_BucketDelete:
-		_ = b.EncodeVarint(3<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.BucketDelete); err != nil {
-			return err
-		}
-	case *BatchRequestItem_BucketList:
-		_ = b.EncodeVarint(4<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.BucketList); err != nil {
-			return err
-		}
-	case *BatchRequestItem_ObjectBegin:
-		_ = b.EncodeVarint(6<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectBegin); err != nil {
-			return err
-		}
-	case *BatchRequestItem_ObjectCommit:
-		_ = b.EncodeVarint(7<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectCommit); err != nil {
-			return err
-		}
-	case *BatchRequestItem_ObjectGet:
-		_ = b.EncodeVarint(8<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectGet); err != nil {
-			return err
-		}
-	case *BatchRequestItem_ObjectList:
-		_ = b.EncodeVarint(9<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectList); err != nil {
-			return err
-		}
-	case *BatchRequestItem_ObjectBeginDelete:
-		_ = b.EncodeVarint(10<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectBeginDelete); err != nil {
-			return err
-		}
-	case *BatchRequestItem_ObjectFinishDelete:
-		_ = b.EncodeVarint(11<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectFinishDelete); err != nil {
-			return err
-		}
-	case *BatchRequestItem_ObjectGetIps:
-		_ = b.EncodeVarint(20<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectGetIps); err != nil {
-			return err
-		}
-	case *BatchRequestItem_PendingObjects:
-		_ = b.EncodeVarint(21<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.PendingObjects); err != nil {
-			return err
-		}
-	case *BatchRequestItem_PendingStreams:
-		_ = b.EncodeVarint(22<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.PendingStreams); err != nil {
-			return err
-		}
-	case *BatchRequestItem_SegmentBegin:
-		_ = b.EncodeVarint(12<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentBegin); err != nil {
-			return err
-		}
-	case *BatchRequestItem_SegmentCommit:
-		_ = b.EncodeVarint(13<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentCommit); err != nil {
-			return err
-		}
-	case *BatchRequestItem_SegmentMakeInline:
-		_ = b.EncodeVarint(14<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentMakeInline); err != nil {
-			return err
-		}
-	case *BatchRequestItem_SegmentBeginDelete:
-		_ = b.EncodeVarint(15<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentBeginDelete); err != nil {
-			return err
-		}
-	case *BatchRequestItem_SegmentFinishDelete:
-		_ = b.EncodeVarint(16<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentFinishDelete); err != nil {
-			return err
-		}
-	case *BatchRequestItem_SegmentList:
-		_ = b.EncodeVarint(17<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentList); err != nil {
-			return err
-		}
-	case *BatchRequestItem_SegmentDownload:
-		_ = b.EncodeVarint(18<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentDownload); err != nil {
-			return err
-		}
-	case *BatchRequestItem_RevokeApiKey:
-		_ = b.EncodeVarint(19<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.RevokeApiKey); err != nil {
-			return err
-		}
-	case nil:
-	default:
-		return fmt.Errorf("BatchRequestItem.Request has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _BatchRequestItem_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*BatchRequestItem)
-	switch tag {
-	case 1: // Request.bucket_create
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(BucketCreateRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_BucketCreate{msg}
-		return true, err
-	case 2: // Request.bucket_get
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(BucketGetRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_BucketGet{msg}
-		return true, err
-	case 3: // Request.bucket_delete
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(BucketDeleteRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_BucketDelete{msg}
-		return true, err
-	case 4: // Request.bucket_list
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(BucketListRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_BucketList{msg}
-		return true, err
-	case 6: // Request.object_begin
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectBeginRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_ObjectBegin{msg}
-		return true, err
-	case 7: // Request.object_commit
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectCommitRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_ObjectCommit{msg}
-		return true, err
-	case 8: // Request.object_get
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectGetRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_ObjectGet{msg}
-		return true, err
-	case 9: // Request.object_list
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectListRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_ObjectList{msg}
-		return true, err
-	case 10: // Request.object_begin_delete
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectBeginDeleteRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_ObjectBeginDelete{msg}
-		return true, err
-	case 11: // Request.object_finish_delete
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectFinishDeleteRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_ObjectFinishDelete{msg}
-		return true, err
-	case 20: // Request.object_get_ips
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectGetIPsRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_ObjectGetIps{msg}
-		return true, err
-	case 21: // Request.pending_objects
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(GetPendingObjectsRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_PendingObjects{msg}
-		return true, err
-	case 22: // Request.pending_streams
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectListPendingStreamsRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_PendingStreams{msg}
-		return true, err
-	case 12: // Request.segment_begin
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentBeginRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_SegmentBegin{msg}
-		return true, err
-	case 13: // Request.segment_commit
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentCommitRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_SegmentCommit{msg}
-		return true, err
-	case 14: // Request.segment_make_inline
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentMakeInlineRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_SegmentMakeInline{msg}
-		return true, err
-	case 15: // Request.segment_begin_delete
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentBeginDeleteRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_SegmentBeginDelete{msg}
-		return true, err
-	case 16: // Request.segment_finish_delete
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentFinishDeleteRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_SegmentFinishDelete{msg}
-		return true, err
-	case 17: // Request.segment_list
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentListRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_SegmentList{msg}
-		return true, err
-	case 18: // Request.segment_download
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentDownloadRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_SegmentDownload{msg}
-		return true, err
-	case 19: // Request.revoke_api_key
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(RevokeAPIKeyRequest)
-		err := b.DecodeMessage(msg)
-		m.Request = &BatchRequestItem_RevokeApiKey{msg}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _BatchRequestItem_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*BatchRequestItem)
-	// Request
-	switch x := m.Request.(type) {
-	case *BatchRequestItem_BucketCreate:
-		s := proto.Size(x.BucketCreate)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_BucketGet:
-		s := proto.Size(x.BucketGet)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_BucketDelete:
-		s := proto.Size(x.BucketDelete)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_BucketList:
-		s := proto.Size(x.BucketList)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_ObjectBegin:
-		s := proto.Size(x.ObjectBegin)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_ObjectCommit:
-		s := proto.Size(x.ObjectCommit)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_ObjectGet:
-		s := proto.Size(x.ObjectGet)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_ObjectList:
-		s := proto.Size(x.ObjectList)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_ObjectBeginDelete:
-		s := proto.Size(x.ObjectBeginDelete)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_ObjectFinishDelete:
-		s := proto.Size(x.ObjectFinishDelete)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_ObjectGetIps:
-		s := proto.Size(x.ObjectGetIps)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_PendingObjects:
-		s := proto.Size(x.PendingObjects)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_PendingStreams:
-		s := proto.Size(x.PendingStreams)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_SegmentBegin:
-		s := proto.Size(x.SegmentBegin)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_SegmentCommit:
-		s := proto.Size(x.SegmentCommit)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_SegmentMakeInline:
-		s := proto.Size(x.SegmentMakeInline)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_SegmentBeginDelete:
-		s := proto.Size(x.SegmentBeginDelete)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_SegmentFinishDelete:
-		s := proto.Size(x.SegmentFinishDelete)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_SegmentList:
-		s := proto.Size(x.SegmentList)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_SegmentDownload:
-		s := proto.Size(x.SegmentDownload)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchRequestItem_RevokeApiKey:
-		s := proto.Size(x.RevokeApiKey)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
 }
 
 type BatchResponse struct {
@@ -4079,67 +3671,67 @@ type isBatchResponseItem_Response interface {
 }
 
 type BatchResponseItem_BucketCreate struct {
-	BucketCreate *BucketCreateResponse `protobuf:"bytes,1,opt,name=bucket_create,json=bucketCreate,proto3,oneof"`
+	BucketCreate *BucketCreateResponse `protobuf:"bytes,1,opt,name=bucket_create,json=bucketCreate,proto3,oneof" json:"bucket_create,omitempty"`
 }
 type BatchResponseItem_BucketGet struct {
-	BucketGet *BucketGetResponse `protobuf:"bytes,2,opt,name=bucket_get,json=bucketGet,proto3,oneof"`
+	BucketGet *BucketGetResponse `protobuf:"bytes,2,opt,name=bucket_get,json=bucketGet,proto3,oneof" json:"bucket_get,omitempty"`
 }
 type BatchResponseItem_BucketDelete struct {
-	BucketDelete *BucketDeleteResponse `protobuf:"bytes,3,opt,name=bucket_delete,json=bucketDelete,proto3,oneof"`
+	BucketDelete *BucketDeleteResponse `protobuf:"bytes,3,opt,name=bucket_delete,json=bucketDelete,proto3,oneof" json:"bucket_delete,omitempty"`
 }
 type BatchResponseItem_BucketList struct {
-	BucketList *BucketListResponse `protobuf:"bytes,4,opt,name=bucket_list,json=bucketList,proto3,oneof"`
+	BucketList *BucketListResponse `protobuf:"bytes,4,opt,name=bucket_list,json=bucketList,proto3,oneof" json:"bucket_list,omitempty"`
 }
 type BatchResponseItem_ObjectBegin struct {
-	ObjectBegin *ObjectBeginResponse `protobuf:"bytes,6,opt,name=object_begin,json=objectBegin,proto3,oneof"`
+	ObjectBegin *ObjectBeginResponse `protobuf:"bytes,6,opt,name=object_begin,json=objectBegin,proto3,oneof" json:"object_begin,omitempty"`
 }
 type BatchResponseItem_ObjectCommit struct {
-	ObjectCommit *ObjectCommitResponse `protobuf:"bytes,7,opt,name=object_commit,json=objectCommit,proto3,oneof"`
+	ObjectCommit *ObjectCommitResponse `protobuf:"bytes,7,opt,name=object_commit,json=objectCommit,proto3,oneof" json:"object_commit,omitempty"`
 }
 type BatchResponseItem_ObjectGet struct {
-	ObjectGet *ObjectGetResponse `protobuf:"bytes,8,opt,name=object_get,json=objectGet,proto3,oneof"`
+	ObjectGet *ObjectGetResponse `protobuf:"bytes,8,opt,name=object_get,json=objectGet,proto3,oneof" json:"object_get,omitempty"`
 }
 type BatchResponseItem_ObjectList struct {
-	ObjectList *ObjectListResponse `protobuf:"bytes,9,opt,name=object_list,json=objectList,proto3,oneof"`
+	ObjectList *ObjectListResponse `protobuf:"bytes,9,opt,name=object_list,json=objectList,proto3,oneof" json:"object_list,omitempty"`
 }
 type BatchResponseItem_ObjectBeginDelete struct {
-	ObjectBeginDelete *ObjectBeginDeleteResponse `protobuf:"bytes,10,opt,name=object_begin_delete,json=objectBeginDelete,proto3,oneof"`
+	ObjectBeginDelete *ObjectBeginDeleteResponse `protobuf:"bytes,10,opt,name=object_begin_delete,json=objectBeginDelete,proto3,oneof" json:"object_begin_delete,omitempty"`
 }
 type BatchResponseItem_ObjectFinishDelete struct {
-	ObjectFinishDelete *ObjectFinishDeleteResponse `protobuf:"bytes,11,opt,name=object_finish_delete,json=objectFinishDelete,proto3,oneof"`
+	ObjectFinishDelete *ObjectFinishDeleteResponse `protobuf:"bytes,11,opt,name=object_finish_delete,json=objectFinishDelete,proto3,oneof" json:"object_finish_delete,omitempty"`
 }
 type BatchResponseItem_ObjectGetIps struct {
-	ObjectGetIps *ObjectGetIPsResponse `protobuf:"bytes,20,opt,name=object_get_ips,json=objectGetIps,proto3,oneof"`
+	ObjectGetIps *ObjectGetIPsResponse `protobuf:"bytes,20,opt,name=object_get_ips,json=objectGetIps,proto3,oneof" json:"object_get_ips,omitempty"`
 }
 type BatchResponseItem_PendingObjects struct {
-	PendingObjects *GetPendingObjectsResponse `protobuf:"bytes,21,opt,name=pending_objects,json=pendingObjects,proto3,oneof"`
+	PendingObjects *GetPendingObjectsResponse `protobuf:"bytes,21,opt,name=pending_objects,json=pendingObjects,proto3,oneof" json:"pending_objects,omitempty"`
 }
 type BatchResponseItem_PendingStreams struct {
-	PendingStreams *ObjectListPendingStreamsResponse `protobuf:"bytes,22,opt,name=pending_streams,json=pendingStreams,proto3,oneof"`
+	PendingStreams *ObjectListPendingStreamsResponse `protobuf:"bytes,22,opt,name=pending_streams,json=pendingStreams,proto3,oneof" json:"pending_streams,omitempty"`
 }
 type BatchResponseItem_SegmentBegin struct {
-	SegmentBegin *SegmentBeginResponse `protobuf:"bytes,12,opt,name=segment_begin,json=segmentBegin,proto3,oneof"`
+	SegmentBegin *SegmentBeginResponse `protobuf:"bytes,12,opt,name=segment_begin,json=segmentBegin,proto3,oneof" json:"segment_begin,omitempty"`
 }
 type BatchResponseItem_SegmentCommit struct {
-	SegmentCommit *SegmentCommitResponse `protobuf:"bytes,13,opt,name=segment_commit,json=segmentCommit,proto3,oneof"`
+	SegmentCommit *SegmentCommitResponse `protobuf:"bytes,13,opt,name=segment_commit,json=segmentCommit,proto3,oneof" json:"segment_commit,omitempty"`
 }
 type BatchResponseItem_SegmentMakeInline struct {
-	SegmentMakeInline *SegmentMakeInlineResponse `protobuf:"bytes,14,opt,name=segment_make_inline,json=segmentMakeInline,proto3,oneof"`
+	SegmentMakeInline *SegmentMakeInlineResponse `protobuf:"bytes,14,opt,name=segment_make_inline,json=segmentMakeInline,proto3,oneof" json:"segment_make_inline,omitempty"`
 }
 type BatchResponseItem_SegmentBeginDelete struct {
-	SegmentBeginDelete *SegmentBeginDeleteResponse `protobuf:"bytes,15,opt,name=segment_begin_delete,json=segmentBeginDelete,proto3,oneof"`
+	SegmentBeginDelete *SegmentBeginDeleteResponse `protobuf:"bytes,15,opt,name=segment_begin_delete,json=segmentBeginDelete,proto3,oneof" json:"segment_begin_delete,omitempty"`
 }
 type BatchResponseItem_SegmentFinishDelete struct {
-	SegmentFinishDelete *SegmentFinishDeleteResponse `protobuf:"bytes,16,opt,name=segment_finish_delete,json=segmentFinishDelete,proto3,oneof"`
+	SegmentFinishDelete *SegmentFinishDeleteResponse `protobuf:"bytes,16,opt,name=segment_finish_delete,json=segmentFinishDelete,proto3,oneof" json:"segment_finish_delete,omitempty"`
 }
 type BatchResponseItem_SegmentList struct {
-	SegmentList *SegmentListResponse `protobuf:"bytes,17,opt,name=segment_list,json=segmentList,proto3,oneof"`
+	SegmentList *SegmentListResponse `protobuf:"bytes,17,opt,name=segment_list,json=segmentList,proto3,oneof" json:"segment_list,omitempty"`
 }
 type BatchResponseItem_SegmentDownload struct {
-	SegmentDownload *SegmentDownloadResponse `protobuf:"bytes,18,opt,name=segment_download,json=segmentDownload,proto3,oneof"`
+	SegmentDownload *SegmentDownloadResponse `protobuf:"bytes,18,opt,name=segment_download,json=segmentDownload,proto3,oneof" json:"segment_download,omitempty"`
 }
 type BatchResponseItem_RevokeApiKey struct {
-	RevokeApiKey *RevokeAPIKeyResponse `protobuf:"bytes,19,opt,name=revoke_api_key,json=revokeApiKey,proto3,oneof"`
+	RevokeApiKey *RevokeAPIKeyResponse `protobuf:"bytes,19,opt,name=revoke_api_key,json=revokeApiKey,proto3,oneof" json:"revoke_api_key,omitempty"`
 }
 
 func (*BatchResponseItem_BucketCreate) isBatchResponseItem_Response()        {}
@@ -4318,9 +3910,9 @@ func (m *BatchResponseItem) GetRevokeApiKey() *RevokeAPIKeyResponse {
 	return nil
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*BatchResponseItem) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _BatchResponseItem_OneofMarshaler, _BatchResponseItem_OneofUnmarshaler, _BatchResponseItem_OneofSizer, []interface{}{
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*BatchResponseItem) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
 		(*BatchResponseItem_BucketCreate)(nil),
 		(*BatchResponseItem_BucketGet)(nil),
 		(*BatchResponseItem_BucketDelete)(nil),
@@ -4343,414 +3935,6 @@ func (*BatchResponseItem) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buf
 		(*BatchResponseItem_SegmentDownload)(nil),
 		(*BatchResponseItem_RevokeApiKey)(nil),
 	}
-}
-
-func _BatchResponseItem_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*BatchResponseItem)
-	// Response
-	switch x := m.Response.(type) {
-	case *BatchResponseItem_BucketCreate:
-		_ = b.EncodeVarint(1<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.BucketCreate); err != nil {
-			return err
-		}
-	case *BatchResponseItem_BucketGet:
-		_ = b.EncodeVarint(2<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.BucketGet); err != nil {
-			return err
-		}
-	case *BatchResponseItem_BucketDelete:
-		_ = b.EncodeVarint(3<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.BucketDelete); err != nil {
-			return err
-		}
-	case *BatchResponseItem_BucketList:
-		_ = b.EncodeVarint(4<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.BucketList); err != nil {
-			return err
-		}
-	case *BatchResponseItem_ObjectBegin:
-		_ = b.EncodeVarint(6<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectBegin); err != nil {
-			return err
-		}
-	case *BatchResponseItem_ObjectCommit:
-		_ = b.EncodeVarint(7<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectCommit); err != nil {
-			return err
-		}
-	case *BatchResponseItem_ObjectGet:
-		_ = b.EncodeVarint(8<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectGet); err != nil {
-			return err
-		}
-	case *BatchResponseItem_ObjectList:
-		_ = b.EncodeVarint(9<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectList); err != nil {
-			return err
-		}
-	case *BatchResponseItem_ObjectBeginDelete:
-		_ = b.EncodeVarint(10<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectBeginDelete); err != nil {
-			return err
-		}
-	case *BatchResponseItem_ObjectFinishDelete:
-		_ = b.EncodeVarint(11<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectFinishDelete); err != nil {
-			return err
-		}
-	case *BatchResponseItem_ObjectGetIps:
-		_ = b.EncodeVarint(20<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ObjectGetIps); err != nil {
-			return err
-		}
-	case *BatchResponseItem_PendingObjects:
-		_ = b.EncodeVarint(21<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.PendingObjects); err != nil {
-			return err
-		}
-	case *BatchResponseItem_PendingStreams:
-		_ = b.EncodeVarint(22<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.PendingStreams); err != nil {
-			return err
-		}
-	case *BatchResponseItem_SegmentBegin:
-		_ = b.EncodeVarint(12<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentBegin); err != nil {
-			return err
-		}
-	case *BatchResponseItem_SegmentCommit:
-		_ = b.EncodeVarint(13<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentCommit); err != nil {
-			return err
-		}
-	case *BatchResponseItem_SegmentMakeInline:
-		_ = b.EncodeVarint(14<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentMakeInline); err != nil {
-			return err
-		}
-	case *BatchResponseItem_SegmentBeginDelete:
-		_ = b.EncodeVarint(15<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentBeginDelete); err != nil {
-			return err
-		}
-	case *BatchResponseItem_SegmentFinishDelete:
-		_ = b.EncodeVarint(16<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentFinishDelete); err != nil {
-			return err
-		}
-	case *BatchResponseItem_SegmentList:
-		_ = b.EncodeVarint(17<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentList); err != nil {
-			return err
-		}
-	case *BatchResponseItem_SegmentDownload:
-		_ = b.EncodeVarint(18<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.SegmentDownload); err != nil {
-			return err
-		}
-	case *BatchResponseItem_RevokeApiKey:
-		_ = b.EncodeVarint(19<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.RevokeApiKey); err != nil {
-			return err
-		}
-	case nil:
-	default:
-		return fmt.Errorf("BatchResponseItem.Response has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _BatchResponseItem_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*BatchResponseItem)
-	switch tag {
-	case 1: // Response.bucket_create
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(BucketCreateResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_BucketCreate{msg}
-		return true, err
-	case 2: // Response.bucket_get
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(BucketGetResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_BucketGet{msg}
-		return true, err
-	case 3: // Response.bucket_delete
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(BucketDeleteResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_BucketDelete{msg}
-		return true, err
-	case 4: // Response.bucket_list
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(BucketListResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_BucketList{msg}
-		return true, err
-	case 6: // Response.object_begin
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectBeginResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_ObjectBegin{msg}
-		return true, err
-	case 7: // Response.object_commit
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectCommitResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_ObjectCommit{msg}
-		return true, err
-	case 8: // Response.object_get
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectGetResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_ObjectGet{msg}
-		return true, err
-	case 9: // Response.object_list
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectListResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_ObjectList{msg}
-		return true, err
-	case 10: // Response.object_begin_delete
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectBeginDeleteResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_ObjectBeginDelete{msg}
-		return true, err
-	case 11: // Response.object_finish_delete
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectFinishDeleteResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_ObjectFinishDelete{msg}
-		return true, err
-	case 20: // Response.object_get_ips
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectGetIPsResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_ObjectGetIps{msg}
-		return true, err
-	case 21: // Response.pending_objects
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(GetPendingObjectsResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_PendingObjects{msg}
-		return true, err
-	case 22: // Response.pending_streams
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ObjectListPendingStreamsResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_PendingStreams{msg}
-		return true, err
-	case 12: // Response.segment_begin
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentBeginResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_SegmentBegin{msg}
-		return true, err
-	case 13: // Response.segment_commit
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentCommitResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_SegmentCommit{msg}
-		return true, err
-	case 14: // Response.segment_make_inline
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentMakeInlineResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_SegmentMakeInline{msg}
-		return true, err
-	case 15: // Response.segment_begin_delete
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentBeginDeleteResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_SegmentBeginDelete{msg}
-		return true, err
-	case 16: // Response.segment_finish_delete
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentFinishDeleteResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_SegmentFinishDelete{msg}
-		return true, err
-	case 17: // Response.segment_list
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentListResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_SegmentList{msg}
-		return true, err
-	case 18: // Response.segment_download
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(SegmentDownloadResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_SegmentDownload{msg}
-		return true, err
-	case 19: // Response.revoke_api_key
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(RevokeAPIKeyResponse)
-		err := b.DecodeMessage(msg)
-		m.Response = &BatchResponseItem_RevokeApiKey{msg}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _BatchResponseItem_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*BatchResponseItem)
-	// Response
-	switch x := m.Response.(type) {
-	case *BatchResponseItem_BucketCreate:
-		s := proto.Size(x.BucketCreate)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_BucketGet:
-		s := proto.Size(x.BucketGet)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_BucketDelete:
-		s := proto.Size(x.BucketDelete)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_BucketList:
-		s := proto.Size(x.BucketList)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_ObjectBegin:
-		s := proto.Size(x.ObjectBegin)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_ObjectCommit:
-		s := proto.Size(x.ObjectCommit)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_ObjectGet:
-		s := proto.Size(x.ObjectGet)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_ObjectList:
-		s := proto.Size(x.ObjectList)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_ObjectBeginDelete:
-		s := proto.Size(x.ObjectBeginDelete)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_ObjectFinishDelete:
-		s := proto.Size(x.ObjectFinishDelete)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_ObjectGetIps:
-		s := proto.Size(x.ObjectGetIps)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_PendingObjects:
-		s := proto.Size(x.PendingObjects)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_PendingStreams:
-		s := proto.Size(x.PendingStreams)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_SegmentBegin:
-		s := proto.Size(x.SegmentBegin)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_SegmentCommit:
-		s := proto.Size(x.SegmentCommit)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_SegmentMakeInline:
-		s := proto.Size(x.SegmentMakeInline)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_SegmentBeginDelete:
-		s := proto.Size(x.SegmentBeginDelete)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_SegmentFinishDelete:
-		s := proto.Size(x.SegmentFinishDelete)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_SegmentList:
-		s := proto.Size(x.SegmentList)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_SegmentDownload:
-		s := proto.Size(x.SegmentDownload)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *BatchResponseItem_RevokeApiKey:
-		s := proto.Size(x.RevokeApiKey)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
 }
 
 type RevokeAPIKeyRequest struct {

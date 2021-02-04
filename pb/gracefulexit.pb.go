@@ -24,7 +24,7 @@ var _ = time.Kitchen
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type TransferFailed_Error int32
 
@@ -302,10 +302,10 @@ type isStorageNodeMessage_Message interface {
 }
 
 type StorageNodeMessage_Succeeded struct {
-	Succeeded *TransferSucceeded `protobuf:"bytes,1,opt,name=succeeded,proto3,oneof"`
+	Succeeded *TransferSucceeded `protobuf:"bytes,1,opt,name=succeeded,proto3,oneof" json:"succeeded,omitempty"`
 }
 type StorageNodeMessage_Failed struct {
-	Failed *TransferFailed `protobuf:"bytes,2,opt,name=failed,proto3,oneof"`
+	Failed *TransferFailed `protobuf:"bytes,2,opt,name=failed,proto3,oneof" json:"failed,omitempty"`
 }
 
 func (*StorageNodeMessage_Succeeded) isStorageNodeMessage_Message() {}
@@ -332,78 +332,12 @@ func (m *StorageNodeMessage) GetFailed() *TransferFailed {
 	return nil
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*StorageNodeMessage) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _StorageNodeMessage_OneofMarshaler, _StorageNodeMessage_OneofUnmarshaler, _StorageNodeMessage_OneofSizer, []interface{}{
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*StorageNodeMessage) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
 		(*StorageNodeMessage_Succeeded)(nil),
 		(*StorageNodeMessage_Failed)(nil),
 	}
-}
-
-func _StorageNodeMessage_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*StorageNodeMessage)
-	// Message
-	switch x := m.Message.(type) {
-	case *StorageNodeMessage_Succeeded:
-		_ = b.EncodeVarint(1<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.Succeeded); err != nil {
-			return err
-		}
-	case *StorageNodeMessage_Failed:
-		_ = b.EncodeVarint(2<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.Failed); err != nil {
-			return err
-		}
-	case nil:
-	default:
-		return fmt.Errorf("StorageNodeMessage.Message has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _StorageNodeMessage_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*StorageNodeMessage)
-	switch tag {
-	case 1: // Message.succeeded
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(TransferSucceeded)
-		err := b.DecodeMessage(msg)
-		m.Message = &StorageNodeMessage_Succeeded{msg}
-		return true, err
-	case 2: // Message.failed
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(TransferFailed)
-		err := b.DecodeMessage(msg)
-		m.Message = &StorageNodeMessage_Failed{msg}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _StorageNodeMessage_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*StorageNodeMessage)
-	// Message
-	switch x := m.Message.(type) {
-	case *StorageNodeMessage_Succeeded:
-		s := proto.Size(x.Succeeded)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *StorageNodeMessage_Failed:
-		s := proto.Size(x.Failed)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
 }
 
 type NotReady struct {
@@ -662,19 +596,19 @@ type isSatelliteMessage_Message interface {
 }
 
 type SatelliteMessage_NotReady struct {
-	NotReady *NotReady `protobuf:"bytes,1,opt,name=not_ready,json=notReady,proto3,oneof"`
+	NotReady *NotReady `protobuf:"bytes,1,opt,name=not_ready,json=notReady,proto3,oneof" json:"not_ready,omitempty"`
 }
 type SatelliteMessage_TransferPiece struct {
-	TransferPiece *TransferPiece `protobuf:"bytes,2,opt,name=transfer_piece,json=transferPiece,proto3,oneof"`
+	TransferPiece *TransferPiece `protobuf:"bytes,2,opt,name=transfer_piece,json=transferPiece,proto3,oneof" json:"transfer_piece,omitempty"`
 }
 type SatelliteMessage_DeletePiece struct {
-	DeletePiece *DeletePiece `protobuf:"bytes,3,opt,name=delete_piece,json=deletePiece,proto3,oneof"`
+	DeletePiece *DeletePiece `protobuf:"bytes,3,opt,name=delete_piece,json=deletePiece,proto3,oneof" json:"delete_piece,omitempty"`
 }
 type SatelliteMessage_ExitCompleted struct {
-	ExitCompleted *ExitCompleted `protobuf:"bytes,4,opt,name=exit_completed,json=exitCompleted,proto3,oneof"`
+	ExitCompleted *ExitCompleted `protobuf:"bytes,4,opt,name=exit_completed,json=exitCompleted,proto3,oneof" json:"exit_completed,omitempty"`
 }
 type SatelliteMessage_ExitFailed struct {
-	ExitFailed *ExitFailed `protobuf:"bytes,5,opt,name=exit_failed,json=exitFailed,proto3,oneof"`
+	ExitFailed *ExitFailed `protobuf:"bytes,5,opt,name=exit_failed,json=exitFailed,proto3,oneof" json:"exit_failed,omitempty"`
 }
 
 func (*SatelliteMessage_NotReady) isSatelliteMessage_Message()      {}
@@ -725,135 +659,15 @@ func (m *SatelliteMessage) GetExitFailed() *ExitFailed {
 	return nil
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*SatelliteMessage) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _SatelliteMessage_OneofMarshaler, _SatelliteMessage_OneofUnmarshaler, _SatelliteMessage_OneofSizer, []interface{}{
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*SatelliteMessage) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
 		(*SatelliteMessage_NotReady)(nil),
 		(*SatelliteMessage_TransferPiece)(nil),
 		(*SatelliteMessage_DeletePiece)(nil),
 		(*SatelliteMessage_ExitCompleted)(nil),
 		(*SatelliteMessage_ExitFailed)(nil),
 	}
-}
-
-func _SatelliteMessage_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*SatelliteMessage)
-	// Message
-	switch x := m.Message.(type) {
-	case *SatelliteMessage_NotReady:
-		_ = b.EncodeVarint(1<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.NotReady); err != nil {
-			return err
-		}
-	case *SatelliteMessage_TransferPiece:
-		_ = b.EncodeVarint(2<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.TransferPiece); err != nil {
-			return err
-		}
-	case *SatelliteMessage_DeletePiece:
-		_ = b.EncodeVarint(3<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.DeletePiece); err != nil {
-			return err
-		}
-	case *SatelliteMessage_ExitCompleted:
-		_ = b.EncodeVarint(4<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ExitCompleted); err != nil {
-			return err
-		}
-	case *SatelliteMessage_ExitFailed:
-		_ = b.EncodeVarint(5<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.ExitFailed); err != nil {
-			return err
-		}
-	case nil:
-	default:
-		return fmt.Errorf("SatelliteMessage.Message has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _SatelliteMessage_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*SatelliteMessage)
-	switch tag {
-	case 1: // Message.not_ready
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(NotReady)
-		err := b.DecodeMessage(msg)
-		m.Message = &SatelliteMessage_NotReady{msg}
-		return true, err
-	case 2: // Message.transfer_piece
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(TransferPiece)
-		err := b.DecodeMessage(msg)
-		m.Message = &SatelliteMessage_TransferPiece{msg}
-		return true, err
-	case 3: // Message.delete_piece
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(DeletePiece)
-		err := b.DecodeMessage(msg)
-		m.Message = &SatelliteMessage_DeletePiece{msg}
-		return true, err
-	case 4: // Message.exit_completed
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ExitCompleted)
-		err := b.DecodeMessage(msg)
-		m.Message = &SatelliteMessage_ExitCompleted{msg}
-		return true, err
-	case 5: // Message.exit_failed
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ExitFailed)
-		err := b.DecodeMessage(msg)
-		m.Message = &SatelliteMessage_ExitFailed{msg}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _SatelliteMessage_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*SatelliteMessage)
-	// Message
-	switch x := m.Message.(type) {
-	case *SatelliteMessage_NotReady:
-		s := proto.Size(x.NotReady)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *SatelliteMessage_TransferPiece:
-		s := proto.Size(x.TransferPiece)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *SatelliteMessage_DeletePiece:
-		s := proto.Size(x.DeletePiece)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *SatelliteMessage_ExitCompleted:
-		s := proto.Size(x.ExitCompleted)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *SatelliteMessage_ExitFailed:
-		s := proto.Size(x.ExitFailed)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
 }
 
 func init() {

@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/calebcase/tmpfile v1.0.2-0.20200602150926-3af473ef8439
-	github.com/gogo/protobuf v1.2.1
+	github.com/gogo/protobuf v1.3.2
 	github.com/spacemonkeygo/monkit/v3 v3.0.7
 	github.com/stretchr/testify v1.4.0
 	github.com/zeebo/admission/v3 v3.0.2
