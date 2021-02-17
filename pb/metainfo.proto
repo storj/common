@@ -254,6 +254,13 @@ message ObjectGetRequest {
     bytes  bucket = 1;
     bytes  encrypted_path = 2;
     int32  version = 3;
+
+    // feature flag used by satellite to determine if uplink is
+    // using RS per object or RS per segment. If flag is set to false
+    // satellite will try to get RS from one of existing segments
+    // (e.g. first). If flag is set to true satellite won't return RS
+    // value in response for this request.
+    bool redundancy_scheme_per_segment = 4;
 }
 
 message ObjectGetResponse {
@@ -492,6 +499,7 @@ message SegmentDownloadResponse {
     int64 segment_size = 5;
     bytes encrypted_key_nonce = 6 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes encrypted_key = 7;
+    pointerdb.RedundancyScheme redundancy_scheme = 9;
 
     SegmentPosition next = 8; // can be nil
 }
