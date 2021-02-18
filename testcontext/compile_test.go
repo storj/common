@@ -12,9 +12,11 @@ import (
 )
 
 func TestCompile(t *testing.T) {
-	t.Skip("temporarily disabled")
 	ctx := testcontext.New(t)
 
-	exe := ctx.Compile("storj.io/storj/examples/grpc-debug")
+	exe := ctx.Compile("storj.io/common/testcontext/testdata/hello")
 	assert.NotEmpty(t, exe)
+
+	exemod := ctx.CompileAt("./testdata/hellomod", "test/hello")
+	assert.NotEmpty(t, exemod)
 }
