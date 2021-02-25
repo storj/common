@@ -4,13 +4,17 @@
 package uuid_test
 
 import (
+	"encoding/binary"
 	"encoding/json"
+	"math"
+	"runtime"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"storj.io/common/testrand"
 	"storj.io/common/uuid"
 )
 
@@ -81,4 +85,142 @@ func TestJSON(t *testing.T) {
 	err = json.Unmarshal([]byte(expected), &b)
 	require.NoError(t, err)
 	require.Equal(t, x, b)
+}
+
+func TestLess(t *testing.T) {
+	for k := 0; k < len(uuid.UUID{}); k++ {
+		var a, b uuid.UUID
+		a[k], b[k] = 1, 2
+		require.True(t, a.Less(b))
+	}
+
+	for k := 0; k < 100; k++ {
+		var x, y uuid.UUID
+		a, b := testrand.Int63n(math.MaxInt64), testrand.Int63n(math.MaxInt64)
+		binary.BigEndian.PutUint64(x[:], uint64(a))
+		binary.BigEndian.PutUint64(y[:], uint64(b))
+		require.Equal(t, a < b, x.Less(y))
+	}
+}
+
+func TestCompare(t *testing.T) {
+	var a uuid.UUID
+	require.Equal(t, 0, a.Compare(a))
+
+	for k := 0; k < len(uuid.UUID{}); k++ {
+		var a, b uuid.UUID
+		a[k], b[k] = 1, 2
+		require.Equal(t, 0, a.Compare(a))
+		require.Equal(t, 0, b.Compare(b))
+		require.Equal(t, -1, a.Compare(b))
+		require.Equal(t, 1, b.Compare(a))
+	}
+
+	for k := 0; k < 100; k++ {
+		var x, y uuid.UUID
+		a, b := testrand.Int63n(math.MaxInt64), testrand.Int63n(math.MaxInt64)
+		binary.BigEndian.PutUint64(x[:], uint64(a))
+		binary.BigEndian.PutUint64(y[:], uint64(b))
+		require.Equal(t, comp(a, b), x.Compare(y))
+	}
+}
+
+func comp(a, b int64) int {
+	if a < b {
+		return -1
+	} else if a > b {
+		return 1
+	}
+	return 0
+}
+
+func BenchmarkLess(b *testing.B) {
+	a := testrand.UUID()
+	b.Run("Same", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		for k := 0; k < b.N; k++ {
+			total += btoi(x.Less(y))
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("First", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[0]++
+		for k := 0; k < b.N; k++ {
+			total += btoi(x.Less(y))
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("Middle", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[len(y)/2]++
+		for k := 0; k < b.N; k++ {
+			total += btoi(x.Less(y))
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("Last", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[len(y)-1]++
+		for k := 0; k < b.N; k++ {
+			total += btoi(x.Less(y))
+		}
+		runtime.KeepAlive(total)
+	})
+}
+
+func btoi(v bool) int {
+	if v {
+		return 1
+	}
+	return 0
+}
+
+func BenchmarkCompare(b *testing.B) {
+	a := testrand.UUID()
+	b.Run("Same", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		for k := 0; k < b.N; k++ {
+			total += x.Compare(y)
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("First", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[0]++
+		for k := 0; k < b.N; k++ {
+			total += x.Compare(y)
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("Middle", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[len(y)/2]++
+		for k := 0; k < b.N; k++ {
+			total += x.Compare(y)
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("Last", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[len(y)-1]++
+		for k := 0; k < b.N; k++ {
+			total += x.Compare(y)
+		}
+		runtime.KeepAlive(total)
+	})
 }

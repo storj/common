@@ -6,6 +6,7 @@ package uuid
 
 import (
 	"crypto/rand"
+	"encoding/binary"
 	"encoding/hex"
 	"io"
 
@@ -101,6 +102,45 @@ func FromString(s string) (UUID, error) {
 	}
 
 	return uuid, nil
+}
+
+// Less returns whether uuid is smaller than other in lexicographic order.
+func (uuid UUID) Less(other UUID) bool {
+	a0, b0 := binary.BigEndian.Uint64(uuid[0:]), binary.BigEndian.Uint64(other[0:])
+	if a0 < b0 {
+		return true
+	} else if a0 > b0 {
+		return false
+	}
+
+	a1, b1 := binary.BigEndian.Uint64(uuid[8:]), binary.BigEndian.Uint64(other[8:])
+	if a1 < b1 {
+		return true
+	} else if a1 > b1 {
+		return false
+	}
+
+	return false
+}
+
+// Compare returns an integer comparing uuid and other lexicographically.
+// The result will be 0 if uuid==other, -1 if uuid < other, and +1 if uuid > other.
+func (uuid UUID) Compare(other UUID) int {
+	a0, b0 := binary.BigEndian.Uint64(uuid[0:]), binary.BigEndian.Uint64(other[0:])
+	if a0 < b0 {
+		return -1
+	} else if a0 > b0 {
+		return 1
+	}
+
+	a1, b1 := binary.BigEndian.Uint64(uuid[8:]), binary.BigEndian.Uint64(other[8:])
+	if a1 < b1 {
+		return -1
+	} else if a1 > b1 {
+		return 1
+	}
+
+	return 0
 }
 
 // MarshalText marshals UUID in `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` form.
