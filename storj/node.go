@@ -4,9 +4,9 @@
 package storj
 
 import (
-	"crypto/sha256"
 	"crypto/x509/pkix"
 	"database/sql/driver"
+	"encoding/binary"
 	"encoding/json"
 	"math/bits"
 
@@ -24,7 +24,7 @@ var (
 )
 
 // NodeIDSize is the byte length of a NodeID.
-const NodeIDSize = sha256.Size
+const NodeIDSize = 32
 
 // NodeID is a unique node identifier.
 type NodeID [NodeIDSize]byte
@@ -112,14 +112,69 @@ func (id NodeID) Bytes() []byte { return id[:] }
 
 // Less returns whether id is smaller than other in lexicographic order.
 func (id NodeID) Less(other NodeID) bool {
-	for k, v := range id {
-		if v < other[k] {
-			return true
-		} else if v > other[k] {
-			return false
-		}
+	a0, b0 := binary.BigEndian.Uint64(id[0:]), binary.BigEndian.Uint64(other[0:])
+	if a0 < b0 {
+		return true
+	} else if a0 > b0 {
+		return false
 	}
+
+	a1, b1 := binary.BigEndian.Uint64(id[8:]), binary.BigEndian.Uint64(other[8:])
+	if a1 < b1 {
+		return true
+	} else if a1 > b1 {
+		return false
+	}
+
+	a2, b2 := binary.BigEndian.Uint64(id[16:]), binary.BigEndian.Uint64(other[16:])
+	if a2 < b2 {
+		return true
+	} else if a2 > b2 {
+		return false
+	}
+
+	a3, b3 := binary.BigEndian.Uint64(id[24:]), binary.BigEndian.Uint64(other[24:])
+	if a3 < b3 {
+		return true
+	} else if a3 > b3 {
+		return false
+	}
+
 	return false
+}
+
+// Compare returns an integer comparing id and other lexicographically.
+// The result will be 0 if id==other, -1 if id < other, and +1 if id > other.
+func (id NodeID) Compare(other NodeID) int {
+	a0, b0 := binary.BigEndian.Uint64(id[0:]), binary.BigEndian.Uint64(other[0:])
+	if a0 < b0 {
+		return -1
+	} else if a0 > b0 {
+		return 1
+	}
+
+	a1, b1 := binary.BigEndian.Uint64(id[8:]), binary.BigEndian.Uint64(other[8:])
+	if a1 < b1 {
+		return -1
+	} else if a1 > b1 {
+		return 1
+	}
+
+	a2, b2 := binary.BigEndian.Uint64(id[16:]), binary.BigEndian.Uint64(other[16:])
+	if a2 < b2 {
+		return -1
+	} else if a2 > b2 {
+		return 1
+	}
+
+	a3, b3 := binary.BigEndian.Uint64(id[24:]), binary.BigEndian.Uint64(other[24:])
+	if a3 < b3 {
+		return -1
+	} else if a3 > b3 {
+		return 1
+	}
+
+	return 0
 }
 
 // Version returns the version of the identity format.

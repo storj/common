@@ -4,8 +4,11 @@
 package storj_test
 
 import (
+	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
+	"math"
+	"runtime"
 	"testing"
 
 	"github.com/btcsuite/btcutil/base58"
@@ -141,6 +144,37 @@ func TestNodeID_String_Version(t *testing.T) {
 	}
 }
 
+func TestNodeID_Compare(t *testing.T) {
+	var a storj.NodeID
+	require.Equal(t, 0, a.Compare(a))
+
+	for k := 0; k < len(storj.NodeID{}); k++ {
+		var a, b storj.NodeID
+		a[k], b[k] = 1, 2
+		require.Equal(t, 0, a.Compare(a))
+		require.Equal(t, 0, b.Compare(b))
+		require.Equal(t, -1, a.Compare(b))
+		require.Equal(t, 1, b.Compare(a))
+	}
+
+	for k := 0; k < 100; k++ {
+		var x, y storj.NodeID
+		a, b := testrand.Int63n(math.MaxInt64), testrand.Int63n(math.MaxInt64)
+		binary.BigEndian.PutUint64(x[:], uint64(a))
+		binary.BigEndian.PutUint64(y[:], uint64(b))
+		require.Equal(t, comp(a, b), x.Compare(y))
+	}
+}
+
+func comp(a, b int64) int {
+	if a < b {
+		return -1
+	} else if a > b {
+		return 1
+	}
+	return 0
+}
+
 func TestNodeID_MarshalJSON(t *testing.T) {
 	nodeID, _ := storj.NodeIDFromString("12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7")
 	buf, err := json.Marshal(nodeID)
@@ -198,4 +232,95 @@ func TestUniqueNodeIDs(t *testing.T) {
 
 	list := IDs.Unique()
 	assert.Equal(t, len(list), 5)
+}
+
+func BenchmarkNodeID_Less(b *testing.B) {
+	a := testrand.NodeID()
+	b.Run("Same", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		for k := 0; k < b.N; k++ {
+			total += btoi(x.Less(y))
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("First", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[0]++
+		for k := 0; k < b.N; k++ {
+			total += btoi(x.Less(y))
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("Middle", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[len(y)/2]++
+		for k := 0; k < b.N; k++ {
+			total += btoi(x.Less(y))
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("Last", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[len(y)-1]++
+		for k := 0; k < b.N; k++ {
+			total += btoi(x.Less(y))
+		}
+		runtime.KeepAlive(total)
+	})
+}
+
+func btoi(v bool) int {
+	if v {
+		return 1
+	}
+	return 0
+}
+
+func BenchmarkNodeID_Compare(b *testing.B) {
+	a := testrand.NodeID()
+	b.Run("Same", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		for k := 0; k < b.N; k++ {
+			total += x.Compare(y)
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("First", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[0]++
+		for k := 0; k < b.N; k++ {
+			total += x.Compare(y)
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("Middle", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[len(y)/2]++
+		for k := 0; k < b.N; k++ {
+			total += x.Compare(y)
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("Last", func(b *testing.B) {
+		total := 0
+		x, y := a, a
+		y[len(y)-1]++
+		for k := 0; k < b.N; k++ {
+			total += x.Compare(y)
+		}
+		runtime.KeepAlive(total)
+	})
 }
