@@ -20,6 +20,7 @@ type SegmentDownloadInfo struct {
 	Size                int64
 	EncryptedInlineData []byte
 	Next                SegmentPosition
+	Position            SegmentPosition
 	PiecePrivateKey     PiecePrivateKey
 
 	SegmentEncryption SegmentEncryption

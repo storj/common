@@ -2320,6 +2320,107 @@
             ]
           },
           {
+            "name": "ObjectDownloadRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "range",
+                "type": "Range"
+              }
+            ]
+          },
+          {
+            "name": "Range",
+            "fields": [
+              {
+                "id": 1,
+                "name": "start_end",
+                "type": "RangeStartEnd"
+              },
+              {
+                "id": 2,
+                "name": "start",
+                "type": "RangeStart"
+              },
+              {
+                "id": 3,
+                "name": "suffix",
+                "type": "RangeSuffix"
+              }
+            ]
+          },
+          {
+            "name": "RangeStartEnd",
+            "fields": [
+              {
+                "id": 1,
+                "name": "plain_start",
+                "type": "int64"
+              },
+              {
+                "id": 2,
+                "name": "plain_end",
+                "type": "int64"
+              }
+            ]
+          },
+          {
+            "name": "RangeStart",
+            "fields": [
+              {
+                "id": 1,
+                "name": "plain_start",
+                "type": "int64"
+              }
+            ]
+          },
+          {
+            "name": "RangeSuffix",
+            "fields": [
+              {
+                "id": 1,
+                "name": "plain_suffix",
+                "type": "int64"
+              }
+            ]
+          },
+          {
+            "name": "ObjectDownloadResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "object",
+                "type": "Object"
+              },
+              {
+                "id": 2,
+                "name": "segment_list",
+                "type": "SegmentListResponse"
+              },
+              {
+                "id": 3,
+                "name": "segment_download",
+                "type": "SegmentDownloadResponse",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
             "name": "ObjectGetRequest",
             "fields": [
               {
@@ -3370,6 +3471,11 @@
                 "id": 8,
                 "name": "next",
                 "type": "SegmentPosition"
+              },
+              {
+                "id": 10,
+                "name": "position",
+                "type": "SegmentPosition"
               }
             ]
           },
@@ -3456,6 +3562,11 @@
                 "id": 22,
                 "name": "pending_streams",
                 "type": "ObjectListPendingStreamsRequest"
+              },
+              {
+                "id": 23,
+                "name": "object_download",
+                "type": "ObjectDownloadRequest"
               },
               {
                 "id": 12,
@@ -3577,6 +3688,11 @@
                 "id": 22,
                 "name": "pending_streams",
                 "type": "ObjectListPendingStreamsResponse"
+              },
+              {
+                "id": 23,
+                "name": "object_download",
+                "type": "ObjectDownloadResponse"
               },
               {
                 "id": 12,
@@ -3707,6 +3823,11 @@
                 "name": "ListPendingObjectStreams",
                 "in_type": "ObjectListPendingStreamsRequest",
                 "out_type": "ObjectListPendingStreamsResponse"
+              },
+              {
+                "name": "DownloadObject",
+                "in_type": "ObjectDownloadRequest",
+                "out_type": "ObjectDownloadResponse"
               },
               {
                 "name": "BeginSegment",
