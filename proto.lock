@@ -3244,6 +3244,21 @@
                 "id": 2,
                 "name": "plain_size",
                 "type": "int64"
+              },
+              {
+                "id": 3,
+                "name": "created_at",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
               }
             ]
           },

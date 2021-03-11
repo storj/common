@@ -480,6 +480,7 @@ message SegmentListResponse {
 message SegmentListItem {
     SegmentPosition position = 1;
     int64 plain_size = 2;
+    google.protobuf.Timestamp created_at = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
 message SegmentDownloadRequest {
