@@ -3314,6 +3314,11 @@
                 "id": 3,
                 "name": "limit",
                 "type": "int32"
+              },
+              {
+                "id": 4,
+                "name": "range",
+                "type": "Range"
               }
             ]
           },
@@ -3344,6 +3349,11 @@
               {
                 "id": 2,
                 "name": "plain_size",
+                "type": "int64"
+              },
+              {
+                "id": 4,
+                "name": "plain_offset",
                 "type": "int64"
               },
               {

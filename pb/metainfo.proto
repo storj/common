@@ -293,7 +293,13 @@ message RangeSuffix {
 message ObjectDownloadResponse {
     Object object = 1;
     // segment_list is populated if the Object does not contain the necessary
-    // information for the client to derive segment information.
+    // information for the client to derive segment information. It only
+    // contains segments within the range specified in the
+    // ObjectDownloadRequest.
+    //
+    // If the `more` value in the response is true, additional request(s) to
+    // ListSegments, with range and cursor position set, may be necessary to
+    // fetch all the segment list items for this download.
     SegmentListResponse segment_list = 2;
     // segment_download will contain segment information for at least the first
     // segment within the requested range so that no additional calls to the
@@ -523,6 +529,9 @@ message SegmentListRequest {
     bytes stream_id                 = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
     SegmentPosition cursor_position = 2;
     int32 limit                     = 3;
+    // If range is included in the request, the response will only include
+    // SegmentListItems within the range specified.
+    Range range                     = 4;
 }
 
 message SegmentListResponse {
@@ -533,6 +542,7 @@ message SegmentListResponse {
 message SegmentListItem {
     SegmentPosition position = 1;
     int64 plain_size = 2;
+    int64 plain_offset = 4;
     google.protobuf.Timestamp created_at = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
