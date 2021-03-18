@@ -467,6 +467,8 @@ message SegmentCommitRequest {
     int64 size_encrypted_data = 4; // refers to segment size not piece size
     int64 plain_size = 6;
 
+    bytes encrypted_e_tag = 7;
+
     repeated SegmentPieceUploadResult upload_result = 5;
 }
 
@@ -491,6 +493,8 @@ message SegmentMakeInlineRequest {
 
     bytes encrypted_inline_data = 5;
     int64 plain_size = 6;
+
+    bytes encrypted_e_tag = 7;
 }
 
 message SegmentMakeInlineResponse {}
@@ -535,8 +539,9 @@ message SegmentListRequest {
 }
 
 message SegmentListResponse {
-    repeated SegmentListItem    items = 1;
-    bool                        more = 2;
+    repeated SegmentListItem items = 1;
+    bool more = 2;
+    encryption.EncryptionParameters encryption_parameters = 3;
 }
 
 message SegmentListItem {
@@ -544,6 +549,9 @@ message SegmentListItem {
     int64 plain_size = 2;
     int64 plain_offset = 4;
     google.protobuf.Timestamp created_at = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    bytes encrypted_e_tag = 5;
+    bytes encrypted_key_nonce = 6 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_key = 7;
 }
 
 message SegmentDownloadRequest {

@@ -3041,6 +3041,11 @@
                 "type": "int64"
               },
               {
+                "id": 7,
+                "name": "encrypted_e_tag",
+                "type": "bytes"
+              },
+              {
                 "id": 5,
                 "name": "upload_result",
                 "type": "SegmentPieceUploadResult",
@@ -3145,6 +3150,11 @@
                 "id": 6,
                 "name": "plain_size",
                 "type": "int64"
+              },
+              {
+                "id": 7,
+                "name": "encrypted_e_tag",
+                "type": "bytes"
               }
             ]
           },
@@ -3339,6 +3349,11 @@
                 "id": 2,
                 "name": "more",
                 "type": "bool"
+              },
+              {
+                "id": 3,
+                "name": "encryption_parameters",
+                "type": "encryption.EncryptionParameters"
               }
             ]
           },
@@ -3374,6 +3389,31 @@
                     "value": "false"
                   }
                 ]
+              },
+              {
+                "id": 5,
+                "name": "encrypted_e_tag",
+                "type": "bytes"
+              },
+              {
+                "id": 6,
+                "name": "encrypted_key_nonce",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "Nonce"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 7,
+                "name": "encrypted_key",
+                "type": "bytes"
               }
             ]
           },
