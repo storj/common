@@ -4,16 +4,11 @@
 package pb
 
 import (
-	context "context"
-	errors "errors"
 	fmt "fmt"
 	math "math"
 	time "time"
 
 	proto "github.com/gogo/protobuf/proto"
-
-	drpc "storj.io/drpc"
-	drpcerr "storj.io/drpc/drpcerr"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -771,115 +766,3 @@ var fileDescriptor_e0f5d4cf0fc9e41b = []byte{
 	0xd3, 0xa9, 0x8a, 0x27, 0xfa, 0x95, 0xdf, 0x02, 0x00, 0x00, 0xff, 0xff, 0x10, 0x96, 0x6e, 0xee,
 	0x9f, 0x0c, 0x00, 0x00,
 }
-
-// --- DRPC BEGIN ---
-
-type DRPCOrdersClient interface {
-	DRPCConn() drpc.Conn
-
-	SettlementWithWindow(ctx context.Context) (DRPCOrders_SettlementWithWindowClient, error)
-}
-
-type drpcOrdersClient struct {
-	cc drpc.Conn
-}
-
-func NewDRPCOrdersClient(cc drpc.Conn) DRPCOrdersClient {
-	return &drpcOrdersClient{cc}
-}
-
-func (c *drpcOrdersClient) DRPCConn() drpc.Conn { return c.cc }
-
-func (c *drpcOrdersClient) SettlementWithWindow(ctx context.Context) (DRPCOrders_SettlementWithWindowClient, error) {
-	stream, err := c.cc.NewStream(ctx, "/orders.Orders/SettlementWithWindow")
-	if err != nil {
-		return nil, err
-	}
-	x := &drpcOrdersSettlementWithWindowClient{stream}
-	return x, nil
-}
-
-type DRPCOrders_SettlementWithWindowClient interface {
-	drpc.Stream
-	Send(*SettlementRequest) error
-	CloseAndRecv() (*SettlementWithWindowResponse, error)
-}
-
-type drpcOrdersSettlementWithWindowClient struct {
-	drpc.Stream
-}
-
-func (x *drpcOrdersSettlementWithWindowClient) Send(m *SettlementRequest) error {
-	return x.MsgSend(m)
-}
-
-func (x *drpcOrdersSettlementWithWindowClient) CloseAndRecv() (*SettlementWithWindowResponse, error) {
-	if err := x.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(SettlementWithWindowResponse)
-	if err := x.MsgRecv(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-type DRPCOrdersServer interface {
-	SettlementWithWindow(DRPCOrders_SettlementWithWindowStream) error
-}
-
-type DRPCOrdersUnimplementedServer struct{}
-
-func (s *DRPCOrdersUnimplementedServer) SettlementWithWindow(DRPCOrders_SettlementWithWindowStream) error {
-	return drpcerr.WithCode(errors.New("Unimplemented"), 12)
-}
-
-type DRPCOrdersDescription struct{}
-
-func (DRPCOrdersDescription) NumMethods() int { return 1 }
-
-func (DRPCOrdersDescription) Method(n int) (string, drpc.Receiver, interface{}, bool) {
-	switch n {
-	case 0:
-		return "/orders.Orders/SettlementWithWindow",
-			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
-				return nil, srv.(DRPCOrdersServer).
-					SettlementWithWindow(
-						&drpcOrdersSettlementWithWindowStream{in1.(drpc.Stream)},
-					)
-			}, DRPCOrdersServer.SettlementWithWindow, true
-	default:
-		return "", nil, nil, false
-	}
-}
-
-func DRPCRegisterOrders(mux drpc.Mux, impl DRPCOrdersServer) error {
-	return mux.Register(impl, DRPCOrdersDescription{})
-}
-
-type DRPCOrders_SettlementWithWindowStream interface {
-	drpc.Stream
-	SendAndClose(*SettlementWithWindowResponse) error
-	Recv() (*SettlementRequest, error)
-}
-
-type drpcOrdersSettlementWithWindowStream struct {
-	drpc.Stream
-}
-
-func (x *drpcOrdersSettlementWithWindowStream) SendAndClose(m *SettlementWithWindowResponse) error {
-	if err := x.MsgSend(m); err != nil {
-		return err
-	}
-	return x.CloseSend()
-}
-
-func (x *drpcOrdersSettlementWithWindowStream) Recv() (*SettlementRequest, error) {
-	m := new(SettlementRequest)
-	if err := x.MsgRecv(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// --- DRPC END ---

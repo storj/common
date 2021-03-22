@@ -27,13 +27,13 @@ func NewTracingWrapper(conn drpc.Conn) *TracingWrapper {
 }
 
 // Invoke implements drpc.Conn's Invoke method with tracing information injected into the context.
-func (c *TracingWrapper) Invoke(ctx context.Context, rpc string, in drpc.Message, out drpc.Message) (err error) {
-	return c.Conn.Invoke(c.trace(ctx), rpc, in, out)
+func (c *TracingWrapper) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in drpc.Message, out drpc.Message) (err error) {
+	return c.Conn.Invoke(c.trace(ctx), rpc, enc, in, out)
 }
 
 // NewStream implements drpc.Conn's NewStream method with tracing information injected into the context.
-func (c *TracingWrapper) NewStream(ctx context.Context, rpc string) (_ drpc.Stream, err error) {
-	return c.Conn.NewStream(c.trace(ctx), rpc)
+func (c *TracingWrapper) NewStream(ctx context.Context, rpc string, enc drpc.Encoding) (_ drpc.Stream, err error) {
+	return c.Conn.NewStream(c.trace(ctx), rpc, enc)
 }
 
 // trace injects tracing related information into the context.

@@ -55,23 +55,23 @@ func (c *poolConn) Close() (err error) {
 
 // Invoke wraps drpc.Conn's Invoke method and keeps track of the number of
 // active RPCs.
-func (c *poolConn) Invoke(ctx context.Context, rpc string, in, out drpc.Message) (err error) {
+func (c *poolConn) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in, out drpc.Message) (err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	c.incActive()
 	defer c.decActive()
 
-	return c.Conn.Invoke(ctx, rpc, in, out)
+	return c.Conn.Invoke(ctx, rpc, enc, in, out)
 }
 
 // NewStream wraps drpc.Conn's NewStream method and keeps track of the number
 // of active RPCs.
-func (c *poolConn) NewStream(ctx context.Context, rpc string) (_ drpc.Stream, err error) {
+func (c *poolConn) NewStream(ctx context.Context, rpc string, enc drpc.Encoding) (_ drpc.Stream, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	c.incActive()
 
-	stream, err := c.Conn.NewStream(ctx, rpc)
+	stream, err := c.Conn.NewStream(ctx, rpc, enc)
 	if err != nil {
 		c.decActive()
 		return nil, err

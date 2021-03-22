@@ -6,7 +6,6 @@ package rpc
 import (
 	"crypto/tls"
 	"net"
-	"sync"
 	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
@@ -86,44 +85,3 @@ type tlsConnWrapper struct {
 
 // Close closes the underlying connection.
 func (t *tlsConnWrapper) Close() error { return t.underlying.Close() }
-
-//
-// drpc header conn wrapper
-//
-
-// drpcHeader is the first bytes we send on a connection so that the remote
-// knows to expect drpc on the wire instead of grpc.
-const drpcHeader = "DRPC!!!1"
-
-// drpcHeaderConn fulfills the net.Conn interface. On the first call to Write
-// it will write the drpcHeader.
-type drpcHeaderConn struct {
-	net.Conn
-	once sync.Once
-}
-
-// newDrpcHeaderConn returns a new *drpcHeaderConn.
-func newDrpcHeaderConn(conn net.Conn) *drpcHeaderConn {
-	return &drpcHeaderConn{
-		Conn: conn,
-	}
-}
-
-// Write will write buf to the underlying conn. If this is the first time Write
-// is called it will prepend the drpcHeader to the beginning of the write.
-func (d *drpcHeaderConn) Write(buf []byte) (n int, err error) {
-	var didOnce bool
-	d.once.Do(func() {
-		didOnce = true
-		header := []byte(drpcHeader)
-		n, err = d.Conn.Write(append(header, buf...))
-	})
-	if didOnce {
-		n -= len(drpcHeader)
-		if n < 0 {
-			n = 0
-		}
-		return n, err
-	}
-	return d.Conn.Write(buf)
-}

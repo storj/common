@@ -833,6 +833,10 @@
           {
             "name": "java_outer_classname",
             "value": "GoGoProtos"
+          },
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
           }
         ]
       }

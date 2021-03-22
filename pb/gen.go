@@ -66,7 +66,8 @@ func main() {
 		overrideImports := ",Mgoogle/protobuf/timestamp.proto=storj.io/common/pb"
 		args := []string{
 			"--lint_out=.",
-			"--drpc_out=plugins=drpc,paths=source_relative" + overrideImports + ":.",
+			"--gogo_out=paths=source_relative" + overrideImports + ":.",
+			"--go-drpc_out=protolib=github.com/gogo/protobuf,paths=source_relative:.",
 			"-I=.",
 		}
 		args = append(args, protofiles...)

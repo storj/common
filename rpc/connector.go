@@ -13,6 +13,7 @@ import (
 
 	"storj.io/common/memory"
 	"storj.io/common/netutil"
+	"storj.io/drpc/drpcmigrate"
 )
 
 // ConnectorConn is a type that creates a connection and establishes a tls
@@ -113,7 +114,7 @@ func (t TCPConnector) DialContextUnencrypted(ctx context.Context, address string
 	}
 
 	return &timedConn{
-		Conn: netutil.TrackClose(newDrpcHeaderConn(conn)),
+		Conn: netutil.TrackClose(drpcmigrate.NewHeaderConn(conn, drpcmigrate.DRPCHeader)),
 		rate: t.TransferRate,
 	}, nil
 }
