@@ -96,3 +96,26 @@ func TestKey_IsZero(t *testing.T) {
 		require.False(t, key.IsZero())
 	})
 }
+
+// TestNonce_Scan tests (*Nonce).Scan().
+func TestNonce_Scan(t *testing.T) {
+	tmp := storj.Nonce{}
+	require.Error(t, tmp.Scan(32))
+	require.Error(t, tmp.Scan(false))
+	require.Error(t, tmp.Scan([]byte{}))
+	require.NoError(t, tmp.Scan(tmp.Bytes()))
+}
+
+// TestEncryptedPrivateKey_Scan tests (*EncryptedPrivateKey).Scan().
+func TestEncryptedPrivateKey_Scan(t *testing.T) {
+	tmp := storj.EncryptedPrivateKey{}
+	require.Error(t, tmp.Scan(32))
+	require.Error(t, tmp.Scan(false))
+	require.NoError(t, tmp.Scan([]byte{}))
+	require.NoError(t, tmp.Scan([]byte{1, 2, 3, 4}))
+
+	ref := []byte{1, 2, 3}
+	require.NoError(t, tmp.Scan(ref))
+	ref[0] = 0xFF
+	require.Equal(t, storj.EncryptedPrivateKey{1, 2, 3}, tmp)
+}

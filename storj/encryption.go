@@ -4,6 +4,7 @@
 package storj
 
 import (
+	"database/sql/driver"
 	"encoding/base32"
 
 	"github.com/zeebo/errs"
@@ -159,5 +160,36 @@ func (nonce *Nonce) UnmarshalJSON(data []byte) error {
 	return err
 }
 
+// Value converts a Nonce to a database field.
+func (nonce Nonce) Value() (driver.Value, error) {
+	return nonce.Bytes(), nil
+}
+
+// Scan extracts a Nonce from a database field.
+func (nonce *Nonce) Scan(src interface{}) (err error) {
+	b, ok := src.([]byte)
+	if !ok {
+		return ErrNodeID.New("Nonce Scan expects []byte")
+	}
+	n, err := NonceFromBytes(b)
+	*nonce = n
+	return err
+}
+
 // EncryptedPrivateKey is a private key that has been encrypted.
 type EncryptedPrivateKey []byte
+
+// Value converts a EncryptedPrivateKey to a database field.
+func (pkey EncryptedPrivateKey) Value() (driver.Value, error) {
+	return append([]byte{}, pkey...), nil
+}
+
+// Scan extracts a EncryptedPrivateKey from a database field.
+func (pkey *EncryptedPrivateKey) Scan(src interface{}) (err error) {
+	b, ok := src.([]byte)
+	if !ok {
+		return ErrNodeID.New("EncryptedPrivateKey Scan expects []byte")
+	}
+	*pkey = append([]byte{}, b...)
+	return nil
+}
