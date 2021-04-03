@@ -7,7 +7,6 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/jackc/pgtype v1.6.2
 	github.com/jackc/pgx/v4 v4.10.1
-	github.com/jtolds/monkit-hw/v2 v2.0.0-20191108235325-141a0da276b3
 	github.com/jtolds/tracetagger/v2 v2.0.0-rc5
 	github.com/mattn/go-sqlite3 v1.14.6
 	github.com/spacemonkeygo/monkit/v3 v3.0.7-0.20200515175308-072401d8c752

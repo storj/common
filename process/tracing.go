@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 
-	hw "github.com/jtolds/monkit-hw/v2"
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/spacemonkeygo/monkit/v3/environment"
 	"go.uber.org/zap"
@@ -67,7 +66,6 @@ func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 		r = monkit.Default
 	}
 	environment.Register(r)
-	hw.Register(r)
 	r.ScopeNamed("env").Chain(monkit.StatSourceFunc(version.Build.Stats))
 
 	if !*tracingEnabled {
