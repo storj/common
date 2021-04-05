@@ -2353,8 +2353,8 @@
             "fields": [
               {
                 "id": 1,
-                "name": "start_end",
-                "type": "RangeStartEnd"
+                "name": "start_limit",
+                "type": "RangeStartLimit"
               },
               {
                 "id": 2,
@@ -2369,7 +2369,7 @@
             ]
           },
           {
-            "name": "RangeStartEnd",
+            "name": "RangeStartLimit",
             "fields": [
               {
                 "id": 1,
@@ -2378,7 +2378,7 @@
               },
               {
                 "id": 2,
-                "name": "plain_end",
+                "name": "plain_limit",
                 "type": "int64"
               }
             ]

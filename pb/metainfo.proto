@@ -260,21 +260,21 @@ message ObjectDownloadRequest {
 
 message Range {
     oneof Range {
-        RangeStartEnd start_end = 1;
+        RangeStartLimit start_limit = 1;
         RangeStart start = 2;
         RangeSuffix suffix = 3;
     }
 }
 
-// RangeStartEnd is used to specify a range where the plain start and end bytes
-// are known and explicitly specified by the client.
-message RangeStartEnd {
+// RangeStartLimit is used to specify a range where the plain start and limit bytes
+// are known and explicitly specified by the client. [start:limit)
+message RangeStartLimit {
     // plain_start is the byte index where the client wishes to begin reading
     // the data.
     int64 plain_start = 1;
 
-    // plain_end is the final byte (inclusive) the client wishes to read.
-    int64 plain_end = 2;
+    // plain_limit is the limit whereto the client wishes to read.
+    int64 plain_limit = 2;
 }
 
 // RangeStart is used to specify a range where the client provides the first
