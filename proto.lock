@@ -188,6 +188,11 @@
                 "id": 2,
                 "name": "ping_error_message",
                 "type": "string"
+              },
+              {
+                "id": 3,
+                "name": "ping_node_success_quic",
+                "type": "bool"
               }
             ]
           },

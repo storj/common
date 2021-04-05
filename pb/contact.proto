@@ -29,6 +29,7 @@ message CheckInRequest {
 message CheckInResponse {
     bool ping_node_success = 1;
     string ping_error_message = 2;
+    bool ping_node_success_quic = 3;
 }
 
 message GetTimeRequest {}
