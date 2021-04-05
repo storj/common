@@ -255,6 +255,9 @@ message ObjectDownloadRequest {
     bytes  bucket = 1;
     bytes  encrypted_object_key = 2;
 
+    // limit specifies the maximum number of segments to return.
+    int32 limit = 4;
+    // range of the object to download.
     Range range = 3;
 }
 

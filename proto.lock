@@ -2342,6 +2342,11 @@
                 "type": "bytes"
               },
               {
+                "id": 4,
+                "name": "limit",
+                "type": "int32"
+              },
+              {
                 "id": 3,
                 "name": "range",
                 "type": "Range"
