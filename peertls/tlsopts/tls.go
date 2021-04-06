@@ -64,6 +64,7 @@ func (opts *Options) tlsConfig(isServer bool, verificationFuncs ...peertls.PeerC
 		VerifyPeerCertificate: peertls.VerifyPeerFunc(
 			verificationFuncs...,
 		),
+		SessionTicketsDisabled: true, // thanks, jeff hodges! https://groups.google.com/g/golang-nuts/c/m3l0AesTdog/m/8CeLeVVyWw4J
 	}
 
 	if isServer {
