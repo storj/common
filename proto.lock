@@ -3507,6 +3507,11 @@
                 "type": "int64"
               },
               {
+                "id": 12,
+                "name": "plain_size",
+                "type": "int64"
+              },
+              {
                 "id": 5,
                 "name": "segment_size",
                 "type": "int64"

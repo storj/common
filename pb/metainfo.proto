@@ -572,6 +572,8 @@ message SegmentDownloadResponse {
 
     bytes encrypted_inline_data = 4;
     int64 plain_offset = 11;
+    int64 plain_size = 12;
+    // segment_size is encrypted_size.
     int64 segment_size = 5;
     bytes encrypted_key_nonce = 6 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes encrypted_key = 7;
