@@ -3502,6 +3502,11 @@
                 "type": "bytes"
               },
               {
+                "id": 11,
+                "name": "plain_offset",
+                "type": "int64"
+              },
+              {
                 "id": 5,
                 "name": "segment_size",
                 "type": "int64"
