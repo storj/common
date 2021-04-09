@@ -177,13 +177,18 @@ message Object {
     bytes encrypted_metadata               = 10;
     bytes encrypted_metadata_encrypted_key = 17;
 
+    // fixed_segment_size is 0 for migrated objects.
     int64                           fixed_segment_size    = 11;
     pointerdb.RedundancyScheme      redundancy_scheme     = 12;
     encryption.EncryptionParameters encryption_parameters = 13;
 
-    int64 total_size  = 14; // total size of object
-    int64 inline_size = 15; // size of inline part of object
-    int64 remote_size = 16; // size of remote part of object
+    // total_size of object.
+    int64 total_size  = 14;
+    // size of inline part of object.
+    int64 inline_size = 15;
+    // size of remote part of object.
+    int64 remote_size = 16;
+    // plain_size is 0 for migrated objects.
     int64 plain_size  = 18;
 }
 
@@ -359,6 +364,7 @@ message ObjectListItem {
     bytes  encrypted_metadata_nonce = 7 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes  encrypted_metadata       = 8;
 
+    // plain_size is 0 for migrated objects.
     int64 plain_size = 10;
 
     bytes  stream_id = 9 [(gogoproto.customtype) = "StreamID"];
@@ -549,7 +555,9 @@ message SegmentListResponse {
 
 message SegmentListItem {
     SegmentPosition position = 1;
+    // plain_size is 0 for migrated objects.
     int64 plain_size = 2;
+    // plain_offset is 0 for migrated objects.
     int64 plain_offset = 4;
     google.protobuf.Timestamp created_at = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     bytes encrypted_e_tag = 5;
@@ -571,7 +579,9 @@ message SegmentDownloadResponse {
     bytes                        private_key = 3 [(gogoproto.customtype) = "PiecePrivateKey", (gogoproto.nullable) = false];
 
     bytes encrypted_inline_data = 4;
+    // plain_offset is 0 for migrated objects.
     int64 plain_offset = 11;
+    // plain_size is 0 for migrated objects.
     int64 plain_size = 12;
     // segment_size is encrypted_size.
     int64 segment_size = 5;

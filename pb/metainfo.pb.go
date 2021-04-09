@@ -858,27 +858,32 @@ func (m *ProjectInfoResponse) GetProjectSalt() []byte {
 }
 
 type Object struct {
-	Bucket                        []byte                `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
-	EncryptedPath                 []byte                `protobuf:"bytes,2,opt,name=encrypted_path,json=encryptedPath,proto3" json:"encrypted_path,omitempty"`
-	Version                       int32                 `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
-	Status                        Object_Status         `protobuf:"varint,4,opt,name=status,proto3,enum=metainfo.Object_Status" json:"status,omitempty"`
-	StreamId                      StreamID              `protobuf:"bytes,5,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id"`
-	CreatedAt                     time.Time             `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3,stdtime" json:"created_at"`
-	StatusAt                      time.Time             `protobuf:"bytes,7,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
-	ExpiresAt                     time.Time             `protobuf:"bytes,8,opt,name=expires_at,json=expiresAt,proto3,stdtime" json:"expires_at"`
-	EncryptedMetadataNonce        Nonce                 `protobuf:"bytes,9,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
-	EncryptedMetadata             []byte                `protobuf:"bytes,10,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
-	EncryptedMetadataEncryptedKey []byte                `protobuf:"bytes,17,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
-	FixedSegmentSize              int64                 `protobuf:"varint,11,opt,name=fixed_segment_size,json=fixedSegmentSize,proto3" json:"fixed_segment_size,omitempty"`
-	RedundancyScheme              *RedundancyScheme     `protobuf:"bytes,12,opt,name=redundancy_scheme,json=redundancyScheme,proto3" json:"redundancy_scheme,omitempty"`
-	EncryptionParameters          *EncryptionParameters `protobuf:"bytes,13,opt,name=encryption_parameters,json=encryptionParameters,proto3" json:"encryption_parameters,omitempty"`
-	TotalSize                     int64                 `protobuf:"varint,14,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
-	InlineSize                    int64                 `protobuf:"varint,15,opt,name=inline_size,json=inlineSize,proto3" json:"inline_size,omitempty"`
-	RemoteSize                    int64                 `protobuf:"varint,16,opt,name=remote_size,json=remoteSize,proto3" json:"remote_size,omitempty"`
-	PlainSize                     int64                 `protobuf:"varint,18,opt,name=plain_size,json=plainSize,proto3" json:"plain_size,omitempty"`
-	XXX_NoUnkeyedLiteral          struct{}              `json:"-"`
-	XXX_unrecognized              []byte                `json:"-"`
-	XXX_sizecache                 int32                 `json:"-"`
+	Bucket                        []byte        `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	EncryptedPath                 []byte        `protobuf:"bytes,2,opt,name=encrypted_path,json=encryptedPath,proto3" json:"encrypted_path,omitempty"`
+	Version                       int32         `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
+	Status                        Object_Status `protobuf:"varint,4,opt,name=status,proto3,enum=metainfo.Object_Status" json:"status,omitempty"`
+	StreamId                      StreamID      `protobuf:"bytes,5,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id"`
+	CreatedAt                     time.Time     `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3,stdtime" json:"created_at"`
+	StatusAt                      time.Time     `protobuf:"bytes,7,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
+	ExpiresAt                     time.Time     `protobuf:"bytes,8,opt,name=expires_at,json=expiresAt,proto3,stdtime" json:"expires_at"`
+	EncryptedMetadataNonce        Nonce         `protobuf:"bytes,9,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
+	EncryptedMetadata             []byte        `protobuf:"bytes,10,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
+	EncryptedMetadataEncryptedKey []byte        `protobuf:"bytes,17,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
+	// fixed_segment_size is 0 for migrated objects.
+	FixedSegmentSize     int64                 `protobuf:"varint,11,opt,name=fixed_segment_size,json=fixedSegmentSize,proto3" json:"fixed_segment_size,omitempty"`
+	RedundancyScheme     *RedundancyScheme     `protobuf:"bytes,12,opt,name=redundancy_scheme,json=redundancyScheme,proto3" json:"redundancy_scheme,omitempty"`
+	EncryptionParameters *EncryptionParameters `protobuf:"bytes,13,opt,name=encryption_parameters,json=encryptionParameters,proto3" json:"encryption_parameters,omitempty"`
+	// total_size of object.
+	TotalSize int64 `protobuf:"varint,14,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
+	// size of inline part of object.
+	InlineSize int64 `protobuf:"varint,15,opt,name=inline_size,json=inlineSize,proto3" json:"inline_size,omitempty"`
+	// size of remote part of object.
+	RemoteSize int64 `protobuf:"varint,16,opt,name=remote_size,json=remoteSize,proto3" json:"remote_size,omitempty"`
+	// plain_size is 0 for migrated objects.
+	PlainSize            int64    `protobuf:"varint,18,opt,name=plain_size,json=plainSize,proto3" json:"plain_size,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *Object) Reset()         { *m = Object{} }
@@ -2105,11 +2110,12 @@ type ObjectListItem struct {
 	ExpiresAt              time.Time     `protobuf:"bytes,6,opt,name=expires_at,json=expiresAt,proto3,stdtime" json:"expires_at"`
 	EncryptedMetadataNonce Nonce         `protobuf:"bytes,7,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
 	EncryptedMetadata      []byte        `protobuf:"bytes,8,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
-	PlainSize              int64         `protobuf:"varint,10,opt,name=plain_size,json=plainSize,proto3" json:"plain_size,omitempty"`
-	StreamId               *StreamID     `protobuf:"bytes,9,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id,omitempty"`
-	XXX_NoUnkeyedLiteral   struct{}      `json:"-"`
-	XXX_unrecognized       []byte        `json:"-"`
-	XXX_sizecache          int32         `json:"-"`
+	// plain_size is 0 for migrated objects.
+	PlainSize            int64     `protobuf:"varint,10,opt,name=plain_size,json=plainSize,proto3" json:"plain_size,omitempty"`
+	StreamId             *StreamID `protobuf:"bytes,9,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
 func (m *ObjectListItem) Reset()         { *m = ObjectListItem{} }
@@ -3442,16 +3448,18 @@ func (m *SegmentListResponse) GetEncryptionParameters() *EncryptionParameters {
 }
 
 type SegmentListItem struct {
-	Position             *SegmentPosition `protobuf:"bytes,1,opt,name=position,proto3" json:"position,omitempty"`
-	PlainSize            int64            `protobuf:"varint,2,opt,name=plain_size,json=plainSize,proto3" json:"plain_size,omitempty"`
-	PlainOffset          int64            `protobuf:"varint,4,opt,name=plain_offset,json=plainOffset,proto3" json:"plain_offset,omitempty"`
-	CreatedAt            time.Time        `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3,stdtime" json:"created_at"`
-	EncryptedETag        []byte           `protobuf:"bytes,5,opt,name=encrypted_e_tag,json=encryptedETag,proto3" json:"encrypted_e_tag,omitempty"`
-	EncryptedKeyNonce    Nonce            `protobuf:"bytes,6,opt,name=encrypted_key_nonce,json=encryptedKeyNonce,proto3,customtype=Nonce" json:"encrypted_key_nonce"`
-	EncryptedKey         []byte           `protobuf:"bytes,7,opt,name=encrypted_key,json=encryptedKey,proto3" json:"encrypted_key,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
+	Position *SegmentPosition `protobuf:"bytes,1,opt,name=position,proto3" json:"position,omitempty"`
+	// plain_size is 0 for migrated objects.
+	PlainSize int64 `protobuf:"varint,2,opt,name=plain_size,json=plainSize,proto3" json:"plain_size,omitempty"`
+	// plain_offset is 0 for migrated objects.
+	PlainOffset          int64     `protobuf:"varint,4,opt,name=plain_offset,json=plainOffset,proto3" json:"plain_offset,omitempty"`
+	CreatedAt            time.Time `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3,stdtime" json:"created_at"`
+	EncryptedETag        []byte    `protobuf:"bytes,5,opt,name=encrypted_e_tag,json=encryptedETag,proto3" json:"encrypted_e_tag,omitempty"`
+	EncryptedKeyNonce    Nonce     `protobuf:"bytes,6,opt,name=encrypted_key_nonce,json=encryptedKeyNonce,proto3,customtype=Nonce" json:"encrypted_key_nonce"`
+	EncryptedKey         []byte    `protobuf:"bytes,7,opt,name=encrypted_key,json=encryptedKey,proto3" json:"encrypted_key,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
 func (m *SegmentListItem) Reset()         { *m = SegmentListItem{} }
@@ -3572,8 +3580,10 @@ type SegmentDownloadResponse struct {
 	AddressedLimits     []*AddressedOrderLimit `protobuf:"bytes,2,rep,name=addressed_limits,json=addressedLimits,proto3" json:"addressed_limits,omitempty"`
 	PrivateKey          PiecePrivateKey        `protobuf:"bytes,3,opt,name=private_key,json=privateKey,proto3,customtype=PiecePrivateKey" json:"private_key"`
 	EncryptedInlineData []byte                 `protobuf:"bytes,4,opt,name=encrypted_inline_data,json=encryptedInlineData,proto3" json:"encrypted_inline_data,omitempty"`
-	PlainOffset         int64                  `protobuf:"varint,11,opt,name=plain_offset,json=plainOffset,proto3" json:"plain_offset,omitempty"`
-	PlainSize           int64                  `protobuf:"varint,12,opt,name=plain_size,json=plainSize,proto3" json:"plain_size,omitempty"`
+	// plain_offset is 0 for migrated objects.
+	PlainOffset int64 `protobuf:"varint,11,opt,name=plain_offset,json=plainOffset,proto3" json:"plain_offset,omitempty"`
+	// plain_size is 0 for migrated objects.
+	PlainSize int64 `protobuf:"varint,12,opt,name=plain_size,json=plainSize,proto3" json:"plain_size,omitempty"`
 	// segment_size is encrypted_size.
 	SegmentSize       int64             `protobuf:"varint,5,opt,name=segment_size,json=segmentSize,proto3" json:"segment_size,omitempty"`
 	EncryptedKeyNonce Nonce             `protobuf:"bytes,6,opt,name=encrypted_key_nonce,json=encryptedKeyNonce,proto3,customtype=Nonce" json:"encrypted_key_nonce"`
