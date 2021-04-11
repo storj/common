@@ -40,7 +40,7 @@ func New(opts Options) *Pool {
 		Expiration:  opts.IdleExpiration,
 		Capacity:    opts.Capacity,
 		KeyCapacity: opts.KeyCapacity,
-		Stale:       func(conn interface{}) bool { return conn.(*poolConn).Closed() },
+		Stale:       func(conn interface{}) bool { return conn.(*poolConn).Stale() },
 		Close:       func(conn interface{}) error { return conn.(*poolConn).forceClose() },
 	})}
 
@@ -105,8 +105,9 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 
 	mon.Event("connection_dialed")
 	return &poolConn{
-		Conn: conn,
+		conn: conn,
 		pk:   pk,
 		pool: p,
+		dial: dial,
 	}, nil
 }

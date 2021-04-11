@@ -28,6 +28,12 @@ func NewDefaultManagerOptions() drpcmanager.Options {
 		Stream: drpcstream.Options{
 			SplitSize: (4096 * 2) - 256,
 		},
+		// TODO: bring back inactivity timeouts once more clients support closed
+		// connections more robustly. once we do bring it back, it should probably
+		// be long enough to account for a full segment upload to nodes in most
+		// cases (the satellite conn will be inactive while uploading to storage
+		// nodes). Maybe this should be a couple of minutes at least?
+		InactivityTimeout: -1,
 	}
 }
 
