@@ -5,6 +5,7 @@ package rpcpool
 
 import (
 	"context"
+	"crypto/tls"
 	"runtime"
 	"time"
 
@@ -40,8 +41,8 @@ func New(opts Options) *Pool {
 		Expiration:  opts.IdleExpiration,
 		Capacity:    opts.Capacity,
 		KeyCapacity: opts.KeyCapacity,
-		Stale:       func(conn interface{}) bool { return conn.(*poolConn).Stale() },
-		Close:       func(conn interface{}) error { return conn.(*poolConn).forceClose() },
+		Stale:       func(conn interface{}) bool { return conn.(drpc.Conn).Closed() },
+		Close:       func(conn interface{}) error { return conn.(drpc.Conn).Close() },
 	})}
 
 	// As much as I dislike finalizers, especially for cases where it handles
@@ -75,39 +76,67 @@ func (p *Pool) Close() error {
 	return p.cache.Close()
 }
 
+// get returns a drpc connection from the cache if possible, dialing if necessary.
+func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (conn drpc.Conn, err error) {
+	defer mon.Task()(&ctx)(&err)
+
+	if p != nil {
+		conn, ok := p.cache.Take(pk).(drpc.Conn)
+		if ok {
+			mon.Event("connection_from_cache")
+			return conn, nil
+		}
+	}
+
+	mon.Event("connection_dialed")
+	conn, err = dial(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return conn, nil
+}
+
 // Get looks up a connection with the same key and TLS options and returns it if it
 // exists. If it does not exist, it calls the dial function to create one. It is safe
 // to call on a nil receiver, and if so, always returns a dialed connection.
 func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options, dial Dialer) (
-	conn drpc.Conn, err error) {
+	conn drpc.Conn, state tls.ConnectionState, err error) {
 	defer mon.Task()(&ctx)(&err)
-
-	if p == nil {
-		mon.Event("connection_dialed")
-		return dial(ctx)
-	}
 
 	pk := poolKey{
 		key:        key,
 		tlsOptions: tlsOptions,
 	}
 
-	conn, ok := p.cache.Take(pk).(drpc.Conn)
-	if ok {
-		mon.Event("connection_from_cache")
-		return conn, nil
-	}
-
-	conn, err = dial(ctx)
+	conn, err = p.get(ctx, pk, dial)
 	if err != nil {
-		return nil, errs.Wrap(err)
+		return nil, tls.ConnectionState{}, err
 	}
 
-	mon.Event("connection_dialed")
+	state, err = getConnectionState(conn)
+	if err != nil {
+		_ = conn.Close()
+		return nil, tls.ConnectionState{}, err
+	}
+
+	// we immediately place the connection back into the pool so that it may be used
+	// by the returned poolConn.
+	p.cache.Put(pk, conn)
+
 	return &poolConn{
-		conn: conn,
 		pk:   pk,
-		pool: p,
 		dial: dial,
-	}, nil
+		pool: p,
+	}, state, nil
+}
+
+func getConnectionState(conn drpc.Conn) (tls.ConnectionState, error) {
+	type connectionState interface {
+		ConnectionState() tls.ConnectionState
+	}
+	if tr, ok := conn.Transport().(connectionState); ok {
+		return tr.ConnectionState(), nil
+	}
+	return tls.ConnectionState{}, errs.New("conn transport did not have tls connection state")
 }

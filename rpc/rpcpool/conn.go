@@ -5,113 +5,68 @@ package rpcpool
 
 import (
 	"context"
-	"sync"
+	"sync/atomic"
 
 	"github.com/zeebo/errs"
 
 	"storj.io/drpc"
 )
 
-// poolConn is a wrapper around a drpc.Conn that we cache.
+// poolConn grabs a connection from the pool for every invoke/stream.
 type poolConn struct {
-	mu     sync.Mutex
-	active int
-	conn   drpc.Conn
-	closed bool
+	closed int32 // atomic where 1 == true
 
 	pk   poolKey
-	pool *Pool
-
 	dial Dialer
+	pool *Pool
 }
 
-// forceClose closes the underlying drpc.Conn.
-func (c *poolConn) forceClose() error {
-	c.mu.Lock()
-	c.closed = true
-	conn := c.conn
-	c.mu.Unlock()
-
-	return conn.Close()
-}
-
-// Close checks to see if there are no active RPCs. If there are none, it places
-// the connection into the pool for reuse. Otherwise, it closes the current
-// live connection and prevents future ones from starting.
+// Close marks the poolConn as closed and will not allow future calls to Invoke or NewStream
+// to proceed. It does not stop any ongoing calls to Invoke or NewStream.
 func (c *poolConn) Close() (err error) {
-	c.mu.Lock()
-
-	if c.active != 0 {
-		c.closed = true
-		conn := c.conn
-		c.mu.Unlock()
-		return conn.Close()
-	}
-
-	c.mu.Unlock()
-	c.pool.cache.Put(c.pk, c)
+	atomic.StoreInt32(&c.closed, 1)
 	return nil
 }
 
-// Invoke wraps drpc.Conn's Invoke method and keeps track of the number of
-// active RPCs, starting a new valid connection if necessary.
+// Closed returns true if the poolConn is closed.
+func (c *poolConn) Closed() bool {
+	return atomic.LoadInt32(&c.closed) != 0
+}
+
+// Invoke acquires a connection from the pool, dialing if necessary, and issues the Invoke on that
+// connection. The connection is replaced into the pool after the invoke finishes.
 func (c *poolConn) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in, out drpc.Message) (err error) {
 	defer mon.Task()(&ctx)(&err)
 
-	c.mu.Lock()
-
-	// TODO: checking if the conn is open before the request is racy. it
-	// would be better to act on the returned error of conn.Invoke to
-	// find out if the connection closed before we started. We won't
-	// be able to do anything if data started going over a Write, but
-	// from an API perspective, drpc telling us the connection is closed
-	// on an attempt cuts down on some possible avoidable races.
-
-	conn, err := c.lockedGetConn(ctx)
-	if err != nil {
-		c.mu.Unlock()
-		return err
+	if c.Closed() {
+		return errs.New("connection closed")
 	}
 
-	c.active++
-	c.mu.Unlock()
-	defer func() {
-		c.mu.Lock()
-		c.active--
-		c.mu.Unlock()
-	}()
+	conn, err := c.pool.get(ctx, c.pk, c.dial)
+	if err != nil {
+		return err
+	}
+	defer c.pool.cache.Put(c.pk, conn)
 
 	return conn.Invoke(ctx, rpc, enc, in, out)
 }
 
-// NewStream wraps drpc.Conn's NewStream method and keeps track of the number
-// of active RPCs, creating a new connection if the current one is dead.
+// NewStream acquires a connection from the pool, dialing if necessary, and issues the NewStream on
+// that connection. The connection is replaced into the pool after the stream is finished.
 func (c *poolConn) NewStream(ctx context.Context, rpc string, enc drpc.Encoding) (_ drpc.Stream, err error) {
 	defer mon.Task()(&ctx)(&err)
 
-	c.mu.Lock()
+	if c.Closed() {
+		return nil, errs.New("connection closed")
+	}
 
-	// TODO: checking if the conn is open before the request is racy. it
-	// would be better to act on the returned error of conn.NewStream to
-	// find out if the connection closed before we started. We won't
-	// be able to do anything if data started going over a Write, but
-	// from an API perspective, drpc telling us the connection is closed
-	// on an attempt cuts down on some possible avoidable races.
-
-	conn, err := c.lockedGetConn(ctx)
+	conn, err := c.pool.get(ctx, c.pk, c.dial)
 	if err != nil {
-		c.mu.Unlock()
 		return nil, err
 	}
 
-	c.active++
-	c.mu.Unlock()
-
 	stream, err := conn.NewStream(ctx, rpc, enc)
 	if err != nil {
-		c.mu.Lock()
-		c.active--
-		c.mu.Unlock()
 		return nil, err
 	}
 
@@ -119,49 +74,13 @@ func (c *poolConn) NewStream(ctx context.Context, rpc string, enc drpc.Encoding)
 	// coming in for that stream anymore. it has been fully terminated.
 	go func() {
 		<-stream.Context().Done()
-		c.mu.Lock()
-		c.active--
-		c.mu.Unlock()
+		c.pool.cache.Put(c.pk, conn)
 	}()
 
 	return stream, nil
 }
 
-func (c *poolConn) lockedGetConn(ctx context.Context) (drpc.Conn, error) {
-	if c.conn.Closed() {
-		if c.closed {
-			return nil, errs.New("conn closed")
-		}
-		conn, err := c.dial(ctx)
-		if err != nil {
-			return nil, err
-		}
-		c.conn = conn
-	}
-	return c.conn, nil
-}
-
-// Closed returns if the conn is no longer usable.
-func (c *poolConn) Closed() bool {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	return c.closed
-}
-
-// Stale returns if the conn will have to dial again to be used, or is
-// no longer usable.
-func (c *poolConn) Stale() bool {
-	c.mu.Lock()
-	conn := c.conn
-	closed := c.closed
-	c.mu.Unlock()
-	return closed || conn.Closed()
-}
-
-// Transport returns the transport the conn is using.
+// Transport returns nil because it does not have a fixed transport.
 func (c *poolConn) Transport() drpc.Transport {
-	c.mu.Lock()
-	conn := c.conn
-	c.mu.Unlock()
-	return conn.Transport() // okay if this is a closed one.
+	return nil
 }

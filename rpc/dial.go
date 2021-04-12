@@ -149,18 +149,9 @@ func (d Dialer) dialPool(ctx context.Context, key string, dialer rpcpool.Dialer)
 		defer cancel()
 	}
 
-	conn, err := d.Pool.Get(ctx, key, d.TLSOptions, dialer)
+	conn, state, err := d.Pool.Get(ctx, key, d.TLSOptions, dialer)
 	if err != nil {
 		return nil, errs.Wrap(err)
-	}
-
-	type connectionState interface {
-		ConnectionState() tls.ConnectionState
-	}
-
-	var state tls.ConnectionState
-	if tr, ok := conn.Transport().(connectionState); ok {
-		state = tr.ConnectionState()
 	}
 
 	return &Conn{
