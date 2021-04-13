@@ -120,6 +120,11 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 		return nil, tls.ConnectionState{}, err
 	}
 
+	// if we have a nil pool, we always dial once and do not return a wrapped connection.
+	if p == nil {
+		return conn, state, nil
+	}
+
 	// we immediately place the connection back into the pool so that it may be used
 	// by the returned poolConn.
 	p.cache.Put(pk, conn)
