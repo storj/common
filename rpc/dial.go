@@ -154,8 +154,17 @@ func (d Dialer) dialPool(ctx context.Context, key string, dialer rpcpool.Dialer)
 		return nil, errs.Wrap(err)
 	}
 
+	// check that the tls connection state has been returned if we were dialing with
+	// tls options.
+	if state == nil {
+		if d.TLSOptions != nil {
+			return nil, errs.New("conn transport did not have tls connection state")
+		}
+		state = &tls.ConnectionState{}
+	}
+
 	return &Conn{
-		state: state,
+		state: *state,
 		Conn:  rpctracing.NewTracingWrapper(conn),
 	}, nil
 }

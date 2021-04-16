@@ -9,8 +9,6 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/zeebo/errs"
-
 	"storj.io/common/peertls/tlsopts"
 	"storj.io/common/rpc/rpccache"
 	"storj.io/drpc"
@@ -101,7 +99,7 @@ func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (conn drpc.Conn
 // exists. If it does not exist, it calls the dial function to create one. It is safe
 // to call on a nil receiver, and if so, always returns a dialed connection.
 func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options, dial Dialer) (
-	conn drpc.Conn, state tls.ConnectionState, err error) {
+	conn drpc.Conn, state *tls.ConnectionState, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	pk := poolKey{
@@ -111,14 +109,9 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 
 	conn, err = p.get(ctx, pk, dial)
 	if err != nil {
-		return nil, tls.ConnectionState{}, err
+		return nil, nil, err
 	}
-
-	state, err = getConnectionState(conn)
-	if err != nil {
-		_ = conn.Close()
-		return nil, tls.ConnectionState{}, err
-	}
+	state = getConnectionState(conn)
 
 	// if we have a nil pool, we always dial once and do not return a wrapped connection.
 	if p == nil {
@@ -136,12 +129,13 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 	}, state, nil
 }
 
-func getConnectionState(conn drpc.Conn) (tls.ConnectionState, error) {
+func getConnectionState(conn drpc.Conn) *tls.ConnectionState {
 	type connectionState interface {
 		ConnectionState() tls.ConnectionState
 	}
 	if tr, ok := conn.Transport().(connectionState); ok {
-		return tr.ConnectionState(), nil
+		state := tr.ConnectionState()
+		return &state
 	}
-	return tls.ConnectionState{}, errs.New("conn transport did not have tls connection state")
+	return nil
 }
