@@ -10,8 +10,8 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/zeebo/admission/v3 v3.0.2
 	github.com/zeebo/errs v1.2.2
-	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+	golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/sys v0.0.0-20210112091331-59c308dcf3cc
+	golang.org/x/sys v0.0.0-20210420072515-93ed5bcd2bfe
 	storj.io/drpc v0.0.20
 )
