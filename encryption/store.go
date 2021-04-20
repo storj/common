@@ -39,6 +39,8 @@ type Store struct {
 	// EncryptionBypass makes it so we can interoperate with
 	// the network without having encryption keys. paths will be encrypted but
 	// base64-encoded, and certain metadata will be unable to be retrieved.
+	// If it is true, all PathCiphers returned in the base for any Lookup call
+	// will return storj.EncNullBase64URL. Iterate is unaffected.
 	EncryptionBypass bool
 }
 
@@ -182,6 +184,13 @@ func (n *node) add(unenc, enc paths.Iterator, base *Base) error {
 func (s *Store) LookupUnencrypted(bucket string, path paths.Unencrypted) (
 	revealed map[string]string, consumed paths.Unencrypted, base *Base) {
 
+	// update the path cipher if we're in encryption bypass mode
+	defer func() {
+		if base != nil && s.EncryptionBypass {
+			base.PathCipher = storj.EncNullBase64URL
+		}
+	}()
+
 	root, ok := s.roots[bucket]
 	if ok {
 		var rawConsumed string
@@ -199,6 +208,13 @@ func (s *Store) LookupUnencrypted(bucket string, path paths.Unencrypted) (
 // an encrypted path exists for some prefix of the encrypted path.
 func (s *Store) LookupEncrypted(bucket string, path paths.Encrypted) (
 	revealed map[string]string, consumed paths.Encrypted, base *Base) {
+
+	// update the path cipher if we're in encryption bypass mode
+	defer func() {
+		if base != nil && s.EncryptionBypass {
+			base.PathCipher = storj.EncNullBase64URL
+		}
+	}()
 
 	root, ok := s.roots[bucket]
 	if ok {

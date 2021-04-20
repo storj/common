@@ -183,29 +183,51 @@ func TestStoreIterate(t *testing.T) {
 		storj.EncAESGCM,
 		storj.EncSecretBox,
 	} {
-		s := NewStore()
-		ep := paths.NewEncrypted
-		up := paths.NewUnencrypted
+		for _, bypass := range []bool{false, true} {
+			s := NewStore()
+			s.EncryptionBypass = bypass
 
-		expected := map[storeEntry]struct{}{
-			{"b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), pathCipher}:         {},
-			{"b1", up("u1/u2/u3/u4"), ep("e1/e2/e3/e4"), toKey("k4"), pathCipher}:   {},
-			{"b1", up("u1/u5"), ep("e1/e5"), toKey("k5"), pathCipher}:               {},
-			{"b1", up("u6"), ep("e6"), toKey("k6"), pathCipher}:                     {},
-			{"b1", up("u6/u7/u8"), ep("e6/e7/e8"), toKey("k8"), pathCipher}:         {},
-			{"b2", up("u1"), ep("e1'"), toKey("k1"), pathCipher}:                    {},
-			{"b3", paths.Unencrypted{}, paths.Encrypted{}, toKey("m1"), pathCipher}: {},
+			ep := paths.NewEncrypted
+			up := paths.NewUnencrypted
+
+			expected := map[storeEntry]struct{}{
+				{"b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), pathCipher}:         {},
+				{"b1", up("u1/u2/u3/u4"), ep("e1/e2/e3/e4"), toKey("k4"), pathCipher}:   {},
+				{"b1", up("u1/u5"), ep("e1/e5"), toKey("k5"), pathCipher}:               {},
+				{"b1", up("u6"), ep("e6"), toKey("k6"), pathCipher}:                     {},
+				{"b1", up("u6/u7/u8"), ep("e6/e7/e8"), toKey("k8"), pathCipher}:         {},
+				{"b2", up("u1"), ep("e1'"), toKey("k1"), pathCipher}:                    {},
+				{"b3", paths.Unencrypted{}, paths.Encrypted{}, toKey("m1"), pathCipher}: {},
+			}
+
+			for entry := range expected {
+				require.NoError(t, s.AddWithCipher(entry.bucket, entry.unenc, entry.enc, entry.key, entry.pathCipher))
+			}
+
+			got := make(map[storeEntry]struct{})
+			require.NoError(t, s.IterateWithCipher(func(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite) error {
+				got[storeEntry{bucket, unenc, enc, key, pathCipher}] = struct{}{}
+				return nil
+			}))
+			require.Equal(t, expected, got)
 		}
+	}
+}
 
-		for entry := range expected {
-			require.NoError(t, s.AddWithCipher(entry.bucket, entry.unenc, entry.enc, entry.key, entry.pathCipher))
-		}
+func TestStoreEncryptionBypass(t *testing.T) {
+	s := NewStore()
+	s.SetDefaultKey(new(storj.Key))
+	s.SetDefaultPathCipher(storj.EncAESGCM)
 
-		got := make(map[storeEntry]struct{})
-		require.NoError(t, s.IterateWithCipher(func(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite) error {
-			got[storeEntry{bucket, unenc, enc, key, pathCipher}] = struct{}{}
-			return nil
-		}))
-		require.Equal(t, expected, got)
+	{
+		_, _, base := s.LookupUnencrypted("bucket", paths.NewUnencrypted(""))
+		require.Equal(t, base.PathCipher, storj.EncAESGCM)
+	}
+
+	s.EncryptionBypass = true
+
+	{
+		_, _, base := s.LookupUnencrypted("bucket", paths.NewUnencrypted(""))
+		require.Equal(t, base.PathCipher, storj.EncNullBase64URL)
 	}
 }
