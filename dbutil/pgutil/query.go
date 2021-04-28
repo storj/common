@@ -193,8 +193,8 @@ var rxPostgresForeignKey = regexp.MustCompile(
 )
 
 var (
-	rxIndex        = regexp.MustCompile(`^CREATE( UNIQUE)? INDEX (.*) ON .*\.(.*) USING btree \((.*)\)$`)
-	indexDirRemove = strings.NewReplacer(" ASC", "", " DESC", "")
+	rxIndex                  = regexp.MustCompile(`^CREATE( UNIQUE)? INDEX (.*) ON .*\.(.*) USING btree \(([^)]+)\)(?: STORING \([^)]+\))?(?: WHERE (.+))?`)
+	indexDirNullsOrderRemove = strings.NewReplacer(" ASC", "", " DESC", "", " NULLS", "", " FIRST", "", " LAST", "")
 )
 
 func parseColumnDefault(columnDefault string) string {
@@ -272,7 +272,8 @@ func parseIndexDefinition(indexdef string) (*dbschema.Index, error) {
 		Name:    name,
 		Table:   matches[3],
 		Unique:  matches[1] != "",
-		Columns: strings.Split(indexDirRemove.Replace(matches[4]), ", "),
+		Columns: strings.Split(indexDirNullsOrderRemove.Replace(matches[4]), ", "),
+		Partial: matches[5],
 	}, nil
 }
 
