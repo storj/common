@@ -140,15 +140,11 @@ func encryptPath(bucket string, path paths.Unencrypted, pathCipher *storj.Cipher
 	return paths.NewEncrypted(builder.String()), nil
 }
 
-// EncryptPathRaw encrypts the path using the provided key directly. EncryptPath should be
-// preferred if possible.
-func EncryptPathRaw(raw string, cipher storj.CipherSuite, key *storj.Key) (string, error) {
-	if cipher == storj.EncNull {
-		return raw, nil
-	}
-
-	var pathB pathBuilder
-	for iter := paths.NewIterator(raw); !iter.Done(); {
+// EncryptIterator encrypts the iterator using the provided key directly, returning the
+// joined path. EncryptPath should be preferred if possible.
+func EncryptIterator(iter paths.Iterator, cipher storj.CipherSuite, key *storj.Key) (string, error) {
+	var pb pathBuilder
+	for !iter.Done() {
 		component := iter.Next()
 		encComponent, err := encryptPathComponent(component, cipher, key)
 		if err != nil {
@@ -158,9 +154,15 @@ func EncryptPathRaw(raw string, cipher storj.CipherSuite, key *storj.Key) (strin
 		if err != nil {
 			return "", errs.Wrap(err)
 		}
-		pathB.append(encComponent)
+		pb.append(encComponent)
 	}
-	return pathB.String(), nil
+	return pb.String(), nil
+}
+
+// EncryptPathRaw encrypts the path using the provided key directly. EncryptPath should be
+// preferred if possible.
+func EncryptPathRaw(raw string, cipher storj.CipherSuite, key *storj.Key) (string, error) {
+	return EncryptIterator(paths.NewIterator(raw), cipher, key)
 }
 
 // DecryptPathWithStoreCipher decrypts the path looking up keys and the cipher from the
@@ -233,15 +235,11 @@ func decryptPath(bucket string, path paths.Encrypted, pathCipher *storj.CipherSu
 	return paths.NewUnencrypted(builder.String()), nil
 }
 
-// DecryptPathRaw decrypts the path using the provided key directly. DecryptPath should be
-// preferred if possible.
-func DecryptPathRaw(raw string, cipher storj.CipherSuite, key *storj.Key) (string, error) {
-	if cipher == storj.EncNull {
-		return raw, nil
-	}
-
-	var pathB pathBuilder
-	for iter := paths.NewIterator(raw); !iter.Done(); {
+// DecryptIterator decrypts the iterator using the provided key directly, returning the
+// joined path. DecryptPath should be preferred if possible.
+func DecryptIterator(iter paths.Iterator, cipher storj.CipherSuite, key *storj.Key) (string, error) {
+	var pb pathBuilder
+	for !iter.Done() {
 		component := iter.Next()
 		unencComponent, err := decryptPathComponent(component, cipher, key)
 		if err != nil {
@@ -251,9 +249,15 @@ func DecryptPathRaw(raw string, cipher storj.CipherSuite, key *storj.Key) (strin
 		if err != nil {
 			return "", errs.Wrap(err)
 		}
-		pathB.append(unencComponent)
+		pb.append(unencComponent)
 	}
-	return pathB.String(), nil
+	return pb.String(), nil
+}
+
+// DecryptPathRaw decrypts the path using the provided key directly. DecryptPath should be
+// preferred if possible.
+func DecryptPathRaw(raw string, cipher storj.CipherSuite, key *storj.Key) (string, error) {
+	return DecryptIterator(paths.NewIterator(raw), cipher, key)
 }
 
 // DeriveContentKey returns the content key for the passed in path by looking up
