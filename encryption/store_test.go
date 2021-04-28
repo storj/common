@@ -14,12 +14,20 @@ import (
 	"storj.io/common/storj"
 )
 
-func printLookup(revealed map[string]string, consumed interface{ Raw() string }, base *Base) {
+func consumeIter(iter paths.Iterator) string {
+	var parts []string
+	for !iter.Done() {
+		parts = append(parts, iter.Next())
+	}
+	return fmt.Sprintf("%q", parts)
+}
+
+func printLookup(revealed map[string]string, remaining paths.Iterator, base *Base) {
 	if base == nil {
-		fmt.Printf("<%q, %q, nil>\n", revealed, consumed.Raw())
+		fmt.Printf("<%q, %s, nil>\n", revealed, consumeIter(remaining))
 	} else {
-		fmt.Printf("<%q, %q, <%q, %q, %q, %v>>\n",
-			revealed, consumed, base.Unencrypted, base.Encrypted, base.Key[:2], base.Default)
+		fmt.Printf("<%q, %s, <%q, %q, %q, %v>>\n",
+			revealed, consumeIter(remaining), base.Unencrypted, base.Encrypted, base.Key[:2], base.Default)
 	}
 }
 
@@ -72,23 +80,23 @@ func ExampleStore() {
 
 	// output:
 	//
-	// <map["e2":"u2" "e5":"u5"], "u1", nil>
-	// <map["e4":"u4"], "u1/u2/u3", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
-	// <map[], "u1/u2/u3/", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
-	// <map[], "u1/u2/u3/u4", <"u1/u2/u3/u4", "e1/e2/e3/e4", "k4", false>>
-	// <map["e8":"u8"], "u6/", <"u6", "e6", "k6", false>>
-	// <map[], "u1", <"u1", "e1'", "k1", false>>
-	// <map[], "", <"", "", "m1", false>>
-	// <map[], "", <"", "", "m1", false>>
+	// <map["e2":"u2" "e5":"u5"], [], nil>
+	// <map["e4":"u4"], [], <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], ["u6"], <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], [], <"u1/u2/u3/u4", "e1/e2/e3/e4", "k4", false>>
+	// <map["e8":"u8"], ["u7"], <"u6", "e6", "k6", false>>
+	// <map[], [], <"u1", "e1'", "k1", false>>
+	// <map[], [], <"", "", "m1", false>>
+	// <map[], ["z1"], <"", "", "m1", false>>
 	//
-	// <map["u2":"e2" "u5":"e5"], "e1", nil>
-	// <map["u4":"e4"], "e1/e2/e3", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
-	// <map[], "e1/e2/e3/", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
-	// <map[], "e1/e2/e3/e4", <"u1/u2/u3/u4", "e1/e2/e3/e4", "k4", false>>
-	// <map["u8":"e8"], "e6/", <"u6", "e6", "k6", false>>
-	// <map[], "e1'", <"u1", "e1'", "k1", false>>
-	// <map[], "", <"", "", "m1", false>>
-	// <map[], "", <"", "", "m1", false>>
+	// <map["u2":"e2" "u5":"e5"], [], nil>
+	// <map["u4":"e4"], [], <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], ["e6"], <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], [], <"u1/u2/u3/u4", "e1/e2/e3/e4", "k4", false>>
+	// <map["u8":"e8"], ["e7"], <"u6", "e6", "k6", false>>
+	// <map[], [], <"u1", "e1'", "k1", false>>
+	// <map[], [], <"", "", "m1", false>>
+	// <map[], ["z1"], <"", "", "m1", false>>
 }
 
 func ExampleStore_SetDefaultKey() {
@@ -114,15 +122,15 @@ func ExampleStore_SetDefaultKey() {
 
 	// output:
 	//
-	// <map[], "", <"", "", "dk", true>>
-	// <map[], "", <"", "", "dk", true>>
-	// <map[], "u1/u2/u3", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
-	// <map[], "u1/u2/u3/", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], ["u1"], <"", "", "dk", true>>
+	// <map[], ["u1" "u2"], <"", "", "dk", true>>
+	// <map[], [], <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], ["u4"], <"u1/u2/u3", "e1/e2/e3", "k3", false>>
 	//
-	// <map[], "", <"", "", "dk", true>>
-	// <map[], "", <"", "", "dk", true>>
-	// <map[], "e1/e2/e3", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
-	// <map[], "e1/e2/e3/", <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], ["e1"], <"", "", "dk", true>>
+	// <map[], ["e1" "e2"], <"", "", "dk", true>>
+	// <map[], [], <"u1/u2/u3", "e1/e2/e3", "k3", false>>
+	// <map[], ["e4"], <"u1/u2/u3", "e1/e2/e3", "k3", false>>
 }
 
 func TestStoreErrors(t *testing.T) {

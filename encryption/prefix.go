@@ -28,14 +28,13 @@ type PrefixInfo struct {
 
 // GetPrefixInfo returns the PrefixInfo for some unencrypted path inside of a bucket.
 func GetPrefixInfo(bucket string, path paths.Unencrypted, store *Store) (pi *PrefixInfo, err error) {
-	_, consumed, base := store.LookupUnencrypted(bucket, path)
+	_, remaining, base := store.LookupUnencrypted(bucket, path)
 	if base == nil {
-		return nil, ErrMissingDecryptionBase.New("%q/%q", bucket, path)
+		return nil, ErrMissingEncryptionBase.New("%q/%q", bucket, path)
 	}
 
-	remaining, ok := path.Consume(consumed)
-	if !ok {
-		return nil, errs.New("unable to encrypt bucket path: %q/%q", bucket, path)
+	if path.Valid() && remaining.Done() {
+		return nil, ErrMissingEncryptionBase.New("no parent: %q/%q", bucket, path)
 	}
 
 	// if we're using the default base (meaning the default key), we need
@@ -48,30 +47,34 @@ func GetPrefixInfo(bucket string, path paths.Unencrypted, store *Store) (pi *Pre
 		}
 	}
 
-	pi = &PrefixInfo{
-		Bucket: bucket,
-		Cipher: base.PathCipher,
+	var (
+		pathUnenc   pathBuilder
+		pathEnc     pathBuilder
+		parentUnenc pathBuilder
+		parentEnc   pathBuilder
+	)
 
-		PathUnenc: path,
-		PathKey:   *key,
+	pathKey := *key
+	parentKey := *key
 
-		ParentKey: *key,
+	if !base.Default && base.Encrypted.Valid() {
+		pathUnenc.append(base.Unencrypted.Raw())
+		pathEnc.append(base.Encrypted.Raw())
+		parentUnenc.append(base.Unencrypted.Raw())
+		parentEnc.append(base.Encrypted.Raw())
 	}
 
 	var componentUnenc string
 	var componentEnc string
-	var pathEnc pathBuilder
-	var parentEnc pathBuilder
-	var parentUnenc pathBuilder
 
-	for iter, i := remaining.Iterator(), 0; !iter.Done(); i++ {
+	for i := 0; !remaining.Done(); i++ {
 		if i > 0 {
+			parentKey = *key
 			parentEnc.append(componentEnc)
 			parentUnenc.append(componentUnenc)
-			pi.ParentKey = *key
 		}
 
-		componentUnenc = iter.Next()
+		componentUnenc = remaining.Next()
 
 		componentEnc, err = encryptPathComponent(componentUnenc, base.PathCipher, key)
 		if err != nil {
@@ -82,13 +85,21 @@ func GetPrefixInfo(bucket string, path paths.Unencrypted, store *Store) (pi *Pre
 			return nil, errs.Wrap(err)
 		}
 
+		pathKey = *key
+		pathUnenc.append(componentUnenc)
 		pathEnc.append(componentEnc)
-		pi.PathKey = *key
 	}
 
-	pi.PathEnc = paths.NewEncrypted(pathEnc.String())
-	pi.ParentUnenc = paths.NewUnencrypted(parentUnenc.String())
-	pi.ParentEnc = paths.NewEncrypted(parentEnc.String())
+	return &PrefixInfo{
+		Bucket: bucket,
+		Cipher: base.PathCipher,
 
-	return pi, nil
+		PathKey:   pathKey,
+		PathUnenc: pathUnenc.Unencrypted(),
+		PathEnc:   pathEnc.Encrypted(),
+
+		ParentKey:   parentKey,
+		ParentUnenc: parentUnenc.Unencrypted(),
+		ParentEnc:   parentEnc.Encrypted(),
+	}, nil
 }

@@ -25,12 +25,12 @@ import (
 //
 // then the following lookups have outputs:
 //
-//    b1, u1          => <{e2:u2, e5:u5}, u1, nil>
-//    b1, u1/u2/u3    => <{e4:u4}, u1/u2/u3, <u1/u2/u3, e1/e2/e3, k3>>
-//    b1, u1/u2/u3/u6 => <{}, u1/u2/u3/, <u1/u2/u3, e1/e2/e3, k3>>
-//    b1, u1/u2/u3/u4 => <{}, u1/u2/u3/u4, <u1/u2/u3/u4, e1/e2/e3/e4, k4>>
-//    b1, u6/u7       => <{e8:u8}, u6/, <u6, e6, k6>>
-//    b2, u1          => <{}, u1, <u1, e1', k1'>>
+//    b1, u1          => <{e2:u2, e5:u5}, [], nil>
+//    b1, u1/u2/u3    => <{e4:u4}, [], <u1/u2/u3, e1/e2/e3, k3>>
+//    b1, u1/u2/u3/u6 => <{}, [u6], <u1/u2/u3, e1/e2/e3, k3>>
+//    b1, u1/u2/u3/u4 => <{}, [], <u1/u2/u3/u4, e1/e2/e3/e4, k4>>
+//    b1, u6/u7       => <{e8:u8}, [u7], <u6, e6, k6>>
+//    b2, u1          => <{}, [u1], <u1, e1', k1'>>
 type Store struct {
 	roots             map[string]*node
 	defaultKey        *storj.Key
@@ -182,7 +182,7 @@ func (n *node) add(unenc, enc paths.Iterator, base *Base) error {
 // much of the path matched, any known unencrypted paths at the requested path, and if a key
 // and encrypted path exists for some prefix of the unencrypted path.
 func (s *Store) LookupUnencrypted(bucket string, path paths.Unencrypted) (
-	revealed map[string]string, consumed paths.Unencrypted, base *Base) {
+	revealed map[string]string, remaining paths.Iterator, base *Base) {
 
 	// update the path cipher if we're in encryption bypass mode
 	defer func() {
@@ -193,21 +193,19 @@ func (s *Store) LookupUnencrypted(bucket string, path paths.Unencrypted) (
 
 	root, ok := s.roots[bucket]
 	if ok {
-		var rawConsumed string
-		revealed, rawConsumed, base = root.lookup(path.Iterator(), "", nil, true)
-		consumed = paths.NewUnencrypted(rawConsumed)
+		revealed, remaining, base = root.lookup(path.Iterator(), paths.Iterator{}, nil, true)
 	}
 	if base == nil && s.defaultKey != nil {
-		return nil, paths.Unencrypted{}, s.defaultBase()
+		return nil, path.Iterator(), s.defaultBase()
 	}
-	return revealed, consumed, base.clone()
+	return revealed, remaining, base.clone()
 }
 
 // LookupEncrypted finds the matching most encrypted path added to the Store, reports how
 // much of the path matched, any known encrypted paths at the requested path, and if a key
 // an encrypted path exists for some prefix of the encrypted path.
 func (s *Store) LookupEncrypted(bucket string, path paths.Encrypted) (
-	revealed map[string]string, consumed paths.Encrypted, base *Base) {
+	revealed map[string]string, remaining paths.Iterator, base *Base) {
 
 	// update the path cipher if we're in encryption bypass mode
 	defer func() {
@@ -218,14 +216,12 @@ func (s *Store) LookupEncrypted(bucket string, path paths.Encrypted) (
 
 	root, ok := s.roots[bucket]
 	if ok {
-		var rawConsumed string
-		revealed, rawConsumed, base = root.lookup(path.Iterator(), "", nil, false)
-		consumed = paths.NewEncrypted(rawConsumed)
+		revealed, remaining, base = root.lookup(path.Iterator(), paths.Iterator{}, nil, false)
 	}
 	if base == nil && s.defaultKey != nil {
-		return nil, paths.Encrypted{}, s.defaultBase()
+		return nil, path.Iterator(), s.defaultBase()
 	}
-	return revealed, consumed, base.clone()
+	return revealed, remaining, base.clone()
 }
 
 func (s *Store) defaultBase() *Base {
@@ -237,12 +233,12 @@ func (s *Store) defaultBase() *Base {
 }
 
 // lookup searches for the path in the node tree structure.
-func (n *node) lookup(path paths.Iterator, bestConsumed string, bestBase *Base, unenc bool) (
-	map[string]string, string, *Base) {
+func (n *node) lookup(iter paths.Iterator, bestRemaining paths.Iterator, bestBase *Base, unenc bool) (
+	map[string]string, paths.Iterator, *Base) {
 
 	// Keep track of the best match so far.
 	if n.base != nil || bestBase == nil {
-		bestBase, bestConsumed = n.base, path.Consumed()
+		bestRemaining, bestBase = iter, n.base
 	}
 
 	// Pick the tree we're walking down based on the unenc bool.
@@ -253,18 +249,18 @@ func (n *node) lookup(path paths.Iterator, bestConsumed string, bestBase *Base, 
 
 	// If we're done walking the path, then return our best match along with the
 	// revealed paths at this node.
-	if path.Done() {
-		return revealed, bestConsumed, bestBase
+	if iter.Done() {
+		return revealed, bestRemaining, bestBase
 	}
 
 	// Walk to the next node in the tree. If there is no node, then report our best match.
-	child, ok := children[path.Next()]
+	child, ok := children[iter.Next()]
 	if !ok {
-		return nil, bestConsumed, bestBase
+		return nil, bestRemaining, bestBase
 	}
 
 	// Recurse to the next node in the tree.
-	return child.lookup(path, bestConsumed, bestBase, unenc)
+	return child.lookup(iter, bestRemaining, bestBase, unenc)
 }
 
 // Iterate executes the callback with every value that has been Added to the Store.

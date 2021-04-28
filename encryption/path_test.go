@@ -37,6 +37,7 @@ func TestStoreEncryption(t *testing.T) {
 			"fold1/file.txt",
 			"fold1/fold2/file.txt",
 			"/fold1/fold2/fold3/file.txt",
+			"/fold1/fold2/fold3/file.txt/",
 		} {
 			errTag := fmt.Sprintf("test:%d path:%q cipher:%v", i, rawPath, cipher)
 
@@ -74,6 +75,7 @@ func TestStorePrefixEncryption(t *testing.T) {
 			"fold1/file.txt",
 			"fold1/fold2/file.txt",
 			"/fold1/fold2/fold3/file.txt",
+			"/fold1/fold2/fold3/file.txt/",
 		} {
 			errTag := fmt.Sprintf("test:%d path:%q cipher:%v", i, rawPath, cipher)
 
@@ -112,6 +114,7 @@ func TestStoreEncryption_BucketRoot(t *testing.T) {
 			"fold1/file.txt",
 			"fold1/fold2/file.txt",
 			"/fold1/fold2/fold3/file.txt",
+			"/fold1/fold2/fold3/file.txt/",
 		} {
 			errTag := fmt.Sprintf("test:%d path:%q cipher:%v", i, rawPath, cipher)
 
@@ -143,6 +146,61 @@ func TestStoreEncryption_BucketRoot(t *testing.T) {
 			}
 
 			assert.Equal(t, rootEncPath, bucketEncPath, errTag)
+		}
+	})
+}
+
+func TestStoreEncryption_MultipleBases(t *testing.T) {
+	forAllCiphers(func(cipher storj.CipherSuite) {
+		for _, rawPath := range []string{
+			"",
+			"/",
+			"//",
+			"file.txt",
+			"file.txt/",
+			"fold1/file.txt",
+			"fold1/fold2/file.txt",
+			"/fold1/fold2/fold3/file.txt",
+			"/fold1/fold2/fold3/file.txt/",
+		} {
+
+			var pb pathBuilder
+			for iter := paths.NewIterator(rawPath); !iter.Done(); {
+				pb.append(iter.Next())
+				prefix := pb.Unencrypted()
+				rawPath := rawPath
+
+				t.Run(fmt.Sprintf("path:%q prefix:%q cipher:%v", rawPath, prefix, cipher), func(t *testing.T) {
+					dk := testrand.Key()
+
+					rootStore := NewStore()
+					rootStore.SetDefaultKey(&dk)
+					rootStore.SetDefaultPathCipher(cipher)
+
+					prefixStore := NewStore()
+					prefixStore.SetDefaultKey(&dk)
+					prefixStore.SetDefaultPathCipher(cipher)
+
+					prefixKey, err := DerivePathKey("bucket", prefix, rootStore)
+					require.NoError(t, err)
+
+					encPrefix, err := EncryptPath("bucket", prefix, cipher, rootStore)
+					require.NoError(t, err)
+
+					err = prefixStore.AddWithCipher("bucket", prefix, encPrefix, *prefixKey, cipher)
+					require.NoError(t, err)
+
+					path := paths.NewUnencrypted(rawPath)
+
+					rootEncPath, err := EncryptPathWithStoreCipher("bucket", path, rootStore)
+					require.NoError(t, err)
+
+					prefixEncPath, err := EncryptPathWithStoreCipher("bucket", path, prefixStore)
+					require.NoError(t, err)
+
+					require.Equal(t, rootEncPath, prefixEncPath)
+				})
+			}
 		}
 	})
 }
