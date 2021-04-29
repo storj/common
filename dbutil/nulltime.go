@@ -18,7 +18,7 @@ const (
 )
 
 // ErrNullTime defines error class for NullTime.
-var ErrNullTime = errs.Class("null time error")
+var ErrNullTime = errs.Class("null time")
 
 // NullTime time helps convert nil to time.Time.
 type NullTime struct {
@@ -60,7 +60,7 @@ func (nt *NullTime) Scan(value interface{}) error {
 		nt.Time, nt.Valid = parsed, true
 
 	default:
-		return ErrNullTime.New("sql null time: scan received unsupported value %T", value)
+		return ErrNullTime.New("scan received unsupported value %T", value)
 	}
 
 	return nil

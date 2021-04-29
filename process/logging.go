@@ -21,7 +21,7 @@ import (
 
 var (
 	// Error is a process error class.
-	Error = errs.Class("process error")
+	Error = errs.Class("process")
 
 	logLevel = zap.LevelFlag("log.level", func() zapcore.Level {
 		if isDev() {

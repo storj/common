@@ -27,7 +27,7 @@ const quote = byte('"')
 
 var (
 	// VerError is the error class for version-related errors.
-	VerError = errs.Class("version error")
+	VerError = errs.Class("version")
 
 	// the following fields are set by linker flags. if any of them
 	// are set and fail to parse, the program will fail to start.
