@@ -10,7 +10,7 @@ import (
 )
 
 // ErrSegmentID is used when something goes wrong with a segment ID.
-var ErrSegmentID = errs.Class("segment ID error")
+var ErrSegmentID = errs.Class("segment ID")
 
 // segmentIDEncoding is base32 without padding.
 var segmentIDEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)

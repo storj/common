@@ -16,7 +16,7 @@ import (
 )
 
 // ErrPieceID is used when something goes wrong with a piece ID.
-var ErrPieceID = errs.Class("piece ID error")
+var ErrPieceID = errs.Class("piece ID")
 
 // pieceIDEncoding is base32 without padding.
 var pieceIDEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)

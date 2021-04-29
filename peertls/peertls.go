@@ -25,13 +25,13 @@ const (
 
 var (
 	// ErrNotExist is used when a file or directory doesn't exist.
-	ErrNotExist = errs.Class("file or directory not found error")
+	ErrNotExist = errs.Class("file or directory not found")
 	// ErrGenerate is used when an error occurred during cert/key generation.
-	ErrGenerate = errs.Class("tls generation error")
+	ErrGenerate = errs.Class("tls generation")
 	// ErrTLSTemplate is used when an error occurs during tls template generation.
-	ErrTLSTemplate = errs.Class("tls template error")
+	ErrTLSTemplate = errs.Class("tls template")
 	// ErrVerifyPeerCert is used when an error occurs during `VerifyPeerCertificate`.
-	ErrVerifyPeerCert = errs.Class("tls peer certificate verification error")
+	ErrVerifyPeerCert = errs.Class("tls peer certificate verification")
 	// ErrVerifyCertificateChain is used when a certificate chain can't be verified from leaf to root
 	// (i.e.: each cert in the chain should be signed by the preceding cert and the root should be self-signed).
 	ErrVerifyCertificateChain = errs.Class("certificate chain signature verification failed")

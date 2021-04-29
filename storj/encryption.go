@@ -81,7 +81,7 @@ func (key *Key) IsZero() bool {
 }
 
 // ErrNonce is used when something goes wrong with a stream ID.
-var ErrNonce = errs.Class("nonce error")
+var ErrNonce = errs.Class("nonce")
 
 // nonceEncoding is base32 without padding.
 var nonceEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)

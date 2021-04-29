@@ -11,7 +11,7 @@ import (
 )
 
 // ErrSerialNumber is used when something goes wrong with a serial number.
-var ErrSerialNumber = errs.Class("serial number error")
+var ErrSerialNumber = errs.Class("serial number")
 
 // serialNumberEncoding is base32 without padding.
 var serialNumberEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)

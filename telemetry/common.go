@@ -8,4 +8,4 @@ import (
 )
 
 // Error is the default telemetry errs class.
-var Error = errs.Class("telemetry error")
+var Error = errs.Class("telemetry")

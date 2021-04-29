@@ -28,10 +28,10 @@ var (
 )
 
 // ErrRevocation is used when an error occurs involving a certificate revocation.
-var ErrRevocation = errs.Class("revocation processing error")
+var ErrRevocation = errs.Class("revocation processing")
 
 // ErrRevocationDB is used when an error occurs involving the revocations database.
-var ErrRevocationDB = errs.Class("revocation database error")
+var ErrRevocationDB = errs.Class("revocation database")
 
 // ErrRevokedCert is used when a certificate in the chain is revoked and not expected to be.
 var ErrRevokedCert = ErrRevocation.New("a certificate in the chain is revoked")

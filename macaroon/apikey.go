@@ -23,15 +23,15 @@ type revoker interface {
 
 var (
 	// Error is a general API Key error.
-	Error = errs.Class("api key error")
+	Error = errs.Class("api key")
 	// ErrFormat means that the structural formatting of the API Key is invalid.
-	ErrFormat = errs.Class("api key format error")
+	ErrFormat = errs.Class("api key format")
 	// ErrInvalid means that the API Key is improperly signed.
-	ErrInvalid = errs.Class("api key invalid error")
+	ErrInvalid = errs.Class("api key invalid")
 	// ErrUnauthorized means that the API key does not grant the requested permission.
-	ErrUnauthorized = errs.Class("api key unauthorized error")
+	ErrUnauthorized = errs.Class("api key unauthorized")
 	// ErrRevoked means the API key has been revoked.
-	ErrRevoked = errs.Class("api key revocation error")
+	ErrRevoked = errs.Class("api key revocation")
 
 	mon = monkit.Package()
 )

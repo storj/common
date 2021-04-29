@@ -51,7 +51,7 @@ var (
 	IdentityPOWCounterExtID = ExtensionID{2, 999, 2, 2}
 
 	// Error is used when an error occurs while processing an extension.
-	Error = errs.Class("extension error")
+	Error = errs.Class("extension")
 
 	// ErrVerifyCASignedLeaf is used when a signed leaf extension signature wasn't produced
 	// by any CA in the whitelist.

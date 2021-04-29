@@ -9,7 +9,7 @@ import (
 )
 
 // Error is the default encryption errs class.
-var Error = errs.Class("encryption error")
+var Error = errs.Class("encryption")
 
 // ErrDecryptFailed is the errs class when the decryption fails.
 var ErrDecryptFailed = errs.Class("decryption failed, check encryption key")

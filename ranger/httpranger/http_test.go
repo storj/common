@@ -41,9 +41,9 @@ func TestHTTPRanger(t *testing.T) {
 		{"abcdef", 6, 1, 4, "bcde", ""},
 		{"abcdef", 6, 2, 4, "cdef", ""},
 		{"abcdefg", 7, 1, 4, "bcde", ""},
-		{"abcdef", 6, 0, 7, "abcdef", "ranger error: range beyond end"},
-		{"abcdef", 6, -1, 7, "abcde", "ranger error: negative offset"},
-		{"abcdef", 6, 0, -1, "abcde", "ranger error: negative length"},
+		{"abcdef", 6, 0, 7, "abcdef", "ranger: range beyond end"},
+		{"abcdef", 6, -1, 7, "abcde", "ranger: negative offset"},
+		{"abcdef", 6, 0, -1, "abcde", "ranger: negative length"},
 	} {
 		tag := fmt.Sprintf("#%d. %+v", i, tt)
 
@@ -110,9 +110,9 @@ func TestHTTPRangerSize(t *testing.T) {
 		{"abcdef", 6, 1, 4, "bcde", ""},
 		{"abcdef", 6, 2, 4, "cdef", ""},
 		{"abcdefg", 7, 1, 4, "bcde", ""},
-		{"abcdef", 6, 0, 7, "abcdef", "ranger error: range beyond end"},
-		{"abcdef", 6, -1, 7, "abcde", "ranger error: negative offset"},
-		{"abcdef", 6, 0, -1, "abcde", "ranger error: negative length"},
+		{"abcdef", 6, 0, 7, "abcdef", "ranger: range beyond end"},
+		{"abcdef", 6, -1, 7, "abcde", "ranger: negative offset"},
+		{"abcdef", 6, 0, -1, "abcde", "ranger: negative length"},
 	} {
 		tag := fmt.Sprintf("#%d. %+v", i, tt)
 

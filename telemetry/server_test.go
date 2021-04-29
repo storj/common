@@ -35,7 +35,7 @@ func TestServe_ReturnErrorOnConnFail(t *testing.T) {
 
 	errServe := server.Serve(context.Background(), nil)
 
-	assert.EqualError(t, errServe, "telemetry error: invalid conn: <nil>")
+	assert.EqualError(t, errServe, "telemetry: invalid conn: <nil>")
 }
 
 func TestListenAndServe_ReturnErrorOnListenFails(t *testing.T) {

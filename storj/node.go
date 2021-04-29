@@ -18,9 +18,9 @@ import (
 
 var (
 	// ErrNodeID is used when something goes wrong with a node id.
-	ErrNodeID = errs.Class("node ID error")
+	ErrNodeID = errs.Class("node ID")
 	// ErrVersion is used for identity version related errors.
-	ErrVersion = errs.Class("node ID version error")
+	ErrVersion = errs.Class("node ID version")
 )
 
 // NodeIDSize is the byte length of a NodeID.

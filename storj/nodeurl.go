@@ -12,7 +12,7 @@ import (
 
 var (
 	// ErrNodeURL is used when something goes wrong with a node url.
-	ErrNodeURL = errs.Class("node URL error")
+	ErrNodeURL = errs.Class("node URL")
 )
 
 // NodeURL defines a structure for connecting to a node.

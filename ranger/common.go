@@ -9,6 +9,6 @@ import (
 )
 
 // Error is the errs class of standard Ranger errors.
-var Error = errs.Class("ranger error")
+var Error = errs.Class("ranger")
 
 var mon = monkit.Package()

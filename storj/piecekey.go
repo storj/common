@@ -11,7 +11,7 @@ import (
 )
 
 // ErrPieceKey is used when something goes wrong with a piece key.
-var ErrPieceKey = errs.Class("piece key error")
+var ErrPieceKey = errs.Class("piece key")
 
 // PiecePublicKey is the unique identifier for pieces.
 type PiecePublicKey struct {

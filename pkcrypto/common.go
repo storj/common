@@ -32,7 +32,7 @@ var (
 	// ErrSign is used when something goes wrong while generating a signature.
 	ErrSign = errs.Class("unable to generate signature")
 	// ErrVerifySignature is used when a signature verification error occurs.
-	ErrVerifySignature = errs.Class("signature verification error")
+	ErrVerifySignature = errs.Class("signature verification")
 	// ErrChainLength is used when the length of a cert chain isn't what was expected.
-	ErrChainLength = errs.Class("cert chain length error")
+	ErrChainLength = errs.Class("cert chain length")
 )

@@ -21,7 +21,7 @@ import (
 var (
 	mon = monkit.Package()
 	// Error is error for tlsopts.
-	Error = errs.Class("tlsopts error")
+	Error = errs.Class("tlsopts")
 )
 
 // Options holds config, identity, and peer verification function data for use with tls.

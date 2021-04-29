@@ -11,7 +11,7 @@ import (
 )
 
 // ErrStreamID is used when something goes wrong with a stream ID.
-var ErrStreamID = errs.Class("stream ID error")
+var ErrStreamID = errs.Class("stream ID")
 
 // streamIDEncoding is base32 without padding.
 var streamIDEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)
