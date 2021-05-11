@@ -3,6 +3,11 @@
 
 package dbutil
 
+import (
+	"strconv"
+	"time"
+)
+
 // Implementation type of valid DBs.
 type Implementation int
 
@@ -43,7 +48,12 @@ func ImplementationForScheme(scheme string) Implementation {
 // SchemeForImplementation returns the scheme that is used for URLs
 // that use the given Implementation.
 func SchemeForImplementation(implementation Implementation) string {
-	switch implementation {
+	return implementation.String()
+}
+
+// String returns the default name for a given implementation.
+func (impl Implementation) String() string {
+	switch impl {
 	case Postgres:
 		return "postgres"
 	case Cockroach:
@@ -57,4 +67,36 @@ func SchemeForImplementation(implementation Implementation) string {
 	default:
 		return "<unknown>"
 	}
+}
+
+// AsOfSystemTime returns a SQL query for the specifying the AS OF SYSTEM TIME using
+// a concrecte time.
+func (impl Implementation) AsOfSystemTime(t time.Time) string {
+	if impl != Cockroach {
+		return ""
+	}
+	if t.IsZero() {
+		return ""
+	}
+	return " AS OF SYSTEM TIME '" + strconv.FormatInt(t.UnixNano(), 10) + "' "
+}
+
+// AsOfSystemInterval returns a SQL query for the specifying the AS OF SYSTEM TIME using
+// a relative interval. The interval should be negative.
+func (impl Implementation) AsOfSystemInterval(interval time.Duration) string {
+	if impl != Cockroach {
+		return ""
+	}
+
+	// a positive or zero interval disables AS OF SYSTEM TIME.
+	if interval >= 0 {
+		return ""
+	}
+
+	// Cockroach does not support intervals smaller than a microsecond.
+	if interval > -time.Microsecond {
+		interval = -time.Microsecond
+	}
+
+	return " AS OF SYSTEM TIME '" + interval.String() + "' "
 }
