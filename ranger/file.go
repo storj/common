@@ -5,6 +5,7 @@ package ranger
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 
@@ -69,7 +70,7 @@ func (reader *FileReader) Read(data []byte) (n int, err error) {
 	}
 	n, err = reader.file.Read(data)
 	reader.remaining -= int64(n)
-	if err == io.EOF && reader.remaining == 0 {
+	if errors.Is(err, io.EOF) && reader.remaining == 0 {
 		err = nil
 	}
 	return

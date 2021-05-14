@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding"
 	"encoding/csv"
+	"errors"
 	"io"
 	"reflect"
 	"sort"
@@ -116,7 +117,7 @@ func Read(r io.Reader, obj interface{}) error {
 	for {
 		record, err := csvr.Read()
 		if err != nil {
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				pv.Elem().Set(v)
 				return nil
 			}

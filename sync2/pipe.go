@@ -231,7 +231,7 @@ func NewMultiPipeFile(tempdir string, pipeCount, pipeSize int64) (*MultiPipe, er
 	if err != nil {
 		closeErr := tempfile.Close()
 		if closeErr != nil {
-			return nil, fmt.Errorf("%v/%v", err, closeErr)
+			return nil, fmt.Errorf("%w/%v", err, closeErr)
 		}
 		return nil, err
 	}

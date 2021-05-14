@@ -25,7 +25,11 @@ type httpRanger struct {
 func HTTPRanger(ctx context.Context, url string) (_ ranger.Ranger, err error) {
 	defer mon.Task()(&ctx)(&err)
 	/* #nosec G107 */ // The callers must control the soure of the url value
-	resp, err := http.Head(url)
+	req, err := http.NewRequestWithContext(ctx, http.MethodHead, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +58,7 @@ func HTTPRanger(ctx context.Context, url string) (_ ranger.Ranger, err error) {
 // HTTPRangerSize creates an HTTPRanger with known size.
 // Use it if you know the content size. This will safe the extra HEAD request
 // for retrieving the content size.
-func HTTPRangerSize(url string, size int64) ranger.Ranger { // nolint:golint
+func HTTPRangerSize(url string, size int64) ranger.Ranger { // nolint:golint,revive
 	return &httpRanger{
 		URL:  url,
 		size: size,
@@ -82,7 +86,7 @@ func (r *httpRanger) Range(ctx context.Context, offset, length int64) (_ io.Read
 		return ioutil.NopCloser(bytes.NewReader([]byte{})), nil
 	}
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", r.URL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, r.URL, nil)
 	if err != nil {
 		return nil, err
 	}

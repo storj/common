@@ -4,6 +4,7 @@
 package fpath
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -84,7 +85,7 @@ func IsValidSetupDir(name string) (ok bool, err error) {
 	for {
 		var filenames []string
 		filenames, err = f.Readdirnames(100)
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			// nothing more
 			return true, nil
 		} else if err != nil {

@@ -442,8 +442,8 @@ func (fi *FullIdentity) RawChain() [][]byte {
 // RawRestChain returns the rest (excluding leaf and CA) of the certificate chain as a 2d byte slice.
 func (fi *FullIdentity) RawRestChain() [][]byte {
 	rawChain := make([][]byte, len(fi.RestChain))
-	for _, cert := range fi.RestChain {
-		rawChain = append(rawChain, cert.Raw)
+	for i, cert := range fi.RestChain {
+		rawChain[i] = cert.Raw
 	}
 	return rawChain
 }

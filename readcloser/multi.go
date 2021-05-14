@@ -4,6 +4,7 @@
 package readcloser
 
 import (
+	"errors"
 	"io"
 
 	"github.com/zeebo/errs"
@@ -44,15 +45,15 @@ func (mr *multiReadCloser) Read(p []byte) (n int, err error) {
 			}
 		}
 		n, err = mr.readers[0].Read(p)
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			err = mr.readers[0].Close()
 			// Use eofReader instead of nil to avoid nil panic
 			// after performing flatten (Issue 18232).
 			mr.readers[0] = eofReadCloser{} // permit earlier GC
 			mr.readers = mr.readers[1:]
 		}
-		if n > 0 || err != io.EOF {
-			if err == io.EOF && len(mr.readers) > 0 {
+		if n > 0 || !errors.Is(err, io.EOF) {
+			if errors.Is(err, io.EOF) && len(mr.readers) > 0 {
 				// Don't return EOF yet. More readers remain.
 				err = nil
 			}

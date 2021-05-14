@@ -4,6 +4,7 @@
 package sync2
 
 import (
+	"errors"
 	"io"
 	"sync"
 	"sync/atomic"
@@ -84,7 +85,7 @@ func (reader *teeReader) Read(data []byte) (n int, err error) {
 	tee.mu.Lock()
 
 	// fail fast on writer error
-	if tee.writerErr != nil && tee.writerErr != io.EOF {
+	if tee.writerErr != nil && !errors.Is(tee.writerErr, io.EOF) {
 		tee.mu.Unlock()
 		return 0, tee.writerErr
 	}

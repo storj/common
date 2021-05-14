@@ -6,6 +6,7 @@ package rpcstatus
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/zeebo/errs"
@@ -42,12 +43,12 @@ const (
 func Code(err error) StatusCode {
 	// special case: if the error is context canceled or deadline exceeded, the code
 	// must be those. additionally, grpc returns OK for a nil error, so we will, too.
-	switch err {
-	case nil:
+	switch {
+	case err == nil:
 		return OK
-	case context.Canceled:
+	case errors.Is(err, context.Canceled):
 		return Canceled
-	case context.DeadlineExceeded:
+	case errors.Is(err, context.DeadlineExceeded):
 		return DeadlineExceeded
 	default:
 		if code := StatusCode(drpcerr.Code(err)); code != Unknown {
@@ -68,10 +69,9 @@ func Wrap(code StatusCode, err error) error {
 		code: code,
 	}
 
-	if ee, ok := err.(errsError); ok {
-		ce.errsError = ee
-	} else {
-		ce.errsError = errs.Wrap(err).(errsError)
+	if !errors.As(err, &ce.errsError) {
+		werr := errs.Wrap(err)
+		errors.As(werr, &ce.errsError)
 	}
 
 	return ce

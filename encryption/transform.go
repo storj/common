@@ -6,6 +6,7 @@ package encryption
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	"io/ioutil"
 
@@ -88,14 +89,14 @@ func (t *transformedReader) Read(p []byte) (n int, err error) {
 		// the next block
 		b, err := io.ReadFull(t.r, t.inbuf)
 		t.bytesRead += b
-		if err == io.EOF && int64(t.bytesRead) < t.expectedSize {
+		if errors.Is(err, io.EOF) && int64(t.bytesRead) < t.expectedSize {
 			return 0, io.ErrUnexpectedEOF
 		} else if err != nil {
 			return 0, err
 		}
 		t.outbuf, err = t.t.Transform(t.outbuf, t.inbuf, t.blockNum)
 		if err != nil {
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				return 0, err
 			}
 			return 0, Error.Wrap(err)
@@ -178,7 +179,7 @@ func (t *transformedRanger) Range(ctx context.Context, offset, length int64) (_ 
 	_, err = io.CopyN(ioutil.Discard, tr,
 		offset-firstBlock*int64(t.t.OutBlockSize()))
 	if err != nil {
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return nil, io.ErrUnexpectedEOF
 		}
 		return nil, Error.Wrap(err)
