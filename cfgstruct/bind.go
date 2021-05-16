@@ -43,23 +43,26 @@ var (
 // BindOpt is an option for the Bind method.
 type BindOpt struct {
 	isDev   *bool
+	isTest  *bool
 	isSetup *bool
 	varfn   func(vars map[string]confVar)
 }
 
-// ConfDir sets variables for default options called $CONFDIR and $CONFNAME.
+// ConfDir sets variables for default options called $CONFDIR.
 func ConfDir(path string) BindOpt {
-	val := filepath.Clean(os.ExpandEnv(path))
-	return BindOpt{varfn: func(vars map[string]confVar) {
-		vars["CONFDIR"] = confVar{val: val, nested: false}
-	}}
+	return ConfigVar("CONFDIR", filepath.Clean(os.ExpandEnv(path)))
 }
 
 // IdentityDir sets a variable for the default option called $IDENTITYDIR.
 func IdentityDir(path string) BindOpt {
-	val := filepath.Clean(os.ExpandEnv(path))
+	return ConfigVar("IDENTITYDIR", filepath.Clean(os.ExpandEnv(path)))
+}
+
+// ConfigVar sets a variable for the default option called name.
+func ConfigVar(name, val string) BindOpt {
+	name = strings.ToUpper(name)
 	return BindOpt{varfn: func(vars map[string]confVar) {
-		vars["IDENTITYDIR"] = confVar{val: val, nested: false}
+		vars[name] = confVar{val: val, nested: false}
 	}}
 }
 
@@ -71,21 +74,33 @@ func SetupMode() BindOpt {
 }
 
 // UseDevDefaults forces the bind call to use development defaults unless
-// UseReleaseDefaults is provided as a subsequent option.
-// Without either, Bind will default to determining which defaults to use
-// based on version.Build.Release.
+// something else is provided as a subsequent option.
+// Without a specific defaults setting, Bind will default to determining which
+// defaults to use based on version.Build.Release.
 func UseDevDefaults() BindOpt {
 	dev := true
-	return BindOpt{isDev: &dev}
+	test := false
+	return BindOpt{isDev: &dev, isTest: &test}
 }
 
 // UseReleaseDefaults forces the bind call to use release defaults unless
-// UseDevDefaults is provided as a subsequent option.
-// Without either, Bind will default to determining which defaults to use
-// based on version.Build.Release.
+// something else is provided as a subsequent option.
+// Without a specific defaults setting, Bind will default to determining which
+// defaults to use based on version.Build.Release.
 func UseReleaseDefaults() BindOpt {
 	dev := false
-	return BindOpt{isDev: &dev}
+	test := false
+	return BindOpt{isDev: &dev, isTest: &test}
+}
+
+// UseTestDefaults forces the bind call to use test defaults unless
+// something else is provided as a subsequent option.
+// Without a specific defaults setting, Bind will default to determining which
+// defaults to use based on version.Build.Release.
+func UseTestDefaults() BindOpt {
+	dev := false
+	test := true
+	return BindOpt{isDev: &dev, isTest: &test}
 }
 
 type confVar struct {
@@ -106,6 +121,7 @@ func bind(flags FlagSet, config interface{}, opts ...BindOpt) {
 		panic(fmt.Sprintf("invalid config type: %#v. Expecting pointer to struct.", config))
 	}
 	isDev := !version.Build.Release
+	isTest := false
 	setupCommand := false
 	vars := map[string]confVar{}
 	for _, opt := range opts {
@@ -115,15 +131,18 @@ func bind(flags FlagSet, config interface{}, opts ...BindOpt) {
 		if opt.isDev != nil {
 			isDev = *opt.isDev
 		}
+		if opt.isTest != nil {
+			isTest = *opt.isTest
+		}
 		if opt.isSetup != nil {
 			setupCommand = *opt.isSetup
 		}
 	}
 
-	bindConfig(flags, "", reflect.ValueOf(config).Elem(), vars, setupCommand, false, isDev)
+	bindConfig(flags, "", reflect.ValueOf(config).Elem(), vars, setupCommand, false, isDev, isTest)
 }
 
-func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string]confVar, setupCommand, setupStruct bool, isDev bool) {
+func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string]confVar, setupCommand, setupStruct bool, isDev, isTest bool) {
 	if val.Kind() != reflect.Struct {
 		panic(fmt.Sprintf("invalid config type: %#v. Expecting struct.", val.Interface()))
 	}
@@ -167,12 +186,7 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 		fieldaddr := fieldref.Interface()
 		if fieldvalue, ok := fieldaddr.(pflag.Value); ok {
 			help := field.Tag.Get("help")
-			var def string
-			if isDev {
-				def = getDefault(field.Tag, "devDefault", "releaseDefault", "default", flagname)
-			} else {
-				def = getDefault(field.Tag, "releaseDefault", "devDefault", "default", flagname)
-			}
+			def := getDefault(field.Tag, isTest, isDev, flagname)
 
 			if field.Tag.Get("internal") == "true" {
 				if def != "" {
@@ -217,24 +231,19 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 		switch field.Type.Kind() {
 		case reflect.Struct:
 			if field.Anonymous {
-				bindConfig(flags, prefix, fieldval, vars, setupCommand, onlyForSetup, isDev)
+				bindConfig(flags, prefix, fieldval, vars, setupCommand, onlyForSetup, isDev, isTest)
 			} else {
-				bindConfig(flags, flagname+".", fieldval, vars, setupCommand, onlyForSetup, isDev)
+				bindConfig(flags, flagname+".", fieldval, vars, setupCommand, onlyForSetup, isDev, isTest)
 			}
 		case reflect.Array:
 			digits := len(fmt.Sprint(fieldval.Len()))
 			for j := 0; j < fieldval.Len(); j++ {
 				padding := strings.Repeat("0", digits-len(fmt.Sprint(j)))
-				bindConfig(flags, fmt.Sprintf("%s.%s%d.", flagname, padding, j), fieldval.Index(j), vars, setupCommand, onlyForSetup, isDev)
+				bindConfig(flags, fmt.Sprintf("%s.%s%d.", flagname, padding, j), fieldval.Index(j), vars, setupCommand, onlyForSetup, isDev, isTest)
 			}
 		default:
 			help := field.Tag.Get("help")
-			var def string
-			if isDev {
-				def = getDefault(field.Tag, "devDefault", "releaseDefault", "default", flagname)
-			} else {
-				def = getDefault(field.Tag, "releaseDefault", "devDefault", "default", flagname)
-			}
+			def := getDefault(field.Tag, isTest, isDev, flagname)
 
 			if field.Tag.Get("internal") == "true" {
 				if def != "" {
@@ -242,6 +251,8 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 				}
 				continue
 			}
+
+			def = expand(resolvedVars, def)
 
 			fieldaddr := fieldval.Addr().Interface()
 			check := func(err error) {
@@ -279,8 +290,7 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 					// NB: conventionally unix path separators are used in default values
 					def = filepath.FromSlash(def)
 				}
-				flags.StringVar(
-					fieldaddr.(*string), flagname, expand(resolvedVars, def), help)
+				flags.StringVar(fieldaddr.(*string), flagname, def, help)
 			case reflect.TypeOf(bool(false)):
 				val, err := strconv.ParseBool(def)
 				check(err)
@@ -322,20 +332,33 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 	}
 }
 
-func getDefault(tag reflect.StructTag, preferred, opposite, fallback, flagname string) string {
-	if val, ok := tag.Lookup(preferred); ok {
-		if _, oppositeExists := tag.Lookup(opposite); !oppositeExists {
-			panic(fmt.Sprintf("%q defined but %q missing for %v", preferred, opposite, flagname))
-		}
-		if _, fallbackExists := tag.Lookup(fallback); fallbackExists {
-			panic(fmt.Sprintf("%q defined along with %q fallback for %v", preferred, fallback, flagname))
-		}
-		return val
+func getDefault(tag reflect.StructTag, isTest, isDev bool, flagname string) string {
+	var order []string
+	var opposites []string
+	if isTest {
+		order = []string{"testDefault", "devDefault", "default"}
+		opposites = []string{"releaseDefault"}
+	} else if isDev {
+		order = []string{"devDefault", "default"}
+		opposites = []string{"releaseDefault", "testDefault"}
+	} else {
+		order = []string{"releaseDefault", "default"}
+		opposites = []string{"devDefault", "testDefault"}
 	}
-	if _, oppositeExists := tag.Lookup(opposite); oppositeExists {
-		panic(fmt.Sprintf("%q missing but %q defined for %v", preferred, opposite, flagname))
+
+	for _, name := range order {
+		if val, ok := tag.Lookup(name); ok {
+			return val
+		}
 	}
-	return tag.Get(fallback)
+
+	for _, name := range opposites {
+		if _, ok := tag.Lookup(name); ok {
+			panic(fmt.Sprintf("%q missing but %q defined for %v", order[0], name, flagname))
+		}
+	}
+
+	return ""
 }
 
 func setSourceAnnotation(flagset interface{}, name, source string) {
@@ -447,6 +470,8 @@ func DefaultsFlag(cmd *cobra.Command) BindOpt {
 		return UseDevDefaults()
 	case "release":
 		return UseReleaseDefaults()
+	case "test":
+		return UseTestDefaults()
 	default:
 		panic(fmt.Sprintf("unsupported defaults value %q", FindDefaultsParam()))
 	}
