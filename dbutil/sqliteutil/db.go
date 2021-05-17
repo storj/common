@@ -83,7 +83,7 @@ func QueryData(ctx context.Context, db dbschema.Queryer, schema *dbschema.Schema
 // IsConstraintError checks if given error is about constraint violation.
 func IsConstraintError(err error) bool {
 	return errs.IsFunc(err, func(err error) bool {
-		if e, ok := err.(sqlite3.Error); ok {
+		if e, ok := err.(sqlite3.Error); ok { //nolint: errorlint // IsFunc implements the unwrap loop.
 			if e.Code == sqlite3.ErrConstraint {
 				return true
 			}
