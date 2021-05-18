@@ -9,7 +9,7 @@ package planneddowntime;
 import "google/protobuf/timestamp.proto";
 
 service PlannedDowntime {
-    rpc GetScheduled(GetScheduledRequest) returns (GetScheduledResponse)
+    rpc GetScheduled(GetScheduledRequest) returns (GetScheduledResponse);
     rpc GetAvailable(GetAvailableRequest) returns (GetAvailableResponse);
     rpc ScheduleDowntime(ScheduleDowntimeRequest) returns (ScheduleDowntimeResponse);
     rpc Cancel(CancelRequest) returns (CancelResponse);

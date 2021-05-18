@@ -42,8 +42,10 @@ func (drpcEncoding_File_planneddowntime_proto) JSONUnmarshal(buf []byte, msg drp
 type DRPCPlannedDowntimeClient interface {
 	DRPCConn() drpc.Conn
 
-	GetAvailable(ctx context.Context, in *Timeframe) (*Available, error)
-	ScheduleDowntime(ctx context.Context, in *Timeframe) (*ScheduleDowntimeResponse, error)
+	GetScheduled(ctx context.Context, in *GetScheduledRequest) (*GetScheduledResponse, error)
+	GetAvailable(ctx context.Context, in *GetAvailableRequest) (*GetAvailableResponse, error)
+	ScheduleDowntime(ctx context.Context, in *ScheduleDowntimeRequest) (*ScheduleDowntimeResponse, error)
+	Cancel(ctx context.Context, in *CancelRequest) (*CancelResponse, error)
 }
 
 type drpcPlannedDowntimeClient struct {
@@ -56,8 +58,17 @@ func NewDRPCPlannedDowntimeClient(cc drpc.Conn) DRPCPlannedDowntimeClient {
 
 func (c *drpcPlannedDowntimeClient) DRPCConn() drpc.Conn { return c.cc }
 
-func (c *drpcPlannedDowntimeClient) GetAvailable(ctx context.Context, in *Timeframe) (*Available, error) {
-	out := new(Available)
+func (c *drpcPlannedDowntimeClient) GetScheduled(ctx context.Context, in *GetScheduledRequest) (*GetScheduledResponse, error) {
+	out := new(GetScheduledResponse)
+	err := c.cc.Invoke(ctx, "/planneddowntime.PlannedDowntime/GetScheduled", drpcEncoding_File_planneddowntime_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *drpcPlannedDowntimeClient) GetAvailable(ctx context.Context, in *GetAvailableRequest) (*GetAvailableResponse, error) {
+	out := new(GetAvailableResponse)
 	err := c.cc.Invoke(ctx, "/planneddowntime.PlannedDowntime/GetAvailable", drpcEncoding_File_planneddowntime_proto{}, in, out)
 	if err != nil {
 		return nil, err
@@ -65,7 +76,7 @@ func (c *drpcPlannedDowntimeClient) GetAvailable(ctx context.Context, in *Timefr
 	return out, nil
 }
 
-func (c *drpcPlannedDowntimeClient) ScheduleDowntime(ctx context.Context, in *Timeframe) (*ScheduleDowntimeResponse, error) {
+func (c *drpcPlannedDowntimeClient) ScheduleDowntime(ctx context.Context, in *ScheduleDowntimeRequest) (*ScheduleDowntimeResponse, error) {
 	out := new(ScheduleDowntimeResponse)
 	err := c.cc.Invoke(ctx, "/planneddowntime.PlannedDowntime/ScheduleDowntime", drpcEncoding_File_planneddowntime_proto{}, in, out)
 	if err != nil {
@@ -74,45 +85,82 @@ func (c *drpcPlannedDowntimeClient) ScheduleDowntime(ctx context.Context, in *Ti
 	return out, nil
 }
 
+func (c *drpcPlannedDowntimeClient) Cancel(ctx context.Context, in *CancelRequest) (*CancelResponse, error) {
+	out := new(CancelResponse)
+	err := c.cc.Invoke(ctx, "/planneddowntime.PlannedDowntime/Cancel", drpcEncoding_File_planneddowntime_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 type DRPCPlannedDowntimeServer interface {
-	GetAvailable(context.Context, *Timeframe) (*Available, error)
-	ScheduleDowntime(context.Context, *Timeframe) (*ScheduleDowntimeResponse, error)
+	GetScheduled(context.Context, *GetScheduledRequest) (*GetScheduledResponse, error)
+	GetAvailable(context.Context, *GetAvailableRequest) (*GetAvailableResponse, error)
+	ScheduleDowntime(context.Context, *ScheduleDowntimeRequest) (*ScheduleDowntimeResponse, error)
+	Cancel(context.Context, *CancelRequest) (*CancelResponse, error)
 }
 
 type DRPCPlannedDowntimeUnimplementedServer struct{}
 
-func (s *DRPCPlannedDowntimeUnimplementedServer) GetAvailable(context.Context, *Timeframe) (*Available, error) {
+func (s *DRPCPlannedDowntimeUnimplementedServer) GetScheduled(context.Context, *GetScheduledRequest) (*GetScheduledResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
-func (s *DRPCPlannedDowntimeUnimplementedServer) ScheduleDowntime(context.Context, *Timeframe) (*ScheduleDowntimeResponse, error) {
+func (s *DRPCPlannedDowntimeUnimplementedServer) GetAvailable(context.Context, *GetAvailableRequest) (*GetAvailableResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCPlannedDowntimeUnimplementedServer) ScheduleDowntime(context.Context, *ScheduleDowntimeRequest) (*ScheduleDowntimeResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
+func (s *DRPCPlannedDowntimeUnimplementedServer) Cancel(context.Context, *CancelRequest) (*CancelResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
 type DRPCPlannedDowntimeDescription struct{}
 
-func (DRPCPlannedDowntimeDescription) NumMethods() int { return 2 }
+func (DRPCPlannedDowntimeDescription) NumMethods() int { return 4 }
 
 func (DRPCPlannedDowntimeDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
 	case 0:
+		return "/planneddowntime.PlannedDowntime/GetScheduled", drpcEncoding_File_planneddowntime_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCPlannedDowntimeServer).
+					GetScheduled(
+						ctx,
+						in1.(*GetScheduledRequest),
+					)
+			}, DRPCPlannedDowntimeServer.GetScheduled, true
+	case 1:
 		return "/planneddowntime.PlannedDowntime/GetAvailable", drpcEncoding_File_planneddowntime_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCPlannedDowntimeServer).
 					GetAvailable(
 						ctx,
-						in1.(*Timeframe),
+						in1.(*GetAvailableRequest),
 					)
 			}, DRPCPlannedDowntimeServer.GetAvailable, true
-	case 1:
+	case 2:
 		return "/planneddowntime.PlannedDowntime/ScheduleDowntime", drpcEncoding_File_planneddowntime_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCPlannedDowntimeServer).
 					ScheduleDowntime(
 						ctx,
-						in1.(*Timeframe),
+						in1.(*ScheduleDowntimeRequest),
 					)
 			}, DRPCPlannedDowntimeServer.ScheduleDowntime, true
+	case 3:
+		return "/planneddowntime.PlannedDowntime/Cancel", drpcEncoding_File_planneddowntime_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCPlannedDowntimeServer).
+					Cancel(
+						ctx,
+						in1.(*CancelRequest),
+					)
+			}, DRPCPlannedDowntimeServer.Cancel, true
 	default:
 		return "", nil, nil, nil, false
 	}
@@ -122,16 +170,32 @@ func DRPCRegisterPlannedDowntime(mux drpc.Mux, impl DRPCPlannedDowntimeServer) e
 	return mux.Register(impl, DRPCPlannedDowntimeDescription{})
 }
 
+type DRPCPlannedDowntime_GetScheduledStream interface {
+	drpc.Stream
+	SendAndClose(*GetScheduledResponse) error
+}
+
+type drpcPlannedDowntime_GetScheduledStream struct {
+	drpc.Stream
+}
+
+func (x *drpcPlannedDowntime_GetScheduledStream) SendAndClose(m *GetScheduledResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_planneddowntime_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
 type DRPCPlannedDowntime_GetAvailableStream interface {
 	drpc.Stream
-	SendAndClose(*Available) error
+	SendAndClose(*GetAvailableResponse) error
 }
 
 type drpcPlannedDowntime_GetAvailableStream struct {
 	drpc.Stream
 }
 
-func (x *drpcPlannedDowntime_GetAvailableStream) SendAndClose(m *Available) error {
+func (x *drpcPlannedDowntime_GetAvailableStream) SendAndClose(m *GetAvailableResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_planneddowntime_proto{}); err != nil {
 		return err
 	}
@@ -148,6 +212,22 @@ type drpcPlannedDowntime_ScheduleDowntimeStream struct {
 }
 
 func (x *drpcPlannedDowntime_ScheduleDowntimeStream) SendAndClose(m *ScheduleDowntimeResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_planneddowntime_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCPlannedDowntime_CancelStream interface {
+	drpc.Stream
+	SendAndClose(*CancelResponse) error
+}
+
+type drpcPlannedDowntime_CancelStream struct {
+	drpc.Stream
+}
+
+func (x *drpcPlannedDowntime_CancelStream) SendAndClose(m *CancelResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_planneddowntime_proto{}); err != nil {
 		return err
 	}
