@@ -9,19 +9,46 @@ package planneddowntime;
 import "google/protobuf/timestamp.proto";
 
 service PlannedDowntime {
-    rpc GetAvailable(Timeframe) returns (Available);
-    rpc ScheduleDowntime(Timeframe) returns (ScheduleDowntimeResponse);
+    rpc GetScheduled(GetScheduledRequest) returns (GetScheduledResponse)
+    rpc GetAvailable(GetAvailableRequest) returns (GetAvailableResponse);
+    rpc ScheduleDowntime(ScheduleDowntimeRequest) returns (ScheduleDowntimeResponse);
+    rpc Cancel(CancelRequest) returns (CancelResponse);
 }
 
 message Timeframe {
-    google.protobuf.Timestamp start = 1;
-    google.protobuf.Timestamp end = 2;
+    google.protobuf.Timestamp start = 2;
+    google.protobuf.Timestamp end = 3;
+}
+
+message GetAvailableRequest {
+    Timeframe timeframe = 1;
+}
+
+message GetAvailableResponse {
+    repeated Timeframe timeframes = 1;
+}
+
+message DowntimeWindow {
+    bytes id = 1;
+    Timeframe timeframe = 2;
+}
+
+message GetScheduledRequest {}
+
+message GetScheduledResponse {
+    repeated DowntimeWindow windows = 1;
+}
+
+message ScheduleDowntimeRequest {
+    Timeframe timeframe = 1;
 }
 
 message ScheduleDowntimeResponse {
-    bool accepted = 1;
+    DowntimeWindow window = 2;
 }
 
-message Available {
-    repeated Timeframe timeframes = 1;
+message CancelRequest {
+    repeated bytes id = 1;
 }
+
+message CancelResponse {}
