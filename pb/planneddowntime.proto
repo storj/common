@@ -6,18 +6,19 @@ option go_package = "storj.io/common/pb";
 
 package planneddowntime;
 
+import "gogo.proto";
 import "google/protobuf/timestamp.proto";
 
 service PlannedDowntime {
-    rpc GetScheduled(GetScheduledRequest) returns (GetScheduledResponse)
+    rpc GetScheduled(GetScheduledRequest) returns (GetScheduledResponse);
     rpc GetAvailable(GetAvailableRequest) returns (GetAvailableResponse);
     rpc ScheduleDowntime(ScheduleDowntimeRequest) returns (ScheduleDowntimeResponse);
     rpc Cancel(CancelRequest) returns (CancelResponse);
 }
 
 message Timeframe {
-    google.protobuf.Timestamp start = 2;
-    google.protobuf.Timestamp end = 3;
+    google.protobuf.Timestamp start = 2[(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp end = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
 message GetAvailableRequest {

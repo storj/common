@@ -5526,6 +5526,176 @@
       }
     },
     {
+      "protopath": "pb:/:planneddowntime.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "Timeframe",
+            "fields": [
+              {
+                "id": 2,
+                "name": "start",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "name": "end",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "GetAvailableRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "timeframe",
+                "type": "Timeframe"
+              }
+            ]
+          },
+          {
+            "name": "GetAvailableResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "timeframes",
+                "type": "Timeframe",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "DowntimeWindow",
+            "fields": [
+              {
+                "id": 1,
+                "name": "id",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "timeframe",
+                "type": "Timeframe"
+              }
+            ]
+          },
+          {
+            "name": "GetScheduledRequest"
+          },
+          {
+            "name": "GetScheduledResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "windows",
+                "type": "DowntimeWindow",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "ScheduleDowntimeRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "timeframe",
+                "type": "Timeframe"
+              }
+            ]
+          },
+          {
+            "name": "ScheduleDowntimeResponse",
+            "fields": [
+              {
+                "id": 2,
+                "name": "window",
+                "type": "DowntimeWindow"
+              }
+            ]
+          },
+          {
+            "name": "CancelRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "id",
+                "type": "bytes",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "CancelResponse"
+          }
+        ],
+        "services": [
+          {
+            "name": "PlannedDowntime",
+            "rpcs": [
+              {
+                "name": "GetScheduled",
+                "in_type": "GetScheduledRequest",
+                "out_type": "GetScheduledResponse"
+              },
+              {
+                "name": "GetAvailable",
+                "in_type": "GetAvailableRequest",
+                "out_type": "GetAvailableResponse"
+              },
+              {
+                "name": "ScheduleDowntime",
+                "in_type": "ScheduleDowntimeRequest",
+                "out_type": "ScheduleDowntimeResponse"
+              },
+              {
+                "name": "Cancel",
+                "in_type": "CancelRequest",
+                "out_type": "CancelResponse"
+              }
+            ]
+          }
+        ],
+        "imports": [
+          {
+            "path": "gogo.proto"
+          },
+          {
+            "path": "google/protobuf/timestamp.proto"
+          }
+        ],
+        "package": {
+          "name": "planneddowntime"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
+          }
+        ]
+      }
+    },
+    {
       "protopath": "pb:/:pointerdb.proto",
       "def": {
         "enums": [

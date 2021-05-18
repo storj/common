@@ -6,6 +6,7 @@ package pb
 import (
 	fmt "fmt"
 	math "math"
+	time "time"
 
 	proto "github.com/gogo/protobuf/proto"
 )
@@ -14,6 +15,7 @@ import (
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -22,11 +24,11 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
 type Timeframe struct {
-	Start                *Timestamp `protobuf:"bytes,1,opt,name=start,proto3" json:"start,omitempty"`
-	End                  *Timestamp `protobuf:"bytes,2,opt,name=end,proto3" json:"end,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
-	XXX_unrecognized     []byte     `json:"-"`
-	XXX_sizecache        int32      `json:"-"`
+	Start                time.Time `protobuf:"bytes,2,opt,name=start,proto3,stdtime" json:"start"`
+	End                  time.Time `protobuf:"bytes,3,opt,name=end,proto3,stdtime" json:"end"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
 func (m *Timeframe) Reset()         { *m = Timeframe{} }
@@ -53,32 +55,260 @@ func (m *Timeframe) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Timeframe proto.InternalMessageInfo
 
-func (m *Timeframe) GetStart() *Timestamp {
+func (m *Timeframe) GetStart() time.Time {
 	if m != nil {
 		return m.Start
+	}
+	return time.Time{}
+}
+
+func (m *Timeframe) GetEnd() time.Time {
+	if m != nil {
+		return m.End
+	}
+	return time.Time{}
+}
+
+type GetAvailableRequest struct {
+	Timeframe            *Timeframe `protobuf:"bytes,1,opt,name=timeframe,proto3" json:"timeframe,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *GetAvailableRequest) Reset()         { *m = GetAvailableRequest{} }
+func (m *GetAvailableRequest) String() string { return proto.CompactTextString(m) }
+func (*GetAvailableRequest) ProtoMessage()    {}
+func (*GetAvailableRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2412c7b076da43f6, []int{1}
+}
+func (m *GetAvailableRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetAvailableRequest.Unmarshal(m, b)
+}
+func (m *GetAvailableRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetAvailableRequest.Marshal(b, m, deterministic)
+}
+func (m *GetAvailableRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetAvailableRequest.Merge(m, src)
+}
+func (m *GetAvailableRequest) XXX_Size() int {
+	return xxx_messageInfo_GetAvailableRequest.Size(m)
+}
+func (m *GetAvailableRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetAvailableRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetAvailableRequest proto.InternalMessageInfo
+
+func (m *GetAvailableRequest) GetTimeframe() *Timeframe {
+	if m != nil {
+		return m.Timeframe
 	}
 	return nil
 }
 
-func (m *Timeframe) GetEnd() *Timestamp {
+type GetAvailableResponse struct {
+	Timeframes           []*Timeframe `protobuf:"bytes,1,rep,name=timeframes,proto3" json:"timeframes,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *GetAvailableResponse) Reset()         { *m = GetAvailableResponse{} }
+func (m *GetAvailableResponse) String() string { return proto.CompactTextString(m) }
+func (*GetAvailableResponse) ProtoMessage()    {}
+func (*GetAvailableResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2412c7b076da43f6, []int{2}
+}
+func (m *GetAvailableResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetAvailableResponse.Unmarshal(m, b)
+}
+func (m *GetAvailableResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetAvailableResponse.Marshal(b, m, deterministic)
+}
+func (m *GetAvailableResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetAvailableResponse.Merge(m, src)
+}
+func (m *GetAvailableResponse) XXX_Size() int {
+	return xxx_messageInfo_GetAvailableResponse.Size(m)
+}
+func (m *GetAvailableResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetAvailableResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetAvailableResponse proto.InternalMessageInfo
+
+func (m *GetAvailableResponse) GetTimeframes() []*Timeframe {
 	if m != nil {
-		return m.End
+		return m.Timeframes
+	}
+	return nil
+}
+
+type DowntimeWindow struct {
+	Id                   []byte     `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Timeframe            *Timeframe `protobuf:"bytes,2,opt,name=timeframe,proto3" json:"timeframe,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *DowntimeWindow) Reset()         { *m = DowntimeWindow{} }
+func (m *DowntimeWindow) String() string { return proto.CompactTextString(m) }
+func (*DowntimeWindow) ProtoMessage()    {}
+func (*DowntimeWindow) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2412c7b076da43f6, []int{3}
+}
+func (m *DowntimeWindow) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DowntimeWindow.Unmarshal(m, b)
+}
+func (m *DowntimeWindow) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DowntimeWindow.Marshal(b, m, deterministic)
+}
+func (m *DowntimeWindow) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DowntimeWindow.Merge(m, src)
+}
+func (m *DowntimeWindow) XXX_Size() int {
+	return xxx_messageInfo_DowntimeWindow.Size(m)
+}
+func (m *DowntimeWindow) XXX_DiscardUnknown() {
+	xxx_messageInfo_DowntimeWindow.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DowntimeWindow proto.InternalMessageInfo
+
+func (m *DowntimeWindow) GetId() []byte {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+func (m *DowntimeWindow) GetTimeframe() *Timeframe {
+	if m != nil {
+		return m.Timeframe
+	}
+	return nil
+}
+
+type GetScheduledRequest struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetScheduledRequest) Reset()         { *m = GetScheduledRequest{} }
+func (m *GetScheduledRequest) String() string { return proto.CompactTextString(m) }
+func (*GetScheduledRequest) ProtoMessage()    {}
+func (*GetScheduledRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2412c7b076da43f6, []int{4}
+}
+func (m *GetScheduledRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetScheduledRequest.Unmarshal(m, b)
+}
+func (m *GetScheduledRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetScheduledRequest.Marshal(b, m, deterministic)
+}
+func (m *GetScheduledRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetScheduledRequest.Merge(m, src)
+}
+func (m *GetScheduledRequest) XXX_Size() int {
+	return xxx_messageInfo_GetScheduledRequest.Size(m)
+}
+func (m *GetScheduledRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetScheduledRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetScheduledRequest proto.InternalMessageInfo
+
+type GetScheduledResponse struct {
+	Windows              []*DowntimeWindow `protobuf:"bytes,1,rep,name=windows,proto3" json:"windows,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
+}
+
+func (m *GetScheduledResponse) Reset()         { *m = GetScheduledResponse{} }
+func (m *GetScheduledResponse) String() string { return proto.CompactTextString(m) }
+func (*GetScheduledResponse) ProtoMessage()    {}
+func (*GetScheduledResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2412c7b076da43f6, []int{5}
+}
+func (m *GetScheduledResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetScheduledResponse.Unmarshal(m, b)
+}
+func (m *GetScheduledResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetScheduledResponse.Marshal(b, m, deterministic)
+}
+func (m *GetScheduledResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetScheduledResponse.Merge(m, src)
+}
+func (m *GetScheduledResponse) XXX_Size() int {
+	return xxx_messageInfo_GetScheduledResponse.Size(m)
+}
+func (m *GetScheduledResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetScheduledResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetScheduledResponse proto.InternalMessageInfo
+
+func (m *GetScheduledResponse) GetWindows() []*DowntimeWindow {
+	if m != nil {
+		return m.Windows
+	}
+	return nil
+}
+
+type ScheduleDowntimeRequest struct {
+	Timeframe            *Timeframe `protobuf:"bytes,1,opt,name=timeframe,proto3" json:"timeframe,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *ScheduleDowntimeRequest) Reset()         { *m = ScheduleDowntimeRequest{} }
+func (m *ScheduleDowntimeRequest) String() string { return proto.CompactTextString(m) }
+func (*ScheduleDowntimeRequest) ProtoMessage()    {}
+func (*ScheduleDowntimeRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2412c7b076da43f6, []int{6}
+}
+func (m *ScheduleDowntimeRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ScheduleDowntimeRequest.Unmarshal(m, b)
+}
+func (m *ScheduleDowntimeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ScheduleDowntimeRequest.Marshal(b, m, deterministic)
+}
+func (m *ScheduleDowntimeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ScheduleDowntimeRequest.Merge(m, src)
+}
+func (m *ScheduleDowntimeRequest) XXX_Size() int {
+	return xxx_messageInfo_ScheduleDowntimeRequest.Size(m)
+}
+func (m *ScheduleDowntimeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ScheduleDowntimeRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ScheduleDowntimeRequest proto.InternalMessageInfo
+
+func (m *ScheduleDowntimeRequest) GetTimeframe() *Timeframe {
+	if m != nil {
+		return m.Timeframe
 	}
 	return nil
 }
 
 type ScheduleDowntimeResponse struct {
-	Accepted             bool     `protobuf:"varint,1,opt,name=accepted,proto3" json:"accepted,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Window               *DowntimeWindow `protobuf:"bytes,2,opt,name=window,proto3" json:"window,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
 }
 
 func (m *ScheduleDowntimeResponse) Reset()         { *m = ScheduleDowntimeResponse{} }
 func (m *ScheduleDowntimeResponse) String() string { return proto.CompactTextString(m) }
 func (*ScheduleDowntimeResponse) ProtoMessage()    {}
 func (*ScheduleDowntimeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2412c7b076da43f6, []int{1}
+	return fileDescriptor_2412c7b076da43f6, []int{7}
 }
 func (m *ScheduleDowntimeResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ScheduleDowntimeResponse.Unmarshal(m, b)
@@ -98,76 +328,124 @@ func (m *ScheduleDowntimeResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ScheduleDowntimeResponse proto.InternalMessageInfo
 
-func (m *ScheduleDowntimeResponse) GetAccepted() bool {
+func (m *ScheduleDowntimeResponse) GetWindow() *DowntimeWindow {
 	if m != nil {
-		return m.Accepted
-	}
-	return false
-}
-
-type Available struct {
-	Timeframes           []*Timeframe `protobuf:"bytes,1,rep,name=timeframes,proto3" json:"timeframes,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
-	XXX_unrecognized     []byte       `json:"-"`
-	XXX_sizecache        int32        `json:"-"`
-}
-
-func (m *Available) Reset()         { *m = Available{} }
-func (m *Available) String() string { return proto.CompactTextString(m) }
-func (*Available) ProtoMessage()    {}
-func (*Available) Descriptor() ([]byte, []int) {
-	return fileDescriptor_2412c7b076da43f6, []int{2}
-}
-func (m *Available) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Available.Unmarshal(m, b)
-}
-func (m *Available) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Available.Marshal(b, m, deterministic)
-}
-func (m *Available) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Available.Merge(m, src)
-}
-func (m *Available) XXX_Size() int {
-	return xxx_messageInfo_Available.Size(m)
-}
-func (m *Available) XXX_DiscardUnknown() {
-	xxx_messageInfo_Available.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Available proto.InternalMessageInfo
-
-func (m *Available) GetTimeframes() []*Timeframe {
-	if m != nil {
-		return m.Timeframes
+		return m.Window
 	}
 	return nil
 }
 
+type CancelRequest struct {
+	Id                   [][]byte `protobuf:"bytes,1,rep,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CancelRequest) Reset()         { *m = CancelRequest{} }
+func (m *CancelRequest) String() string { return proto.CompactTextString(m) }
+func (*CancelRequest) ProtoMessage()    {}
+func (*CancelRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2412c7b076da43f6, []int{8}
+}
+func (m *CancelRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CancelRequest.Unmarshal(m, b)
+}
+func (m *CancelRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CancelRequest.Marshal(b, m, deterministic)
+}
+func (m *CancelRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CancelRequest.Merge(m, src)
+}
+func (m *CancelRequest) XXX_Size() int {
+	return xxx_messageInfo_CancelRequest.Size(m)
+}
+func (m *CancelRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CancelRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CancelRequest proto.InternalMessageInfo
+
+func (m *CancelRequest) GetId() [][]byte {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type CancelResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CancelResponse) Reset()         { *m = CancelResponse{} }
+func (m *CancelResponse) String() string { return proto.CompactTextString(m) }
+func (*CancelResponse) ProtoMessage()    {}
+func (*CancelResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2412c7b076da43f6, []int{9}
+}
+func (m *CancelResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CancelResponse.Unmarshal(m, b)
+}
+func (m *CancelResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CancelResponse.Marshal(b, m, deterministic)
+}
+func (m *CancelResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CancelResponse.Merge(m, src)
+}
+func (m *CancelResponse) XXX_Size() int {
+	return xxx_messageInfo_CancelResponse.Size(m)
+}
+func (m *CancelResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CancelResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CancelResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*Timeframe)(nil), "planneddowntime.Timeframe")
+	proto.RegisterType((*GetAvailableRequest)(nil), "planneddowntime.GetAvailableRequest")
+	proto.RegisterType((*GetAvailableResponse)(nil), "planneddowntime.GetAvailableResponse")
+	proto.RegisterType((*DowntimeWindow)(nil), "planneddowntime.DowntimeWindow")
+	proto.RegisterType((*GetScheduledRequest)(nil), "planneddowntime.GetScheduledRequest")
+	proto.RegisterType((*GetScheduledResponse)(nil), "planneddowntime.GetScheduledResponse")
+	proto.RegisterType((*ScheduleDowntimeRequest)(nil), "planneddowntime.ScheduleDowntimeRequest")
 	proto.RegisterType((*ScheduleDowntimeResponse)(nil), "planneddowntime.ScheduleDowntimeResponse")
-	proto.RegisterType((*Available)(nil), "planneddowntime.Available")
+	proto.RegisterType((*CancelRequest)(nil), "planneddowntime.CancelRequest")
+	proto.RegisterType((*CancelResponse)(nil), "planneddowntime.CancelResponse")
 }
 
 func init() { proto.RegisterFile("planneddowntime.proto", fileDescriptor_2412c7b076da43f6) }
 
 var fileDescriptor_2412c7b076da43f6 = []byte{
-	// 268 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x50, 0x4d, 0x4b, 0xc3, 0x40,
-	0x10, 0x25, 0x16, 0xa5, 0x1d, 0x85, 0xca, 0xa2, 0x10, 0x72, 0xb1, 0xe4, 0xa4, 0x20, 0x89, 0x54,
-	0xf0, 0xe0, 0x4d, 0x11, 0x7b, 0x95, 0xd8, 0x8b, 0xde, 0x36, 0xd9, 0x69, 0x8d, 0xee, 0xee, 0x2c,
-	0xd9, 0xa9, 0xfe, 0x31, 0x7f, 0xa0, 0x34, 0x31, 0xad, 0xa4, 0xd8, 0x1e, 0x67, 0xde, 0xc7, 0xbc,
-	0x79, 0x70, 0xea, 0xb4, 0xb4, 0x16, 0x95, 0xa2, 0x2f, 0xcb, 0xa5, 0xc1, 0xc4, 0x55, 0xc4, 0x24,
-	0x86, 0x9d, 0x75, 0x74, 0x36, 0x27, 0x9a, 0x6b, 0x4c, 0x6b, 0x38, 0x5f, 0xcc, 0xd2, 0xe5, 0xd6,
-	0xb3, 0x34, 0xae, 0x51, 0xc4, 0x1f, 0x30, 0x98, 0x96, 0x06, 0x67, 0x95, 0x34, 0x28, 0xae, 0x60,
-	0xdf, 0xb3, 0xac, 0x38, 0x0c, 0x46, 0xc1, 0xf9, 0xe1, 0x38, 0x4a, 0x1a, 0x75, 0xd2, 0xaa, 0x93,
-	0x69, 0xab, 0xce, 0x1a, 0xa2, 0xb8, 0x84, 0x1e, 0x5a, 0x15, 0xee, 0xed, 0xe4, 0x2f, 0x69, 0xf1,
-	0x0d, 0x84, 0xcf, 0xc5, 0x1b, 0xaa, 0x85, 0xc6, 0x87, 0xdf, 0x84, 0x19, 0x7a, 0x47, 0xd6, 0xa3,
-	0x88, 0xa0, 0x2f, 0x8b, 0x02, 0x1d, 0xa3, 0xaa, 0xcf, 0xf7, 0xb3, 0xd5, 0x1c, 0x4f, 0x60, 0x70,
-	0xf7, 0x29, 0x4b, 0x2d, 0x73, 0x8d, 0xe2, 0x16, 0x80, 0xdb, 0xc4, 0x3e, 0x0c, 0x46, 0xbd, 0xfa,
-	0x72, 0xb7, 0x8f, 0xd5, 0x53, 0xd9, 0x1f, 0xf6, 0xf8, 0x3b, 0x80, 0xe1, 0x53, 0xc3, 0x6c, 0x03,
-	0x88, 0x47, 0x38, 0x9a, 0x20, 0xaf, 0xfd, 0xb7, 0x78, 0x45, 0x9b, 0xd8, 0x5a, 0xf7, 0x02, 0xc7,
-	0xdd, 0xe7, 0xb6, 0x7a, 0x5d, 0x6c, 0x60, 0xff, 0x75, 0x73, 0x7f, 0xf2, 0x2a, 0x3c, 0x53, 0xf5,
-	0x9e, 0x94, 0x94, 0x16, 0x64, 0x0c, 0xd9, 0xd4, 0xe5, 0xf9, 0x41, 0x5d, 0xf3, 0xf5, 0x4f, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0x9b, 0x91, 0x6a, 0xdc, 0x0c, 0x02, 0x00, 0x00,
+	// 438 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x94, 0xcd, 0xee, 0xd2, 0x40,
+	0x14, 0xc5, 0x6d, 0x1b, 0xd1, 0xff, 0x15, 0x81, 0x8c, 0x10, 0x9b, 0x2e, 0x2c, 0x99, 0x68, 0x82,
+	0x9b, 0x36, 0xc1, 0xc4, 0xaf, 0x9d, 0x68, 0x62, 0x5c, 0xa9, 0x85, 0xc4, 0x04, 0x57, 0x2d, 0x33,
+	0xd4, 0x9a, 0x76, 0xa6, 0xb6, 0x83, 0x2c, 0x7d, 0x05, 0x1f, 0xcb, 0xa7, 0xd0, 0x47, 0xd1, 0xd0,
+	0x99, 0x41, 0xda, 0x42, 0x90, 0xb8, 0xa4, 0xf3, 0x3b, 0xe7, 0x9e, 0x7b, 0x66, 0x02, 0x8c, 0xf2,
+	0x34, 0x64, 0x8c, 0x12, 0xc2, 0xb7, 0x4c, 0x24, 0x19, 0xf5, 0xf2, 0x82, 0x0b, 0x8e, 0xfa, 0x8d,
+	0xcf, 0x0e, 0xc4, 0x3c, 0xe6, 0xf2, 0xd0, 0x71, 0x63, 0xce, 0xe3, 0x94, 0xfa, 0xd5, 0xaf, 0x68,
+	0xb3, 0xf6, 0x77, 0x44, 0x29, 0xc2, 0x2c, 0x97, 0x00, 0xfe, 0x06, 0x57, 0x8b, 0x24, 0xa3, 0xeb,
+	0x22, 0xcc, 0x28, 0x7a, 0x0e, 0xd7, 0x4b, 0x11, 0x16, 0xc2, 0x36, 0xc7, 0xc6, 0xe4, 0xd6, 0xd4,
+	0xf1, 0xa4, 0xda, 0xd3, 0x6a, 0x6f, 0xa1, 0xd5, 0xb3, 0x9b, 0x3f, 0x7e, 0xba, 0xd7, 0xbe, 0xff,
+	0x72, 0x8d, 0x40, 0x4a, 0xd0, 0x63, 0xb0, 0x28, 0x23, 0xb6, 0x75, 0x81, 0x72, 0x27, 0xc0, 0x6f,
+	0xe1, 0xce, 0x6b, 0x2a, 0x5e, 0x7c, 0x0d, 0x93, 0x34, 0x8c, 0x52, 0x1a, 0xd0, 0x2f, 0x1b, 0x5a,
+	0x0a, 0xf4, 0x14, 0xae, 0x84, 0xce, 0x65, 0x1b, 0xca, 0xb4, 0x59, 0xc0, 0x3e, 0x79, 0xf0, 0x17,
+	0xc6, 0x01, 0x0c, 0xeb, 0x86, 0x65, 0xce, 0x59, 0xb9, 0x5b, 0x0e, 0xf6, 0x50, 0x69, 0x1b, 0x63,
+	0xeb, 0x8c, 0xe5, 0x01, 0x8d, 0x97, 0xd0, 0x7b, 0xa5, 0x88, 0x0f, 0x09, 0x23, 0x7c, 0x8b, 0x7a,
+	0x60, 0x26, 0xa4, 0x0a, 0xd6, 0x0d, 0xcc, 0x84, 0xd4, 0xf3, 0x9a, 0x97, 0xe4, 0x1d, 0x55, 0x05,
+	0xcc, 0x57, 0x9f, 0x28, 0xd9, 0xa4, 0x94, 0xa8, 0x02, 0xf0, 0xfb, 0x6a, 0x8d, 0x83, 0xcf, 0x6a,
+	0x8d, 0x67, 0x70, 0x63, 0x5b, 0x45, 0xd0, 0x3b, 0xb8, 0xad, 0x31, 0xf5, 0xa8, 0x81, 0xe6, 0xf1,
+	0x1c, 0xee, 0x6a, 0x3f, 0x8d, 0xfc, 0x7f, 0xdd, 0x73, 0xb0, 0xdb, 0xa6, 0x2a, 0xeb, 0x13, 0xe8,
+	0xc8, 0xd9, 0xaa, 0x91, 0xb3, 0x51, 0x15, 0x8e, 0x5d, 0xb8, 0xfd, 0x32, 0x64, 0x2b, 0x9a, 0xea,
+	0x7c, 0xba, 0x6e, 0x4b, 0xd6, 0x8d, 0x07, 0xd0, 0xd3, 0x80, 0x9c, 0x35, 0xfd, 0x6d, 0x42, 0xff,
+	0x9d, 0x74, 0xd7, 0xa6, 0xe8, 0x23, 0x74, 0x0f, 0x3b, 0x44, 0xf7, 0x5b, 0xf3, 0x8f, 0x34, 0xef,
+	0x3c, 0x38, 0x43, 0xa9, 0xe5, 0xa4, 0xf9, 0xfe, 0x9d, 0x1d, 0x37, 0x6f, 0xbe, 0xeb, 0xe3, 0xe6,
+	0xed, 0xc7, 0x1a, 0xc3, 0xa0, 0xd9, 0x2a, 0x9a, 0xb4, 0xa4, 0x27, 0x6e, 0xd3, 0x79, 0xf8, 0x0f,
+	0xa4, 0x1a, 0xf4, 0x06, 0x3a, 0xb2, 0x48, 0x74, 0xaf, 0x25, 0xaa, 0x5d, 0x81, 0xe3, 0x9e, 0x3c,
+	0x97, 0x56, 0xb3, 0xe1, 0x12, 0x95, 0x82, 0x17, 0x9f, 0xbd, 0x84, 0xfb, 0x2b, 0x9e, 0x65, 0x9c,
+	0xf9, 0x79, 0x14, 0x75, 0xaa, 0xbf, 0x80, 0x47, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0xe6, 0xea,
+	0xdd, 0xc4, 0xbe, 0x04, 0x00, 0x00,
 }
