@@ -30,17 +30,6 @@ func Conn(ctx context.Context, db tagsql.DB, fn func(conn *pgx.Conn) error) (err
 	defer func() { err = errs.Combine(err, conn.Close()) }()
 
 	return conn.Raw(ctx, func(driverConn interface{}) (err error) {
-		defer func() {
-			if closable, ok := driverConn.(interface{ Close() error }); ok {
-				err = errs.Combine(err, closable.Close())
-				return
-			}
-			if closable, ok := driverConn.(interface{ Close() }); ok {
-				closable.Close()
-				return
-			}
-		}()
-
 		var pgxconn *pgx.Conn
 		switch conn := driverConn.(type) {
 		case interface{ StdlibConn() *stdlib.Conn }:
