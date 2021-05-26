@@ -12,11 +12,86 @@ import (
 	"github.com/calebcase/tmpfile"
 )
 
+// PipeWriter allows closing the writer with an error.
+type PipeWriter interface {
+	io.WriteCloser
+	CloseWithError(reason error) error
+}
+
+// PipeReader allows closing the reader with an error.
+type PipeReader interface {
+	io.ReadCloser
+	CloseWithError(reason error) error
+}
+
+// NewTeeFile returns a tee that uses file-system to offload memory.
+func NewTeeFile(readers int, tempdir string) ([]PipeReader, PipeWriter, error) {
+	file, err := tmpfile.New(tempdir, "tee")
+	if err != nil {
+		return nil, nil, err
+	}
+	handles := int64(readers + 1) // +1 for the writer
+
+	tee := &tee{
+		open: &handles,
+	}
+	tee.nodata.L = &tee.mu
+	tee.noreader.L = &tee.mu
+
+	teeReaders := make([]PipeReader, readers)
+	for i := 0; i < readers; i++ {
+		teeReaders[i] = &teeReader{
+			tee: tee,
+			buffer: &sharedFile{
+				file: file,
+				open: &handles,
+			},
+		}
+	}
+
+	return teeReaders, &teeWriter{
+		tee: tee,
+		buffer: &sharedFile{
+			file: file,
+			open: &handles,
+		},
+	}, nil
+}
+
+// NewTeeInmemory returns a tee that uses inmemory.
+func NewTeeInmemory(readers int, allocMemory int64) ([]PipeReader, PipeWriter, error) {
+	memory := make([]byte, allocMemory)
+	handles := int64(readers + 1) // +1 for the writer
+
+	tee := &tee{
+		open: &handles,
+	}
+	tee.nodata.L = &tee.mu
+	tee.noreader.L = &tee.mu
+
+	teeReaders := make([]PipeReader, readers)
+	for i := 0; i < readers; i++ {
+		teeReaders[i] = &teeReader{
+			tee: tee,
+			buffer: &sharedMemory{
+				memory: memory,
+			},
+		}
+	}
+
+	return teeReaders, &teeWriter{
+		tee: tee,
+		buffer: &sharedMemory{
+			memory: memory,
+		},
+	}, nil
+}
+
+// tee synchronizes access to a shared buffer with one writer and multiple readers.
 type tee struct {
 	noCopy noCopy // nolint: structcheck
 
-	buffer ReadAtWriteAtCloser
-	open   *int64
+	open *int64
 
 	mu       sync.Mutex
 	nodata   sync.Cond
@@ -29,53 +104,17 @@ type tee struct {
 	writerErr  error
 }
 
-// NewTeeFile returns a tee that uses file-system to offload memory.
-func NewTeeFile(readers int, tempdir string) ([]PipeReader, PipeWriter, error) {
-	file, err := tmpfile.New(tempdir, "tee")
-	if err != nil {
-		return nil, nil, err
-	}
-
-	handles := int64(readers + 1) // +1 for the writer
-
-	buffer := &offsetFile{
-		file: file,
-		open: &handles,
-	}
-
-	return newTee(buffer, readers, &handles)
-}
-
-// NewTeeInmemory returns a tee that uses inmemory.
-func NewTeeInmemory(readers int, allocMemory int64) ([]PipeReader, PipeWriter, error) {
-	handles := int64(readers + 1) // +1 for the writer
-	memory := memory(make([]byte, allocMemory))
-	return newTee(memory, readers, &handles)
-}
-
-func newTee(buffer ReadAtWriteAtCloser, readers int, open *int64) ([]PipeReader, PipeWriter, error) {
-	tee := &tee{
-		buffer: buffer,
-		open:   open,
-	}
-	tee.nodata.L = &tee.mu
-	tee.noreader.L = &tee.mu
-
-	teeReaders := make([]PipeReader, readers)
-	for i := 0; i < readers; i++ {
-		teeReaders[i] = &teeReader{tee: tee}
-	}
-
-	return teeReaders, &teeWriter{tee}, nil
-}
-
 type teeReader struct {
 	tee    *tee
+	buffer io.ReadCloser
 	pos    int64
 	closed int32
 }
 
-type teeWriter struct{ tee *tee }
+type teeWriter struct {
+	tee    *tee
+	buffer io.WriteCloser
+}
 
 // Read reads from the tee returning io.EOF when writer is closed or bufSize is reached.
 //
@@ -115,11 +154,10 @@ func (reader *teeReader) Read(data []byte) (n int, err error) {
 	if toRead > canRead {
 		toRead = canRead
 	}
-	readAt := reader.pos
 	tee.mu.Unlock()
 
 	// read data
-	readAmount, err := tee.buffer.ReadAt(data[:toRead], readAt)
+	readAmount, err := reader.buffer.Read(data[:toRead])
 	reader.pos += int64(readAmount)
 
 	return readAmount, err
@@ -147,12 +185,10 @@ func (writer *teeWriter) Write(data []byte) (n int, err error) {
 		// wait until new data is required by any reader
 		tee.noreader.Wait()
 	}
-
-	writeAt := tee.write
 	tee.mu.Unlock()
 
 	// write data to buffer
-	writeAmount, err := tee.buffer.WriteAt(data, writeAt)
+	writeAmount, err := writer.buffer.Write(data)
 
 	tee.mu.Lock()
 	// update writing head
@@ -174,7 +210,7 @@ func (writer *teeWriter) Close() error { return writer.CloseWithError(nil) }
 func (reader *teeReader) CloseWithError(reason error) (err error) {
 	tee := reader.tee
 	if atomic.CompareAndSwapInt32(&reader.closed, 0, 1) {
-		err = tee.buffer.Close()
+		err = reader.buffer.Close()
 	}
 
 	tee.mu.Lock()
@@ -201,5 +237,5 @@ func (writer *teeWriter) CloseWithError(reason error) error {
 	tee.nodata.Broadcast()
 	tee.mu.Unlock()
 
-	return tee.buffer.Close()
+	return writer.buffer.Close()
 }
