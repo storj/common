@@ -59,8 +59,10 @@ func NewTeeFile(readers int, tempdir string) ([]PipeReader, PipeWriter, error) {
 }
 
 // NewTeeInmemory returns a tee that uses inmemory.
-func NewTeeInmemory(readers int, allocMemory int64) ([]PipeReader, PipeWriter, error) {
-	memory := make([]byte, allocMemory)
+func NewTeeInmemory(readers int, blockSize int64) ([]PipeReader, PipeWriter, error) {
+	block := &memoryBlock{
+		data: make([]byte, blockSize),
+	}
 	handles := int64(readers + 1) // +1 for the writer
 
 	tee := &tee{
@@ -73,16 +75,16 @@ func NewTeeInmemory(readers int, allocMemory int64) ([]PipeReader, PipeWriter, e
 	for i := 0; i < readers; i++ {
 		teeReaders[i] = &teeReader{
 			tee: tee,
-			buffer: &sharedMemory{
-				memory: memory,
+			buffer: &blockReader{
+				current: block,
 			},
 		}
 	}
 
 	return teeReaders, &teeWriter{
 		tee: tee,
-		buffer: &sharedMemory{
-			memory: memory,
+		buffer: &blockWriter{
+			current: block,
 		},
 	}, nil
 }
@@ -213,9 +215,7 @@ func (reader *teeReader) CloseWithError(reason error) (err error) {
 		err = reader.buffer.Close()
 	}
 
-	tee.mu.Lock()
 	tee.noreader.Broadcast()
-	tee.mu.Unlock()
 
 	return err
 }

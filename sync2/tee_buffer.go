@@ -4,7 +4,7 @@
 package sync2
 
 import (
-	"io"
+	"errors"
 	"os"
 	"sync/atomic"
 )
@@ -39,35 +39,87 @@ func (buf *sharedFile) Close() error {
 	return nil
 }
 
-// sharedMemory implements Read, Write on a memory buffer.
-type sharedMemory struct {
-	memory []byte
-	read   int
-	write  int
+type memoryBlock struct {
+	offset int
+	data   []byte
+	next   *memoryBlock
 }
 
-// ReadAt implements io.Reader methods.
-func (buf *sharedMemory) Read(data []byte) (amount int, err error) {
-	if buf.read >= len(buf.memory) {
-		return 0, io.ErrClosedPipe
-	}
-	amount = copy(data, buf.memory[buf.read:])
-	buf.read += amount
-	return amount, err
+// blockReader implements io.ReadCloser on a memoryBlock.
+type blockReader struct {
+	current *memoryBlock
+	read    int
 }
 
-// WriteAt implements io.Writer methods.
-func (buf *sharedMemory) Write(data []byte) (amount int, err error) {
-	if buf.write >= len(buf.memory) {
-		return 0, io.ErrClosedPipe
+// blockWriter implements io.WriteCloser on a memoryBlock.
+type blockWriter struct {
+	current *memoryBlock
+	write   int
+}
+
+var (
+	errReaderPassedWriter = errors.New("block reader passed writer")
+	errWriterMissingBlock = errors.New("block writer is missing a block")
+)
+
+// Reader implements io.Reader method.
+func (buf *blockReader) Read(data []byte) (amount int, err error) {
+	into := data
+	for len(into) > 0 {
+		cur := buf.current
+		// if we don't have a block, we've finished the data
+		if cur == nil {
+			return amount, errReaderPassedWriter
+		}
+
+		// check whether we should proceed to the next block
+		if buf.read-cur.offset >= len(cur.data) {
+			buf.current = cur.next
+			continue
+		}
+
+		// copy as much as we can
+		n := copy(into, cur.data[buf.read-cur.offset:])
+
+		into = into[n:]
+		amount += n
+		buf.read += n
 	}
-	amount = copy(buf.memory[buf.write:], data)
-	buf.write += amount
-	if amount < len(data) {
-		return amount, io.ErrShortWrite
+	return amount, nil
+}
+
+// Write implements io.Writer method.
+func (buf *blockWriter) Write(data []byte) (amount int, err error) {
+	out := data
+	for len(out) > 0 {
+		cur := buf.current
+		// if we don't have a block, there's an error
+		if cur == nil {
+			return amount, errWriterMissingBlock
+		}
+
+		// we've reached end of the current block
+		if buf.write-cur.offset >= len(cur.data) {
+			cur.next = &memoryBlock{
+				offset: cur.offset + len(cur.data),
+				data:   make([]byte, len(cur.data)),
+			}
+			buf.current = cur.next
+			continue
+		}
+
+		// copy as much as we can
+		n := copy(cur.data[buf.write-cur.offset:], out)
+
+		out = out[n:]
+		amount += n
+		buf.write += n
 	}
-	return amount, err
+	return amount, nil
 }
 
 // Close implements io.Closer methods.
-func (buf *sharedMemory) Close() error { return nil }
+func (buf *blockReader) Close() error { return nil }
+
+// Close implements io.Closer methods.
+func (buf *blockWriter) Close() error { return nil }
