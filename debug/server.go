@@ -88,8 +88,36 @@ func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *
 	if atomicLevel != nil {
 		server.mux.HandleFunc("/logging", atomicLevel.ServeHTTP)
 	}
+	server.mux.HandleFunc("/", indexPage(config.Control, atomicLevel != nil))
 
 	return server
+}
+
+func writeLink(w http.ResponseWriter, link string) {
+	_, _ = w.Write([]byte(fmt.Sprintf("<a href=\"%s\">%s</a><br />\n", link, link)))
+}
+
+func indexPage(writeControl, writeLogging bool) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		w.WriteHeader(http.StatusOK)
+
+		_, _ = w.Write([]byte("<html><body>\n"))
+		if writeControl {
+			writeLink(w, "/control/")
+		}
+		writeLink(w, "/version/")
+		writeLink(w, "/debug/pprof/")
+		writeLink(w, "/debug/pprof/symbol")
+		writeLink(w, "/debug/run/trace/db")
+		writeLink(w, "/mon/")
+		writeLink(w, "/metrics")
+		writeLink(w, "/health")
+		if writeLogging {
+			writeLink(w, "/logging")
+		}
+		_, _ = w.Write([]byte("</body></html>\n"))
+	}
 }
 
 // Run starts the debug endpoint.
