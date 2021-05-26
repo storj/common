@@ -100,8 +100,6 @@ func writeLink(w http.ResponseWriter, link string) {
 func indexPage(writeControl, writeLogging bool) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
-		w.WriteHeader(http.StatusOK)
-
 		_, _ = w.Write([]byte("<html><body>\n"))
 		if writeControl {
 			writeLink(w, "/control/")
