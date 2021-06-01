@@ -35,7 +35,9 @@ func PiecePublicKeyFromBytes(data []byte) (PiecePublicKey, error) {
 	if len(data) != ed25519.PublicKeySize {
 		return PiecePublicKey{}, ErrPieceKey.New("invalid public key length %v", len(data))
 	}
-	return PiecePublicKey{ed25519.PublicKey(data)}, nil
+	pub := make(ed25519.PublicKey, len(data))
+	copy(pub, data)
+	return PiecePublicKey{pub}, nil
 }
 
 // PiecePrivateKeyFromBytes converts bytes to a piece private key.
@@ -43,7 +45,9 @@ func PiecePrivateKeyFromBytes(data []byte) (PiecePrivateKey, error) {
 	if len(data) != ed25519.PrivateKeySize {
 		return PiecePrivateKey{}, ErrPieceKey.New("invalid private key length %v", len(data))
 	}
-	return PiecePrivateKey{ed25519.PrivateKey(data)}, nil
+	priv := make(ed25519.PrivateKey, len(data))
+	copy(priv, data)
+	return PiecePrivateKey{priv}, nil
 }
 
 // Sign signs the message with privateKey and returns a signature.
