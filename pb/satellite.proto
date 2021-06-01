@@ -1,0 +1,22 @@
+// Copyright (C) 2021 Storj Labs, Inc.
+// See LICENSE for copying information.
+
+syntax = "proto3";
+option go_package = "storj.io/common/pb";
+
+package satellite;
+
+import "node.proto";
+
+// Config contains public satellite configuration that may be useful to storage nodes or uplinks.
+service Config {
+    // MinimumStorageNode returns minimum versions required for storage nodes.
+    rpc MinimumStorageNode(MinimumStorageNodeRequest) returns (MinimumStorageNodeResponse);
+}
+
+message MinimumStorageNodeRequest {}
+
+message MinimumStorageNodeResponse {
+    // upload is the minimum storage node version that are considered for uploading data.
+    node.NodeVersion upload = 1;
+}

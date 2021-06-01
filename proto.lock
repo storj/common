@@ -5803,6 +5803,52 @@
       }
     },
     {
+      "protopath": "pb:/:satellite.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "MinimumStorageNodeRequest"
+          },
+          {
+            "name": "MinimumStorageNodeResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "upload",
+                "type": "node.NodeVersion"
+              }
+            ]
+          }
+        ],
+        "services": [
+          {
+            "name": "Config",
+            "rpcs": [
+              {
+                "name": "MinimumStorageNode",
+                "in_type": "MinimumStorageNodeRequest",
+                "out_type": "MinimumStorageNodeResponse"
+              }
+            ]
+          }
+        ],
+        "imports": [
+          {
+            "path": "node.proto"
+          }
+        ],
+        "package": {
+          "name": "satellite"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
+          }
+        ]
+      }
+    },
+    {
       "protopath": "pb:/:scope.proto",
       "def": {
         "messages": [
