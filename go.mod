@@ -13,5 +13,5 @@ require (
 	golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/sys v0.0.0-20210420072515-93ed5bcd2bfe
-	storj.io/drpc v0.0.22
+	storj.io/drpc v0.0.23
 )
