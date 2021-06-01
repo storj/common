@@ -45,6 +45,7 @@ type DRPCNodeStatsClient interface {
 	GetStats(ctx context.Context, in *GetStatsRequest) (*GetStatsResponse, error)
 	DailyStorageUsage(ctx context.Context, in *DailyStorageUsageRequest) (*DailyStorageUsageResponse, error)
 	PricingModel(ctx context.Context, in *PricingModelRequest) (*PricingModelResponse, error)
+	MinimumVersion(ctx context.Context, in *MinimumVersionRequest) (*MinimumVersionResponse, error)
 }
 
 type drpcNodeStatsClient struct {
@@ -84,10 +85,20 @@ func (c *drpcNodeStatsClient) PricingModel(ctx context.Context, in *PricingModel
 	return out, nil
 }
 
+func (c *drpcNodeStatsClient) MinimumVersion(ctx context.Context, in *MinimumVersionRequest) (*MinimumVersionResponse, error) {
+	out := new(MinimumVersionResponse)
+	err := c.cc.Invoke(ctx, "/nodestats.NodeStats/MinimumVersion", drpcEncoding_File_nodestats_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 type DRPCNodeStatsServer interface {
 	GetStats(context.Context, *GetStatsRequest) (*GetStatsResponse, error)
 	DailyStorageUsage(context.Context, *DailyStorageUsageRequest) (*DailyStorageUsageResponse, error)
 	PricingModel(context.Context, *PricingModelRequest) (*PricingModelResponse, error)
+	MinimumVersion(context.Context, *MinimumVersionRequest) (*MinimumVersionResponse, error)
 }
 
 type DRPCNodeStatsUnimplementedServer struct{}
@@ -104,9 +115,13 @@ func (s *DRPCNodeStatsUnimplementedServer) PricingModel(context.Context, *Pricin
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
+func (s *DRPCNodeStatsUnimplementedServer) MinimumVersion(context.Context, *MinimumVersionRequest) (*MinimumVersionResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
 type DRPCNodeStatsDescription struct{}
 
-func (DRPCNodeStatsDescription) NumMethods() int { return 3 }
+func (DRPCNodeStatsDescription) NumMethods() int { return 4 }
 
 func (DRPCNodeStatsDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -137,6 +152,15 @@ func (DRPCNodeStatsDescription) Method(n int) (string, drpc.Encoding, drpc.Recei
 						in1.(*PricingModelRequest),
 					)
 			}, DRPCNodeStatsServer.PricingModel, true
+	case 3:
+		return "/nodestats.NodeStats/MinimumVersion", drpcEncoding_File_nodestats_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCNodeStatsServer).
+					MinimumVersion(
+						ctx,
+						in1.(*MinimumVersionRequest),
+					)
+			}, DRPCNodeStatsServer.MinimumVersion, true
 	default:
 		return "", nil, nil, nil, false
 	}
@@ -188,6 +212,22 @@ type drpcNodeStats_PricingModelStream struct {
 }
 
 func (x *drpcNodeStats_PricingModelStream) SendAndClose(m *PricingModelResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_nodestats_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCNodeStats_MinimumVersionStream interface {
+	drpc.Stream
+	SendAndClose(*MinimumVersionResponse) error
+}
+
+type drpcNodeStats_MinimumVersionStream struct {
+	drpc.Stream
+}
+
+func (x *drpcNodeStats_MinimumVersionStream) SendAndClose(m *MinimumVersionResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_nodestats_proto{}); err != nil {
 		return err
 	}

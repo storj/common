@@ -8,11 +8,19 @@ package nodestats;
 
 import "gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "node.proto";
 
 service NodeStats {
     rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
     rpc DailyStorageUsage(DailyStorageUsageRequest) returns (DailyStorageUsageResponse);
     rpc PricingModel(PricingModelRequest) returns (PricingModelResponse);
+    rpc MinimumVersion(MinimumVersionRequest) returns (MinimumVersionResponse);
+}
+
+message MinimumVersionRequest {}
+
+message MinimumVersionResponse {
+    node.NodeVersion version = 1;
 }
 
 message ReputationStats {
