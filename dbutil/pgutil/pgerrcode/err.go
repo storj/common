@@ -5,7 +5,9 @@
 // library.
 package pgerrcode
 
-import "errors"
+import (
+	"errors"
+)
 
 // FromError returns the 5-character PostgreSQL error code string associated
 // with the given error, if any.
@@ -23,4 +25,10 @@ func FromError(err error) string {
 // apparently underway to get lib/pq to add this interface.
 type errWithSQLState interface {
 	SQLState() string
+}
+
+// IsInvalidSyntax returns whether the query syntax is invalid.
+func IsInvalidSyntax(err error) bool {
+	code := FromError(err)
+	return code == "42000" || code == "42601"
 }
