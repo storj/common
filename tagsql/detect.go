@@ -61,10 +61,10 @@ func DetectContextSupport(db *sql.DB) (ContextSupport, error) {
 		// wrapper for sqlite
 		typ.PkgPath() == "storj.io/private/dbutil/utccheck" && typ.Name() == "Driver":
 		return SupportBasic, nil
-	case typ.PkgPath() == "github.com/lib/pq" && typ.Name() == "Driver" ||
-		// internally uses lib/pq
-		typ.PkgPath() == "storj.io/private/dbutil/cockroachutil" && typ.Name() == "Driver":
+	case typ.PkgPath() == "github.com/lib/pq" && typ.Name() == "Driver":
 		return SupportNone, nil
+	case typ.PkgPath() == "storj.io/private/dbutil/cockroachutil" && typ.Name() == "Driver":
+		return SupportTransactions, nil
 	case typ.PkgPath() == "github.com/jackc/pgx/v4/stdlib" && typ.Name() == "Driver":
 		return SupportTransactions, nil
 	default:
