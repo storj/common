@@ -33,6 +33,7 @@ type Stmt interface {
 
 // sqlStmt implements Stmt, which optionally disables contexts.
 type sqlStmt struct {
+	query      string
 	stmt       *sql.Stmt
 	useContext bool
 	tracker    *tracker
@@ -42,26 +43,34 @@ func (s *sqlStmt) Close() error {
 	return errs.Combine(s.tracker.close(), s.stmt.Close())
 }
 
-func (s *sqlStmt) Exec(ctx context.Context, args ...interface{}) (sql.Result, error) {
+func (s *sqlStmt) Exec(ctx context.Context, args ...interface{}) (_ sql.Result, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, s.query, args)(&err)
+
 	return s.stmt.Exec(args...)
 }
 
-func (s *sqlStmt) ExecContext(ctx context.Context, args ...interface{}) (sql.Result, error) {
+func (s *sqlStmt) ExecContext(ctx context.Context, args ...interface{}) (_ sql.Result, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, s.query, args)(&err)
+
 	if !s.useContext {
 		return s.stmt.Exec(args...)
 	}
 	return s.stmt.ExecContext(ctx, args...)
 }
 
-func (s *sqlStmt) Query(ctx context.Context, args ...interface{}) (Rows, error) {
+func (s *sqlStmt) Query(ctx context.Context, args ...interface{}) (_ Rows, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, s.query, args)(&err)
+
 	return s.tracker.wrapRows(s.stmt.Query(args...))
 }
 
-func (s *sqlStmt) QueryContext(ctx context.Context, args ...interface{}) (Rows, error) {
+func (s *sqlStmt) QueryContext(ctx context.Context, args ...interface{}) (_ Rows, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, s.query, args)(&err)
+
 	if !s.useContext {
 		return s.tracker.wrapRows(s.stmt.Query(args...))
 	}
@@ -70,11 +79,15 @@ func (s *sqlStmt) QueryContext(ctx context.Context, args ...interface{}) (Rows, 
 
 func (s *sqlStmt) QueryRow(ctx context.Context, args ...interface{}) *sql.Row {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, s.query, args)(nil)
+
 	return s.stmt.QueryRow(args...)
 }
 
 func (s *sqlStmt) QueryRowContext(ctx context.Context, args ...interface{}) *sql.Row {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, s.query, args)(nil)
+
 	if !s.useContext {
 		return s.stmt.QueryRow(args...)
 	}

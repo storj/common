@@ -68,8 +68,10 @@ func (s *sqlConn) Close() error {
 	return errs.Combine(s.tracker.close(), s.conn.Close())
 }
 
-func (s *sqlConn) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (s *sqlConn) ExecContext(ctx context.Context, query string, args ...interface{}) (_ sql.Result, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(&err)
+
 	if !s.useContext {
 		ctx = context2.WithoutCancellation(ctx)
 	}
@@ -84,8 +86,10 @@ func (s *sqlConn) PingContext(ctx context.Context) error {
 	return s.conn.PingContext(ctx)
 }
 
-func (s *sqlConn) PrepareContext(ctx context.Context, query string) (Stmt, error) {
+func (s *sqlConn) PrepareContext(ctx context.Context, query string) (_ Stmt, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query)(&err)
+
 	if !s.useContext {
 		ctx = context2.WithoutCancellation(ctx)
 	}
@@ -100,8 +104,10 @@ func (s *sqlConn) PrepareContext(ctx context.Context, query string) (Stmt, error
 	}, nil
 }
 
-func (s *sqlConn) QueryContext(ctx context.Context, query string, args ...interface{}) (Rows, error) {
+func (s *sqlConn) QueryContext(ctx context.Context, query string, args ...interface{}) (_ Rows, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(&err)
+
 	if !s.useContext {
 		ctx = context2.WithoutCancellation(ctx)
 	}
@@ -110,6 +116,8 @@ func (s *sqlConn) QueryContext(ctx context.Context, query string, args ...interf
 
 func (s *sqlConn) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(nil)
+
 	if !s.useContext {
 		ctx = context2.WithoutCancellation(ctx)
 	}

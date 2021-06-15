@@ -41,36 +41,44 @@ type sqlTx struct {
 	tracker    *tracker
 }
 
-func (s *sqlTx) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (s *sqlTx) Exec(ctx context.Context, query string, args ...interface{}) (_ sql.Result, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(&err)
+
 	return s.tx.Exec(query, args...)
 }
 
-func (s *sqlTx) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (s *sqlTx) ExecContext(ctx context.Context, query string, args ...interface{}) (_ sql.Result, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(&err)
+
 	if !s.useContext {
 		return s.tx.Exec(query, args...)
 	}
 	return s.tx.ExecContext(ctx, query, args...)
 }
 
-func (s *sqlTx) Prepare(ctx context.Context, query string) (Stmt, error) {
+func (s *sqlTx) Prepare(ctx context.Context, query string) (_ Stmt, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query)(&err)
+
 	stmt, err := s.tx.Prepare(query)
 	if err != nil {
 		return nil, err
 	}
 	return &sqlStmt{
+		query:      query,
 		stmt:       stmt,
 		useContext: s.useContext,
 		tracker:    s.tracker.child(1),
 	}, nil
 }
 
-func (s *sqlTx) PrepareContext(ctx context.Context, query string) (Stmt, error) {
+func (s *sqlTx) PrepareContext(ctx context.Context, query string) (_ Stmt, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query)(&err)
+
 	var stmt *sql.Stmt
-	var err error
 	if !s.useContext {
 		stmt, err = s.tx.Prepare(query)
 		if err != nil {
@@ -83,19 +91,24 @@ func (s *sqlTx) PrepareContext(ctx context.Context, query string) (Stmt, error) 
 		}
 	}
 	return &sqlStmt{
+		query:      query,
 		stmt:       stmt,
 		useContext: s.useContext,
 		tracker:    s.tracker.child(1),
 	}, err
 }
 
-func (s *sqlTx) Query(ctx context.Context, query string, args ...interface{}) (Rows, error) {
+func (s *sqlTx) Query(ctx context.Context, query string, args ...interface{}) (_ Rows, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(&err)
+
 	return s.tracker.wrapRows(s.tx.Query(query, args...))
 }
 
-func (s *sqlTx) QueryContext(ctx context.Context, query string, args ...interface{}) (Rows, error) {
+func (s *sqlTx) QueryContext(ctx context.Context, query string, args ...interface{}) (_ Rows, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(&err)
+
 	if !s.useContext {
 		return s.tracker.wrapRows(s.tx.Query(query, args...))
 	}
@@ -104,11 +117,15 @@ func (s *sqlTx) QueryContext(ctx context.Context, query string, args ...interfac
 
 func (s *sqlTx) QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(nil)
+
 	return s.tx.QueryRow(query, args...)
 }
 
 func (s *sqlTx) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(nil)
+
 	if !s.useContext {
 		return s.tx.QueryRow(query, args...)
 	}

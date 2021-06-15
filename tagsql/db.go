@@ -15,11 +15,14 @@ import (
 	"runtime/pprof"
 	"time"
 
+	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/errs"
 
 	"storj.io/common/context2"
 	"storj.io/private/traces"
 )
+
+var mon = monkit.Package()
 
 // Open opens *sql.DB and wraps the implementation with tagging.
 func Open(ctx context.Context, driverName, dataSourceName string) (DB, error) {
@@ -187,13 +190,17 @@ func (s *sqlDB) Driver() driver.Driver {
 	return s.db.Driver()
 }
 
-func (s *sqlDB) Exec(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (s *sqlDB) Exec(ctx context.Context, query string, args ...interface{}) (_ sql.Result, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(&err)
+
 	return s.db.Exec(query, args...)
 }
 
-func (s *sqlDB) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (s *sqlDB) ExecContext(ctx context.Context, query string, args ...interface{}) (_ sql.Result, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(&err)
+
 	if !s.useContext {
 		return s.db.Exec(query, args...)
 	}
@@ -213,19 +220,27 @@ func (s *sqlDB) PingContext(ctx context.Context) error {
 	return s.db.PingContext(ctx)
 }
 
-func (s *sqlDB) Prepare(ctx context.Context, query string) (Stmt, error) {
+func (s *sqlDB) Prepare(ctx context.Context, query string) (_ Stmt, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query)(&err)
+
 	stmt, err := s.db.Prepare(query)
 	if err != nil {
 		return nil, err
 	}
-	return &sqlStmt{stmt: stmt, useContext: s.useContext}, nil
+	return &sqlStmt{
+		query:      query,
+		stmt:       stmt,
+		useContext: s.useContext,
+		tracker:    s.tracker.child(1),
+	}, nil
 }
 
-func (s *sqlDB) PrepareContext(ctx context.Context, query string) (Stmt, error) {
+func (s *sqlDB) PrepareContext(ctx context.Context, query string) (_ Stmt, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query)(&err)
+
 	var stmt *sql.Stmt
-	var err error
 	if !s.useContext {
 		stmt, err = s.db.Prepare(query)
 		if err != nil {
@@ -238,19 +253,24 @@ func (s *sqlDB) PrepareContext(ctx context.Context, query string) (Stmt, error) 
 		}
 	}
 	return &sqlStmt{
+		query:      query,
 		stmt:       stmt,
 		useContext: s.useContext,
 		tracker:    s.tracker.child(1),
 	}, nil
 }
 
-func (s *sqlDB) Query(ctx context.Context, query string, args ...interface{}) (Rows, error) {
+func (s *sqlDB) Query(ctx context.Context, query string, args ...interface{}) (_ Rows, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(&err)
+
 	return s.tracker.wrapRows(s.db.Query(query, args...))
 }
 
-func (s *sqlDB) QueryContext(ctx context.Context, query string, args ...interface{}) (Rows, error) {
+func (s *sqlDB) QueryContext(ctx context.Context, query string, args ...interface{}) (_ Rows, err error) {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(&err)
+
 	if !s.useContext {
 		return s.tracker.wrapRows(s.db.Query(query, args...))
 	}
@@ -259,11 +279,15 @@ func (s *sqlDB) QueryContext(ctx context.Context, query string, args ...interfac
 
 func (s *sqlDB) QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(nil)
+
 	return s.db.QueryRow(query, args...)
 }
 
 func (s *sqlDB) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
 	traces.Tag(ctx, traces.TagDB)
+	defer mon.Task()(&ctx, query, args)(nil)
+
 	if !s.useContext {
 		return s.db.QueryRow(query, args...)
 	}
