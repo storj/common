@@ -97,7 +97,7 @@ func NewDefaultConnectionPool() *rpcpool.Pool {
 
 // DialNodeURL dials to the specified node url and asserts it has the given node id.
 func (d Dialer) DialNodeURL(ctx context.Context, nodeURL storj.NodeURL) (_ *Conn, err error) {
-	defer mon.Task()(&ctx, "node: "+nodeURL.ID.String()[0:8])(&err)
+	defer mon.Task()(&ctx, "node: "+nodeURL.String())(&err)
 
 	if d.TLSOptions == nil {
 		return nil, Error.New("tls options not set when required for this dial")
