@@ -413,6 +413,69 @@
       }
     },
     {
+      "protopath": "pb:/:gatewayauth.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "RegisterGatewayAccessRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "access_grant",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "public",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "name": "RegisterGatewayAccessResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "access_key_id",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "secret_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "endpoint",
+                "type": "string"
+              }
+            ]
+          }
+        ],
+        "services": [
+          {
+            "name": "GatewayAuth",
+            "rpcs": [
+              {
+                "name": "RegisterGatewayAccess",
+                "in_type": "RegisterGatewayAccessRequest",
+                "out_type": "RegisterGatewayAccessResponse"
+              }
+            ]
+          }
+        ],
+        "package": {
+          "name": "encryption_access"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
+          }
+        ]
+      }
+    },
+    {
       "protopath": "pb:/:gogo.proto",
       "def": {
         "messages": [
