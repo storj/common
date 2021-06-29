@@ -23,7 +23,7 @@ func TestServer_PrometheusMetrics(t *testing.T) {
 		}))
 
 	rec := httptest.NewRecorder()
-	srv.prometheusMetrics(rec, nil)
+	srv.prometheusMetrics(registry, rec, nil)
 
 	const (
 		m1 = `# TYPE m1 gauge

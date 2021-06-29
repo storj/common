@@ -20,6 +20,7 @@ import (
 	"storj.io/common/identity"
 	"storj.io/common/telemetry"
 	"storj.io/private/cfgstruct"
+	"storj.io/private/debug"
 	"storj.io/private/version"
 )
 
@@ -101,7 +102,7 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 			Interval:      calcMetricInterval(),
 			Application:   appName,
 			Instance:      instanceID,
-			Registry:      r,
+			Registry:      debug.ApplyNewTransformers(r),
 			FloatEncoding: admproto.Float32Encoding,
 		})
 		if err != nil {

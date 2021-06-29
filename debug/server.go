@@ -46,13 +46,17 @@ type Server struct {
 	mux      http.ServeMux
 
 	Panel *Panel
-
-	registry *monkit.Registry
 }
 
 // NewServer returns a new debug.Server.
 func NewServer(log *zap.Logger, listener net.Listener, registry *monkit.Registry, config Config) *Server {
 	return NewServerWithAtomicLevel(log, listener, registry, config, nil)
+}
+
+// ApplyNewTransformers adds the default set of monkit.CallbackTransformers.
+// This needs to happen individually for each output type and endpoint.
+func ApplyNewTransformers(r *monkit.Registry) *monkit.Registry {
+	return r.WithTransformers(monkit.NewDeltaTransformer())
 }
 
 // NewServerWithAtomicLevel returns a new debug.Server with logging endpoint enabled.
@@ -61,7 +65,6 @@ func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *
 
 	server.listener = listener
 	server.server.Handler = &server.mux
-	server.registry = registry
 
 	server.Panel = NewPanel(log.Named("control"), "/control", config.ControlTitle)
 	if config.Control {
@@ -78,8 +81,12 @@ func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *
 
 	server.mux.HandleFunc("/debug/run/trace/db", server.collectTraces)
 
-	server.mux.Handle("/mon/", http.StripPrefix("/mon", present.HTTP(server.registry)))
-	server.mux.HandleFunc("/metrics", server.prometheusMetrics)
+	monRegistry := ApplyNewTransformers(registry)
+	promRegistry := ApplyNewTransformers(registry)
+	server.mux.Handle("/mon/", http.StripPrefix("/mon", present.HTTP(monRegistry)))
+	server.mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		server.prometheusMetrics(promRegistry, w, r)
+	})
 
 	server.mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = fmt.Fprintln(w, "OK")
@@ -149,7 +156,7 @@ func (server *Server) Close() error {
 }
 
 // prometheusMetrics writes https://prometheus.io/docs/instrumenting/exposition_formats/
-func (server *Server) prometheusMetrics(w http.ResponseWriter, r *http.Request) {
+func (server *Server) prometheusMetrics(registry *monkit.Registry, w http.ResponseWriter, r *http.Request) {
 	// We have to collect all of the metrics before we write. This is because we do not
 	// get all of the metrics from the registry sorted by measurement, and from the docs:
 	//
@@ -161,7 +168,7 @@ func (server *Server) prometheusMetrics(w http.ResponseWriter, r *http.Request) 
 	data := make(map[string][]string)
 	var components []string
 
-	server.registry.Stats(func(key monkit.SeriesKey, field string, val float64) {
+	registry.Stats(func(key monkit.SeriesKey, field string, val float64) {
 		components = components[:0]
 
 		measurement := sanitize(key.Measurement)
