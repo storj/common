@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	monkit "github.com/spacemonkeygo/monkit/v3"
 	"github.com/spacemonkeygo/monkit/v3/environment"
@@ -23,10 +24,10 @@ import (
 )
 
 var (
-	metricInterval       = flag.Duration("metrics.interval", telemetry.DefaultInterval, "how frequently to send up telemetry")
+	metricInterval       = flag.Duration("metrics.interval", telemetry.DefaultInterval, "how frequently to send up telemetry. Ignored for certain applications.")
 	metricCollector      = flag.String("metrics.addr", flagDefault("", "collectora.storj.io:9000"), "address(es) to send telemetry to (comma-separated)")
-	metricApp            = flag.String("metrics.app", filepath.Base(os.Args[0]), "application name for telemetry identification")
-	metricAppSuffix      = flag.String("metrics.app-suffix", flagDefault("-dev", "-release"), "application suffix")
+	metricApp            = flag.String("metrics.app", filepath.Base(os.Args[0]), "application name for telemetry identification. Ignored for certain applications.")
+	metricAppSuffix      = flag.String("metrics.app-suffix", flagDefault("-dev", "-release"), "application suffix. Ignored for certain applications.")
 	metricInstancePrefix = flag.String("metrics.instance-prefix", "", "instance id prefix")
 )
 
@@ -53,6 +54,17 @@ func flagDefault(dev, release string) string {
 	return dev
 }
 
+func calcMetricInterval() time.Duration {
+	if *metricInterval == 0 || hardcodedAppName == "" {
+		// allow it to be disabled and configured when not hardcoded.
+		return *metricInterval
+	}
+	if hardcodedAppName == "storagenode" {
+		return 30 * time.Minute
+	}
+	return telemetry.DefaultInterval
+}
+
 // InitMetrics initializes telemetry reporting. Makes a telemetry.Client and calls
 // its Run() method in a goroutine.
 func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string) (err error) {
@@ -62,7 +74,7 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	environment.Register(r)
 	r.ScopeNamed("env").Chain(monkit.StatSourceFunc(version.Build.Stats))
 
-	if *metricCollector == "" || *metricInterval == 0 {
+	if *metricCollector == "" || calcMetricInterval() == 0 {
 		log.Debug("Telemetry disabled")
 		return nil
 	}
@@ -86,7 +98,7 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 
 	for _, address := range strings.Split(*metricCollector, ",") {
 		c, err := telemetry.NewClient(address, telemetry.ClientOpts{
-			Interval:      *metricInterval,
+			Interval:      calcMetricInterval(),
 			Application:   appName,
 			Instance:      instanceID,
 			Registry:      r,
