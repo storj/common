@@ -4,14 +4,19 @@
 package debug
 
 import (
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/spacemonkeygo/monkit/v3"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
+
+	"storj.io/common/testcontext"
 )
 
 func TestServer_PrometheusMetrics(t *testing.T) {
+	ctx := testcontext.New(t)
 	registry := monkit.NewRegistry()
 	srv := NewServer(zaptest.NewLogger(t), nil, registry, Config{})
 
@@ -24,7 +29,9 @@ func TestServer_PrometheusMetrics(t *testing.T) {
 		}))
 
 	rec := httptest.NewRecorder()
-	srv.prometheusMetrics(registry, rec, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "/", nil)
+	require.NoError(t, err)
+	srv.prometheusMetrics(rec, req)
 
 	const (
 		m1 = `# TYPE m1 gauge

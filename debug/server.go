@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
@@ -46,6 +47,10 @@ type Server struct {
 	mux      http.ServeMux
 
 	Panel *Panel
+
+	baseRegistry *monkit.Registry
+	registryMu   sync.Mutex
+	registries   map[string]*monkit.Registry
 }
 
 // NewServer returns a new debug.Server.
@@ -61,9 +66,13 @@ func ApplyNewTransformers(r *monkit.Registry) *monkit.Registry {
 
 // NewServerWithAtomicLevel returns a new debug.Server with logging endpoint enabled.
 func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *monkit.Registry, config Config, atomicLevel *zap.AtomicLevel) *Server {
-	server := &Server{log: log}
+	server := &Server{
+		log:          log,
+		listener:     listener,
+		baseRegistry: registry,
+		registries:   map[string]*monkit.Registry{},
+	}
 
-	server.listener = listener
 	server.server.Handler = &server.mux
 
 	server.Panel = NewPanel(log.Named("control"), "/control", config.ControlTitle)
@@ -81,12 +90,11 @@ func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *
 
 	server.mux.HandleFunc("/debug/run/trace/db", server.collectTraces)
 
-	monRegistry := ApplyNewTransformers(registry)
-	promRegistry := ApplyNewTransformers(registry)
-	server.mux.Handle("/mon/", http.StripPrefix("/mon", present.HTTP(monRegistry)))
-	server.mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
-		server.prometheusMetrics(promRegistry, w, r)
-	})
+	server.mux.Handle("/mon/", http.StripPrefix("/mon", http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			present.HTTP(server.registryForRequest(r)).ServeHTTP(w, r)
+		})))
+	server.mux.HandleFunc("/metrics", server.prometheusMetrics)
 
 	server.mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		_, _ = fmt.Fprintln(w, "OK")
@@ -156,7 +164,7 @@ func (server *Server) Close() error {
 }
 
 // prometheusMetrics writes https://prometheus.io/docs/instrumenting/exposition_formats/
-func (server *Server) prometheusMetrics(registry *monkit.Registry, w http.ResponseWriter, r *http.Request) {
+func (server *Server) prometheusMetrics(w http.ResponseWriter, r *http.Request) {
 	// We have to collect all of the metrics before we write. This is because we do not
 	// get all of the metrics from the registry sorted by measurement, and from the docs:
 	//
@@ -168,7 +176,7 @@ func (server *Server) prometheusMetrics(registry *monkit.Registry, w http.Respon
 	data := make(map[string][]string)
 	var components []string
 
-	registry.Stats(func(key monkit.SeriesKey, field string, val float64) {
+	server.registryForRequest(r).Stats(func(key monkit.SeriesKey, field string, val float64) {
 		components = components[:0]
 
 		measurement := sanitize(key.Measurement)
@@ -189,6 +197,19 @@ func (server *Server) prometheusMetrics(registry *monkit.Registry, w http.Respon
 			_, _ = fmt.Fprintf(w, "%s%s\n", measurement, sample)
 		}
 	}
+}
+
+func (server *Server) registryForRequest(r *http.Request) *monkit.Registry {
+	outputID := r.URL.Query().Get("output-id")
+	server.registryMu.Lock()
+	defer server.registryMu.Unlock()
+	// okay if outputID is ""
+	reg, found := server.registries[outputID]
+	if !found {
+		reg = ApplyNewTransformers(server.baseRegistry)
+		server.registries[outputID] = reg
+	}
+	return reg
 }
 
 // collectTraces collects traces until request is canceled.
