@@ -118,3 +118,10 @@ func (t TCPConnector) DialContextUnencrypted(ctx context.Context, address string
 		rate: t.TransferRate,
 	}, nil
 }
+
+// SetTransferRate sets the transfer rate member for this TCPConnector
+// instance. This is mainly provided for interface compatibility with other
+// connectors.
+func (t *TCPConnector) SetTransferRate(rate memory.Size) {
+	t.TransferRate = rate
+}
