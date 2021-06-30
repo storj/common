@@ -76,7 +76,9 @@ func main() {
 		cmd := exec.Command(*protoc, args...)
 		fmt.Println(strings.Join(cmd.Args, " "))
 		out, err := cmd.CombinedOutput()
-		fmt.Println(string(out))
+		if len(out) > 0 {
+			fmt.Println(string(out))
+		}
 		check(err)
 	}
 
@@ -91,7 +93,9 @@ func main() {
 	{
 		// format code to get rid of extra imports
 		out, err := exec.Command("goimports", "-local", "storj.io", "-w", ".").CombinedOutput()
-		fmt.Println(string(out))
+		if len(out) > 0 {
+			fmt.Println(string(out))
+		}
 		check(err)
 	}
 }

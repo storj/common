@@ -4444,6 +4444,21 @@
                 ]
               },
               {
+                "id": 10,
+                "name": "vetted_at",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
                 "id": 9,
                 "name": "audit_history",
                 "type": "AuditHistory"
