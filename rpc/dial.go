@@ -121,6 +121,17 @@ func (d Dialer) DialAddressInsecure(ctx context.Context, address string) (_ *Con
 	})
 }
 
+// DialAddressHostnameVerification dials to the specified address and assumes that the
+// server will valdiate their hostname with the system/browser CA. It ignores any
+// TLSOptions set on the dialer and always uses a default tls configuration.
+func (d Dialer) DialAddressHostnameVerification(ctx context.Context, address string) (_ *Conn, err error) {
+	defer mon.Task()(&ctx)(&err)
+
+	return d.dialPool(ctx, "hostname:"+address, func(ctx context.Context) (drpc.Conn, error) {
+		return d.dialEncryptedConn(ctx, address, new(tls.Config))
+	})
+}
+
 // DialAddressUnencrypted dials to the specified address without tls.
 func (d Dialer) DialAddressUnencrypted(ctx context.Context, address string) (_ *Conn, err error) {
 	defer mon.Task()(&ctx)(&err)
