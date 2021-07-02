@@ -2859,6 +2859,59 @@
             ]
           },
           {
+            "name": "ObjectUpdateMetadataRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "version",
+                "type": "int32"
+              },
+              {
+                "id": 4,
+                "name": "encrypted_metadata_nonce",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "Nonce"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 5,
+                "name": "encrypted_metadata",
+                "type": "bytes"
+              },
+              {
+                "id": 6,
+                "name": "encrypted_metadata_encrypted_key",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "ObjectUpdateMetadataResponse"
+          },
+          {
             "name": "SatStreamID",
             "fields": [
               {
@@ -3706,6 +3759,11 @@
                 "type": "ObjectDownloadRequest"
               },
               {
+                "id": 24,
+                "name": "object_update_metadata",
+                "type": "ObjectUpdateMetadataRequest"
+              },
+              {
                 "id": 12,
                 "name": "segment_begin",
                 "type": "SegmentBeginRequest"
@@ -3830,6 +3888,11 @@
                 "id": 23,
                 "name": "object_download",
                 "type": "ObjectDownloadResponse"
+              },
+              {
+                "id": 24,
+                "name": "object_update_metadata",
+                "type": "ObjectUpdateMetadataResponse"
               },
               {
                 "id": 12,
@@ -3965,6 +4028,11 @@
                 "name": "DownloadObject",
                 "in_type": "ObjectDownloadRequest",
                 "out_type": "ObjectDownloadResponse"
+              },
+              {
+                "name": "UpdateObjectMetadata",
+                "in_type": "ObjectUpdateMetadataRequest",
+                "out_type": "ObjectUpdateMetadataResponse"
               },
               {
                 "name": "BeginSegment",

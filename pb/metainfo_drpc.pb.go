@@ -56,6 +56,7 @@ type DRPCMetainfoClient interface {
 	GetObjectIPs(ctx context.Context, in *ObjectGetIPsRequest) (*ObjectGetIPsResponse, error)
 	ListPendingObjectStreams(ctx context.Context, in *ObjectListPendingStreamsRequest) (*ObjectListPendingStreamsResponse, error)
 	DownloadObject(ctx context.Context, in *ObjectDownloadRequest) (*ObjectDownloadResponse, error)
+	UpdateObjectMetadata(ctx context.Context, in *ObjectUpdateMetadataRequest) (*ObjectUpdateMetadataResponse, error)
 	BeginSegment(ctx context.Context, in *SegmentBeginRequest) (*SegmentBeginResponse, error)
 	CommitSegment(ctx context.Context, in *SegmentCommitRequest) (*SegmentCommitResponse, error)
 	MakeInlineSegment(ctx context.Context, in *SegmentMakeInlineRequest) (*SegmentMakeInlineResponse, error)
@@ -204,6 +205,15 @@ func (c *drpcMetainfoClient) DownloadObject(ctx context.Context, in *ObjectDownl
 	return out, nil
 }
 
+func (c *drpcMetainfoClient) UpdateObjectMetadata(ctx context.Context, in *ObjectUpdateMetadataRequest) (*ObjectUpdateMetadataResponse, error) {
+	out := new(ObjectUpdateMetadataResponse)
+	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/UpdateObjectMetadata", drpcEncoding_File_metainfo_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *drpcMetainfoClient) BeginSegment(ctx context.Context, in *SegmentBeginRequest) (*SegmentBeginResponse, error) {
 	out := new(SegmentBeginResponse)
 	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/BeginSegment", drpcEncoding_File_metainfo_proto{}, in, out)
@@ -309,6 +319,7 @@ type DRPCMetainfoServer interface {
 	GetObjectIPs(context.Context, *ObjectGetIPsRequest) (*ObjectGetIPsResponse, error)
 	ListPendingObjectStreams(context.Context, *ObjectListPendingStreamsRequest) (*ObjectListPendingStreamsResponse, error)
 	DownloadObject(context.Context, *ObjectDownloadRequest) (*ObjectDownloadResponse, error)
+	UpdateObjectMetadata(context.Context, *ObjectUpdateMetadataRequest) (*ObjectUpdateMetadataResponse, error)
 	BeginSegment(context.Context, *SegmentBeginRequest) (*SegmentBeginResponse, error)
 	CommitSegment(context.Context, *SegmentCommitRequest) (*SegmentCommitResponse, error)
 	MakeInlineSegment(context.Context, *SegmentMakeInlineRequest) (*SegmentMakeInlineResponse, error)
@@ -379,6 +390,10 @@ func (s *DRPCMetainfoUnimplementedServer) DownloadObject(context.Context, *Objec
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
 
+func (s *DRPCMetainfoUnimplementedServer) UpdateObjectMetadata(context.Context, *ObjectUpdateMetadataRequest) (*ObjectUpdateMetadataResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
+}
+
 func (s *DRPCMetainfoUnimplementedServer) BeginSegment(context.Context, *SegmentBeginRequest) (*SegmentBeginResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), 12)
 }
@@ -421,7 +436,7 @@ func (s *DRPCMetainfoUnimplementedServer) RevokeAPIKey(context.Context, *RevokeA
 
 type DRPCMetainfoDescription struct{}
 
-func (DRPCMetainfoDescription) NumMethods() int { return 24 }
+func (DRPCMetainfoDescription) NumMethods() int { return 25 }
 
 func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -552,6 +567,15 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 					)
 			}, DRPCMetainfoServer.DownloadObject, true
 	case 14:
+		return "/metainfo.Metainfo/UpdateObjectMetadata", drpcEncoding_File_metainfo_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCMetainfoServer).
+					UpdateObjectMetadata(
+						ctx,
+						in1.(*ObjectUpdateMetadataRequest),
+					)
+			}, DRPCMetainfoServer.UpdateObjectMetadata, true
+	case 15:
 		return "/metainfo.Metainfo/BeginSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -560,7 +584,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*SegmentBeginRequest),
 					)
 			}, DRPCMetainfoServer.BeginSegment, true
-	case 15:
+	case 16:
 		return "/metainfo.Metainfo/CommitSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -569,7 +593,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*SegmentCommitRequest),
 					)
 			}, DRPCMetainfoServer.CommitSegment, true
-	case 16:
+	case 17:
 		return "/metainfo.Metainfo/MakeInlineSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -578,7 +602,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*SegmentMakeInlineRequest),
 					)
 			}, DRPCMetainfoServer.MakeInlineSegment, true
-	case 17:
+	case 18:
 		return "/metainfo.Metainfo/BeginDeleteSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -587,7 +611,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*SegmentBeginDeleteRequest),
 					)
 			}, DRPCMetainfoServer.BeginDeleteSegment, true
-	case 18:
+	case 19:
 		return "/metainfo.Metainfo/FinishDeleteSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -596,7 +620,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*SegmentFinishDeleteRequest),
 					)
 			}, DRPCMetainfoServer.FinishDeleteSegment, true
-	case 19:
+	case 20:
 		return "/metainfo.Metainfo/ListSegments", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -605,7 +629,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*SegmentListRequest),
 					)
 			}, DRPCMetainfoServer.ListSegments, true
-	case 20:
+	case 21:
 		return "/metainfo.Metainfo/DownloadSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -614,7 +638,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*SegmentDownloadRequest),
 					)
 			}, DRPCMetainfoServer.DownloadSegment, true
-	case 21:
+	case 22:
 		return "/metainfo.Metainfo/Batch", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -623,7 +647,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BatchRequest),
 					)
 			}, DRPCMetainfoServer.Batch, true
-	case 22:
+	case 23:
 		return "/metainfo.Metainfo/ProjectInfo", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -632,7 +656,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*ProjectInfoRequest),
 					)
 			}, DRPCMetainfoServer.ProjectInfo, true
-	case 23:
+	case 24:
 		return "/metainfo.Metainfo/RevokeAPIKey", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -868,6 +892,22 @@ type drpcMetainfo_DownloadObjectStream struct {
 }
 
 func (x *drpcMetainfo_DownloadObjectStream) SendAndClose(m *ObjectDownloadResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCMetainfo_UpdateObjectMetadataStream interface {
+	drpc.Stream
+	SendAndClose(*ObjectUpdateMetadataResponse) error
+}
+
+type drpcMetainfo_UpdateObjectMetadataStream struct {
+	drpc.Stream
+}
+
+func (x *drpcMetainfo_UpdateObjectMetadataStream) SendAndClose(m *ObjectUpdateMetadataResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
 		return err
 	}
