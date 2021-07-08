@@ -425,6 +425,8 @@ message ObjectUpdateMetadataRequest {
     bytes  encrypted_object_key = 2;
     int32  version = 3;
 
+    bytes stream_id = 7 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+
     bytes encrypted_metadata_nonce = 4 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes encrypted_metadata = 5; // TODO: set maximum size limit
     bytes encrypted_metadata_encrypted_key = 6;

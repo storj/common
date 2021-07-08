@@ -2882,6 +2882,21 @@
                 "type": "int32"
               },
               {
+                "id": 7,
+                "name": "stream_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "StreamID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
                 "id": 4,
                 "name": "encrypted_metadata_nonce",
                 "type": "bytes",
