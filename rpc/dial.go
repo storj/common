@@ -39,9 +39,12 @@ func NewDefaultManagerOptions() drpcmanager.Options {
 
 // Dialer holds configuration for dialing.
 type Dialer struct {
-	// TLSOptions controls the tls options for dialing. If it is nil, only
-	// insecure connections can be made.
+	// TLSOptions controls the tls options for dialing with NodeID verification.
+	// If it is nil, only insecure connections can be made.
 	TLSOptions *tlsopts.Options
+
+	// Override system TLS settings when using hostname verification
+	HostnameTLSConfig *tls.Config
 
 	// DialTimeout causes all the tcp dials to error if they take longer
 	// than it if it is non-zero.
@@ -122,13 +125,33 @@ func (d Dialer) DialAddressInsecure(ctx context.Context, address string) (_ *Con
 }
 
 // DialAddressHostnameVerification dials to the specified address and assumes that the
-// server will valdiate their hostname with the system/browser CA. It ignores any
-// TLSOptions set on the dialer and always uses a default tls configuration.
+// server will valdiate their hostname with the system/browser CA, unless overridden.
+// It ignores any TLSOptions set on the dialer.
 func (d Dialer) DialAddressHostnameVerification(ctx context.Context, address string) (_ *Conn, err error) {
 	defer mon.Task()(&ctx)(&err)
 
+	// clear out TLS options so that the cache does not include it as part of the key.
+	d.TLSOptions = nil
+
+	var tlsConfig *tls.Config
+	if d.HostnameTLSConfig == nil {
+		tlsConfig = new(tls.Config)
+	} else {
+		// clone for thread safety
+		tlsConfig = d.HostnameTLSConfig.Clone()
+	}
+
+	if tlsConfig.ServerName == "" {
+		host, _, err := net.SplitHostPort(address)
+		if err != nil {
+			return nil, Error.Wrap(err)
+		}
+
+		tlsConfig.ServerName = host
+	}
+
 	return d.dialPool(ctx, "hostname:"+address, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
-		return d.dialEncryptedConn(ctx, address, new(tls.Config))
+		return d.dialEncryptedConn(ctx, address, tlsConfig)
 	})
 }
 
