@@ -39,8 +39,17 @@ func New(opts Options) *Pool {
 		Expiration:  opts.IdleExpiration,
 		Capacity:    opts.Capacity,
 		KeyCapacity: opts.KeyCapacity,
-		Stale:       func(conn interface{}) bool { return conn.(drpc.Conn).Closed() },
-		Close:       func(conn interface{}) error { return conn.(drpc.Conn).Close() },
+		Close: func(pv interface{}) error {
+			return pv.(*poolValue).conn.Close()
+		},
+		Stale: func(pv interface{}) bool {
+			select {
+			case <-pv.(*poolValue).conn.Closed():
+				return true
+			default:
+				return false
+			}
+		},
 	})}
 
 	// As much as I dislike finalizers, especially for cases where it handles
@@ -61,8 +70,14 @@ type poolKey struct {
 	tlsOptions *tlsopts.Options
 }
 
+// poolValue is the type of values in the cache.
+type poolValue struct {
+	conn  drpc.Conn
+	state *tls.ConnectionState
+}
+
 // Dialer is the type of function to create a new connection.
-type Dialer = func(context.Context) (drpc.Conn, error)
+type Dialer = func(context.Context) (drpc.Conn, *tls.ConnectionState, error)
 
 // Close closes all of the cached connections. It is safe to call on a nil receiver.
 func (p *Pool) Close() error {
@@ -75,24 +90,27 @@ func (p *Pool) Close() error {
 }
 
 // get returns a drpc connection from the cache if possible, dialing if necessary.
-func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (conn drpc.Conn, err error) {
+func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (pv *poolValue, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	if p != nil {
-		conn, ok := p.cache.Take(pk).(drpc.Conn)
+		pv, ok := p.cache.Take(pk).(*poolValue)
 		if ok {
 			mon.Event("connection_from_cache")
-			return conn, nil
+			return pv, nil
 		}
 	}
 
 	mon.Event("connection_dialed")
-	conn, err = dial(ctx)
+	conn, state, err := dial(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return conn, nil
+	return &poolValue{
+		conn:  conn,
+		state: state,
+	}, nil
 }
 
 // Get looks up a connection with the same key and TLS options and returns it if it
@@ -107,35 +125,24 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 		tlsOptions: tlsOptions,
 	}
 
-	conn, err = p.get(ctx, pk, dial)
+	pv, err := p.get(ctx, pk, dial)
 	if err != nil {
 		return nil, nil, err
 	}
-	state = getConnectionState(conn)
 
 	// if we have a nil pool, we always dial once and do not return a wrapped connection.
 	if p == nil {
-		return conn, state, nil
+		return pv.conn, pv.state, nil
 	}
 
 	// we immediately place the connection back into the pool so that it may be used
 	// by the returned poolConn.
-	p.cache.Put(pk, conn)
+	p.cache.Put(pk, pv)
 
 	return &poolConn{
+		ch:   make(chan struct{}),
 		pk:   pk,
 		dial: dial,
 		pool: p,
-	}, state, nil
-}
-
-func getConnectionState(conn drpc.Conn) *tls.ConnectionState {
-	type connectionState interface {
-		ConnectionState() tls.ConnectionState
-	}
-	if tr, ok := conn.Transport().(connectionState); ok {
-		state := tr.ConnectionState()
-		return &state
-	}
-	return nil
+	}, pv.state, nil
 }

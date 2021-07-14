@@ -5,7 +5,7 @@ package rpcpool
 
 import (
 	"context"
-	"sync/atomic"
+	"sync"
 
 	"github.com/zeebo/errs"
 
@@ -14,7 +14,8 @@ import (
 
 // poolConn grabs a connection from the pool for every invoke/stream.
 type poolConn struct {
-	closed int32 // atomic where 1 == true
+	on sync.Once
+	ch chan struct{}
 
 	pk   poolKey
 	dial Dialer
@@ -24,13 +25,13 @@ type poolConn struct {
 // Close marks the poolConn as closed and will not allow future calls to Invoke or NewStream
 // to proceed. It does not stop any ongoing calls to Invoke or NewStream.
 func (c *poolConn) Close() (err error) {
-	atomic.StoreInt32(&c.closed, 1)
+	c.on.Do(func() { close(c.ch) })
 	return nil
 }
 
 // Closed returns true if the poolConn is closed.
-func (c *poolConn) Closed() bool {
-	return atomic.LoadInt32(&c.closed) != 0
+func (c *poolConn) Closed() <-chan struct{} {
+	return c.ch
 }
 
 // Invoke acquires a connection from the pool, dialing if necessary, and issues the Invoke on that
@@ -38,17 +39,19 @@ func (c *poolConn) Closed() bool {
 func (c *poolConn) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in, out drpc.Message) (err error) {
 	defer mon.Task()(&ctx)(&err)
 
-	if c.Closed() {
+	select {
+	case <-c.ch:
 		return errs.New("connection closed")
+	default:
 	}
 
-	conn, err := c.pool.get(ctx, c.pk, c.dial)
+	pv, err := c.pool.get(ctx, c.pk, c.dial)
 	if err != nil {
 		return err
 	}
-	defer c.pool.cache.Put(c.pk, conn)
+	defer c.pool.cache.Put(c.pk, pv)
 
-	return conn.Invoke(ctx, rpc, enc, in, out)
+	return pv.conn.Invoke(ctx, rpc, enc, in, out)
 }
 
 // NewStream acquires a connection from the pool, dialing if necessary, and issues the NewStream on
@@ -56,16 +59,18 @@ func (c *poolConn) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in
 func (c *poolConn) NewStream(ctx context.Context, rpc string, enc drpc.Encoding) (_ drpc.Stream, err error) {
 	defer mon.Task()(&ctx)(&err)
 
-	if c.Closed() {
+	select {
+	case <-c.ch:
 		return nil, errs.New("connection closed")
+	default:
 	}
 
-	conn, err := c.pool.get(ctx, c.pk, c.dial)
+	pv, err := c.pool.get(ctx, c.pk, c.dial)
 	if err != nil {
 		return nil, err
 	}
 
-	stream, err := conn.NewStream(ctx, rpc, enc)
+	stream, err := pv.conn.NewStream(ctx, rpc, enc)
 	if err != nil {
 		return nil, err
 	}
@@ -74,13 +79,8 @@ func (c *poolConn) NewStream(ctx context.Context, rpc string, enc drpc.Encoding)
 	// coming in for that stream anymore. it has been fully terminated.
 	go func() {
 		<-stream.Context().Done()
-		c.pool.cache.Put(c.pk, conn)
+		c.pool.cache.Put(c.pk, pv)
 	}()
 
 	return stream, nil
-}
-
-// Transport returns nil because it does not have a fixed transport.
-func (c *poolConn) Transport() drpc.Transport {
-	return nil
 }

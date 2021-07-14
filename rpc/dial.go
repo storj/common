@@ -103,7 +103,7 @@ func (d Dialer) DialNodeURL(ctx context.Context, nodeURL storj.NodeURL) (_ *Conn
 		return nil, Error.New("tls options not set when required for this dial")
 	}
 
-	return d.dialPool(ctx, "node:"+nodeURL.ID.String(), func(ctx context.Context) (drpc.Conn, error) {
+	return d.dialPool(ctx, "node:"+nodeURL.ID.String(), func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
 		return d.dialEncryptedConn(ctx, nodeURL.Address, d.TLSOptions.ClientTLSConfig(nodeURL.ID))
 	})
 }
@@ -116,7 +116,7 @@ func (d Dialer) DialAddressInsecure(ctx context.Context, address string) (_ *Con
 		return nil, Error.New("tls options not set when required for this dial")
 	}
 
-	return d.dialPool(ctx, "insecure:"+address, func(ctx context.Context) (drpc.Conn, error) {
+	return d.dialPool(ctx, "insecure:"+address, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
 		return d.dialEncryptedConn(ctx, address, d.TLSOptions.UnverifiedClientTLSConfig())
 	})
 }
@@ -127,7 +127,7 @@ func (d Dialer) DialAddressInsecure(ctx context.Context, address string) (_ *Con
 func (d Dialer) DialAddressHostnameVerification(ctx context.Context, address string) (_ *Conn, err error) {
 	defer mon.Task()(&ctx)(&err)
 
-	return d.dialPool(ctx, "hostname:"+address, func(ctx context.Context) (drpc.Conn, error) {
+	return d.dialPool(ctx, "hostname:"+address, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
 		return d.dialEncryptedConn(ctx, address, new(tls.Config))
 	})
 }
@@ -139,7 +139,7 @@ func (d Dialer) DialAddressUnencrypted(ctx context.Context, address string) (_ *
 	// clear out TLS options so that the cache does not include it as part of the key.
 	d.TLSOptions = nil
 
-	return d.dialPool(ctx, "unencrypted:"+address, func(ctx context.Context) (drpc.Conn, error) {
+	return d.dialPool(ctx, "unencrypted:"+address, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
 		return d.dialUnencryptedConn(ctx, address)
 	})
 }
@@ -181,7 +181,7 @@ func (d Dialer) dialPool(ctx context.Context, key string, dialer rpcpool.Dialer)
 }
 
 // dialEncryptedConn performs dialing to the drpc endpoint with tls.
-func (d Dialer) dialEncryptedConn(ctx context.Context, address string, tlsConfig *tls.Config) (_ drpc.Conn, err error) {
+func (d Dialer) dialEncryptedConn(ctx context.Context, address string, tlsConfig *tls.Config) (_ drpc.Conn, _ *tls.ConnectionState, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	if d.DialLatency > 0 {
@@ -190,19 +190,17 @@ func (d Dialer) dialEncryptedConn(ctx context.Context, address string, tlsConfig
 		case <-timer.C:
 		case <-ctx.Done():
 			timer.Stop()
-			return nil, Error.Wrap(ctx.Err())
+			return nil, nil, Error.Wrap(ctx.Err())
 		}
 	}
 
 	conn, err := d.Connector.DialContext(ctx, tlsConfig, address)
 	if err != nil {
-		return nil, Error.Wrap(err)
+		return nil, nil, Error.Wrap(err)
 	}
 
-	return &Conn{
-		Conn:  rpctracing.NewTracingWrapper(drpcconn.NewWithOptions(conn, d.ConnectionOptions)),
-		state: conn.ConnectionState(),
-	}, nil
+	state := conn.ConnectionState()
+	return drpcconn.NewWithOptions(conn, d.ConnectionOptions), &state, nil
 }
 
 type unencryptedConnector interface {
@@ -210,7 +208,7 @@ type unencryptedConnector interface {
 }
 
 // dialUnencryptedConn performs dialing to the drpc endpoint with no tls.
-func (d Dialer) dialUnencryptedConn(ctx context.Context, address string) (_ drpc.Conn, err error) {
+func (d Dialer) dialUnencryptedConn(ctx context.Context, address string) (_ drpc.Conn, _ *tls.ConnectionState, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	if d.DialLatency > 0 {
@@ -219,7 +217,7 @@ func (d Dialer) dialUnencryptedConn(ctx context.Context, address string) (_ drpc
 		case <-timer.C:
 		case <-ctx.Done():
 			timer.Stop()
-			return nil, Error.Wrap(ctx.Err())
+			return nil, nil, Error.Wrap(ctx.Err())
 		}
 	}
 
@@ -227,13 +225,11 @@ func (d Dialer) dialUnencryptedConn(ctx context.Context, address string) (_ drpc
 		// open the tcp socket to the address
 		conn, err := unencConnector.DialContextUnencrypted(ctx, address)
 		if err != nil {
-			return nil, Error.Wrap(err)
+			return nil, nil, Error.Wrap(err)
 		}
 
-		return &Conn{
-			Conn: rpctracing.NewTracingWrapper(drpcconn.NewWithOptions(conn, d.ConnectionOptions)),
-		}, nil
+		return drpcconn.NewWithOptions(conn, d.ConnectionOptions), nil, nil
 	}
 
-	return nil, Error.New("unsupported transport type: %T, use TCPTransport", d.Connector)
+	return nil, nil, Error.New("unsupported transport type: %T, use TCPTransport", d.Connector)
 }

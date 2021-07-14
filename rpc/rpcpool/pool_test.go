@@ -16,9 +16,9 @@ import (
 func TestGet(t *testing.T) {
 	ctx := context.Background()
 	calls := 0
-	dial := func(ctx context.Context) (drpc.Conn, error) {
+	dial := func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
 		calls++
-		return emptyConn{}, nil
+		return emptyConn{}, nil, nil
 	}
 
 	check := func(t *testing.T, pool *Pool, counts ...int) {
@@ -59,16 +59,9 @@ func TestGet(t *testing.T) {
 
 type emptyConn struct{ drpc.Conn }
 
-func (emptyConn) Close() error              { return nil }
-func (emptyConn) Closed() bool              { return false }
-func (emptyConn) Transport() drpc.Transport { return emptyTransport{} }
+func (emptyConn) Close() error            { return nil }
+func (emptyConn) Closed() <-chan struct{} { return nil }
 
 func (emptyConn) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in, out drpc.Message) error {
 	return nil
-}
-
-type emptyTransport struct{ drpc.Transport }
-
-func (emptyTransport) ConnectionState() tls.ConnectionState {
-	return tls.ConnectionState{}
 }
