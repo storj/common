@@ -210,6 +210,9 @@ func sanitize(val string) string {
 	// specifies all metric names must match [a-zA-Z_:][a-zA-Z0-9_:]*
 	// Note: The colons are reserved for user defined recording rules.
 	// They should not be used by exporters or direct instrumentation.
+	if val == "" {
+		return ""
+	}
 	if '0' <= val[0] && val[0] <= '9' {
 		val = "_" + val
 	}

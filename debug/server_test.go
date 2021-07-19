@@ -20,6 +20,7 @@ func TestServer_PrometheusMetrics(t *testing.T) {
 			cb(monkit.NewSeriesKey("m1"), "f1", 1)
 			cb(monkit.NewSeriesKey("m2"), "f2", 2)
 			cb(monkit.NewSeriesKey("m1"), "f3", 3)
+			cb(monkit.NewSeriesKey("m3"), "", 4)
 		}))
 
 	rec := httptest.NewRecorder()
@@ -33,11 +34,14 @@ m1{scope="test",field="f3"} 3
 		m2 = `# TYPE m2 gauge
 m2{scope="test",field="f2"} 2
 `
+		m3 = `# TYPE m3 gauge
+m3{scope="test",field=""} 4
+`
 	)
 
 	body := rec.Body.String()
-	if body != m1+m2 && body != m2+m1 {
+	if body != m1+m2+m3 && body != m3+m2+m1 {
 		t.Fatalf("string mismatch:\nbody:%q\nexp1:%q\nexp2:%q",
-			body, m1+m2, m2+m1)
+			body, m1+m2+m3, m3+m2+m1)
 	}
 }
