@@ -2579,6 +2579,11 @@
                 "id": 6,
                 "name": "object_includes",
                 "type": "ObjectListItemIncludes"
+              },
+              {
+                "id": 8,
+                "name": "use_object_includes",
+                "type": "bool"
               }
             ]
           },

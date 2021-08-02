@@ -350,6 +350,12 @@ message ObjectListRequest {
     Object.Status status    = 7;
 
     ObjectListItemIncludes object_includes = 6;
+    // because uplink was not setting object_includes correctly
+    // (object_includes.Metadata was always false) we need a way
+    // to give satellite know that should be using object_includes,
+    // otherwise old uplinks can break. Newer uplinks should 
+    // set this value always to true.
+    bool use_object_includes = 8;
 }
 
 message ObjectListResponse {
