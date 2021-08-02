@@ -350,6 +350,7 @@ message ObjectListRequest {
     Object.Status status    = 7;
 
     ObjectListItemIncludes object_includes = 6;
+    bool use_object_includes = 8;
 }
 
 message ObjectListResponse {
