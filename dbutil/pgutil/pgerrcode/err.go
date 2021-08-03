@@ -7,6 +7,7 @@ package pgerrcode
 
 import (
 	"errors"
+	"strings"
 )
 
 // FromError returns the 5-character PostgreSQL error code string associated
@@ -31,4 +32,10 @@ type errWithSQLState interface {
 func IsInvalidSyntax(err error) bool {
 	code := FromError(err)
 	return code == "42000" || code == "42601"
+}
+
+// IsConstraintViolation returns true if provided error belongs to Integrity
+// Constraint Violation, Class 23.
+func IsConstraintViolation(err error) bool {
+	return strings.HasPrefix(FromError(err), "23")
 }
