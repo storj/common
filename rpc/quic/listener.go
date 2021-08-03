@@ -9,12 +9,15 @@ import (
 	"context"
 	"crypto/tls"
 	"net"
+	"time"
 
 	"github.com/lucas-clemente/quic-go"
 	"github.com/zeebo/errs"
 
 	"storj.io/common/peertls/tlsopts"
 )
+
+const defaultIdleTimeout = 60 * time.Second
 
 // Listener implements listener for QUIC.
 type Listener struct {
@@ -34,6 +37,17 @@ func NewListener(conn *net.UDPConn, tlsConfig *tls.Config, quicConfig *quic.Conf
 	}
 	tlsConfigCopy := tlsConfig.Clone()
 	tlsConfigCopy.NextProtos = []string{tlsopts.StorjApplicationProtocol}
+
+	if quicConfig == nil {
+		quicConfig = &quic.Config{
+			MaxIdleTimeout: defaultIdleTimeout,
+			// disable address validation in QUIC (it costs an extra round-trip, and we believe
+			// it to be unnecessary given the low potential for traffic amplification attacks).
+			AcceptToken: func(clientAddr net.Addr, token *quic.Token) bool {
+				return true
+			},
+		}
+	}
 
 	listener, err := quic.Listen(conn, tlsConfigCopy, quicConfig)
 	if err != nil {

@@ -8,6 +8,7 @@ package quic
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"io"
 	"net"
 	"runtime"
@@ -98,7 +99,7 @@ func (c *Conn) ConnectionState() tls.ConnectionState {
 
 // Close closes the quic connection.
 func (c *Conn) Close() error {
-	return c.session.CloseWithError(quic.ErrorCode(0), "")
+	return c.session.CloseWithError(quic.ApplicationErrorCode(quic.NoError), "")
 }
 
 // LocalAddr returns the local address.
@@ -145,15 +146,13 @@ func (c *Conn) SetDeadline(t time.Time) error {
 
 // isSessionSuccessfulExit determines whether an error as returned from a network
 // operation is a QUIC "successful exit" application code.
-//
-// This is pretty awful.
-//
-// The reason is that quic-go, in its wisdom, has decided not to export any
-// fields or interfaces whatsoever that we could use to access the error code
-// from a "github.com/lucas-clemente/quic-go/internal/qerr".(*QuicError)
-// instance.
 func isSessionSuccessfulExit(err error) bool {
-	return err != nil && err.Error() == "Application error 0x0"
+	var quicErr *quic.ApplicationError
+	if errors.As(err, &quicErr) {
+		return quicErr.ErrorCode == quic.ApplicationErrorCode(quic.NoError)
+	}
+
+	return false
 }
 
 func (c *Conn) captureWriteErr(err error) error {
