@@ -11,6 +11,8 @@ import (
 	"encoding/hex"
 	"net/url"
 	"strings"
+
+	"storj.io/private/dbutil/pgutil/pgerrcode"
 )
 
 // CreateRandomTestingSchemaName creates a random schema name string.
@@ -75,7 +77,7 @@ func CreateSchema(ctx context.Context, db Execer, schema string) (err error) {
 		// In that case, we will retry rather than doing anything more complicated.
 		//
 		// See more in: https://stackoverflow.com/a/29908840/192220
-		if IsConstraintError(err) {
+		if pgerrcode.IsConstraintViolation(err) {
 			continue
 		}
 		return err

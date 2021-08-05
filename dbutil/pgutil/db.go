@@ -15,18 +15,11 @@ import (
 	"storj.io/common/context2"
 	"storj.io/private/dbutil"
 	"storj.io/private/dbutil/dbschema"
-	"storj.io/private/dbutil/pgutil/pgerrcode"
 	"storj.io/private/tagsql"
 )
 
 var (
 	mon = monkit.Package()
-)
-
-const (
-	// pgErrorClassConstraintViolation is the class of PostgreSQL errors indicating
-	// integrity constraint violations.
-	pgErrorClassConstraintViolation = "23"
 )
 
 // OpenUnique opens a postgres database with a temporary unique schema, which will be cleaned up
@@ -108,12 +101,6 @@ func CheckApplicationName(s string, app string) (string, error) {
 	}
 	// return source as is if application_name is set
 	return s, nil
-}
-
-// IsConstraintError checks if given error is about constraint violation.
-func IsConstraintError(err error) bool {
-	errCode := pgerrcode.FromError(err)
-	return strings.HasPrefix(errCode, pgErrorClassConstraintViolation)
 }
 
 // QuoteIdentifier quotes an identifier for use in an interpolated SQL string.

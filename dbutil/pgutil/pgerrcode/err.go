@@ -10,6 +10,12 @@ import (
 	"strings"
 )
 
+const (
+	// pgErrorClassConstraintViolation is the class of PostgreSQL errors indicating
+	// integrity constraint violations.
+	pgErrorClassConstraintViolation = "23"
+)
+
 // FromError returns the 5-character PostgreSQL error code string associated
 // with the given error, if any.
 func FromError(err error) string {
@@ -37,5 +43,5 @@ func IsInvalidSyntax(err error) bool {
 // IsConstraintViolation returns true if provided error belongs to Integrity
 // Constraint Violation, Class 23.
 func IsConstraintViolation(err error) bool {
-	return strings.HasPrefix(FromError(err), "23")
+	return strings.HasPrefix(FromError(err), pgErrorClassConstraintViolation)
 }
