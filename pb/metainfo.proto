@@ -50,6 +50,8 @@ service Metainfo {
     rpc ListSegments(SegmentListRequest) returns (SegmentListResponse);
     rpc DownloadSegment(SegmentDownloadRequest) returns (SegmentDownloadResponse);
 
+    rpc DeletePart(PartDeleteRequest) returns (PartDeleteResponse);
+
     rpc Batch(BatchRequest) returns (BatchResponse);
 
     rpc ProjectInfo(ProjectInfoRequest) returns (ProjectInfoResponse);
@@ -622,6 +624,16 @@ message SegmentDownloadResponse {
     SegmentPosition position = 10;
 }
 
+message PartDeleteRequest {
+    RequestHeader header = 15;
+
+    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    int32 part_number = 2;
+}
+
+message PartDeleteResponse {
+}
+
 message BatchRequest {
     RequestHeader header = 15; // the only header that matters in a batch.
 
@@ -657,6 +669,8 @@ message BatchRequestItem {
 
         SegmentListRequest     segment_list = 17;
         SegmentDownloadRequest segment_download = 18;
+
+        PartDeleteRequest part_delete = 25;
 
         RevokeAPIKeyRequest revoke_api_key = 19;
 
@@ -695,6 +709,8 @@ message BatchResponseItem {
 
         SegmentListResponse     segment_list = 17;
         SegmentDownloadResponse segment_download = 18;
+
+        PartDeleteResponse part_delete = 25;
 
         RevokeAPIKeyResponse revoke_api_key = 19;
     }

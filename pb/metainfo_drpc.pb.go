@@ -64,6 +64,7 @@ type DRPCMetainfoClient interface {
 	FinishDeleteSegment(ctx context.Context, in *SegmentFinishDeleteRequest) (*SegmentFinishDeleteResponse, error)
 	ListSegments(ctx context.Context, in *SegmentListRequest) (*SegmentListResponse, error)
 	DownloadSegment(ctx context.Context, in *SegmentDownloadRequest) (*SegmentDownloadResponse, error)
+	DeletePart(ctx context.Context, in *PartDeleteRequest) (*PartDeleteResponse, error)
 	Batch(ctx context.Context, in *BatchRequest) (*BatchResponse, error)
 	ProjectInfo(ctx context.Context, in *ProjectInfoRequest) (*ProjectInfoResponse, error)
 	RevokeAPIKey(ctx context.Context, in *RevokeAPIKeyRequest) (*RevokeAPIKeyResponse, error)
@@ -277,6 +278,15 @@ func (c *drpcMetainfoClient) DownloadSegment(ctx context.Context, in *SegmentDow
 	return out, nil
 }
 
+func (c *drpcMetainfoClient) DeletePart(ctx context.Context, in *PartDeleteRequest) (*PartDeleteResponse, error) {
+	out := new(PartDeleteResponse)
+	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/DeletePart", drpcEncoding_File_metainfo_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *drpcMetainfoClient) Batch(ctx context.Context, in *BatchRequest) (*BatchResponse, error) {
 	out := new(BatchResponse)
 	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/Batch", drpcEncoding_File_metainfo_proto{}, in, out)
@@ -327,6 +337,7 @@ type DRPCMetainfoServer interface {
 	FinishDeleteSegment(context.Context, *SegmentFinishDeleteRequest) (*SegmentFinishDeleteResponse, error)
 	ListSegments(context.Context, *SegmentListRequest) (*SegmentListResponse, error)
 	DownloadSegment(context.Context, *SegmentDownloadRequest) (*SegmentDownloadResponse, error)
+	DeletePart(context.Context, *PartDeleteRequest) (*PartDeleteResponse, error)
 	Batch(context.Context, *BatchRequest) (*BatchResponse, error)
 	ProjectInfo(context.Context, *ProjectInfoRequest) (*ProjectInfoResponse, error)
 	RevokeAPIKey(context.Context, *RevokeAPIKeyRequest) (*RevokeAPIKeyResponse, error)
@@ -422,6 +433,10 @@ func (s *DRPCMetainfoUnimplementedServer) DownloadSegment(context.Context, *Segm
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
+func (s *DRPCMetainfoUnimplementedServer) DeletePart(context.Context, *PartDeleteRequest) (*PartDeleteResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
 func (s *DRPCMetainfoUnimplementedServer) Batch(context.Context, *BatchRequest) (*BatchResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
@@ -436,7 +451,7 @@ func (s *DRPCMetainfoUnimplementedServer) RevokeAPIKey(context.Context, *RevokeA
 
 type DRPCMetainfoDescription struct{}
 
-func (DRPCMetainfoDescription) NumMethods() int { return 25 }
+func (DRPCMetainfoDescription) NumMethods() int { return 26 }
 
 func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -639,6 +654,15 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 					)
 			}, DRPCMetainfoServer.DownloadSegment, true
 	case 22:
+		return "/metainfo.Metainfo/DeletePart", drpcEncoding_File_metainfo_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCMetainfoServer).
+					DeletePart(
+						ctx,
+						in1.(*PartDeleteRequest),
+					)
+			}, DRPCMetainfoServer.DeletePart, true
+	case 23:
 		return "/metainfo.Metainfo/Batch", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -647,7 +671,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BatchRequest),
 					)
 			}, DRPCMetainfoServer.Batch, true
-	case 23:
+	case 24:
 		return "/metainfo.Metainfo/ProjectInfo", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -656,7 +680,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*ProjectInfoRequest),
 					)
 			}, DRPCMetainfoServer.ProjectInfo, true
-	case 24:
+	case 25:
 		return "/metainfo.Metainfo/RevokeAPIKey", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -1020,6 +1044,22 @@ type drpcMetainfo_DownloadSegmentStream struct {
 }
 
 func (x *drpcMetainfo_DownloadSegmentStream) SendAndClose(m *SegmentDownloadResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCMetainfo_DeletePartStream interface {
+	drpc.Stream
+	SendAndClose(*PartDeleteResponse) error
+}
+
+type drpcMetainfo_DeletePartStream struct {
+	drpc.Stream
+}
+
+func (x *drpcMetainfo_DeletePartStream) SendAndClose(m *PartDeleteResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
 		return err
 	}

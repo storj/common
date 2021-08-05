@@ -3690,6 +3690,39 @@
             ]
           },
           {
+            "name": "PartDeleteRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "stream_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "StreamID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "part_number",
+                "type": "int32"
+              }
+            ]
+          },
+          {
+            "name": "PartDeleteResponse"
+          },
+          {
             "name": "BatchRequest",
             "fields": [
               {
@@ -3817,6 +3850,11 @@
                 "id": 18,
                 "name": "segment_download",
                 "type": "SegmentDownloadRequest"
+              },
+              {
+                "id": 25,
+                "name": "part_delete",
+                "type": "PartDeleteRequest"
               },
               {
                 "id": 19,
@@ -3948,6 +3986,11 @@
                 "id": 18,
                 "name": "segment_download",
                 "type": "SegmentDownloadResponse"
+              },
+              {
+                "id": 25,
+                "name": "part_delete",
+                "type": "PartDeleteResponse"
               },
               {
                 "id": 19,
@@ -4088,6 +4131,11 @@
                 "name": "DownloadSegment",
                 "in_type": "SegmentDownloadRequest",
                 "out_type": "SegmentDownloadResponse"
+              },
+              {
+                "name": "DeletePart",
+                "in_type": "PartDeleteRequest",
+                "out_type": "PartDeleteResponse"
               },
               {
                 "name": "Batch",
