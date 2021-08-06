@@ -6,11 +6,13 @@ package pgutil
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/errs"
 
+	"storj.io/common/context2"
 	"storj.io/private/dbutil"
 	"storj.io/private/dbutil/dbschema"
 	"storj.io/private/dbutil/pgutil/pgerrcode"
@@ -55,7 +57,9 @@ func OpenUnique(ctx context.Context, connstr string, schemaPrefix string) (*dbut
 	}
 
 	cleanup := func(cleanupDB tagsql.DB) error {
-		return DropSchema(ctx, cleanupDB, schemaName)
+		childCtx, cancel := context.WithTimeout(context2.WithoutCancellation(ctx), 15*time.Second)
+		defer cancel()
+		return DropSchema(childCtx, cleanupDB, schemaName)
 	}
 
 	dbutil.Configure(ctx, db, "tmp_postgres", mon)
