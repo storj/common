@@ -4016,6 +4016,121 @@
           },
           {
             "name": "RevokeAPIKeyResponse"
+          },
+          {
+            "name": "ObjectBeginMoveRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "ObjectBeginMoveResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "stream_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "StreamID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "segment_keys",
+                "type": "EncryptedKeyAndNonce",
+                "is_repeated": true
+              },
+              {
+                "id": 3,
+                "name": "encryption_parameters",
+                "type": "encryption.EncryptionParameters"
+              }
+            ]
+          },
+          {
+            "name": "ObjectFinishMoveRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "stream_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "StreamID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "new_encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "new_segment_keys",
+                "type": "EncryptedKeyAndNonce",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "EncryptedKeyAndNonce",
+            "fields": [
+              {
+                "id": 1,
+                "name": "encrypted_key_nonce",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "Nonce"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "encrypted_key",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "ObjectFinishMoveResponse"
           }
         ],
         "services": [
@@ -4151,6 +4266,16 @@
                 "name": "RevokeAPIKey",
                 "in_type": "RevokeAPIKeyRequest",
                 "out_type": "RevokeAPIKeyResponse"
+              },
+              {
+                "name": "BeginMoveObject",
+                "in_type": "ObjectBeginMoveRequest",
+                "out_type": "ObjectBeginMoveResponse"
+              },
+              {
+                "name": "FinishMoveObject",
+                "in_type": "ObjectFinishMoveRequest",
+                "out_type": "ObjectFinishMoveResponse"
               }
             ]
           }

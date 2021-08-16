@@ -56,6 +56,10 @@ service Metainfo {
 
     rpc ProjectInfo(ProjectInfoRequest) returns (ProjectInfoResponse);
     rpc RevokeAPIKey(RevokeAPIKeyRequest) returns (RevokeAPIKeyResponse);
+
+    // Server side move.
+    rpc BeginMoveObject(ObjectBeginMoveRequest) returns (ObjectBeginMoveResponse);
+    rpc FinishMoveObject(ObjectFinishMoveRequest) returns (ObjectFinishMoveResponse);
 }
 
 message RequestHeader {
@@ -723,3 +727,32 @@ message RevokeAPIKeyRequest {
 }
 
 message RevokeAPIKeyResponse { }
+
+// Server side move.
+message ObjectBeginMoveRequest {
+    RequestHeader header = 15;
+
+    bytes bucket = 1;
+    bytes encrypted_object_key = 2;
+}
+
+message ObjectBeginMoveResponse {
+    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    repeated EncryptedKeyAndNonce segment_keys = 2;
+    encryption.EncryptionParameters encryption_parameters = 3;
+}
+
+message ObjectFinishMoveRequest {
+    RequestHeader header = 15;
+
+    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes new_encrypted_object_key = 2;
+    repeated EncryptedKeyAndNonce new_segment_keys = 3;
+}
+
+message EncryptedKeyAndNonce {
+    bytes encrypted_key_nonce = 1 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_key = 2;
+}
+
+message ObjectFinishMoveResponse { }
