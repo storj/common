@@ -663,6 +663,8 @@ message BatchRequestItem {
         ObjectListPendingStreamsRequest pending_streams = 22;
         ObjectDownloadRequest           object_download = 23;
         ObjectUpdateMetadataRequest     object_update_metadata = 24;
+        ObjectBeginMoveRequest          object_begin_move = 26;
+        ObjectFinishMoveRequest         object_finish_move = 27;
 
         SegmentBeginRequest      segment_begin = 12;
         SegmentCommitRequest     segment_commit = 13;
@@ -703,6 +705,8 @@ message BatchResponseItem {
         ObjectListPendingStreamsResponse pending_streams = 22;
         ObjectDownloadResponse           object_download = 23;
         ObjectUpdateMetadataResponse     object_update_metadata = 24;
+        ObjectBeginMoveResponse          object_begin_move = 26;
+        ObjectFinishMoveResponse         object_finish_move = 27;
 
         SegmentBeginResponse      segment_begin = 12;
         SegmentCommitResponse     segment_commit = 13;

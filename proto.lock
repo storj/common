@@ -3817,6 +3817,16 @@
                 "type": "ObjectUpdateMetadataRequest"
               },
               {
+                "id": 26,
+                "name": "object_begin_move",
+                "type": "ObjectBeginMoveRequest"
+              },
+              {
+                "id": 27,
+                "name": "object_finish_move",
+                "type": "ObjectFinishMoveRequest"
+              },
+              {
                 "id": 12,
                 "name": "segment_begin",
                 "type": "SegmentBeginRequest"
@@ -3951,6 +3961,16 @@
                 "id": 24,
                 "name": "object_update_metadata",
                 "type": "ObjectUpdateMetadataResponse"
+              },
+              {
+                "id": 26,
+                "name": "object_begin_move",
+                "type": "ObjectBeginMoveResponse"
+              },
+              {
+                "id": 27,
+                "name": "object_finish_move",
+                "type": "ObjectFinishMoveResponse"
               },
               {
                 "id": 12,
