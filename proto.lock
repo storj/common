@@ -276,6 +276,69 @@
       }
     },
     {
+      "protopath": "pb:/:edgeauth.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "EdgeRegisterAccessRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "access_grant",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "public",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "name": "EdgeRegisterAccessResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "access_key_id",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "secret_key",
+                "type": "string"
+              },
+              {
+                "id": 3,
+                "name": "endpoint",
+                "type": "string"
+              }
+            ]
+          }
+        ],
+        "services": [
+          {
+            "name": "EdgeAuth",
+            "rpcs": [
+              {
+                "name": "RegisterAccess",
+                "in_type": "EdgeRegisterAccessRequest",
+                "out_type": "EdgeRegisterAccessResponse"
+              }
+            ]
+          }
+        ],
+        "package": {
+          "name": "contact"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
+          }
+        ]
+      }
+    },
+    {
       "protopath": "pb:/:encryption.proto",
       "def": {
         "enums": [
@@ -399,69 +462,6 @@
         "imports": [
           {
             "path": "encryption.proto"
-          }
-        ],
-        "package": {
-          "name": "encryption_access"
-        },
-        "options": [
-          {
-            "name": "go_package",
-            "value": "storj.io/common/pb"
-          }
-        ]
-      }
-    },
-    {
-      "protopath": "pb:/:gatewayauth.proto",
-      "def": {
-        "messages": [
-          {
-            "name": "RegisterGatewayAccessRequest",
-            "fields": [
-              {
-                "id": 1,
-                "name": "access_grant",
-                "type": "bytes"
-              },
-              {
-                "id": 2,
-                "name": "public",
-                "type": "bool"
-              }
-            ]
-          },
-          {
-            "name": "RegisterGatewayAccessResponse",
-            "fields": [
-              {
-                "id": 1,
-                "name": "access_key_id",
-                "type": "bytes"
-              },
-              {
-                "id": 2,
-                "name": "secret_key",
-                "type": "bytes"
-              },
-              {
-                "id": 3,
-                "name": "endpoint",
-                "type": "string"
-              }
-            ]
-          }
-        ],
-        "services": [
-          {
-            "name": "GatewayAuth",
-            "rpcs": [
-              {
-                "name": "RegisterGatewayAccess",
-                "in_type": "RegisterGatewayAccessRequest",
-                "out_type": "RegisterGatewayAccessResponse"
-              }
-            ]
           }
         ],
         "package": {
