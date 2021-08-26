@@ -836,7 +836,7 @@ func Test_contentType_detection(t *testing.T) {
 		},
 		{
 			name:     "file.js",
-			expected: []string{"application/x-javascript", "application/javascript"},
+			expected: []string{"application/x-javascript", "application/javascript", "text/javascript; charset=utf-8"},
 		},
 		{
 			name:     "file.json",
@@ -868,11 +868,7 @@ func Test_contentType_detection(t *testing.T) {
 		},
 		{
 			name:     "file.xml",
-			expected: []string{"application/xml"},
-		},
-		{
-			name:     "file.m3u8",
-			expected: []string{"application/x-mpegURL"},
+			expected: []string{"application/xml", "text/xml; charset=utf-8"},
 		},
 	} {
 		req := httptest.NewRequest("", "/"+tt.name, nil)
