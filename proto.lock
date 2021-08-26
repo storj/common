@@ -4129,6 +4129,11 @@
             "fields": [
               {
                 "id": 1,
+                "name": "position",
+                "type": "SegmentPosition"
+              },
+              {
+                "id": 2,
                 "name": "encrypted_key_nonce",
                 "type": "bytes",
                 "options": [
@@ -4143,7 +4148,7 @@
                 ]
               },
               {
-                "id": 2,
+                "id": 3,
                 "name": "encrypted_key",
                 "type": "bytes"
               }

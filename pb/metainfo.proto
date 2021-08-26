@@ -755,8 +755,9 @@ message ObjectFinishMoveRequest {
 }
 
 message EncryptedKeyAndNonce {
-    bytes encrypted_key_nonce = 1 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
-    bytes encrypted_key = 2;
+    SegmentPosition position = 1;
+    bytes encrypted_key_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_key = 3;
 }
 
 message ObjectFinishMoveResponse { }
