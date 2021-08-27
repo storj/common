@@ -742,8 +742,11 @@ message ObjectBeginMoveRequest {
 
 message ObjectBeginMoveResponse {
     bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
-    repeated EncryptedKeyAndNonce segment_keys = 2;
-    encryption.EncryptionParameters encryption_parameters = 3;
+
+    bytes encrypted_metadata_key_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_key = 3;
+    repeated EncryptedKeyAndNonce segment_keys = 4;
+    encryption.EncryptionParameters encryption_parameters = 5;
 }
 
 message ObjectFinishMoveRequest {
@@ -751,7 +754,9 @@ message ObjectFinishMoveRequest {
 
     bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
     bytes new_encrypted_object_key = 2;
-    repeated EncryptedKeyAndNonce new_segment_keys = 3;
+    bytes new_encrypted_metadata_key_nonce = 3 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes new_encrypted_metadata_key = 4;
+    repeated EncryptedKeyAndNonce new_segment_keys = 5;
 }
 
 message EncryptedKeyAndNonce {
