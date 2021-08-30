@@ -59,6 +59,12 @@ func (scheme RedundancyScheme) DownloadNodes() int32 {
 	return needed
 }
 
+// StripeCount returns segment's total number of stripes based on segment's encrypted size.
+func (scheme RedundancyScheme) StripeCount(encryptedSegmentSize int32) int32 {
+	stripeSize := scheme.StripeSize()
+	return (encryptedSegmentSize + stripeSize - 1) / stripeSize
+}
+
 // RedundancyAlgorithm is the algorithm used for redundancy.
 type RedundancyAlgorithm byte
 

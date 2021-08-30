@@ -38,3 +38,44 @@ func TestRedundancyScheme_DownloadNodes(t *testing.T) {
 		assert.Equal(t, tt.needed, rs.DownloadNodes(), tag)
 	}
 }
+
+func TestRedundancySchemeStripesCount(t *testing.T) {
+	scheme := storj.RedundancyScheme{
+		ShareSize:      1,
+		RequiredShares: 8,
+	}
+
+	cases := []struct {
+		EncryptedSize int32
+		StripesLen    int32
+	}{
+		{
+			EncryptedSize: 1,
+			StripesLen:    1,
+		},
+		{
+			EncryptedSize: 7,
+			StripesLen:    1,
+		},
+		{
+			EncryptedSize: 57,
+			StripesLen:    8,
+		},
+		{
+			EncryptedSize: 63,
+			StripesLen:    8,
+		},
+		{
+			EncryptedSize: 64,
+			StripesLen:    8,
+		},
+		{
+			EncryptedSize: 65,
+			StripesLen:    9,
+		},
+	}
+
+	for _, c := range cases {
+		assert.Equal(t, c.StripesLen, scheme.StripeCount(c.EncryptedSize))
+	}
+}
