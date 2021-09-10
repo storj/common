@@ -206,7 +206,7 @@ func URLPath() string {
 
 // URLPathNonFolder creates a clean random url path that is not a folder.
 func URLPathNonFolder() string {
-	n := rand.Intn(1024) + 1
+	n := rand.Intn(512) + 1
 	path := bytesOf(n, letters+numbers+numbers+safepath+safepath+safepath)
 
 	// replace / every 3 to 100 characters
