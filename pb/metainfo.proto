@@ -738,6 +738,9 @@ message ObjectBeginMoveRequest {
 
     bytes bucket = 1;
     bytes encrypted_object_key = 2;
+   
+    bytes new_bucket = 3;
+    bytes new_encrypted_object_key = 4;
 }
 
 message ObjectBeginMoveResponse {
@@ -753,6 +756,8 @@ message ObjectFinishMoveRequest {
     RequestHeader header = 15;
 
     bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+
+    bytes new_bucket = 6;
     bytes new_encrypted_object_key = 2;
     bytes new_encrypted_metadata_key_nonce = 3 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes new_encrypted_metadata_key = 4;

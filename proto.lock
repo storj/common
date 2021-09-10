@@ -4054,6 +4054,16 @@
                 "id": 2,
                 "name": "encrypted_object_key",
                 "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "new_bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "new_encrypted_object_key",
+                "type": "bytes"
               }
             ]
           },
@@ -4130,6 +4140,11 @@
                     "value": "false"
                   }
                 ]
+              },
+              {
+                "id": 6,
+                "name": "new_bucket",
+                "type": "bytes"
               },
               {
                 "id": 2,
