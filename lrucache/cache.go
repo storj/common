@@ -52,7 +52,6 @@ func New(opts Options) *ExpiringLRU {
 // cached and further calls will try again.
 func (e *ExpiringLRU) Get(key string, fn func() (interface{}, error)) (
 	value interface{}, err error) {
-
 	if e.opts.Capacity <= 0 {
 		return fn()
 	}
@@ -124,4 +123,77 @@ func (e *ExpiringLRU) Delete(key string) {
 	}
 	delete(e.data, key)
 	e.order.Remove(state.order)
+}
+
+// Add adds a value to the cache.
+//
+// replaced is true if the key already existed in the cache and was valid, hence
+// the value is replaced.
+func (e *ExpiringLRU) Add(key string, value interface{}) (replaced bool) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	state, evicted := e.peek(key)
+	if state == nil {
+		if !evicted && e.order.Len() >= e.opts.Capacity {
+			item := e.order.Back()
+			delete(e.data, item.Value.(string))
+		}
+
+		e.data[key] = &cacheState{
+			when:  time.Now(),
+			order: e.order.PushFront(key),
+			value: value,
+		}
+
+		return false
+	}
+
+	e.order.Remove(state.order)
+	e.data[key] = &cacheState{
+		when:  time.Now(),
+		order: e.order.PushFront(key),
+		value: value,
+	}
+
+	return true
+}
+
+// GetCached returns the value associated with key and true if it exists and
+// hasn't expired, otherwise nil and false.
+func (e *ExpiringLRU) GetCached(key string) (value interface{}, cached bool) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	state, _ := e.peek(key)
+	if state == nil {
+		return nil, false
+	}
+
+	e.order.MoveToFront(state.order)
+	return state.value, true
+}
+
+// peek returns the state associated to the key if exists and it's valid,
+// otherwise nil. evicted is true when the key existed but the state has
+// expired.
+//
+// peek doesn't update the key as being recently used.
+//
+// NOTE the caller must always lock and unlock the mutex before calling this
+// method.
+func (e *ExpiringLRU) peek(key string) (state *cacheState, evicted bool) {
+	state, ok := e.data[key]
+	if !ok {
+		return nil, false
+	}
+
+	if e.opts.Expiration > 0 && time.Since(state.when) > e.opts.Expiration {
+		e.order.Remove(state.order)
+		delete(e.data, key)
+
+		return nil, true
+	}
+
+	return state, false
 }
