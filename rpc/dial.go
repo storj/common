@@ -183,7 +183,7 @@ func (d Dialer) dialPool(ctx context.Context, key string, dialer rpcpool.Dialer)
 		defer cancel()
 	}
 
-	conn, state, err := d.Pool.Get(ctx, key, d.TLSOptions, dialer)
+	conn, state, err := d.Pool.Get(ctx, key, d.TLSOptions, rpcpool.WrapDialer(ctx, dialer))
 	if err != nil {
 		return nil, errs.Wrap(err)
 	}
