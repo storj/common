@@ -66,12 +66,22 @@ type TB interface {
 
 // New creates a new test context with default timeout.
 func New(test TB) *Context {
-	return NewWithTimeout(test, DefaultTimeout)
+	return NewWithContextAndTimeout(context.Background(), test, DefaultTimeout)
+}
+
+// NewWithContext creates a new test context with a parent context.
+func NewWithContext(parentCtx context.Context, test TB) *Context {
+	return NewWithContextAndTimeout(parentCtx, test, DefaultTimeout)
 }
 
 // NewWithTimeout creates a new test context with a given timeout.
 func NewWithTimeout(test TB, timeout time.Duration) *Context {
-	timedctx, cancel := context.WithTimeout(context.Background(), timeout)
+	return NewWithContextAndTimeout(context.Background(), test, timeout)
+}
+
+// NewWithContextAndTimeout  creates a new test context with a given timeout and the parent context.
+func NewWithContextAndTimeout(parentCtx context.Context, test TB, timeout time.Duration) *Context {
+	timedctx, cancel := context.WithTimeout(parentCtx, timeout)
 	group, errctx := errgroup.WithContext(timedctx)
 
 	ctx := &Context{
