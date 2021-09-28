@@ -2711,6 +2711,11 @@
                 "id": 1,
                 "name": "metadata",
                 "type": "bool"
+              },
+              {
+                "id": 2,
+                "name": "exclude_system_metadata",
+                "type": "bool"
               }
             ]
           },
