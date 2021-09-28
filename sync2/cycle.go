@@ -132,7 +132,7 @@ func (cycle *Cycle) Run(ctx context.Context, fn func(ctx context.Context) error)
 
 			case cycleTrigger:
 				// trigger the function
-				if err := fn(choreCtx); err != nil {
+				if err := fn(withManualTrigger(choreCtx)); err != nil {
 					return err
 				}
 				if message.done != nil {
@@ -221,4 +221,21 @@ func (cycle *Cycle) TriggerWait() {
 	case <-done:
 	case <-cycle.stopped:
 	}
+}
+
+type cycleManualTriggerTag struct{}
+
+func withManualTrigger(ctx context.Context) context.Context {
+	return context.WithValue(ctx, cycleManualTriggerTag{}, true)
+}
+
+// IsManuallyTriggeredCycle returns whether ctx comes from a context
+// that was started due to a `Trigger` or `TriggerWait` call in Cycle.
+func IsManuallyTriggeredCycle(ctx context.Context) bool {
+	val := ctx.Value(cycleManualTriggerTag{})
+	if val == nil {
+		return false
+	}
+	triggered, ok := val.(bool)
+	return triggered && ok
 }

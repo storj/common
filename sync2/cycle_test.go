@@ -5,6 +5,7 @@ package sync2_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync/atomic"
 	"testing"
@@ -106,6 +107,8 @@ func TestCycle_MultipleStops(t *testing.T) {
 	go cycle.Stop()
 	cycle.Stop()
 	cycle.Stop()
+
+	require.NoError(t, group.Wait())
 }
 
 func TestCycle_StopCancelled(t *testing.T) {
@@ -122,8 +125,13 @@ func TestCycle_StopCancelled(t *testing.T) {
 		return nil
 	})
 
+	time.Sleep(2 * time.Second)
+
 	cycle.Stop()
 	cycle.Stop()
+
+	err := group.Wait()
+	require.True(t, errors.Is(err, context.Canceled))
 }
 
 func TestCycle_Run_NoInterval(t *testing.T) {
@@ -180,4 +188,58 @@ func TestCycle_Stop_EnsureLoopIsFinished(t *testing.T) {
 	cycle.Stop()
 
 	require.Equal(t, atomic.LoadInt64(&completed), int64(1))
+}
+
+func TestCycle_TimeTriggered(t *testing.T) {
+	t.Parallel()
+
+	cycle := sync2.NewCycle(time.Second)
+	defer cycle.Close()
+
+	ctx := context.Background()
+
+	var ranOnce sync2.Fence
+
+	var group errgroup.Group
+	cycle.Start(ctx, &group, func(ctx context.Context) error {
+		defer ranOnce.Release()
+
+		if sync2.IsManuallyTriggeredCycle(ctx) {
+			return fmt.Errorf("shouldn't be manually triggered")
+		}
+		return nil
+	})
+
+	ranOnce.Wait(ctx)
+	cycle.Stop()
+
+	require.NoError(t, group.Wait())
+}
+
+func TestCycle_ManuallyTriggered(t *testing.T) {
+	t.Parallel()
+
+	cycle := sync2.NewCycle(time.Second)
+	defer cycle.Close()
+
+	ctx := context.Background()
+
+	var group errgroup.Group
+
+	check := false
+	cycle.Start(ctx, &group, func(ctx context.Context) error {
+		if check {
+			if !sync2.IsManuallyTriggeredCycle(ctx) {
+				return fmt.Errorf("should be manually triggered")
+			}
+		}
+		return nil
+	})
+	cycle.Pause()
+	cycle.TriggerWait()
+	check = true
+	cycle.TriggerWait()
+
+	cycle.Stop()
+	require.NoError(t, group.Wait())
 }
