@@ -162,11 +162,19 @@ func (nonce *Nonce) UnmarshalJSON(data []byte) error {
 
 // Value converts a Nonce to a database field.
 func (nonce Nonce) Value() (driver.Value, error) {
+	if nonce.IsZero() {
+		return nil, nil
+	}
 	return nonce.Bytes(), nil
 }
 
 // Scan extracts a Nonce from a database field.
 func (nonce *Nonce) Scan(src interface{}) (err error) {
+	if src == nil {
+		*nonce = Nonce{}
+		return
+	}
+
 	b, ok := src.([]byte)
 	if !ok {
 		return ErrNodeID.New("Nonce Scan expects []byte")

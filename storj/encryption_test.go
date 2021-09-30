@@ -103,7 +103,11 @@ func TestNonce_Scan(t *testing.T) {
 	require.Error(t, tmp.Scan(32))
 	require.Error(t, tmp.Scan(false))
 	require.Error(t, tmp.Scan([]byte{}))
+
+	require.NoError(t, tmp.Scan(nil))
+	require.True(t, tmp.IsZero())
 	require.NoError(t, tmp.Scan(tmp.Bytes()))
+	require.True(t, tmp.IsZero())
 }
 
 // TestEncryptedPrivateKey_Scan tests (*EncryptedPrivateKey).Scan().
