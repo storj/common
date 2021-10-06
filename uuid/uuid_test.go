@@ -103,6 +103,25 @@ func TestLess(t *testing.T) {
 	}
 }
 
+func TestMarshal(t *testing.T) {
+	expectedUUID := testrand.UUID()
+	uuidBytes, err := expectedUUID.Marshal()
+	require.NoError(t, err)
+
+	uuid := uuid.UUID{}
+	err = uuid.Unmarshal(uuidBytes)
+	require.NoError(t, err)
+	require.Equal(t, expectedUUID, uuid)
+	require.Equal(t, expectedUUID.Bytes(), uuid.Bytes())
+	require.Equal(t, expectedUUID.Size(), uuid.Size())
+
+	uuidBytesTo := make([]byte, len(expectedUUID))
+	n, err := expectedUUID.MarshalTo(uuidBytesTo)
+	require.NoError(t, err)
+	require.Equal(t, len(expectedUUID), n)
+	require.Equal(t, uuidBytes, uuidBytesTo)
+}
+
 func TestCompare(t *testing.T) {
 	var a uuid.UUID
 	require.Equal(t, 0, a.Compare(a))

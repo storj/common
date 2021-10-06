@@ -179,3 +179,29 @@ func (uuid *UUID) UnmarshalJSON(b []byte) error {
 	*uuid = x
 	return nil
 }
+
+// Marshal serializes uuid.
+func (uuid UUID) Marshal() ([]byte, error) {
+	return uuid.Bytes(), nil
+}
+
+// MarshalTo serializes uuid into the passed byte slice.
+func (uuid *UUID) MarshalTo(data []byte) (n int, err error) {
+	n = copy(data, uuid[:])
+	return n, nil
+}
+
+// Unmarshal deserializes uuid.
+func (uuid *UUID) Unmarshal(data []byte) error {
+	var err error
+	*uuid, err = FromBytes(data)
+	return err
+}
+
+// Bytes returns raw bytes of the uuid.
+func (uuid UUID) Bytes() []byte { return uuid[:] }
+
+// Size returns the length of uuid (implements gogo's custom type interface).
+func (uuid UUID) Size() int {
+	return len(uuid)
+}
