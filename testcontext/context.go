@@ -200,8 +200,9 @@ func (ctx *Context) File(elem ...string) string {
 		ctx.test.Fatal("expected more than one argument")
 	}
 
-	dir := ctx.Dir(elem[:len(elem)-1]...)
-	return filepath.Join(dir, elem[len(elem)-1])
+	path := filepath.Join(elem...)
+	dir := ctx.Dir(filepath.Dir(path))
+	return filepath.Join(dir, filepath.Base(path))
 }
 
 // Cleanup waits everything to be completed,
