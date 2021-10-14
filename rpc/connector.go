@@ -46,6 +46,12 @@ type TCPConnector struct {
 	// the size per second if it is non-zero.
 	TransferRate memory.Size
 
+	// SendDRPCMuxHeader caused the connector to send a preamble after TCP handshake
+	// but before the TLS handshake.
+	// This was used to migrate from gRPC to DRPC.
+	// This needs to be false when connecting through a TLS termination proxy.
+	SendDRPCMuxHeader bool
+
 	dialer *ConnectorAdapter
 }
 
@@ -59,8 +65,9 @@ func NewDefaultTCPConnector(dialer *ConnectorAdapter) TCPConnector {
 	}
 
 	return TCPConnector{
-		TCPUserTimeout: 15 * time.Minute,
-		dialer:         dialer,
+		TCPUserTimeout:    15 * time.Minute,
+		SendDRPCMuxHeader: true,
+		dialer:            dialer,
 	}
 }
 
@@ -113,8 +120,12 @@ func (t TCPConnector) DialContextUnencrypted(ctx context.Context, address string
 		}
 	}
 
+	if t.SendDRPCMuxHeader {
+		conn = drpcmigrate.NewHeaderConn(conn, drpcmigrate.DRPCHeader)
+	}
+
 	return &timedConn{
-		Conn: netutil.TrackClose(drpcmigrate.NewHeaderConn(conn, drpcmigrate.DRPCHeader)),
+		Conn: netutil.TrackClose(conn),
 		rate: t.TransferRate,
 	}, nil
 }
