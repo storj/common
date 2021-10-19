@@ -70,7 +70,7 @@ func (impl Implementation) String() string {
 }
 
 // AsOfSystemTime returns a SQL query for the specifying the AS OF SYSTEM TIME using
-// a concrecte time.
+// a concrete time.
 func (impl Implementation) AsOfSystemTime(t time.Time) string {
 	if impl != Cockroach {
 		return ""
@@ -79,6 +79,16 @@ func (impl Implementation) AsOfSystemTime(t time.Time) string {
 		return ""
 	}
 	return " AS OF SYSTEM TIME '" + strconv.FormatInt(t.UnixNano(), 10) + "' "
+}
+
+// WrapAsOfSystemTime converts a query to include AS OF SYSTEM TIME using
+// a concrete time.
+func (impl Implementation) WrapAsOfSystemTime(sql string, t time.Time) string {
+	aost := impl.AsOfSystemTime(t)
+	if aost == "" {
+		return sql
+	}
+	return "SELECT * FROM (" + sql + ")" + aost
 }
 
 // AsOfSystemInterval returns a SQL query for the specifying the AS OF SYSTEM TIME using
@@ -99,4 +109,14 @@ func (impl Implementation) AsOfSystemInterval(interval time.Duration) string {
 	}
 
 	return " AS OF SYSTEM TIME '" + interval.String() + "' "
+}
+
+// WrapAsOfSystemInterval converts a query to include AS OF SYSTEM TIME using
+// a relative interval. The interval should be negative.
+func (impl Implementation) WrapAsOfSystemInterval(sql string, interval time.Duration) string {
+	aost := impl.AsOfSystemInterval(interval)
+	if aost == "" {
+		return sql
+	}
+	return "SELECT * FROM (" + sql + ")" + aost
 }

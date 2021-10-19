@@ -40,8 +40,8 @@ m3{scope="test",field=""} 4
 	)
 
 	body := rec.Body.String()
-	if body != m1+m2+m3 && body != m3+m2+m1 && body != m3+m1+m2 {
-		t.Fatalf("string mismatch:\nbody:%q\nexp1:%q\nexp2:%q\nexp3:%q",
-			body, m1+m2+m3, m3+m2+m1, m3+m1+m2)
+
+	if body != m1+m2+m3 && body != m3+m2+m1 && body != m3+m1+m2 && body != m2+m1+m3 && body != m2+m3+m1 {
+		t.Fatalf("string not a combination of m1,m2,m3:\nbody:%q\nm1:%q\nm2:%q\nm3:%q", body, m1, m2, m3)
 	}
 }
