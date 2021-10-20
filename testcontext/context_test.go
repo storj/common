@@ -43,6 +43,8 @@ func TestMessage(t *testing.T) {
 	})
 	ctx.Cleanup()
 
+	t.Log(subtest.errors[0])
+
 	assert.Contains(t, subtest.errors[0], "Test exceeded timeout")
 	assert.Contains(t, subtest.errors[0], "some goroutines are still running")
 

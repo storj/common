@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/pprof"
 	"strings"
 	"sync"
 	"time"
@@ -18,6 +19,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"storj.io/common/memory"
+	"storj.io/common/testtrace"
 )
 
 // DefaultTimeout is the default timeout used by new context.
@@ -27,9 +29,10 @@ const DefaultTimeout = 3 * time.Minute
 type Context struct {
 	context.Context
 
-	timedctx context.Context
-	cancel   context.CancelFunc
-	cleaning chan struct{}
+	parentctx context.Context
+	timedctx  context.Context
+	cancel    context.CancelFunc
+	cleaning  chan struct{}
 
 	group *errgroup.Group
 	test  TB
@@ -87,19 +90,35 @@ func NewWithContextAndTimeout(parentCtx context.Context, test TB, timeout time.D
 	ctx := &Context{
 		Context: errctx,
 
-		timedctx: timedctx,
-		cancel:   cancel,
-		cleaning: make(chan struct{}),
+		parentctx: parentCtx,
+		timedctx:  timedctx,
+		cancel:    cancel,
+		cleaning:  make(chan struct{}),
 
 		group: group,
 		test:  test,
 	}
+
+	ctx.Context = pprof.WithLabels(ctx.Context, pprof.Labels("testcontext", ctx.label()))
+	pprof.SetGoroutineLabels(ctx.Context)
 
 	go ctx.monitorSlowShutdown()
 
 	test.Cleanup(ctx.Cleanup)
 
 	return ctx
+}
+
+func (ctx *Context) label() string { return fmt.Sprintf("%p", ctx) }
+
+// StackTrace returns stack trace about the goroutines that are related to this
+// Context.
+func (ctx *Context) StackTrace() string {
+	content, err := testtrace.Summary("testcontext", ctx.label())
+	if err != nil {
+		return fmt.Sprintf("unable to create stack trace: %v", err)
+	}
+	return content
 }
 
 func (ctx *Context) monitorSlowShutdown() {
@@ -209,6 +228,7 @@ func (ctx *Context) File(elem ...string) string {
 // checks errors and goroutines which haven't ended and tries to cleanup
 // directories.
 func (ctx *Context) Cleanup() {
+	pprof.SetGoroutineLabels(ctx.parentctx)
 	ctx.test.Helper()
 	ctx.cleanupOnce.Do(func() {
 		close(ctx.cleaning)
@@ -258,9 +278,11 @@ func (ctx *Context) reportRunning() {
 			if fn := runtime.FuncForPC(caller.pc); fn != nil {
 				fnname = fn.Name()
 			}
-			fmt.Fprintf(&message, "\n%s:%d: %s", caller.file, caller.line, fnname)
+			fmt.Fprintf(&message, "\n    %s:%d: %s", caller.file, caller.line, fnname)
 		}
 	}
+	_, _ = message.WriteString("\nRelated stack trace\n")
+	_, _ = message.WriteString(ctx.StackTrace())
 
 	ctx.test.Error(message.String())
 
