@@ -67,7 +67,7 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 		return content.Range(ctx, 0, size)
 	}
 
-	ranges, err := parseRange(rangeReq, size)
+	ranges, err := ParseRange(rangeReq, size)
 	if err != nil {
 		if errors.Is(err, errNoOverlap) {
 			w.Header().Set("Content-Range", fmt.Sprintf("bytes */%d", size))
@@ -96,8 +96,8 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 		// A response to a request for a single range MUST NOT
 		// be sent using the multipart/byteranges media type."
 		ra := ranges[0]
-		sendContent = func() (io.ReadCloser, error) { return content.Range(ctx, ra.start, ra.length) }
-		sendSize = ra.length
+		sendContent = func() (io.ReadCloser, error) { return content.Range(ctx, ra.Start, ra.Length) }
+		sendSize = ra.Length
 		code = http.StatusPartialContent
 		w.Header().Set("Content-Range", ra.contentRange(size))
 	case len(ranges) > 1:
@@ -126,7 +126,7 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 
 					return
 				}
-				partReader, err := content.Range(ctx, ra.start, ra.length)
+				partReader, err := content.Range(ctx, ra.Start, ra.Length)
 				if err != nil {
 					if err := pw.CloseWithError(err); err != nil {
 						log.Printf("Error Closing pipewriter with errors: %s", err)
@@ -425,25 +425,25 @@ func etagWeakMatch(a, b string) bool {
 	return strings.TrimPrefix(a, "W/") == strings.TrimPrefix(b, "W/")
 }
 
-// httpRange specifies the byte range to be sent to the client.
-type httpRange struct {
-	start, length int64
+// HTTPRange specifies the byte range to be sent to the client.
+type HTTPRange struct {
+	Start, Length int64
 }
 
-func (r httpRange) contentRange(size int64) string {
-	return fmt.Sprintf("bytes %d-%d/%d", r.start, r.start+r.length-1, size)
+func (r HTTPRange) contentRange(size int64) string {
+	return fmt.Sprintf("bytes %d-%d/%d", r.Start, r.Start+r.Length-1, size)
 }
 
-func (r httpRange) mimeHeader(contentType string, size int64) (rv textproto.MIMEHeader) {
+func (r HTTPRange) mimeHeader(contentType string, size int64) (rv textproto.MIMEHeader) {
 	return textproto.MIMEHeader{
 		"Content-Range": {r.contentRange(size)},
 		"Content-Type":  {contentType},
 	}
 }
 
-// parseRange parses a Range header string as per RFC 2616.
+// ParseRange parses a Range header string as per RFC 2616.
 // errNoOverlap is returned if none of the ranges overlap.
-func parseRange(s string, size int64) ([]httpRange, error) {
+func ParseRange(s string, size int64) ([]HTTPRange, error) {
 	if s == "" {
 		return nil, nil // header not present
 	}
@@ -452,7 +452,7 @@ func parseRange(s string, size int64) ([]httpRange, error) {
 		return nil, errors.New("invalid range")
 	}
 
-	var ranges []httpRange
+	var ranges []HTTPRange
 	noOverlap := false
 	for _, ra := range strings.Split(s[len(b):], ",") {
 		ra = strings.TrimSpace(ra)
@@ -464,10 +464,13 @@ func parseRange(s string, size int64) ([]httpRange, error) {
 			return nil, errors.New("invalid range")
 		}
 		start, end := strings.TrimSpace(ra[:i]), strings.TrimSpace(ra[i+1:])
-		var r httpRange
+		var r HTTPRange
 		if start == "" {
 			// If no start is specified, end specifies the
-			// range start relative to the end of the file.
+			// range start relative to the end of the file,
+			// and we are dealing with <suffix-length>
+			// which has to be a non-negative integer as per
+			// RFC 7233 Section 2.1 "Byte-Ranges".
 			i, err := strconv.ParseInt(end, 10, 64)
 			if err != nil {
 				return nil, errors.New("invalid range")
@@ -475,8 +478,8 @@ func parseRange(s string, size int64) ([]httpRange, error) {
 			if i > size {
 				i = size
 			}
-			r.start = size - i
-			r.length = size - r.start
+			r.Start = size - i
+			r.Length = size - r.Start
 		} else {
 			i, err := strconv.ParseInt(start, 10, 64)
 			if err != nil || i < 0 {
@@ -488,19 +491,19 @@ func parseRange(s string, size int64) ([]httpRange, error) {
 				noOverlap = true
 				continue
 			}
-			r.start = i
+			r.Start = i
 			if end == "" {
 				// If no end is specified, range extends to end of the file.
-				r.length = size - r.start
+				r.Length = size - r.Start
 			} else {
 				i, err := strconv.ParseInt(end, 10, 64)
-				if err != nil || r.start > i {
+				if err != nil || r.Start > i {
 					return nil, errors.New("invalid range")
 				}
 				if i >= size {
 					i = size - 1
 				}
-				r.length = i - r.start + 1
+				r.Length = i - r.Start + 1
 			}
 		}
 		ranges = append(ranges, r)
@@ -522,7 +525,7 @@ func (w *countingWriter) Write(p []byte) (n int, err error) {
 
 // rangesMIMESize returns the number of bytes it takes to encode the
 // provided ranges as a multipart response.
-func rangesMIMESize(ranges []httpRange, contentType string, contentSize int64) (encSize int64) {
+func rangesMIMESize(ranges []HTTPRange, contentType string, contentSize int64) (encSize int64) {
 	var w countingWriter
 	mw := multipart.NewWriter(&w)
 	for _, ra := range ranges {
@@ -530,7 +533,7 @@ func rangesMIMESize(ranges []httpRange, contentType string, contentSize int64) (
 			log.Printf("Failed to Create Part: %s", err)
 		}
 
-		encSize += ra.length
+		encSize += ra.Length
 	}
 	if err := mw.Close(); err != nil {
 		log.Printf("Failed to close: %s", err)
@@ -540,13 +543,13 @@ func rangesMIMESize(ranges []httpRange, contentType string, contentSize int64) (
 	return encSize
 }
 
-func sumRangesSize(ranges []httpRange) (size int64) {
+func sumRangesSize(ranges []HTTPRange) (size int64) {
 	for _, ra := range ranges {
-		size += ra.length
+		size += ra.Length
 	}
 	return size
 }
 
-// errNoOverlap is returned by serveContent's parseRange if first-byte-pos of
+// errNoOverlap is returned by serveContent's ParseRange if first-byte-pos of
 // all of the byte-range-spec values is greater than the content size.
 var errNoOverlap = errors.New("invalid range: failed to overlap")

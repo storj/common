@@ -628,9 +628,9 @@ func Test_httpRange_contentRange(t *testing.T) {
 			expectedRangeSize: "bytes 1-5/8",
 		},
 	} {
-		r := httpRange{
-			start:  tt.start,
-			length: tt.length,
+		r := HTTPRange{
+			Start:  tt.start,
+			Length: tt.length,
 		}
 
 		gotRangeSize := r.contentRange(tt.size)
@@ -653,9 +653,9 @@ func Test_httpRange_mimeHeader(t *testing.T) {
 			expected:    "bytes 1-5/8",
 		},
 	} {
-		r := httpRange{
-			start:  1,
-			length: 5,
+		r := HTTPRange{
+			Start:  1,
+			Length: 5,
 		}
 
 		gotMimeHeader := r.mimeHeader(tt.contentType, tt.size)
@@ -670,7 +670,7 @@ func Test_parseRange(t *testing.T) {
 		name          string
 		s             string
 		size          int64
-		expectedRange []httpRange
+		expectedRange []HTTPRange
 		expectedError bool
 	}{
 		{
@@ -723,7 +723,7 @@ func Test_parseRange(t *testing.T) {
 			expectedError: true,
 		},
 	} {
-		gotRange, err := parseRange(tt.s, tt.size)
+		gotRange, err := ParseRange(tt.s, tt.size)
 
 		assert.Equal(t, err != nil, tt.expectedError, tt.name)
 		assert.Equal(t, gotRange, tt.expectedRange, tt.name)
@@ -761,13 +761,13 @@ func Test_countingWriter_Write(t *testing.T) {
 func Test_rangesMIMESize(t *testing.T) {
 	for _, tt := range []struct {
 		name            string
-		ranges          []httpRange
+		ranges          []HTTPRange
 		expectedEncSize int64
 	}{
 		{
 			name: "Valid case",
-			ranges: []httpRange{
-				{start: 0, length: 5},
+			ranges: []HTTPRange{
+				{Start: 0, Length: 5},
 			},
 			expectedEncSize: 187,
 		},
@@ -780,21 +780,21 @@ func Test_rangesMIMESize(t *testing.T) {
 
 func Test_sumRangesSize(t *testing.T) {
 	for _, tt := range []struct {
-		ranges       []httpRange
+		ranges       []HTTPRange
 		expectedSize int64
 	}{
 		{
-			ranges: []httpRange{
-				{length: 5},
-				{length: 5},
-				{length: 5},
+			ranges: []HTTPRange{
+				{Length: 5},
+				{Length: 5},
+				{Length: 5},
 			},
 			expectedSize: 15,
 		}, {
-			ranges: []httpRange{
-				{length: 0},
-				{length: 0},
-				{length: 0},
+			ranges: []HTTPRange{
+				{Length: 0},
+				{Length: 0},
+				{Length: 0},
 			},
 			expectedSize: 0,
 		},
