@@ -9,11 +9,14 @@ import (
 	"encoding/hex"
 	"net/url"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/errs"
 
 	"storj.io/common/context2"
+	"storj.io/common/errs2"
 	"storj.io/private/dbutil"
 	"storj.io/private/dbutil/pgutil"
 	"storj.io/private/tagsql"
@@ -58,7 +61,23 @@ func OpenUnique(ctx context.Context, connStr string, schemaPrefix string) (db *d
 
 	cleanup := func(cleanupDB tagsql.DB) error {
 		ctx := context2.WithoutCancellation(ctx)
-		_, err := cleanupDB.Exec(ctx, "DROP DATABASE "+pgutil.QuoteIdentifier(schemaName))
+
+		// HACKFIX: Set upper time limit for dropping the database.
+		// This stall causes flakiness during CI and it's not
+		// clear what's the cause.
+		//
+		// It's better to ignore the DROP than to prevent tests
+		// from failing and causing wasted time.
+		err := asyncTimeout(ctx, 15*time.Second, func(ctx context.Context) error {
+			_, err := cleanupDB.Exec(ctx, "DROP DATABASE "+pgutil.QuoteIdentifier(schemaName))
+			return err
+		})
+
+		// ignore timeout error
+		if errs2.IsCanceled(err) {
+			err = nil
+		}
+
 		return errs.Wrap(err)
 	}
 
@@ -90,4 +109,37 @@ func changeDBTargetInConnStr(connStr string, newDBName string) (string, error) {
 	}
 	connURL.Path = newDBName
 	return connURL.String(), nil
+}
+
+// asyncTimeout starts fn in a goroutine and returns when it doesn't finish in the specified timeout.
+func asyncTimeout(parentCtx context.Context, timeout time.Duration, fn func(context.Context) error) error {
+	ctx, cancel := context.WithTimeout(parentCtx, timeout)
+	defer cancel()
+
+	var mu sync.Mutex
+	var result error
+	var finished bool
+
+	// fn is called inside a goroutine, in case the context
+	// hasn't been handled properly.
+	go func() {
+		defer cancel()
+		err := fn(ctx)
+
+		mu.Lock()
+		result = err
+		finished = true
+		mu.Unlock()
+	}()
+
+	<-ctx.Done()
+
+	mu.Lock()
+	r := result
+	if !finished {
+		r = ctx.Err()
+	}
+	mu.Unlock()
+
+	return r
 }
