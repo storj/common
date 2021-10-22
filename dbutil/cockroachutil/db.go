@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"net/url"
 	"strings"
 	"sync"
@@ -16,7 +17,6 @@ import (
 	"github.com/zeebo/errs"
 
 	"storj.io/common/context2"
-	"storj.io/common/errs2"
 	"storj.io/private/dbutil"
 	"storj.io/private/dbutil/pgutil"
 	"storj.io/private/tagsql"
@@ -74,7 +74,7 @@ func OpenUnique(ctx context.Context, connStr string, schemaPrefix string) (db *d
 		})
 
 		// ignore timeout error
-		if errs2.IsCanceled(err) {
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 			err = nil
 		}
 
