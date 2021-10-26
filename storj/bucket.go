@@ -34,4 +34,5 @@ type Bucket struct {
 	DefaultSegmentsSize         int64
 	DefaultRedundancyScheme     RedundancyScheme
 	DefaultEncryptionParameters EncryptionParameters
+	Placement                   PlacementConstraint
 }
