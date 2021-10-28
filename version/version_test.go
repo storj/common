@@ -29,6 +29,20 @@ func TestInfo_IsZero(t *testing.T) {
 	require.False(t, info.IsZero())
 }
 
+func TestSemVer_String(t *testing.T) {
+	buildVer, err := version.NewSemVer("1.2.3-rc")
+	require.NoError(t, err)
+	require.Equal(t, "v1.2.3-rc", buildVer.String())
+
+	buildVer2, err := version.NewSemVer("1.2.3-rc-metainfo")
+	require.NoError(t, err)
+	require.Equal(t, "v1.2.3-rc-metainfo", buildVer2.String())
+
+	nonBuildVer, err := version.NewSemVer("1.2.3")
+	require.NoError(t, err)
+	require.Equal(t, "v1.2.3", nonBuildVer.String())
+}
+
 func TestSemVer_IsZero(t *testing.T) {
 	zeroVer := version.SemVer{}
 	require.True(t, zeroVer.IsZero())

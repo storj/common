@@ -168,7 +168,15 @@ func (sem *SemVer) Compare(version SemVer) int {
 
 // String converts the SemVer struct to a more easy to handle string.
 func (sem *SemVer) String() (version string) {
-	return fmt.Sprintf("v%d.%d.%d", sem.Major, sem.Minor, sem.Patch)
+	base := fmt.Sprintf("v%d.%d.%d", sem.Major, sem.Minor, sem.Patch)
+	if len(sem.Pre) > 0 {
+		var build string
+		for _, val := range sem.Pre {
+			build = build + "-" + val.String()
+		}
+		return fmt.Sprintf("%s%s", base, build)
+	}
+	return base
 }
 
 // IsZero checks if the semantic version is its zero value.
