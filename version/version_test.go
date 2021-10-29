@@ -84,6 +84,14 @@ func TestSemVer_Compare(t *testing.T) {
 	require.True(t, version600.Compare(version040) > 0)
 }
 
+func TestVersion_IsZero(t *testing.T) {
+	zeroVer := version.Version{}
+	require.True(t, zeroVer.IsZero())
+
+	ver := version.Version{Version: "v1.2.3", URL: "http://127.0.0.1/"}
+	require.False(t, ver.IsZero())
+}
+
 func TestRollout_MarshalJSON_UnmarshalJSON(t *testing.T) {
 	var arbitraryRollout version.Rollout
 	for i := 0; i < len(version.RolloutBytes{}); i++ {

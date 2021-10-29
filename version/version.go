@@ -193,6 +193,11 @@ func (ver *Version) SemVer() (SemVer, error) {
 	return NewSemVer(ver.Version)
 }
 
+// IsZero checks if the Version is its zero value.
+func (ver *Version) IsZero() bool {
+	return reflect.ValueOf(ver.Version).IsZero()
+}
+
 // New creates Version_Info from a json byte array.
 func New(data []byte) (v Info, err error) {
 	err = json.Unmarshal(data, &v)
@@ -258,15 +263,15 @@ func isRolloutCandidate(nodeID storj.NodeID, rollout Rollout) bool {
 }
 
 // ShouldUpdateVersion determines if, given a current version and data from the version server, if
-// the current version should be updated. It returns the SemVer to update to or an empty SemVer.
-func ShouldUpdateVersion(currentVersion SemVer, nodeID storj.NodeID, requested Process) (updateVersion SemVer, reason string, err error) {
+// the current version should be updated. It returns the Version to update to or an empty Version.
+func ShouldUpdateVersion(currentVersion SemVer, nodeID storj.NodeID, requested Process) (updateVersion Version, reason string, err error) {
 	// first, confirm if an update is even necessary
 	suggestedVersion, err := requested.Suggested.SemVer()
 	if err != nil {
-		return SemVer{}, "", err
+		return Version{}, "", err
 	}
 	if currentVersion.Compare(suggestedVersion) >= 0 {
-		return SemVer{}, "Version is up to date", nil
+		return Version{}, "Version is up to date", nil
 	}
 
 	// next, make sure we're at least running the minimum version. See
@@ -274,19 +279,19 @@ func ShouldUpdateVersion(currentVersion SemVer, nodeID storj.NodeID, requested P
 	// and storj/docs/blueprints/storage-node-automatic-updater.md
 	minimumVersion, err := requested.Minimum.SemVer()
 	if err != nil {
-		return SemVer{}, "", err
+		return Version{}, "", err
 	}
 	if currentVersion.Compare(minimumVersion) < 0 {
-		return minimumVersion, "Version is below minimum allowed", nil
+		return requested.Minimum, "Version is below minimum allowed", nil
 	}
 
 	// Okay, now consider the rollout
 	rollout := isRolloutCandidate(nodeID, requested.Rollout)
 	if rollout {
-		return suggestedVersion, "New version is being rolled out and this node is a candidate", nil
+		return requested.Suggested, "New version is being rolled out and this node is a candidate", nil
 	}
 
-	return SemVer{}, "New version is being rolled out but hasn't made it to this node yet", nil
+	return Version{}, "New version is being rolled out but hasn't made it to this node yet", nil
 }
 
 func init() {
