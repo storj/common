@@ -226,6 +226,16 @@ func Path() string {
 	return string(path)
 }
 
+// RandAlphaNumeric creates a random byte slice of given length composed of ASCII numbers and letters.
+func RandAlphaNumeric(length int) []byte {
+	return bytesOf(length, letters+numbers)
+}
+
+// RandNumeric creates a random byte slice of given length composed of ASCII numbers.
+func RandNumeric(length int) []byte {
+	return bytesOf(length, numbers)
+}
+
 // bytesOf generates random bytes using the specified alphabet.
 func bytesOf(length int, alphabet string) []byte {
 	if len(alphabet) > 256 {
