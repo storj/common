@@ -59,7 +59,7 @@ func TestCriteria_Geofencing(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			assert.Equal(t, c.expected, c.placement.allowedCountry(c.country))
+			assert.Equal(t, c.expected, c.placement.AllowedCountry(c.country))
 		})
 	}
 }

@@ -28,7 +28,8 @@ const (
 	DE = 4
 )
 
-func (p PlacementConstraint) allowedCountry(isoCountryCode location.CountryCode) bool {
+// AllowedCountry checks if country is allowed by the placement policy.
+func (p PlacementConstraint) AllowedCountry(isoCountryCode location.CountryCode) bool {
 	if p == EveryCountry {
 		return true
 	}
