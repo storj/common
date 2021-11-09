@@ -10,6 +10,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/zeebo/errs"
@@ -80,6 +82,10 @@ const (`)
 		return errs.Wrap(err)
 	}
 
+	countries := make(map[string]location.CountryCode)
+	var countryNames []string
+
+	maxCountryName := 0
 	for _, line := range strings.Split(string(content), "\n") {
 		if strings.HasPrefix(line, "#") {
 			continue
@@ -93,12 +99,26 @@ const (`)
 		country = strings.ReplaceAll(country, ",", "")
 		country = strings.ReplaceAll(country, "-", "")
 		country = strings.ReplaceAll(country, ".", "")
-		_, err = out.WriteString(fmt.Sprintf("   %s = %d\n", country, location.ToCountryCode(fields[0])))
+
+		countries[country] = location.ToCountryCode(fields[0])
+		if len(country) > maxCountryName {
+			maxCountryName = len(country)
+		}
+		countryNames = append(countryNames, country)
+	}
+
+	sort.Strings(countryNames)
+
+	countries["None"] = location.CountryCode(0)
+	countryNames = append([]string{"None"}, countryNames...)
+
+	for _, country := range countryNames {
+		_, err = out.WriteString(fmt.Sprintf("\t%-"+strconv.Itoa(maxCountryName)+"s = CountryCode(%d)\n", country, countries[country]))
 		if err != nil {
 			return errs.Wrap(err)
 		}
 	}
-	_, err = out.WriteString("\n)\n")
+	_, err = out.WriteString("\n\n)\n")
 	if err != nil {
 		return errs.Wrap(err)
 	}

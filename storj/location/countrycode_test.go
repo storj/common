@@ -13,5 +13,5 @@ func TestCountryCode_String(t *testing.T) {
 	require.Equal(t, "HU", ToCountryCode("HU").String())
 	require.Equal(t, "DE", ToCountryCode("DE").String())
 	require.Equal(t, "XX", ToCountryCode("XX").String())
-	require.Equal(t, "", CountryCode(0).String())
+	require.Equal(t, "", None.String())
 }
