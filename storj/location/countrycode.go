@@ -22,3 +22,11 @@ func ToCountryCode(s string) CountryCode {
 func (c CountryCode) Equal(o CountryCode) bool {
 	return c == o
 }
+
+// String returns with the upper-case (two letter) ISO code of the country.
+func (c CountryCode) String() string {
+	if c == 0 {
+		return ""
+	}
+	return string([]byte{byte(c / 256), byte(c % 256)})
+}
