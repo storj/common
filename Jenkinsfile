@@ -41,6 +41,7 @@ pipeline {
                         sh 'golangci-lint --config /go/ci/.golangci.yml -j=2 run'
                         sh 'check-mod-tidy -mod .build/go.mod.orig'
                         sh 'go-licenses check ./...'
+                        sh 'check-downgrades'
                     }
                 }
 
