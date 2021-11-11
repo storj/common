@@ -4,6 +4,10 @@
 package storj
 
 import (
+	"database/sql/driver"
+
+	"github.com/zeebo/errs"
+
 	"storj.io/common/storj/location"
 )
 
@@ -59,4 +63,29 @@ func (p PlacementConstraint) AllowedCountry(isoCountryCode location.CountryCode)
 		return false
 	}
 	return false
+}
+
+// Value implements the driver.Valuer interface.
+func (p PlacementConstraint) Value() (driver.Value, error) {
+	return int64(p), nil
+}
+
+// Scan implements the sql.Scanner interface.
+func (p *PlacementConstraint) Scan(value interface{}) error {
+	if value == nil {
+		*p = EveryCountry
+		return nil
+	}
+
+	if _, isInt64 := value.(int64); !isInt64 {
+		return errs.New("unable to scan %T into PlacementConstraint", value)
+	}
+
+	code, err := driver.Int32.ConvertValue(value)
+	if err != nil {
+		return errs.Wrap(err)
+	}
+	*p = PlacementConstraint(code.(int64))
+	return nil
+
 }

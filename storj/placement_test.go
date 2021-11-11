@@ -7,11 +7,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"storj.io/common/storj/location"
 )
 
-func TestCriteria_Geofencing(t *testing.T) {
+func TestPlacement_Geofencing(t *testing.T) {
 
 	cases := []struct {
 		name      string
@@ -62,4 +63,22 @@ func TestCriteria_Geofencing(t *testing.T) {
 			assert.Equal(t, c.expected, c.placement.AllowedCountry(c.country))
 		})
 	}
+}
+
+func TestPlacement_SQLConversion(t *testing.T) {
+	p := PlacementConstraint(EEA)
+	value, err := p.Value()
+	require.NoError(t, err)
+
+	res := new(PlacementConstraint)
+	err = res.Scan(value)
+	require.NoError(t, err)
+	require.Equal(t, PlacementConstraint(EEA), *res)
+
+	err = res.Scan(nil)
+	require.NoError(t, err)
+	require.Equal(t, EveryCountry, *res)
+
+	err = res.Scan("")
+	require.Error(t, err)
 }

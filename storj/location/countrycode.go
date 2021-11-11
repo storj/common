@@ -3,7 +3,12 @@
 
 package location
 
-import "strings"
+import (
+	"database/sql/driver"
+	"strings"
+
+	"github.com/zeebo/errs"
+)
 
 // CountryCode stores upper case ISO code of countries.
 type CountryCode uint16
@@ -29,4 +34,29 @@ func (c CountryCode) String() string {
 		return ""
 	}
 	return string([]byte{byte(c / 256), byte(c % 256)})
+}
+
+// Value implements the driver.Valuer interface.
+func (c CountryCode) Value() (driver.Value, error) {
+	return c.String(), nil
+}
+
+// Scan implements the sql.Scanner interface.
+func (c *CountryCode) Scan(value interface{}) error {
+	if value == nil {
+		*c = None
+		return nil
+	}
+
+	if _, isString := value.(string); !isString {
+		return errs.New("unable to scan %T into CountryCode", value)
+	}
+
+	rawValue, err := driver.String.ConvertValue(value)
+	if err != nil {
+		return errs.Wrap(err)
+	}
+	*c = ToCountryCode(rawValue.(string))
+	return nil
+
 }
