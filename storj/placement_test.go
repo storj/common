@@ -46,13 +46,13 @@ func TestPlacement_Geofencing(t *testing.T) {
 		},
 		{
 			name:      "Empty country doesn't match region",
-			country:   location.CountryCode(0),
+			country:   location.None,
 			placement: EU,
 			expected:  false,
 		},
 		{
 			name:      "Empty country doesn't match country",
-			country:   location.CountryCode(0),
+			country:   location.None,
 			placement: US,
 			expected:  false,
 		},
@@ -66,14 +66,14 @@ func TestPlacement_Geofencing(t *testing.T) {
 }
 
 func TestPlacement_SQLConversion(t *testing.T) {
-	p := PlacementConstraint(EEA)
+	p := EEA
 	value, err := p.Value()
 	require.NoError(t, err)
 
 	res := new(PlacementConstraint)
 	err = res.Scan(value)
 	require.NoError(t, err)
-	require.Equal(t, PlacementConstraint(EEA), *res)
+	require.Equal(t, EEA, *res)
 
 	err = res.Scan(nil)
 	require.NoError(t, err)

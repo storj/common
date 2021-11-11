@@ -12,7 +12,7 @@ import (
 )
 
 // PlacementConstraint is the ID of the placement/geofencing rule.
-type PlacementConstraint int
+type PlacementConstraint uint16
 
 const (
 
@@ -20,16 +20,16 @@ const (
 	EveryCountry PlacementConstraint = 0
 
 	// EU includes only the 27 members of European Union.
-	EU = 1
+	EU PlacementConstraint = 1
 
 	// EEA defines the European Economic Area (EU + 3 countries), the area where GDPR is valid.
-	EEA = 2
+	EEA PlacementConstraint = 2
 
 	// US filters nodes only from the United States.
-	US = 3
+	US PlacementConstraint = 3
 
 	// DE placement uses nodes only from Germany.
-	DE = 4
+	DE PlacementConstraint = 4
 )
 
 // AllowedCountry checks if country is allowed by the placement policy.
@@ -85,7 +85,7 @@ func (p *PlacementConstraint) Scan(value interface{}) error {
 	if err != nil {
 		return errs.Wrap(err)
 	}
-	*p = PlacementConstraint(code.(int64))
+	*p = PlacementConstraint(uint16(code.(int64)))
 	return nil
 
 }
