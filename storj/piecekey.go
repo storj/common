@@ -5,6 +5,7 @@ package storj
 
 import (
 	"database/sql/driver"
+	"fmt"
 
 	"github.com/zeebo/errs"
 	"golang.org/x/crypto/ed25519"
@@ -64,6 +65,7 @@ func (key PiecePublicKey) Verify(data, signature []byte) error {
 		return ErrPieceKey.New("invalid public key length %v", len(key.pub))
 	}
 	if !ed25519.Verify(key.pub, data, signature) {
+		fmt.Printf("Error verifying uplink signature\npublic key: %#v\nsignature: %x\nmarshaled order: %x", key.pub, signature, data)
 		return ErrPieceKey.New("invalid signature")
 	}
 	return nil

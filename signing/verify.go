@@ -30,6 +30,7 @@ func VerifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb
 	if err != nil {
 		fmt.Printf("Error verifying satellite signature\noriginal order limit: %#v", signed)
 	}
+	return err
 }
 
 // VerifyOrderSignature verifies that the signature inside order is valid and belongs to the uplink.
@@ -61,7 +62,11 @@ func VerifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublic
 		return Error.Wrap(err)
 	}
 
-	return Error.Wrap(publicKey.Verify(bytes, signed.UplinkSignature))
+	err = publicKey.Verify(bytes, signed.UplinkSignature)
+	if err != nil {
+		fmt.Printf("Error verifying uplink signature\noriginal order: %#v", signed)
+	}
+	return Error.Wrap(err)
 }
 
 // VerifyPieceHashSignature verifies that the signature inside piece hash is valid and belongs to the signer, which is either uplink or storage node.
