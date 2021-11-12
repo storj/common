@@ -12,6 +12,7 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
+	"fmt"
 	"math/big"
 	"reflect"
 )
@@ -57,7 +58,11 @@ func GeneratePrivateRSAKey(bits int) (*rsa.PrivateKey, error) {
 // data. It returns an error if verification fails, or nil otherwise.
 func HashAndVerifySignature(key crypto.PublicKey, data, signature []byte) error {
 	digest := SHA256Hash(data)
-	return VerifySignatureWithoutHashing(key, digest, signature)
+	err := VerifySignatureWithoutHashing(key, digest, signature)
+	if err != nil {
+		fmt.Printf("Error verifying satellite signature\npublic key: %#v\nsignature: %x\ndigest: %x\n marshaled order limit: %x", key, signature, digest, data)
+	}
+	return err
 }
 
 // VerifySignatureWithoutHashing checks the signature against the passed data

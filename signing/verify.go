@@ -5,6 +5,7 @@ package signing
 
 import (
 	"context"
+	"fmt"
 
 	"storj.io/common/pb"
 	"storj.io/common/storj"
@@ -25,7 +26,10 @@ func VerifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb
 		return Error.Wrap(err)
 	}
 
-	return satellite.HashAndVerifySignature(ctx, bytes, signed.SatelliteSignature)
+	err = satellite.HashAndVerifySignature(ctx, bytes, signed.SatelliteSignature)
+	if err != nil {
+		fmt.Printf("Error verifying satellite signature\noriginal order limit: %#v", signed)
+	}
 }
 
 // VerifyOrderSignature verifies that the signature inside order is valid and belongs to the uplink.
