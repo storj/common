@@ -20,6 +20,9 @@ var (
 
 	// ErrBucketNotFound is an error class for non-existing bucket.
 	ErrBucketNotFound = errs.Class("bucket not found")
+
+	// ErrBucketNotEmpty is an error class for using non-empty bucket in operation that requires empty bucket.
+	ErrBucketNotEmpty = errs.Class("bucket must be empty")
 )
 
 // Bucket contains information about a specific bucket.
