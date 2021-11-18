@@ -30,6 +30,9 @@ const (
 
 	// DE placement uses nodes only from Germany.
 	DE PlacementConstraint = 4
+
+	// InvalidPlacement is used when there is no information about the stored placement.
+	InvalidPlacement PlacementConstraint = 5
 )
 
 // AllowedCountry checks if country is allowed by the placement policy.
