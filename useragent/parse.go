@@ -49,6 +49,10 @@ type Entry struct {
 
 // ParseEntries parses every entry in useragent string.
 func ParseEntries(data []byte) ([]Entry, error) {
+	if len(data) == 0 {
+		return []Entry{}, nil
+	}
+
 	// Parses the first entry, this must not be a comment.
 	//  v---------v
 	// `Mozilla/5.0    (Linux; U; Android 4.4.3;)`
