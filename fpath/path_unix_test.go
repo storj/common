@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information.
 
+//go:build linux || darwin
 // +build linux darwin
 
 package fpath
