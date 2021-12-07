@@ -124,13 +124,13 @@ func TestMarshal(t *testing.T) {
 
 func TestCompare(t *testing.T) {
 	var a uuid.UUID
-	require.Equal(t, 0, a.Compare(a))
+	require.Equal(t, 0, a.Compare(a)) //nolint: gocritic
 
 	for k := 0; k < len(uuid.UUID{}); k++ {
 		var a, b uuid.UUID
 		a[k], b[k] = 1, 2
-		require.Equal(t, 0, a.Compare(a))
-		require.Equal(t, 0, b.Compare(b))
+		require.Equal(t, 0, a.Compare(a)) //nolint: gocritic
+		require.Equal(t, 0, b.Compare(b)) //nolint: gocritic
 		require.Equal(t, -1, a.Compare(b))
 		require.Equal(t, 1, b.Compare(a))
 	}
