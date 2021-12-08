@@ -2,6 +2,7 @@
 // See LICENSE for copying information
 
 //go:build linux || darwin || netbsd || freebsd || openbsd
+// +build linux darwin netbsd freebsd openbsd
 
 package processgroup
 

@@ -2,6 +2,7 @@
 // See LICENSE for copying information.
 
 //go:build !linux
+// +build !linux
 
 package netutil
 
