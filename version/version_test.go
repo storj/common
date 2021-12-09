@@ -67,9 +67,9 @@ func TestSemVer_Compare(t *testing.T) {
 	require.NoError(t, err)
 
 	// compare the same values
-	require.True(t, version001.Compare(version001) == 0)
-	require.True(t, version030.Compare(version030) == 0)
-	require.True(t, version500.Compare(version500) == 0)
+	require.True(t, version001.Compare(version001) == 0) //nolint: gocritic
+	require.True(t, version030.Compare(version030) == 0) //nolint: gocritic
+	require.True(t, version500.Compare(version500) == 0) //nolint: gocritic
 
 	require.True(t, version001.Compare(version002) < 0)
 	require.True(t, version030.Compare(version040) < 0)
