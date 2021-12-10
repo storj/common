@@ -146,13 +146,13 @@ func TestNodeID_String_Version(t *testing.T) {
 
 func TestNodeID_Compare(t *testing.T) {
 	var a storj.NodeID
-	require.Equal(t, 0, a.Compare(a))
+	require.Equal(t, 0, a.Compare(a)) //nolint: gocritic
 
 	for k := 0; k < len(storj.NodeID{}); k++ {
 		var a, b storj.NodeID
 		a[k], b[k] = 1, 2
-		require.Equal(t, 0, a.Compare(a))
-		require.Equal(t, 0, b.Compare(b))
+		require.Equal(t, 0, a.Compare(a)) //nolint: gocritic
+		require.Equal(t, 0, b.Compare(b)) //nolint: gocritic
 		require.Equal(t, -1, a.Compare(b))
 		require.Equal(t, 1, b.Compare(a))
 	}

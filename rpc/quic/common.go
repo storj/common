@@ -1,6 +1,7 @@
 // Copyright (C) 2021 Storj Labs, Inc.
 // See LICENSE for copying information.
 
+//go:build go1.16
 // +build go1.16
 
 package quic
