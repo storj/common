@@ -2682,6 +2682,11 @@
                 ]
               },
               {
+                "id": 11,
+                "name": "encrypted_metadata_encrypted_key",
+                "type": "bytes"
+              },
+              {
                 "id": 8,
                 "name": "encrypted_metadata",
                 "type": "bytes"

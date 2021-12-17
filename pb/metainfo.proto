@@ -378,8 +378,9 @@ message ObjectListItem {
     google.protobuf.Timestamp status_at  = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     google.protobuf.Timestamp expires_at = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 
-    bytes  encrypted_metadata_nonce = 7 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
-    bytes  encrypted_metadata       = 8;
+    bytes encrypted_metadata_nonce = 7 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_encrypted_key = 11;
+    bytes encrypted_metadata       = 8;
 
     // plain_size is 0 for migrated objects.
     int64 plain_size = 10;
