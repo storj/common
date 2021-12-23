@@ -15,18 +15,20 @@ import (
 )
 
 type TestStruct struct {
-	String   string         `default:"dev"`
-	Bool     bool           `releaseDefault:"false" devDefault:"true"`
-	Int64    int64          `releaseDefault:"0" devDefault:"1" testDefault:"2"`
-	Int      int            `default:"2"`
-	Uint64   uint64         `default:"3" releaseDefault:"2"`
-	Uint     uint           `default:"0" devDefault:"2"`
-	Float64  float64        `default:"5.5" testDefault:"1"`
-	Size     memory.Size    `default:"0"`
-	Duration time.Duration  `default:"1h" testDefault:"$TESTINTERVAL"`
-	NodeURL  storj.NodeURL  `releaseDefault:"" devDefault:"12EayRS2V1kEsWESU9QMRseFhdxYxKicsiFmxrsLZHeLUtdps3S@mars.tardigrade.io:7777"`
-	NodeURLs storj.NodeURLs `releaseDefault:"" devDefault:"12EayRS2V1kEsWESU9QMRseFhdxYxKicsiFmxrsLZHeLUtdps3S@mars.tardigrade.io:7777,12L9ZFwhzVpuEKMUNUqkaTLGzwY9G24tbiigLiXpmZWKwmcNDDs@jupiter.tardigrade.io:7777"`
-	Struct   struct {
+	String              string         `default:"dev"`
+	StringArray         []string       `default:"dev"`
+	StringArrayMultiple []string       `default:"dev,test"`
+	Bool                bool           `releaseDefault:"false" devDefault:"true"`
+	Int64               int64          `releaseDefault:"0" devDefault:"1" testDefault:"2"`
+	Int                 int            `default:"2"`
+	Uint64              uint64         `default:"3" releaseDefault:"2"`
+	Uint                uint           `default:"0" devDefault:"2"`
+	Float64             float64        `default:"5.5" testDefault:"1"`
+	Size                memory.Size    `default:"0"`
+	Duration            time.Duration  `default:"1h" testDefault:"$TESTINTERVAL"`
+	NodeURL             storj.NodeURL  `releaseDefault:"" devDefault:"12EayRS2V1kEsWESU9QMRseFhdxYxKicsiFmxrsLZHeLUtdps3S@mars.tardigrade.io:7777"`
+	NodeURLs            storj.NodeURLs `releaseDefault:"" devDefault:"12EayRS2V1kEsWESU9QMRseFhdxYxKicsiFmxrsLZHeLUtdps3S@mars.tardigrade.io:7777,12L9ZFwhzVpuEKMUNUqkaTLGzwY9G24tbiigLiXpmZWKwmcNDDs@jupiter.tardigrade.io:7777"`
+	Struct              struct {
 		AnotherString string `default:"dev2"`
 	}
 	Fields [10]struct {
@@ -40,6 +42,8 @@ func TestBind(t *testing.T) {
 	Bind(f, &c, UseReleaseDefaults())
 
 	require.Equal(t, c.String, string("dev"))
+	require.Equal(t, c.StringArray, []string{"dev"})
+	require.Equal(t, c.StringArrayMultiple, []string{"dev", "test"})
 	require.Equal(t, c.Bool, bool(false))
 	require.Equal(t, c.Int64, int64(0))
 	require.Equal(t, c.Int, int(2))
@@ -61,6 +65,8 @@ func TestBind(t *testing.T) {
 
 	err = f.Parse([]string{
 		"--string=1",
+		"--string-array=1",
+		"--string-array=2",
 		"--bool=true",
 		"--int64=1",
 		"--int=1",
@@ -77,6 +83,7 @@ func TestBind(t *testing.T) {
 		panic(err)
 	}
 	require.Equal(t, c.String, string("1"))
+	require.Equal(t, c.StringArray, []string{"1", "2"})
 	require.Equal(t, c.Bool, bool(true))
 	require.Equal(t, c.Int64, int64(1))
 	require.Equal(t, c.Int, int(1))
