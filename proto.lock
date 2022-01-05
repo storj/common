@@ -2120,6 +2120,31 @@
                 "type": "bytes"
               },
               {
+                "id": 19,
+                "name": "secondary_encrypted_metadata_nonce",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "Nonce"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 20,
+                "name": "secondary_encrypted_metadata",
+                "type": "bytes"
+              },
+              {
+                "id": 21,
+                "name": "secondary_encrypted_metadata_encrypted_key",
+                "type": "bytes"
+              },
+              {
                 "id": 11,
                 "name": "fixed_segment_size",
                 "type": "int64"
@@ -2203,6 +2228,31 @@
                 "id": 8,
                 "name": "encryption_parameters",
                 "type": "encryption.EncryptionParameters"
+              },
+              {
+                "id": 9,
+                "name": "secondary_encrypted_metadata_nonce",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "Nonce"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 10,
+                "name": "secondary_encrypted_metadata",
+                "type": "bytes"
+              },
+              {
+                "id": 11,
+                "name": "secondary_encrypted_metadata_encrypted_key",
+                "type": "bytes"
               }
             ]
           },
@@ -2689,6 +2739,31 @@
               {
                 "id": 8,
                 "name": "encrypted_metadata",
+                "type": "bytes"
+              },
+              {
+                "id": 12,
+                "name": "secondary_encrypted_metadata_nonce",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "Nonce"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 13,
+                "name": "secondary_encrypted_metadata_encrypted_key",
+                "type": "bytes"
+              },
+              {
+                "id": 14,
+                "name": "secondary_encrypted_metadata",
                 "type": "bytes"
               },
               {

@@ -188,6 +188,10 @@ message Object {
     bytes encrypted_metadata               = 10;
     bytes encrypted_metadata_encrypted_key = 17;
 
+    bytes secondary_encrypted_metadata_nonce         = 19 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes secondary_encrypted_metadata               = 20;
+    bytes secondary_encrypted_metadata_encrypted_key = 21;
+
     // fixed_segment_size is 0 for migrated objects.
     int64                           fixed_segment_size    = 11;
     pointerdb.RedundancyScheme      redundancy_scheme     = 12;
@@ -214,6 +218,10 @@ message ObjectBeginRequest {
 
     pointerdb.RedundancyScheme      redundancy_scheme = 7; // can be zero
     encryption.EncryptionParameters encryption_parameters = 8; // can be zero
+
+    bytes secondary_encrypted_metadata_nonce = 9 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes secondary_encrypted_metadata = 10;
+    bytes secondary_encrypted_metadata_encrypted_key = 11;
 }
 
 message ObjectBeginResponse {
@@ -381,6 +389,10 @@ message ObjectListItem {
     bytes encrypted_metadata_nonce = 7 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes encrypted_metadata_encrypted_key = 11;
     bytes encrypted_metadata       = 8;
+
+    bytes secondary_encrypted_metadata_nonce = 12 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes secondary_encrypted_metadata_encrypted_key = 13;
+    bytes secondary_encrypted_metadata       = 14;
 
     // plain_size is 0 for migrated objects.
     int64 plain_size = 10;
