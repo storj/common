@@ -16,6 +16,7 @@ service Contact {
 
 service Node {
     rpc CheckIn(CheckInRequest) returns (CheckInResponse);
+    rpc CheckInNetworkQUIC(CheckInNetworkQUICRequest) returns (CheckInNetworkQUICResponse);
     rpc GetTime(GetTimeRequest) returns (GetTimeResponse);
 }
 
@@ -35,9 +36,15 @@ message CheckInResponse {
 message GetTimeRequest {}
 
 message GetTimeResponse {
-     google.protobuf.Timestamp timestamp = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp timestamp = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
 message ContactPingRequest {}
 
 message ContactPingResponse {}
+
+message CheckInNetworkQUICRequest {
+    string address = 1;
+}
+
+message CheckInNetworkQUICResponse {}

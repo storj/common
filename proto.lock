@@ -224,6 +224,19 @@
           },
           {
             "name": "ContactPingResponse"
+          },
+          {
+            "name": "CheckInNetworkQUICRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "address",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "CheckInNetworkQUICResponse"
           }
         ],
         "services": [
@@ -244,6 +257,11 @@
                 "name": "CheckIn",
                 "in_type": "CheckInRequest",
                 "out_type": "CheckInResponse"
+              },
+              {
+                "name": "CheckInNetworkQUIC",
+                "in_type": "CheckInNetworkQUICRequest",
+                "out_type": "CheckInNetworkQUICResponse"
               },
               {
                 "name": "GetTime",
