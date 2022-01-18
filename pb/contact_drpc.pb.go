@@ -118,7 +118,7 @@ type DRPCNodeClient interface {
 	DRPCConn() drpc.Conn
 
 	CheckIn(ctx context.Context, in *CheckInRequest) (*CheckInResponse, error)
-	CheckInNetworkQUIC(ctx context.Context, in *CheckInNetworkQUICRequest) (*CheckInNetworkQUICResponse, error)
+	PingMe(ctx context.Context, in *PingMeRequest) (*PingMeResponse, error)
 	GetTime(ctx context.Context, in *GetTimeRequest) (*GetTimeResponse, error)
 }
 
@@ -141,9 +141,9 @@ func (c *drpcNodeClient) CheckIn(ctx context.Context, in *CheckInRequest) (*Chec
 	return out, nil
 }
 
-func (c *drpcNodeClient) CheckInNetworkQUIC(ctx context.Context, in *CheckInNetworkQUICRequest) (*CheckInNetworkQUICResponse, error) {
-	out := new(CheckInNetworkQUICResponse)
-	err := c.cc.Invoke(ctx, "/contact.Node/CheckInNetworkQUIC", drpcEncoding_File_contact_proto{}, in, out)
+func (c *drpcNodeClient) PingMe(ctx context.Context, in *PingMeRequest) (*PingMeResponse, error) {
+	out := new(PingMeResponse)
+	err := c.cc.Invoke(ctx, "/contact.Node/PingMe", drpcEncoding_File_contact_proto{}, in, out)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +161,7 @@ func (c *drpcNodeClient) GetTime(ctx context.Context, in *GetTimeRequest) (*GetT
 
 type DRPCNodeServer interface {
 	CheckIn(context.Context, *CheckInRequest) (*CheckInResponse, error)
-	CheckInNetworkQUIC(context.Context, *CheckInNetworkQUICRequest) (*CheckInNetworkQUICResponse, error)
+	PingMe(context.Context, *PingMeRequest) (*PingMeResponse, error)
 	GetTime(context.Context, *GetTimeRequest) (*GetTimeResponse, error)
 }
 
@@ -171,7 +171,7 @@ func (s *DRPCNodeUnimplementedServer) CheckIn(context.Context, *CheckInRequest) 
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
-func (s *DRPCNodeUnimplementedServer) CheckInNetworkQUIC(context.Context, *CheckInNetworkQUICRequest) (*CheckInNetworkQUICResponse, error) {
+func (s *DRPCNodeUnimplementedServer) PingMe(context.Context, *PingMeRequest) (*PingMeResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
@@ -195,14 +195,14 @@ func (DRPCNodeDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, 
 					)
 			}, DRPCNodeServer.CheckIn, true
 	case 1:
-		return "/contact.Node/CheckInNetworkQUIC", drpcEncoding_File_contact_proto{},
+		return "/contact.Node/PingMe", drpcEncoding_File_contact_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCNodeServer).
-					CheckInNetworkQUIC(
+					PingMe(
 						ctx,
-						in1.(*CheckInNetworkQUICRequest),
+						in1.(*PingMeRequest),
 					)
-			}, DRPCNodeServer.CheckInNetworkQUIC, true
+			}, DRPCNodeServer.PingMe, true
 	case 2:
 		return "/contact.Node/GetTime", drpcEncoding_File_contact_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
@@ -237,16 +237,16 @@ func (x *drpcNode_CheckInStream) SendAndClose(m *CheckInResponse) error {
 	return x.CloseSend()
 }
 
-type DRPCNode_CheckInNetworkQUICStream interface {
+type DRPCNode_PingMeStream interface {
 	drpc.Stream
-	SendAndClose(*CheckInNetworkQUICResponse) error
+	SendAndClose(*PingMeResponse) error
 }
 
-type drpcNode_CheckInNetworkQUICStream struct {
+type drpcNode_PingMeStream struct {
 	drpc.Stream
 }
 
-func (x *drpcNode_CheckInNetworkQUICStream) SendAndClose(m *CheckInNetworkQUICResponse) error {
+func (x *drpcNode_PingMeStream) SendAndClose(m *PingMeResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_contact_proto{}); err != nil {
 		return err
 	}

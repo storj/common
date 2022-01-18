@@ -226,17 +226,22 @@
             "name": "ContactPingResponse"
           },
           {
-            "name": "CheckInNetworkQUICRequest",
+            "name": "PingMeRequest",
             "fields": [
               {
                 "id": 1,
                 "name": "address",
                 "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "transport",
+                "type": "node.NodeTransport"
               }
             ]
           },
           {
-            "name": "CheckInNetworkQUICResponse"
+            "name": "PingMeResponse"
           }
         ],
         "services": [
@@ -259,9 +264,9 @@
                 "out_type": "CheckInResponse"
               },
               {
-                "name": "CheckInNetworkQUIC",
-                "in_type": "CheckInNetworkQUICRequest",
-                "out_type": "CheckInNetworkQUICResponse"
+                "name": "PingMe",
+                "in_type": "PingMeRequest",
+                "out_type": "PingMeResponse"
               },
               {
                 "name": "GetTime",
@@ -4533,6 +4538,10 @@
             "enum_fields": [
               {
                 "name": "TCP_TLS_GRPC"
+              },
+              {
+                "name": "QUIC_GRPC",
+                "integer": 1
               }
             ]
           }

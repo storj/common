@@ -16,7 +16,7 @@ service Contact {
 
 service Node {
     rpc CheckIn(CheckInRequest) returns (CheckInResponse);
-    rpc CheckInNetworkQUIC(CheckInNetworkQUICRequest) returns (CheckInNetworkQUICResponse);
+    rpc PingMe(PingMeRequest) returns (PingMeResponse);
     rpc GetTime(GetTimeRequest) returns (GetTimeResponse);
 }
 
@@ -43,8 +43,9 @@ message ContactPingRequest {}
 
 message ContactPingResponse {}
 
-message CheckInNetworkQUICRequest {
+message PingMeRequest {
     string address = 1;
+    node.NodeTransport transport = 2;
 }
 
-message CheckInNetworkQUICResponse {}
+message PingMeResponse {}

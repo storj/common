@@ -37,6 +37,7 @@ message NodeAddress {
 // NodeTransport is an enum of possible transports for the overlay network.
 enum NodeTransport {
     TCP_TLS_GRPC = 0;
+    QUIC_GRPC = 1;
 }
 
 // NodeOperator contains info about the storage node operator.
