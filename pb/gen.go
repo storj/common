@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information.
 
+//go:build ignore
 // +build ignore
 
 package main
@@ -37,7 +38,7 @@ func ignore(files []string) []string {
 // Programs needed for code generation:
 //
 // github.com/ckaznocha/protoc-gen-lint
-// storj.io/drpc/cmd/protoc-gen-drpc
+// storj.io/drpc/cmd/protoc-gen-go-drpc
 // github.com/nilslice/protolock/cmd/protolock
 
 func main() {
