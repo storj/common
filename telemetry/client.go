@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
-	"github.com/zeebo/admission/v3/admmonkit"
 	"github.com/zeebo/admission/v3/admproto"
 
 	"storj.io/common/sync2"
@@ -65,8 +64,8 @@ type ClientOpts struct {
 // from a monkit.Registry.
 type Client struct {
 	interval time.Duration
-	opts     admmonkit.Options
-	send     func(context.Context, admmonkit.Options) error
+	opts     Options
+	send     func(context.Context, Options) error
 
 	mu      sync.Mutex
 	cancel  context.CancelFunc
@@ -96,16 +95,24 @@ func NewClient(remoteAddr string, opts ClientOpts) (rv *Client, err error) {
 	if opts.PacketSize == 0 {
 		opts.PacketSize = DefaultPacketSize
 	}
-
 	return &Client{
 		interval: opts.Interval,
-		send:     admmonkit.Send,
-		opts: admmonkit.Options{
+		send: func(ctx context.Context, options Options) error {
+			return Send(ctx, options, func(entries func(key string, value float64)) {
+				if opts.Registry == nil {
+					opts.Registry = monkit.Default
+				}
+				opts.Registry.Stats(func(key monkit.SeriesKey, field string, val float64) {
+					series := key.WithField(field)
+					entries(series, val)
+				})
+			})
+		},
+		opts: Options{
 			Application: opts.Application,
-			InstanceId:  []byte(opts.Instance),
+			InstanceID:  []byte(opts.Instance),
 			Address:     remoteAddr,
 			PacketSize:  opts.PacketSize,
-			Registry:    opts.Registry,
 			ProtoOpts:   admproto.Options{FloatEncoding: opts.FloatEncoding},
 			Headers:     opts.Headers,
 		},

@@ -8,9 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/stretchr/testify/assert"
-	"github.com/zeebo/admission/v3/admmonkit"
 )
 
 func TestNewClient_IntervalIsZero(t *testing.T) {
@@ -82,7 +80,7 @@ func TestNewClient_InstanceIsEmpty(t *testing.T) {
 	assert.NotNil(t, client)
 	assert.NoError(t, err)
 
-	assert.Equal(t, client.opts.InstanceId, []byte(DefaultInstanceID()))
+	assert.Equal(t, client.opts.InstanceID, []byte(DefaultInstanceID()))
 	assert.Equal(t, client.opts.Application, "qwe")
 	assert.Equal(t, client.interval, DefaultInterval)
 }
@@ -100,10 +98,9 @@ func TestNewClient_RegistryIsNil(t *testing.T) {
 
 	assert.NotNil(t, client)
 	assert.NoError(t, err)
-	assert.Equal(t, client.opts.InstanceId, []byte(DefaultInstanceID()))
+	assert.Equal(t, client.opts.InstanceID, []byte(DefaultInstanceID()))
 	assert.Equal(t, client.opts.Application, "qwe")
 	assert.Equal(t, client.interval, DefaultInterval)
-	assert.Equal(t, client.opts.Registry, monkit.Default)
 }
 
 func TestNewClient_PacketSizeIsZero(t *testing.T) {
@@ -120,11 +117,10 @@ func TestNewClient_PacketSizeIsZero(t *testing.T) {
 
 	assert.NotNil(t, client)
 
-	assert.Equal(t, client.opts.InstanceId, []byte(DefaultInstanceID()))
+	assert.Equal(t, client.opts.InstanceID, []byte(DefaultInstanceID()))
 	assert.NoError(t, err)
 	assert.Equal(t, client.opts.Application, "qwe")
 	assert.Equal(t, client.interval, DefaultInterval)
-	assert.Equal(t, client.opts.Registry, monkit.Default)
 	assert.Equal(t, client.opts.PacketSize, DefaultPacketSize)
 }
 
@@ -137,7 +133,7 @@ func TestRun_ReportNoCalled(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	client.send = func(context.Context, admmonkit.Options) error {
+	client.send = func(context.Context, Options) error {
 		t.Fatal("shouldn't be called")
 		return nil
 	}
