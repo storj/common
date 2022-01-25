@@ -14,6 +14,7 @@ import (
 )
 
 func TestWithoutCancellation(t *testing.T) {
+	t.Parallel()
 	ctx := testcontext.New(t)
 
 	parent, cancel := context.WithCancel(ctx)
