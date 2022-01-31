@@ -10,9 +10,9 @@ import (
 	"encoding/json"
 	"math/bits"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/zeebo/errs"
 
+	"storj.io/common/base58"
 	"storj.io/common/peertls/extensions"
 )
 

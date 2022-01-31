@@ -8,10 +8,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/errs"
 
+	"storj.io/common/base58"
 	"storj.io/common/pb"
 )
 

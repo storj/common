@@ -8,8 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/btcsuite/btcutil/base58"
-
+	"storj.io/common/base58"
 	"storj.io/common/encryption"
 	"storj.io/common/macaroon"
 	"storj.io/common/paths"

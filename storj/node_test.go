@@ -11,10 +11,10 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"storj.io/common/base58"
 	"storj.io/common/storj"
 	"storj.io/common/testrand"
 )

@@ -3,7 +3,6 @@ module storj.io/common
 go 1.17
 
 require (
-	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/calebcase/tmpfile v1.0.3
 	github.com/gogo/protobuf v1.3.2
 	github.com/google/pprof v0.0.0-20211108044417-e9b028704de0
