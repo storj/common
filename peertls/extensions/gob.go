@@ -8,8 +8,6 @@ import (
 	"encoding/binary"
 	"io"
 	"math/bits"
-
-	"github.com/zeebo/errs"
 )
 
 const (
@@ -112,7 +110,7 @@ func (decoder *revocationDecoder) decode(data []byte) (revocation Revocation, er
 	wire := make([]byte, len(wireEncoding))
 	_, err = io.ReadFull(decoder.data, wire)
 	if err != nil {
-		return revocation, err
+		return revocation, ErrRevocation.Wrap(err)
 	}
 	if !bytes.Equal(wire, wireEncoding) {
 		return revocation, ErrRevocation.New("invalid revocation encoding")
@@ -120,7 +118,7 @@ func (decoder *revocationDecoder) decode(data []byte) (revocation Revocation, er
 
 	length, err := decoder.decodeUint()
 	if err != nil {
-		return revocation, err
+		return revocation, ErrRevocation.Wrap(err)
 	}
 
 	if length != uint64(len(decoder.data.Bytes())) {
@@ -129,17 +127,17 @@ func (decoder *revocationDecoder) decode(data []byte) (revocation Revocation, er
 
 	typeID, err := decoder.decodeUint()
 	if err != nil {
-		return revocation, err
+		return revocation, ErrRevocation.Wrap(err)
 	}
 	if typeID != encFirstCustomTypeID {
-		return revocation, ErrRevocation.New("invalid revocation encoding")
+		return revocation, ErrRevocation.Wrap(ErrRevocation.New("invalid revocation encoding"))
 	}
 
 	index := uint64(0)
 	for {
 		field, err := decoder.decodeUint()
 		if err != nil {
-			return revocation, err
+			return revocation, ErrRevocation.Wrap(err)
 		}
 
 		if field == 0 {
@@ -150,20 +148,20 @@ func (decoder *revocationDecoder) decode(data []byte) (revocation Revocation, er
 		case 1:
 			revocation.Timestamp, err = decoder.decodeInt()
 			if err != nil {
-				return revocation, err
+				return revocation, ErrRevocation.Wrap(err)
 			}
 		case 2:
-			revocation.KeyHash, err = decoder.decodeByteArray()
+			revocation.KeyHash, err = decoder.decodeHash()
 			if err != nil {
-				return revocation, err
+				return revocation, ErrRevocation.Wrap(err)
 			}
 		case 3:
-			revocation.Signature, err = decoder.decodeByteArray()
+			revocation.Signature, err = decoder.decodeHash()
 			if err != nil {
-				return revocation, err
+				return revocation, ErrRevocation.Wrap(err)
 			}
 		default:
-			return revocation, errs.New("invalid field")
+			return revocation, ErrRevocation.New("invalid field")
 		}
 
 		index += field
@@ -172,25 +170,44 @@ func (decoder *revocationDecoder) decode(data []byte) (revocation Revocation, er
 	return revocation, nil
 }
 
+func (decoder *revocationDecoder) decodeHash() ([]byte, error) {
+	length, err := decoder.decodeUint()
+	if err != nil {
+		return nil, ErrRevocation.Wrap(err)
+	}
+
+	n := int(length)
+	if uint64(n) != length || decoder.data.Len() < n || n < 0 {
+		return nil, ErrRevocation.New("invalid hash length: %d", length)
+	}
+
+	buf := make([]byte, n)
+	_, err = io.ReadFull(decoder.data, buf)
+	if err != nil {
+		return nil, ErrRevocation.Wrap(err)
+	}
+	return buf, nil
+}
+
 func (decoder *revocationDecoder) decodeUint() (x uint64, err error) {
 	b, err := decoder.data.ReadByte()
 	if err != nil {
-		return 0, err
+		return 0, ErrRevocation.Wrap(err)
 	}
 	if b <= 0x7f {
 		return uint64(b), nil
 	}
 	n := -int(int8(b))
-	if n > uint64Size {
-		return 0, errs.New("encoded unsigned integer out of range")
+	if n > uint64Size || n < 0 {
+		return 0, ErrRevocation.New("encoded unsigned integer out of range")
 	}
 	buf := make([]byte, n)
 	read, err := io.ReadFull(decoder.data, buf)
 	if err != nil {
-		return 0, err
+		return 0, ErrRevocation.Wrap(err)
 	}
 	if read < n {
-		return 0, errs.New("invalid uint data length %d: exceeds input size %d", n, len(buf))
+		return 0, ErrRevocation.New("invalid uint data length %d: exceeds input size %d", n, len(buf))
 	}
 	// Don't need to check error; it's safe to loop regardless.
 	// Could check that the high byte is zero but it's not worth it.
@@ -209,23 +226,4 @@ func (decoder *revocationDecoder) decodeInt() (int64, error) {
 		return ^int64(x >> 1), nil
 	}
 	return int64(x >> 1), nil
-}
-
-func (decoder *revocationDecoder) decodeByteArray() ([]byte, error) {
-	length, err := decoder.decodeUint()
-	if err != nil {
-		return nil, err
-	}
-
-	n := int(length)
-	if uint64(n) != length || decoder.data.Len() < n {
-		return nil, errs.New("invalid array length: %d", length)
-	}
-
-	buf := make([]byte, n)
-	_, err = io.ReadFull(decoder.data, buf)
-	if err != nil {
-		return nil, err
-	}
-	return buf, nil
 }

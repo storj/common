@@ -157,6 +157,7 @@ func (handlerFactory *HandlerFactory) NewHandlerFunc(opts *Options) HandlerFunc 
 	return handlerFactory.factory(opts)
 }
 
+// uniqueExts checks whether exts only contains unique id-s.
 func uniqueExts(exts []pkix.Extension) bool {
 	seen := make(map[string]struct{}, len(exts))
 	for _, e := range exts {
@@ -169,6 +170,8 @@ func uniqueExts(exts []pkix.Extension) bool {
 	return true
 }
 
+// caWhitelistSignedLeafHandler checks whether the chain contains
+// extension signed by one of the peer ca whitelist.
 func caWhitelistSignedLeafHandler(opts *Options) HandlerFunc {
 	return func(ext pkix.Extension, chains [][]*x509.Certificate) error {
 		if opts.PeerCAWhitelist == nil {
