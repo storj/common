@@ -6,13 +6,10 @@ package telemetry
 import (
 	"context"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/admission/v3/admproto"
-
-	"storj.io/common/sync2"
 )
 
 const (
@@ -60,98 +57,75 @@ type ClientOpts struct {
 	Headers map[string]string
 }
 
+func (o *ClientOpts) fillDefaults() {
+	if o.Interval == 0 {
+		o.Interval = DefaultInterval
+	}
+	if o.Application == "" {
+		if len(os.Args) > 0 {
+			o.Application = os.Args[0]
+		} else {
+			// what the actual heck
+			o.Application = DefaultApplication
+		}
+	}
+	if o.Instance == "" {
+		o.Instance = DefaultInstanceID()
+	}
+	if o.Registry == nil {
+		o.Registry = monkit.Default
+	}
+	if o.PacketSize == 0 {
+		o.PacketSize = DefaultPacketSize
+	}
+}
+
 // Client is a telemetry client for sending UDP packets at a regular interval
 // from a monkit.Registry.
 type Client struct {
-	interval time.Duration
-	opts     Options
-	send     func(context.Context, Options) error
-
-	mu      sync.Mutex
-	cancel  context.CancelFunc
-	stopped bool
+	reporter *Reporter
 }
 
 // NewClient constructs a telemetry client that sends packets to remoteAddr
 // over UDP.
 func NewClient(remoteAddr string, opts ClientOpts) (rv *Client, err error) {
-	if opts.Interval == 0 {
-		opts.Interval = DefaultInterval
+	opts.fillDefaults()
+
+	options := Options{
+		Application: opts.Application,
+		InstanceID:  []byte(opts.Instance),
+		Address:     remoteAddr,
+		PacketSize:  opts.PacketSize,
+		ProtoOpts:   admproto.Options{FloatEncoding: opts.FloatEncoding},
+		Headers:     opts.Headers,
 	}
-	if opts.Application == "" {
-		if len(os.Args) > 0 {
-			opts.Application = os.Args[0]
-		} else {
-			// what the actual heck
-			opts.Application = DefaultApplication
-		}
-	}
-	if opts.Instance == "" {
-		opts.Instance = DefaultInstanceID()
-	}
-	if opts.Registry == nil {
-		opts.Registry = monkit.Default
-	}
-	if opts.PacketSize == 0 {
-		opts.PacketSize = DefaultPacketSize
+
+	reporter, err := NewReporter(opts.Interval, func(ctx context.Context) error {
+		return Send(ctx, options, func(entries func(key string, value float64)) {
+			if opts.Registry == nil {
+				opts.Registry = monkit.Default
+			}
+			opts.Registry.Stats(func(key monkit.SeriesKey, field string, val float64) {
+				series := key.WithField(field)
+				entries(series, val)
+			})
+		})
+	})
+	if err != nil {
+		return nil, err
 	}
 	return &Client{
-		interval: opts.Interval,
-		send: func(ctx context.Context, options Options) error {
-			return Send(ctx, options, func(entries func(key string, value float64)) {
-				if opts.Registry == nil {
-					opts.Registry = monkit.Default
-				}
-				opts.Registry.Stats(func(key monkit.SeriesKey, field string, val float64) {
-					series := key.WithField(field)
-					entries(series, val)
-				})
-			})
-		},
-		opts: Options{
-			Application: opts.Application,
-			InstanceID:  []byte(opts.Instance),
-			Address:     remoteAddr,
-			PacketSize:  opts.PacketSize,
-			ProtoOpts:   admproto.Options{FloatEncoding: opts.FloatEncoding},
-			Headers:     opts.Headers,
-		},
+		reporter: reporter,
 	}, nil
 }
 
 // Run calls Report roughly every Interval.
 func (c *Client) Run(ctx context.Context) {
-	c.mu.Lock()
-	if c.stopped {
-		c.mu.Unlock()
-		return
-	}
-	ctx, c.cancel = context.WithCancel(ctx)
-	c.mu.Unlock()
-
-	for {
-		sync2.Sleep(ctx, jitter(c.interval))
-		if ctx.Err() != nil {
-			return
-		}
-
-		_ = c.Report(ctx)
-	}
-}
-
-// Stop stops the Run loop.
-func (c *Client) Stop() {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	c.stopped = true
-	if c.cancel != nil {
-		c.cancel()
-	}
+	c.reporter.Run(ctx)
 }
 
 // Report bundles up all the current stats and writes them out as UDP packets.
 func (c *Client) Report(ctx context.Context) (err error) {
 	defer mon.Task()(&ctx)(&err)
-	return c.send(ctx, c.opts)
+	return c.reporter.Publish(ctx)
 }

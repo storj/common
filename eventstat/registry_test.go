@@ -75,6 +75,13 @@ func TestRegistry_WithLimit(t *testing.T) {
 	}, p.sortedEvents())
 }
 
+func TestTags(t *testing.T) {
+	require.Equal(t, "foo=bar", (&eventstat.Tags{"foo": "bar"}).String())
+	twoKeys := (&eventstat.Tags{"foo1": "bar", "foo2": "bar"}).String()
+	require.True(t, twoKeys == "foo1=bar,foo2=bar" || twoKeys == "foo2=bar,foo1=bar")
+	require.Equal(t, "f\\=oo=b\\,a\\ r", (&eventstat.Tags{"f=oo": "b,a r"}).String())
+}
+
 func BenchmarkRegistry(b *testing.B) {
 	b.ReportAllocs()
 	r := eventstat.Registry{}

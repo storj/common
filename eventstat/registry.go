@@ -4,11 +4,26 @@
 package eventstat
 
 import (
+	"strings"
 	"sync"
 )
 
 // Tags represent key/values for any event.
 type Tags map[string]string
+
+func (t *Tags) String() string {
+	var builder strings.Builder
+	for k, v := range *t {
+		if builder.Len() > 0 {
+			builder.WriteString(",")
+		}
+		writeTag(&builder, k)
+		builder.WriteString("=")
+		writeTag(&builder, v)
+
+	}
+	return builder.String()
+}
 
 // Publisher is a function which sends out statistics.
 type Publisher func(name string, tags Tags, value float64)
