@@ -21,7 +21,7 @@ require (
 	go.uber.org/zap v1.14.1
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	gopkg.in/yaml.v2 v2.4.0
-	storj.io/common v0.0.0-20220131120956-e74f624a3d55
+	storj.io/common v0.0.0-20220216094301-b27f3c9d69e1
 	storj.io/drpc v0.0.29
 	storj.io/monkit-jaeger v0.0.0-20220131130547-dc4cb5a0d97a
 )
@@ -57,10 +57,10 @@ require (
 	go.opencensus.io v0.22.2 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
 	go.uber.org/multierr v1.5.0 // indirect
-	golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa // indirect
-	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781 // indirect
+	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838 // indirect
+	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
-	golang.org/x/sys v0.0.0-20211109065445-02f5c0300f6e // indirect
+	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/api v0.15.0 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
