@@ -57,6 +57,8 @@ type TCPConnector struct {
 
 // NewDefaultTCPConnector creates a new TCPConnector instance with provided tcp dialer.
 // If no dialer is predefined, net.Dialer is used by default.
+//
+// Deprecated: Use NewHybridConnector wherever possible instead.
 func NewDefaultTCPConnector(dialer *ConnectorAdapter) TCPConnector {
 	if dialer == nil {
 		dialer = &ConnectorAdapter{
