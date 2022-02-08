@@ -72,7 +72,7 @@ func NewDefaultDialer(tlsOptions *tlsopts.Options) Dialer {
 		ConnectionOptions: drpcconn.Options{
 			Manager: NewDefaultManagerOptions(),
 		},
-		Connector: NewDefaultTCPConnector(nil),
+		Connector: NewHybridConnector(),
 	}
 }
 

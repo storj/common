@@ -164,7 +164,7 @@ func TestDialHostnameVerification(t *testing.T) {
 			if conn != nil {
 				return errs.New("expected conn to be nil")
 			}
-			if err.Error() != "rpc: x509: certificate is valid for localhost, not storj.test" {
+			if !strings.Contains(err.Error(), "certificate is valid for localhost, not storj.test") {
 				return errs.New("expected an error, got: %w", err)
 			}
 			return nil

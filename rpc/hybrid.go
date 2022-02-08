@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"net"
 	"sync"
 
 	"github.com/zeebo/errs"
@@ -209,6 +210,18 @@ func (c HybridConnector) DialContext(ctx context.Context, tlsConfig *tls.Config,
 	}
 	mon.Event(fmt.Sprintf("hybrid_connector_established_%s_connection", chosen.name))
 	return chosen.conn, nil
+}
+
+// DialContextUnencrypted creates a raw connection using the first registered
+// connector that has a DialContextUnencrypted method. Unless the tcp connector
+// is unregistered, this will be the tcp connector.
+func (c HybridConnector) DialContextUnencrypted(ctx context.Context, address string) (net.Conn, error) {
+	for _, entry := range c.connectors {
+		if entry, ok := entry.connector.(unencryptedConnector); ok {
+			return entry.DialContextUnencrypted(ctx, address)
+		}
+	}
+	return nil, Error.New("unable to do unencrypted dial")
 }
 
 // SetTransferRate calls SetTransferRate with the given transfer rate on all of
