@@ -138,3 +138,8 @@ func (t TCPConnector) DialContextUnencrypted(ctx context.Context, address string
 func (t *TCPConnector) SetTransferRate(rate memory.Size) {
 	t.TransferRate = rate
 }
+
+// SetSendDRPCMuxHeader says whether we should send the DRPC mux header.
+func (t *TCPConnector) SetSendDRPCMuxHeader(send bool) {
+	t.SendDRPCMuxHeader = send
+}

@@ -220,3 +220,12 @@ func (c *HybridConnector) SetTransferRate(rate memory.Size) {
 		}
 	}
 }
+
+// SetSendDRPCMuxHeader tells the underlying connector whether it should send the DRPC mux header.
+func (c *HybridConnector) SetSendDRPCMuxHeader(send bool) {
+	for _, entry := range c.connectors {
+		if entry, ok := entry.connector.(interface{ SetSendDRPCMuxHeader(bool) }); ok {
+			entry.SetSendDRPCMuxHeader(send)
+		}
+	}
+}
