@@ -60,6 +60,10 @@ service Metainfo {
     // Server side move.
     rpc BeginMoveObject(ObjectBeginMoveRequest) returns (ObjectBeginMoveResponse);
     rpc FinishMoveObject(ObjectFinishMoveRequest) returns (ObjectFinishMoveResponse);
+
+    // Server side copy.
+    rpc BeginCopyObject(ObjectBeginCopyRequest) returns (ObjectBeginCopyResponse);
+    rpc FinishCopyObject(ObjectFinishCopyRequest) returns (ObjectFinishCopyResponse);
 }
 
 message RequestHeader {
@@ -682,6 +686,8 @@ message BatchRequestItem {
         ObjectUpdateMetadataRequest     object_update_metadata = 24;
         ObjectBeginMoveRequest          object_begin_move = 26;
         ObjectFinishMoveRequest         object_finish_move = 27;
+        ObjectBeginCopyRequest          object_begin_copy = 28;
+        ObjectFinishCopyRequest         object_finish_copy = 29;
 
         SegmentBeginRequest      segment_begin = 12;
         SegmentCommitRequest     segment_commit = 13;
@@ -724,6 +730,8 @@ message BatchResponseItem {
         ObjectUpdateMetadataResponse     object_update_metadata = 24;
         ObjectBeginMoveResponse          object_begin_move = 26;
         ObjectFinishMoveResponse         object_finish_move = 27;
+        ObjectBeginCopyResponse          object_begin_copy = 28;
+        ObjectFinishCopyResponse         object_finish_copy = 29;
 
         SegmentBeginResponse      segment_begin = 12;
         SegmentCommitResponse     segment_commit = 13;
@@ -750,6 +758,7 @@ message RevokeAPIKeyRequest {
 message RevokeAPIKeyResponse { }
 
 // Server side move.
+// Has the same fields as copy.
 message ObjectBeginMoveRequest {
     RequestHeader header = 15;
 
@@ -781,10 +790,51 @@ message ObjectFinishMoveRequest {
     repeated EncryptedKeyAndNonce new_segment_keys = 5;
 }
 
+message ObjectFinishMoveResponse { }
+
+// Server side copy.
+// Has the same fields as move.
+message ObjectBeginCopyRequest {
+    RequestHeader header = 15;
+
+    bytes bucket = 1;
+    bytes encrypted_object_key = 2;
+
+    bytes new_bucket = 3;
+    bytes new_encrypted_object_key = 4;
+}
+
+// The satellite returns metadata of the source object,
+// so that the client can re-encrypt it and re-submit it for the destination object.
+message ObjectBeginCopyResponse {
+    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+
+    bytes encrypted_metadata_key_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_key = 3;
+    repeated EncryptedKeyAndNonce segment_keys = 4;
+    encryption.EncryptionParameters encryption_parameters = 5;
+}
+
+// Uplink uploads the newly encrypted metadata fore the destination object,
+// so that the satellite can finish the copy.
+message ObjectFinishCopyRequest {
+    RequestHeader header = 15;
+
+    // Stream ID of source object
+    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+
+    // Newly encrypted data of the copy destination
+    bytes new_bucket = 2;
+    bytes new_encrypted_object_key = 3;
+    bytes new_encrypted_metadata_key_nonce = 4 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes new_encrypted_metadata_key = 5;
+    repeated EncryptedKeyAndNonce new_segment_keys = 6;
+}
+
+message ObjectFinishCopyResponse { }
+
 message EncryptedKeyAndNonce {
     SegmentPosition position = 1;
     bytes encrypted_key_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes encrypted_key = 3;
 }
-
-message ObjectFinishMoveResponse { }

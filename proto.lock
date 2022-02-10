@@ -3935,6 +3935,16 @@
                 "type": "ObjectFinishMoveRequest"
               },
               {
+                "id": 28,
+                "name": "object_begin_copy",
+                "type": "ObjectBeginCopyRequest"
+              },
+              {
+                "id": 29,
+                "name": "object_finish_copy",
+                "type": "ObjectFinishCopyRequest"
+              },
+              {
                 "id": 12,
                 "name": "segment_begin",
                 "type": "SegmentBeginRequest"
@@ -4079,6 +4089,16 @@
                 "id": 27,
                 "name": "object_finish_move",
                 "type": "ObjectFinishMoveResponse"
+              },
+              {
+                "id": 28,
+                "name": "object_begin_copy",
+                "type": "ObjectBeginCopyResponse"
+              },
+              {
+                "id": 29,
+                "name": "object_finish_copy",
+                "type": "ObjectFinishCopyResponse"
               },
               {
                 "id": 12,
@@ -4288,6 +4308,154 @@
             ]
           },
           {
+            "name": "ObjectFinishMoveResponse"
+          },
+          {
+            "name": "ObjectBeginCopyRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "new_bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "new_encrypted_object_key",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "ObjectBeginCopyResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "stream_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "StreamID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "encrypted_metadata_key_nonce",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "Nonce"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "name": "encrypted_metadata_key",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "segment_keys",
+                "type": "EncryptedKeyAndNonce",
+                "is_repeated": true
+              },
+              {
+                "id": 5,
+                "name": "encryption_parameters",
+                "type": "encryption.EncryptionParameters"
+              }
+            ]
+          },
+          {
+            "name": "ObjectFinishCopyRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "stream_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "StreamID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "new_bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "new_encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "new_encrypted_metadata_key_nonce",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "Nonce"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 5,
+                "name": "new_encrypted_metadata_key",
+                "type": "bytes"
+              },
+              {
+                "id": 6,
+                "name": "new_segment_keys",
+                "type": "EncryptedKeyAndNonce",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "ObjectFinishCopyResponse"
+          },
+          {
             "name": "EncryptedKeyAndNonce",
             "fields": [
               {
@@ -4316,9 +4484,6 @@
                 "type": "bytes"
               }
             ]
-          },
-          {
-            "name": "ObjectFinishMoveResponse"
           }
         ],
         "services": [
@@ -4464,6 +4629,16 @@
                 "name": "FinishMoveObject",
                 "in_type": "ObjectFinishMoveRequest",
                 "out_type": "ObjectFinishMoveResponse"
+              },
+              {
+                "name": "BeginCopyObject",
+                "in_type": "ObjectBeginCopyRequest",
+                "out_type": "ObjectBeginCopyResponse"
+              },
+              {
+                "name": "FinishCopyObject",
+                "in_type": "ObjectFinishCopyRequest",
+                "out_type": "ObjectFinishCopyResponse"
               }
             ]
           }

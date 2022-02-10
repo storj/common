@@ -70,6 +70,8 @@ type DRPCMetainfoClient interface {
 	RevokeAPIKey(ctx context.Context, in *RevokeAPIKeyRequest) (*RevokeAPIKeyResponse, error)
 	BeginMoveObject(ctx context.Context, in *ObjectBeginMoveRequest) (*ObjectBeginMoveResponse, error)
 	FinishMoveObject(ctx context.Context, in *ObjectFinishMoveRequest) (*ObjectFinishMoveResponse, error)
+	BeginCopyObject(ctx context.Context, in *ObjectBeginCopyRequest) (*ObjectBeginCopyResponse, error)
+	FinishCopyObject(ctx context.Context, in *ObjectFinishCopyRequest) (*ObjectFinishCopyResponse, error)
 }
 
 type drpcMetainfoClient struct {
@@ -334,6 +336,24 @@ func (c *drpcMetainfoClient) FinishMoveObject(ctx context.Context, in *ObjectFin
 	return out, nil
 }
 
+func (c *drpcMetainfoClient) BeginCopyObject(ctx context.Context, in *ObjectBeginCopyRequest) (*ObjectBeginCopyResponse, error) {
+	out := new(ObjectBeginCopyResponse)
+	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/BeginCopyObject", drpcEncoding_File_metainfo_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *drpcMetainfoClient) FinishCopyObject(ctx context.Context, in *ObjectFinishCopyRequest) (*ObjectFinishCopyResponse, error) {
+	out := new(ObjectFinishCopyResponse)
+	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/FinishCopyObject", drpcEncoding_File_metainfo_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 type DRPCMetainfoServer interface {
 	CreateBucket(context.Context, *BucketCreateRequest) (*BucketCreateResponse, error)
 	GetBucket(context.Context, *BucketGetRequest) (*BucketGetResponse, error)
@@ -363,6 +383,8 @@ type DRPCMetainfoServer interface {
 	RevokeAPIKey(context.Context, *RevokeAPIKeyRequest) (*RevokeAPIKeyResponse, error)
 	BeginMoveObject(context.Context, *ObjectBeginMoveRequest) (*ObjectBeginMoveResponse, error)
 	FinishMoveObject(context.Context, *ObjectFinishMoveRequest) (*ObjectFinishMoveResponse, error)
+	BeginCopyObject(context.Context, *ObjectBeginCopyRequest) (*ObjectBeginCopyResponse, error)
+	FinishCopyObject(context.Context, *ObjectFinishCopyRequest) (*ObjectFinishCopyResponse, error)
 }
 
 type DRPCMetainfoUnimplementedServer struct{}
@@ -479,9 +501,17 @@ func (s *DRPCMetainfoUnimplementedServer) FinishMoveObject(context.Context, *Obj
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
+func (s *DRPCMetainfoUnimplementedServer) BeginCopyObject(context.Context, *ObjectBeginCopyRequest) (*ObjectBeginCopyResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) FinishCopyObject(context.Context, *ObjectFinishCopyRequest) (*ObjectFinishCopyResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
 type DRPCMetainfoDescription struct{}
 
-func (DRPCMetainfoDescription) NumMethods() int { return 28 }
+func (DRPCMetainfoDescription) NumMethods() int { return 30 }
 
 func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -737,6 +767,24 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*ObjectFinishMoveRequest),
 					)
 			}, DRPCMetainfoServer.FinishMoveObject, true
+	case 28:
+		return "/metainfo.Metainfo/BeginCopyObject", drpcEncoding_File_metainfo_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCMetainfoServer).
+					BeginCopyObject(
+						ctx,
+						in1.(*ObjectBeginCopyRequest),
+					)
+			}, DRPCMetainfoServer.BeginCopyObject, true
+	case 29:
+		return "/metainfo.Metainfo/FinishCopyObject", drpcEncoding_File_metainfo_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCMetainfoServer).
+					FinishCopyObject(
+						ctx,
+						in1.(*ObjectFinishCopyRequest),
+					)
+			}, DRPCMetainfoServer.FinishCopyObject, true
 	default:
 		return "", nil, nil, nil, false
 	}
@@ -1188,6 +1236,38 @@ type drpcMetainfo_FinishMoveObjectStream struct {
 }
 
 func (x *drpcMetainfo_FinishMoveObjectStream) SendAndClose(m *ObjectFinishMoveResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCMetainfo_BeginCopyObjectStream interface {
+	drpc.Stream
+	SendAndClose(*ObjectBeginCopyResponse) error
+}
+
+type drpcMetainfo_BeginCopyObjectStream struct {
+	drpc.Stream
+}
+
+func (x *drpcMetainfo_BeginCopyObjectStream) SendAndClose(m *ObjectBeginCopyResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCMetainfo_FinishCopyObjectStream interface {
+	drpc.Stream
+	SendAndClose(*ObjectFinishCopyResponse) error
+}
+
+type drpcMetainfo_FinishCopyObjectStream struct {
+	drpc.Stream
+}
+
+func (x *drpcMetainfo_FinishCopyObjectStream) SendAndClose(m *ObjectFinishCopyResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
 		return err
 	}
