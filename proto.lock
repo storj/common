@@ -4453,7 +4453,14 @@
             ]
           },
           {
-            "name": "ObjectFinishCopyResponse"
+            "name": "ObjectFinishCopyResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "object",
+                "type": "Object"
+              }
+            ]
           },
           {
             "name": "EncryptedKeyAndNonce",

@@ -831,7 +831,9 @@ message ObjectFinishCopyRequest {
     repeated EncryptedKeyAndNonce new_segment_keys = 6;
 }
 
-message ObjectFinishCopyResponse { }
+message ObjectFinishCopyResponse {
+    Object object = 1;
+}
 
 message EncryptedKeyAndNonce {
     SegmentPosition position = 1;
