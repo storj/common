@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -19,16 +20,38 @@ import (
 	"storj.io/common/storj"
 )
 
+type atomicInt struct {
+	mu  sync.Mutex
+	val int
+}
+
+func (a *atomicInt) Store(n int) int {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	old := a.val
+	a.val = n
+
+	return old
+}
+
+func (a *atomicInt) Get() int {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	return a.val
+}
+
 // quicRolloutPercent is between 0 and 100.
 const quicRolloutPercentDefault = 0
 
-var quicRolloutPercent int
+var quicRolloutPercent atomicInt
 
 func init() {
 	if percent, err := strconv.Atoi(os.Getenv("STORJ_QUIC_ROLLOUT_PERCENT")); err == nil {
-		quicRolloutPercent = percent
+		quicRolloutPercent.Store(percent)
 	} else {
-		quicRolloutPercent = quicRolloutPercentDefault
+		quicRolloutPercent.Store(quicRolloutPercentDefault)
 	}
 }
 
@@ -41,12 +64,22 @@ func intn(n int) int {
 	return rand.New(rand.NewSource(int64(atomic.AddUint64(&rngState, rngInc)))).Intn(n)
 }
 
+// SetQUICRolloutPercent is intended to allow tests to set the rollout percent
+// and returns a function that should be called to reset the value back to
+// what it was before the function was called.
+func SetQUICRolloutPercent(percent int) (reset func()) {
+	old := quicRolloutPercent.Store(percent)
+	return func() { quicRolloutPercent.Store(old) }
+}
+
 func checkQUICRolloutState(sess quic.Session) error {
-	if quicRolloutPercent >= 100 {
+	percent := quicRolloutPercent.Get()
+
+	if percent >= 100 {
 		return nil
 	}
 
-	if quicRolloutPercent < 0 {
+	if percent < 0 {
 		return Error.New("quic disabled")
 	}
 
@@ -59,7 +92,7 @@ func checkQUICRolloutState(sess quic.Session) error {
 		return nil
 	}
 
-	if intn(100) < quicRolloutPercent {
+	if intn(100) < percent {
 		return nil
 	}
 
