@@ -23,10 +23,16 @@ func NewUnrestricted(secret []byte) (*Macaroon, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	return NewUnrestrictedFromParts(head, secret), nil
+}
+
+// NewUnrestrictedFromParts constructs an unrestricted Macaroon from the provided head and secret.
+func NewUnrestrictedFromParts(head, secret []byte) *Macaroon {
 	return &Macaroon{
 		head: head,
 		tail: sign(secret, head),
-	}, nil
+	}
 }
 
 func sign(secret []byte, data []byte) []byte {

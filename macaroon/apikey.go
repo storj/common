@@ -102,6 +102,20 @@ func NewAPIKey(secret []byte) (*APIKey, error) {
 	return &APIKey{mac: mac}, nil
 }
 
+// FromParts generates an api key from the provided parts.
+func FromParts(head, secret []byte, caveats ...Caveat) (_ *APIKey, err error) {
+	apiKey := &APIKey{mac: NewUnrestrictedFromParts(head, secret)}
+
+	for _, caveat := range caveats {
+		apiKey, err = apiKey.Restrict(caveat)
+		if err != nil {
+			return nil, Error.Wrap(err)
+		}
+	}
+
+	return apiKey, nil
+}
+
 // Check makes sure that the key authorizes the provided action given the root
 // project secret and any possible revocations, returning an error if the action
 // is not authorized. 'revoked' is a list of revoked heads.
