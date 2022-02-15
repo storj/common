@@ -1,57 +1,29 @@
 // Copyright (C) 2021 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-//go:build go1.16
-// +build go1.16
-
-package quic
+package rpc
 
 import (
+	"context"
 	"math/rand"
 	"os"
 	"strconv"
-	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/lucas-clemente/quic-go"
-
-	"storj.io/common/identity"
 	"storj.io/common/storj"
 )
-
-type atomicInt struct {
-	mu  sync.Mutex
-	val int
-}
-
-func (a *atomicInt) Store(n int) int {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	old := a.val
-	a.val = n
-
-	return old
-}
-
-func (a *atomicInt) Get() int {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-
-	return a.val
-}
 
 // quicRolloutPercent is between 0 and 100.
 const quicRolloutPercentDefault = 0
 
-var quicRolloutPercent atomicInt
+var quicRolloutPercent int
 
 func init() {
 	if percent, err := strconv.Atoi(os.Getenv("STORJ_QUIC_ROLLOUT_PERCENT")); err == nil {
-		quicRolloutPercent.Store(percent)
+		quicRolloutPercent = percent
 	} else {
-		quicRolloutPercent.Store(quicRolloutPercentDefault)
+		quicRolloutPercent = quicRolloutPercentDefault
 	}
 }
 
@@ -64,39 +36,40 @@ func intn(n int) int {
 	return rand.New(rand.NewSource(int64(atomic.AddUint64(&rngState, rngInc)))).Intn(n)
 }
 
-// SetQUICRolloutPercent is intended to allow tests to set the rollout percent
-// and returns a function that should be called to reset the value back to
-// what it was before the function was called.
-func SetQUICRolloutPercent(percent int) (reset func()) {
-	old := quicRolloutPercent.Store(percent)
-	return func() { quicRolloutPercent.Store(old) }
+type quicRolloutPercentKey struct{}
+
+// WithQUICRolloutPercent sets the QUIC rollout percent for any dials that
+// use the returned context.
+func WithQUICRolloutPercent(ctx context.Context, percent int) context.Context {
+	return context.WithValue(ctx, quicRolloutPercentKey{}, percent)
 }
 
-func checkQUICRolloutState(sess quic.Session) error {
-	percent := quicRolloutPercent.Get()
+func checkQUICRolloutState(ctx context.Context, id storj.NodeID) bool {
+	var percent int
+
+	if ctxpercent, ok := ctx.Value(quicRolloutPercentKey{}).(int); ok {
+		percent = ctxpercent
+	} else {
+		percent = quicRolloutPercent
+	}
 
 	if percent >= 100 {
-		return nil
+		return true
 	}
 
 	if percent < 0 {
-		return Error.New("quic disabled")
+		return false
 	}
 
-	id, err := identity.PeerIdentityFromChain(sess.ConnectionState().TLS.PeerCertificates)
-	if err != nil {
-		return Error.Wrap(err)
-	}
-
-	if quicRolloutSatelliteIDs[id.ID] {
-		return nil
+	if quicRolloutSatelliteIDs[id] {
+		return true
 	}
 
 	if intn(100) < percent {
-		return nil
+		return true
 	}
 
-	return Error.New("quic disabled")
+	return false
 }
 
 var quicRolloutSatelliteIDs = map[storj.NodeID]bool{

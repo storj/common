@@ -15,6 +15,12 @@ import (
 	"storj.io/common/memory"
 )
 
+type hybridConnectorForcedKind struct{}
+
+func hyrbidConnectorContextWithForcedKind(ctx context.Context, kind string) context.Context {
+	return context.WithValue(ctx, hybridConnectorForcedKind{}, kind)
+}
+
 // HybridConnector implements a dialer that creates a connection using any of
 // (potentially) multiple connector candidates. The fastest one is kept, and
 // all others are closed and discarded.
@@ -146,19 +152,28 @@ func (c HybridConnector) DialContext(ctx context.Context, tlsConfig *tls.Config,
 		return nil, Error.New("tls config is not set")
 	}
 
+	forcedKind, _ := ctx.Value(hybridConnectorForcedKind{}).(string)
+
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	var chosen candidateConnection
 	errChan := make(chan error)
 	readyChan := make(chan candidateConnection)
+	spawned := 0
 
 	for _, entry := range c.connectors {
+		if forcedKind != "" && forcedKind != entry.name {
+			continue
+		}
+
 		entry := entry
+		spawned++
+
 		go func() {
 			conn, err := entry.connector.DialContext(ctx, tlsConfig.Clone(), address)
 			if err != nil {
-				errChan <- fmt.Errorf("%s connector failed: %w", entry.name, err)
+				errChan <- errs.New("%s connector failed: %w", entry.name, err)
 				return
 			}
 			readyChan <- candidateConnection{
@@ -169,15 +184,19 @@ func (c HybridConnector) DialContext(ctx context.Context, tlsConfig *tls.Config,
 		}()
 	}
 
+	if spawned == 0 {
+		mon.Event("hybrid_connector_no_attempts")
+		return nil, errs.New("no connectors available for connection")
+	}
+
 	var errors []error
-	var numFinished int
 	// make sure all dials are finished either with an established connection or
 	// an error. This allows us to appropriately close extra connection if multiple
 	// connections are ready around the same time
-	for numFinished < len(c.connectors) {
+	for spawned > 0 {
 		select {
 		case candidate := <-readyChan:
-			numFinished++
+			spawned--
 			// cancel all other dials (they might be ready too, or they might
 			// become ready before they receive this cancellation message; that
 			// is ok). if cancel() was already called, that's fine too; this
@@ -198,7 +217,7 @@ func (c HybridConnector) DialContext(ctx context.Context, tlsConfig *tls.Config,
 			}
 
 		case err := <-errChan:
-			numFinished++
+			spawned--
 			errors = append(errors, err)
 		}
 	}
@@ -216,7 +235,11 @@ func (c HybridConnector) DialContext(ctx context.Context, tlsConfig *tls.Config,
 // connector that has a DialContextUnencrypted method. Unless the tcp connector
 // is unregistered, this will be the tcp connector.
 func (c HybridConnector) DialContextUnencrypted(ctx context.Context, address string) (net.Conn, error) {
+	forcedKind, _ := ctx.Value(hybridConnectorForcedKind{}).(string)
 	for _, entry := range c.connectors {
+		if forcedKind != "" && forcedKind != entry.name {
+			continue
+		}
 		if entry, ok := entry.connector.(unencryptedConnector); ok {
 			return entry.DialContextUnencrypted(ctx, address)
 		}

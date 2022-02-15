@@ -54,12 +54,6 @@ func (c Connector) DialContext(ctx context.Context, tlsConfig *tls.Config, addre
 		return nil, Error.Wrap(err)
 	}
 
-	err = checkQUICRolloutState(sess)
-	if err != nil {
-		_ = sess.CloseWithError(0, "")
-		return nil, Error.Wrap(err)
-	}
-
 	stream, err := sess.OpenStreamSync(ctx)
 	if err != nil {
 		_ = sess.CloseWithError(0, "")
