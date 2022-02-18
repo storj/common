@@ -33,7 +33,6 @@ service Metainfo {
     rpc BeginObject(ObjectBeginRequest) returns (ObjectBeginResponse);
     rpc CommitObject(ObjectCommitRequest) returns (ObjectCommitResponse);
     rpc GetObject(ObjectGetRequest) returns (ObjectGetResponse);
-    rpc GetPendingObjects(GetPendingObjectsRequest) returns (GetPendingObjectsResponse);
     rpc ListObjects(ObjectListRequest) returns (ObjectListResponse);
     rpc BeginDeleteObject(ObjectBeginDeleteRequest) returns (ObjectBeginDeleteResponse);
     rpc FinishDeleteObject(ObjectFinishDeleteRequest) returns (ObjectFinishDeleteResponse);
@@ -250,18 +249,6 @@ message ObjectCommitRequest {
 }
 
 message ObjectCommitResponse {
-}
-
-message GetPendingObjectsRequest {
-    RequestHeader header = 15;
-    bytes  bucket = 1;
-    bytes  encrypted_path = 2;
-    int32  limit = 3;
-}
-
-message GetPendingObjectsResponse {
-    repeated ObjectListItem items = 1;
-    bool more = 2;
 }
 
 message ObjectListPendingStreamsRequest {
@@ -680,8 +667,7 @@ message BatchRequestItem {
         ObjectBeginDeleteRequest        object_begin_delete = 10;
         ObjectFinishDeleteRequest       object_finish_delete = 11;
         ObjectGetIPsRequest             object_get_ips = 20;
-        GetPendingObjectsRequest        pending_objects = 21;
-        ObjectListPendingStreamsRequest pending_streams = 22;
+        ObjectListPendingStreamsRequest object_list_pending_streams = 22;
         ObjectDownloadRequest           object_download = 23;
         ObjectUpdateMetadataRequest     object_update_metadata = 24;
         ObjectBeginMoveRequest          object_begin_move = 26;
@@ -702,7 +688,6 @@ message BatchRequestItem {
         PartDeleteRequest part_delete = 25;
 
         RevokeAPIKeyRequest revoke_api_key = 19;
-
     }
 }
 
@@ -724,8 +709,7 @@ message BatchResponseItem {
         ObjectBeginDeleteResponse        object_begin_delete = 10;
         ObjectFinishDeleteResponse       object_finish_delete = 11;
         ObjectGetIPsResponse             object_get_ips = 20;
-        GetPendingObjectsResponse        pending_objects = 21;
-        ObjectListPendingStreamsResponse pending_streams = 22;
+        ObjectListPendingStreamsResponse object_list_pending_streams = 22;
         ObjectDownloadResponse           object_download = 23;
         ObjectUpdateMetadataResponse     object_update_metadata = 24;
         ObjectBeginMoveResponse          object_begin_move = 26;

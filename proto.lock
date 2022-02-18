@@ -2378,47 +2378,6 @@
             "name": "ObjectCommitResponse"
           },
           {
-            "name": "GetPendingObjectsRequest",
-            "fields": [
-              {
-                "id": 15,
-                "name": "header",
-                "type": "RequestHeader"
-              },
-              {
-                "id": 1,
-                "name": "bucket",
-                "type": "bytes"
-              },
-              {
-                "id": 2,
-                "name": "encrypted_path",
-                "type": "bytes"
-              },
-              {
-                "id": 3,
-                "name": "limit",
-                "type": "int32"
-              }
-            ]
-          },
-          {
-            "name": "GetPendingObjectsResponse",
-            "fields": [
-              {
-                "id": 1,
-                "name": "items",
-                "type": "ObjectListItem",
-                "is_repeated": true
-              },
-              {
-                "id": 2,
-                "name": "more",
-                "type": "bool"
-              }
-            ]
-          },
-          {
             "name": "ObjectListPendingStreamsRequest",
             "fields": [
               {
@@ -3905,13 +3864,8 @@
                 "type": "ObjectGetIPsRequest"
               },
               {
-                "id": 21,
-                "name": "pending_objects",
-                "type": "GetPendingObjectsRequest"
-              },
-              {
                 "id": 22,
-                "name": "pending_streams",
+                "name": "object_list_pending_streams",
                 "type": "ObjectListPendingStreamsRequest"
               },
               {
@@ -4061,13 +4015,8 @@
                 "type": "ObjectGetIPsResponse"
               },
               {
-                "id": 21,
-                "name": "pending_objects",
-                "type": "GetPendingObjectsResponse"
-              },
-              {
                 "id": 22,
-                "name": "pending_streams",
+                "name": "object_list_pending_streams",
                 "type": "ObjectListPendingStreamsResponse"
               },
               {
@@ -4531,11 +4480,6 @@
                 "name": "GetObject",
                 "in_type": "ObjectGetRequest",
                 "out_type": "ObjectGetResponse"
-              },
-              {
-                "name": "GetPendingObjects",
-                "in_type": "GetPendingObjectsRequest",
-                "out_type": "GetPendingObjectsResponse"
               },
               {
                 "name": "ListObjects",
