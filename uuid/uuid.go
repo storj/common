@@ -9,6 +9,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"io"
+	"sort"
 
 	"github.com/zeebo/errs"
 )
@@ -141,6 +142,13 @@ func (uuid UUID) Compare(other UUID) int {
 	}
 
 	return 0
+}
+
+// SortAscending orders a slice of UUIDs from low to high.
+func SortAscending(uuids []UUID) {
+	sort.Slice(uuids, func(i, j int) bool {
+		return uuids[i].Less(uuids[j])
+	})
 }
 
 // MarshalText marshals UUID in `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` form.

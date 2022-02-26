@@ -103,6 +103,28 @@ func TestLess(t *testing.T) {
 	}
 }
 
+func TestSort(t *testing.T) {
+	uuid1, _ := uuid.FromString("00000000-0000-0000-0000-000000000001")
+	uuid2, _ := uuid.FromString("00000000-0000-0000-0000-000000000002")
+	uuid3, _ := uuid.FromString("00000000-0000-0000-0000-000000000003")
+
+	emptyAsc := []uuid.UUID{}
+	uuid.SortAscending(emptyAsc)
+	require.Equal(t, []uuid.UUID{}, emptyAsc)
+
+	oneAsc := []uuid.UUID{uuid1}
+	uuid.SortAscending(oneAsc)
+	require.Equal(t, []uuid.UUID{uuid1}, oneAsc)
+
+	threeAscToAsc := []uuid.UUID{uuid1, uuid2, uuid3}
+	uuid.SortAscending(threeAscToAsc)
+	require.Equal(t, []uuid.UUID{uuid1, uuid2, uuid3}, threeAscToAsc)
+
+	threeDescToAsc := []uuid.UUID{uuid3, uuid2, uuid1}
+	uuid.SortAscending(threeDescToAsc)
+	require.Equal(t, []uuid.UUID{uuid1, uuid2, uuid3}, threeDescToAsc)
+}
+
 func TestMarshal(t *testing.T) {
 	expectedUUID := testrand.UUID()
 	uuidBytes, err := expectedUUID.Marshal()
