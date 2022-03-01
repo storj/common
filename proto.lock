@@ -4374,6 +4374,11 @@
                 "type": "bytes"
               },
               {
+                "id": 7,
+                "name": "new_encrypted_metadata",
+                "type": "bytes"
+              },
+              {
                 "id": 4,
                 "name": "new_encrypted_metadata_key_nonce",
                 "type": "bytes",
