@@ -4374,6 +4374,11 @@
                 "type": "bytes"
               },
               {
+                "id": 8,
+                "name": "override_metadata",
+                "type": "bool"
+              },
+              {
                 "id": 7,
                 "name": "new_encrypted_metadata",
                 "type": "bytes"

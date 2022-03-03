@@ -810,6 +810,8 @@ message ObjectFinishCopyRequest {
     // Newly encrypted data of the copy destination
     bytes new_bucket = 2;
     bytes new_encrypted_object_key = 3;
+    // if false, keep existing metadata by ignoring 'new_encrypted_metadata'
+    bool override_metadata = 8;
     bytes new_encrypted_metadata = 7;
     bytes new_encrypted_metadata_key_nonce = 4 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes new_encrypted_metadata_key = 5;
