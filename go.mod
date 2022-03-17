@@ -10,11 +10,11 @@ require (
 	github.com/spacemonkeygo/monkit/v3 v3.0.17
 	github.com/stretchr/testify v1.7.0
 	github.com/zeebo/admission/v3 v3.0.3
-	github.com/zeebo/errs v1.2.2
+	github.com/zeebo/errs v1.3.0
 	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27
-	storj.io/drpc v0.0.29
+	storj.io/drpc v0.0.30
 )
 
 require (
