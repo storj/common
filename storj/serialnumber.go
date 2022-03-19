@@ -6,6 +6,7 @@ package storj
 import (
 	"database/sql/driver"
 	"encoding/base32"
+	"encoding/json"
 
 	"github.com/zeebo/errs"
 )
@@ -23,7 +24,7 @@ type SerialNumber [16]byte
 func SerialNumberFromString(s string) (SerialNumber, error) {
 	idBytes, err := serialNumberEncoding.DecodeString(s)
 	if err != nil {
-		return SerialNumber{}, ErrNodeID.Wrap(err)
+		return SerialNumber{}, ErrSerialNumber.Wrap(err)
 	}
 	return SerialNumberFromBytes(idBytes)
 }
@@ -92,8 +93,12 @@ func (id SerialNumber) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON deserializes a json string (as bytes) to a serial number.
 func (id *SerialNumber) UnmarshalJSON(data []byte) error {
-	var err error
-	*id, err = SerialNumberFromString(string(data))
+	var unquoted string
+	err := json.Unmarshal(data, &unquoted)
+	if err != nil {
+		return err
+	}
+	*id, err = SerialNumberFromString(unquoted)
 	if err != nil {
 		return err
 	}
