@@ -5,6 +5,7 @@ package signing_test
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -97,6 +98,51 @@ func TestOrderLimitVerification(t *testing.T) {
 		encoded, err := signing.EncodeOrderLimit(ctx, &orderLimit)
 		require.NoError(t, err)
 		assert.Equal(t, unsignedBytes, encoded)
+	}
+}
+
+// Ensure that an order limit can survive a round trip through JSON and still have its
+// signature validated. (This also verifies that JSON encoding and decoding are correctly
+// matched in terms of how they treat each of the OrderLimit fields.)
+func TestOrderLimitJSON(t *testing.T) {
+	ctx := testcontext.New(t)
+
+	const (
+		unsignedOrderLimit = "0a1052fdfc072182654f163f5f0f9a621d7212200ed28abb2813e184a1e98b0f6605c4911ea468c7e8433eb583e0fca7ceac300022209566c74d10037c4d7bbb0407d1e2c64981855ad8681d0d86d1e91e00167939002a206694d2c422acd208a0072939487f6999eb9d18a44784045d87f3c67cf22746e930904e38024a0c0899eea2e9051090b98af6025a1f121d68747470733a2f2f736174656c6c6974652e6578616d706c652e636f6d6a20fd302f9f1acd1f90f5b59d8fb5d5b2d8d3d62210d4efa8647bb7a177ece96dcc"
+		signedOrderLimit   = "0a1052fdfc072182654f163f5f0f9a621d7212200ed28abb2813e184a1e98b0f6605c4911ea468c7e8433eb583e0fca7ceac300022209566c74d10037c4d7bbb0407d1e2c64981855ad8681d0d86d1e91e00167939002a206694d2c422acd208a0072939487f6999eb9d18a44784045d87f3c67cf22746e930904e3802420b088092b8c398feffffff014a0c0899eea2e9051090b98af60252483046022100cf538a3f81f9030786bfd6d810be8b5a3c50efdfbe79ca1ce720b0a9d1359625022100e3841b64fbff97cfa8e13d9044a9b6d059b5d0914abbd1f5c792d66a5b6a50fd5a1f121d68747470733a2f2f736174656c6c6974652e6578616d706c652e636f6d620b088092b8c398feffffff016a20fd302f9f1acd1f90f5b59d8fb5d5b2d8d3d62210d4efa8647bb7a177ece96dcc"
+	)
+
+	for _, test := range []struct {
+		name string
+		hex  string
+	}{
+		{name: "unsigned", hex: unsignedOrderLimit},
+		{name: "signed", hex: signedOrderLimit},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			orderLimitBytes, err := hex.DecodeString(test.hex)
+			require.NoError(t, err)
+
+			orderLimitObject := pb.OrderLimit{}
+			err = pb.Unmarshal(orderLimitBytes, &orderLimitObject)
+			require.NoError(t, err)
+
+			orderLimitJSON, err := json.Marshal(&orderLimitObject)
+			require.NoError(t, err)
+
+			orderLimitReconstituted := pb.OrderLimit{}
+			err = json.Unmarshal(orderLimitJSON, &orderLimitReconstituted)
+			require.NoError(t, err)
+
+			require.Equal(t, orderLimitObject, orderLimitReconstituted)
+
+			canonical1, err := signing.EncodeOrderLimit(ctx, &orderLimitObject)
+			require.NoError(t, err)
+			canonical2, err := signing.EncodeOrderLimit(ctx, &orderLimitReconstituted)
+			require.NoError(t, err)
+
+			require.Equal(t, canonical1, canonical2)
+		})
 	}
 }
 
