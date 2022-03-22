@@ -47,7 +47,10 @@ type candidateConnectorType struct {
 	priority      int
 }
 
-const tcpConnectorPriority = 10
+// TCPConnectorPriority is the priority TCP is registered with by default for
+// RegisterCandidateConnectorType. This is useful if you want to override TCP
+// dialing settings for a specific HybridConnector using AddCandidateConnector.
+const TCPConnectorPriority = 10
 
 var (
 	// connectorRegistryLock must be held when changing or accessing
@@ -61,7 +64,7 @@ var (
 		{
 			name:          "tcp",
 			connectorType: func() Connector { return NewDefaultTCPConnector(nil) },
-			priority:      tcpConnectorPriority,
+			priority:      TCPConnectorPriority,
 		},
 	}
 )
@@ -112,17 +115,27 @@ type candidateConnection struct {
 
 // AddCandidateConnector adds a candidate connector to this HybridConnector
 // instance. (Other HybridConnector instances, both current and future, will
-// not be affected by this call.
+// not be affected by this call).
 //
 // It is recommended that this be used before any connections are attempted
 // with the HybridConnector, because no concurrency protection is built in to
 // accesses to c.connectors.
+//
+// This method now replaces any candidate connector with the same name, to match
+// the behavior of RegisterCandidateConnectorType.
 func (c *HybridConnector) AddCandidateConnector(name string, connector Connector, priority int) {
-	c.connectors = append(c.connectors, candidateConnector{
+	candidate := candidateConnector{
 		name:      name,
 		connector: connector,
 		priority:  priority,
-	})
+	}
+	for i := range c.connectors {
+		if c.connectors[i].name == name {
+			c.connectors[i] = candidate
+			return
+		}
+	}
+	c.connectors = append(c.connectors, candidate)
 }
 
 // RemoveCandidateConnector removes a candidate connector from this
