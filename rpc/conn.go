@@ -4,25 +4,22 @@
 package rpc
 
 import (
-	"crypto/tls"
+	"github.com/zeebo/errs"
 
 	"storj.io/common/identity"
-	"storj.io/drpc"
+	"storj.io/common/rpc/rpcpool"
 )
 
 // Conn is a wrapper around a drpc client connection.
 type Conn struct {
-	state tls.ConnectionState
-	drpc.Conn
+	rpcpool.Conn
 }
-
-// Close closes the connection.
-func (c *Conn) Close() error { return c.Conn.Close() }
-
-// ConnectionState returns the tls connection state.
-func (c *Conn) ConnectionState() tls.ConnectionState { return c.state }
 
 // PeerIdentity returns the peer identity on the other end of the connection.
 func (c *Conn) PeerIdentity() (*identity.PeerIdentity, error) {
-	return identity.PeerIdentityFromChain(c.state.PeerCertificates)
+	state := c.Conn.State()
+	if state == nil {
+		return nil, errs.New("unknown identity: need to communicate first")
+	}
+	return identity.PeerIdentityFromChain(state.PeerCertificates)
 }

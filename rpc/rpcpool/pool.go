@@ -89,6 +89,13 @@ func (p *Pool) Close() error {
 	return p.cache.Close()
 }
 
+// put puts back the pool key and value into the cache.
+func (p *Pool) put(pk poolKey, pv *poolValue) {
+	if p != nil {
+		p.cache.Put(pk, pv)
+	}
+}
+
 // get returns a drpc connection from the cache if possible, dialing if necessary.
 func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (pv *poolValue, err error) {
 	defer mon.Task()(&ctx)(&err)
@@ -116,8 +123,7 @@ func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (pv *poolValue,
 // Get looks up a connection with the same key and TLS options and returns it if it
 // exists. If it does not exist, it calls the dial function to create one. It is safe
 // to call on a nil receiver, and if so, always returns a dialed connection.
-func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options, dial Dialer) (
-	conn drpc.Conn, state *tls.ConnectionState, err error) {
+func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options, dial Dialer) (conn Conn, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	pk := poolKey{
@@ -125,24 +131,10 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 		tlsOptions: tlsOptions,
 	}
 
-	pv, err := p.get(ctx, pk, dial)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// if we have a nil pool, we always dial once and do not return a wrapped connection.
-	if p == nil {
-		return pv.conn, pv.state, nil
-	}
-
-	// we immediately place the connection back into the pool so that it may be used
-	// by the returned poolConn.
-	p.cache.Put(pk, pv)
-
 	return &poolConn{
-		ch:   make(chan struct{}),
-		pk:   pk,
-		dial: dial,
-		pool: p,
-	}, pv.state, nil
+		closedChan: make(chan struct{}),
+		pk:         pk,
+		dial:       dial,
+		pool:       p,
+	}, nil
 }

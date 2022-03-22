@@ -200,23 +200,13 @@ func (d Dialer) dialPool(ctx context.Context, key string, dialer rpcpool.Dialer)
 		defer cancel()
 	}
 
-	conn, state, err := d.Pool.Get(ctx, key, d.TLSOptions, rpcpool.WrapDialer(ctx, dialer))
+	conn, err := d.Pool.Get(ctx, key, d.TLSOptions, rpcpool.WrapDialer(ctx, dialer))
 	if err != nil {
 		return nil, errs.Wrap(err)
 	}
 
-	// check that the tls connection state has been returned if we were dialing with
-	// tls options.
-	if state == nil {
-		if d.TLSOptions != nil {
-			return nil, errs.New("conn transport did not have tls connection state")
-		}
-		state = &tls.ConnectionState{}
-	}
-
 	return &Conn{
-		state: *state,
-		Conn:  experiment.NewConnWrapper(rpctracing.NewTracingWrapper(conn)),
+		Conn: experiment.NewConnWrapper(rpctracing.NewTracingWrapper(conn)),
 	}, nil
 }
 

@@ -10,17 +10,18 @@ import (
 
 	"github.com/spacemonkeygo/monkit/v3"
 
+	"storj.io/common/rpc/rpcpool"
 	"storj.io/drpc"
 	"storj.io/drpc/drpcmetadata"
 )
 
 // TracingWrapper wraps a drpc.Conn with tracing information.
 type TracingWrapper struct {
-	drpc.Conn
+	rpcpool.Conn
 }
 
 // NewTracingWrapper creates a new instance of the wrapper.
-func NewTracingWrapper(conn drpc.Conn) *TracingWrapper {
+func NewTracingWrapper(conn rpcpool.Conn) *TracingWrapper {
 	return &TracingWrapper{
 		conn,
 	}

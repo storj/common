@@ -6,17 +6,18 @@ package experiment
 import (
 	"context"
 
+	"storj.io/common/rpc/rpcpool"
 	"storj.io/drpc"
 	"storj.io/drpc/drpcmetadata"
 )
 
-// Wrapper wraps a drpc.Conn with experimental feature flag information.
+// Wrapper wraps a Conn with experimental feature flag information.
 type Wrapper struct {
-	drpc.Conn
+	rpcpool.Conn
 }
 
 // NewConnWrapper creates a new instance of the wrapper.
-func NewConnWrapper(conn drpc.Conn) *Wrapper {
+func NewConnWrapper(conn rpcpool.Conn) *Wrapper {
 	return &Wrapper{
 		conn,
 	}

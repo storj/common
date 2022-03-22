@@ -5,6 +5,7 @@ package rpcpool
 
 import (
 	"context"
+	"crypto/tls"
 	"sync"
 
 	"github.com/zeebo/errs"
@@ -12,26 +13,74 @@ import (
 	"storj.io/drpc"
 )
 
+// Conn is the type for connections returned from the pool.
+type Conn interface {
+	drpc.Conn
+	State() *tls.ConnectionState
+	ForceState(ctx context.Context) error
+}
+
 // poolConn grabs a connection from the pool for every invoke/stream.
 type poolConn struct {
-	on sync.Once
-	ch chan struct{}
-
 	pk   poolKey
 	dial Dialer
 	pool *Pool
+
+	closedOnce sync.Once
+	closedChan chan struct{}
+
+	stateMu sync.Mutex
+	state   *tls.ConnectionState
 }
 
 // Close marks the poolConn as closed and will not allow future calls to Invoke or NewStream
 // to proceed. It does not stop any ongoing calls to Invoke or NewStream.
 func (c *poolConn) Close() (err error) {
-	c.on.Do(func() { close(c.ch) })
+	c.closedOnce.Do(func() { close(c.closedChan) })
 	return nil
 }
 
 // Closed returns true if the poolConn is closed.
 func (c *poolConn) Closed() <-chan struct{} {
-	return c.ch
+	return c.closedChan
+}
+
+// State returns the current best known tls.ConnectionState. It is nil if it is unknown.
+func (c *poolConn) State() *tls.ConnectionState {
+	c.stateMu.Lock()
+	defer c.stateMu.Unlock()
+
+	return c.state
+}
+
+// ForceState forces a dial so that the tls connection state is filled in. It is
+// a no-op if the state is already filled in.
+func (c *poolConn) ForceState(ctx context.Context) (err error) {
+	defer mon.Task()(&ctx)(&err)
+
+	select {
+	case <-c.closedChan:
+		return errs.New("connection closed")
+	default:
+	}
+
+	if c.State() != nil {
+		return nil
+	}
+
+	pv, err := c.pool.get(ctx, c.pk, c.dial)
+	if err != nil {
+		return err
+	}
+	defer c.pool.put(c.pk, pv)
+
+	c.stateMu.Lock()
+	if c.state == nil {
+		c.state = pv.state
+	}
+	c.stateMu.Unlock()
+
+	return nil
 }
 
 // Invoke acquires a connection from the pool, dialing if necessary, and issues the Invoke on that
@@ -40,7 +89,7 @@ func (c *poolConn) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in
 	defer mon.Task()(&ctx)(&err)
 
 	select {
-	case <-c.ch:
+	case <-c.closedChan:
 		return errs.New("connection closed")
 	default:
 	}
@@ -49,7 +98,13 @@ func (c *poolConn) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in
 	if err != nil {
 		return err
 	}
-	defer c.pool.cache.Put(c.pk, pv)
+	defer c.pool.put(c.pk, pv)
+
+	c.stateMu.Lock()
+	if c.state == nil {
+		c.state = pv.state
+	}
+	c.stateMu.Unlock()
 
 	return pv.conn.Invoke(ctx, rpc, enc, in, out)
 }
@@ -60,7 +115,7 @@ func (c *poolConn) NewStream(ctx context.Context, rpc string, enc drpc.Encoding)
 	defer mon.Task()(&ctx)(&err)
 
 	select {
-	case <-c.ch:
+	case <-c.closedChan:
 		return nil, errs.New("connection closed")
 	default:
 	}
@@ -69,6 +124,12 @@ func (c *poolConn) NewStream(ctx context.Context, rpc string, enc drpc.Encoding)
 	if err != nil {
 		return nil, err
 	}
+
+	c.stateMu.Lock()
+	if c.state == nil {
+		c.state = pv.state
+	}
+	c.stateMu.Unlock()
 
 	stream, err := pv.conn.NewStream(ctx, rpc, enc)
 	if err != nil {
@@ -79,7 +140,7 @@ func (c *poolConn) NewStream(ctx context.Context, rpc string, enc drpc.Encoding)
 	// coming in for that stream anymore. it has been fully terminated.
 	go func() {
 		<-stream.Context().Done()
-		c.pool.cache.Put(c.pk, pv)
+		c.pool.put(c.pk, pv)
 	}()
 
 	return stream, nil

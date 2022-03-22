@@ -24,15 +24,15 @@ func TestGet(t *testing.T) {
 	check := func(t *testing.T, pool *Pool, counts ...int) {
 		calls = 0
 
-		_, _, err := pool.Get(ctx, "key1", nil, dial)
+		_, err := pool.Get(ctx, "key1", nil, dial)
 		require.NoError(t, err)
 		require.Equal(t, calls, counts[0])
 
-		c1, _, err := pool.Get(ctx, "key1", nil, dial)
+		c1, err := pool.Get(ctx, "key1", nil, dial)
 		require.NoError(t, err)
 		require.Equal(t, calls, counts[1])
 
-		c2, _, err := pool.Get(ctx, "key2", nil, dial)
+		c2, err := pool.Get(ctx, "key2", nil, dial)
 		require.NoError(t, err)
 		require.Equal(t, calls, counts[2])
 
@@ -47,11 +47,11 @@ func TestGet(t *testing.T) {
 	}
 
 	t.Run("Cached", func(t *testing.T) {
-		check(t, New(Options{}), 1, 1, 2, 2, 2, 2)
+		check(t, New(Options{}), 0, 0, 0, 1, 2, 2)
 	})
 
 	t.Run("Nil", func(t *testing.T) {
-		check(t, (*Pool)(nil), 1, 2, 3, 3, 3, 3)
+		check(t, (*Pool)(nil), 0, 0, 0, 1, 2, 3)
 	})
 }
 

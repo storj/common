@@ -25,6 +25,7 @@ import (
 
 	"storj.io/common/sync2"
 	"storj.io/common/testcontext"
+	"storj.io/drpc"
 	"storj.io/drpc/drpcmigrate"
 )
 
@@ -105,6 +106,14 @@ func TestDialHostnameVerification(t *testing.T) {
 		return nil
 	}
 
+	useConn := func(ctx context.Context, conn drpc.Conn) error {
+		stream, err := conn.NewStream(ctx, "test-rpc", nil)
+		if err != nil {
+			return errs.Wrap(err)
+		}
+		return errs.Wrap(stream.Close())
+	}
+
 	// create client
 	certPool := x509.NewCertPool()
 	certPool.AppendCertsFromPEM(certificatePEM)
@@ -124,6 +133,12 @@ func TestDialHostnameVerification(t *testing.T) {
 			if err != nil {
 				return errs.Wrap(err)
 			}
+			defer func() { _ = conn.Close() }()
+
+			if err := useConn(ctx, conn); err != nil {
+				return errs.Wrap(err)
+			}
+
 			return errs.Wrap(conn.Close())
 		},
 	))
@@ -143,6 +158,12 @@ func TestDialHostnameVerification(t *testing.T) {
 			if err != nil {
 				return errs.Wrap(err)
 			}
+			defer func() { _ = conn.Close() }()
+
+			if err := useConn(ctx, conn); err != nil {
+				return errs.Wrap(err)
+			}
+
 			return errs.Wrap(conn.Close())
 		},
 	))
@@ -157,16 +178,19 @@ func TestDialHostnameVerification(t *testing.T) {
 				ServerName: "storj.test",
 			}
 			conn, err := dialer.DialAddressHostnameVerification(ctx, serverAddr)
-			if err == nil {
-				_ = conn.Close()
-				return errs.New("expected an error")
+			if err != nil {
+				return errs.Wrap(err)
 			}
-			if conn != nil {
-				return errs.New("expected conn to be nil")
+			defer func() { _ = conn.Close() }()
+
+			err = useConn(ctx, conn)
+			if err == nil {
+				return errs.New("expected an error")
 			}
 			if !strings.Contains(err.Error(), "certificate is valid for localhost, not storj.test") {
 				return errs.New("expected an error, got: %w", err)
 			}
+
 			return nil
 		},
 	))
