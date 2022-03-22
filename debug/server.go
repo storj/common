@@ -1,7 +1,8 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-// Package debug implements debug server for satellite and storage node.
+// Package debug implements debug server for satellite, storage node, and edge
+// services.
 package debug
 
 import (
@@ -108,28 +109,43 @@ func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *
 	return server
 }
 
-func writeLink(w http.ResponseWriter, link string) {
-	_, _ = w.Write([]byte(fmt.Sprintf("<a href=\"%s\">%s</a><br />\n", link, link)))
+func htmlLink(link string) string {
+	return fmt.Sprintf("<a href=\"%s\">%s</a>", link, link)
 }
 
 func indexPage(writeControl, writeLogging bool) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		line := func(args ...string) {
+			_, _ = w.Write([]byte(strings.Join(args, "") + "\n"))
+		}
+
 		w.Header().Set("Content-Type", "text/html")
-		_, _ = w.Write([]byte("<html><body>\n"))
+		line("<html><head><title>Storj debug server</title></head><body>")
+		defer line("</body></html>")
+
+		line("<dl>")
 		if writeControl {
-			writeLink(w, "/control/")
+			line("<dt>", htmlLink("/control/"), "</dt>")
 		}
-		writeLink(w, "/version/")
-		writeLink(w, "/debug/pprof/")
-		writeLink(w, "/debug/pprof/symbol")
-		writeLink(w, "/debug/run/trace/db")
-		writeLink(w, "/mon/")
-		writeLink(w, "/metrics")
-		writeLink(w, "/health")
+		line("<dt>", htmlLink("/version/"), "</dt>")
+		line("<dd>JSON representation of the current version information for the binary</dd>")
+		line("<dt>", htmlLink("/debug/pprof/"), "</dt>")
+		line("<dd>HTML page listing the available Go pprof profiles</dd>")
+		line("<dt>", htmlLink("/debug/pprof/symbol"), "</dt>")
+		line("<dd>Looks up the program counters listed in the request, responding with a table mapping program counters to function names</dd>")
+		line("<dt>", htmlLink("/debug/run/trace/db"), "</dt>")
+		line("<dd>Collects traces until request is canceled</dd>")
+		line("<dt>", htmlLink("/mon/"), "</dt>")
+		line("<dd>HTML page listing the available Monkit metrics</dd>")
+		line("<dt>", htmlLink("/metrics"), "</dt>")
+		line("<dd>Monkit metrics in Prometheus format</dd>")
+		line("<dt>", htmlLink("/health"), "</dt>")
+		line("<dd>Debug server health check</dd>")
 		if writeLogging {
-			writeLink(w, "/logging")
+			line("<dt>", htmlLink("/logging"), "</dt>")
+			line("<dd>JSON endpoint can report or change the current logging level (https://pkg.go.dev/go.uber.org/zap#AtomicLevel.ServeHTTP)</dd>")
 		}
-		_, _ = w.Write([]byte("</body></html>\n"))
+		line("</dl>")
 	}
 }
 
