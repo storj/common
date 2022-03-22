@@ -106,12 +106,11 @@ func (d Dialer) DialNodeURL(ctx context.Context, nodeURL storj.NodeURL) (_ *Conn
 		return nil, Error.New("tls options not set when required for this dial")
 	}
 
-	// check for a quic rollout, and if not, force tcp.
-	if !checkQUICRolloutState(ctx, nodeURL.ID) {
-		ctx = hyrbidConnectorContextWithForcedKind(ctx, "tcp")
-	}
-
 	return d.dialPool(ctx, "node:"+nodeURL.ID.String(), func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
+		// check for a quic rollout, and if not, force tcp.
+		if !checkQUICRolloutState(ctx, nodeURL.ID) {
+			ctx = hyrbidConnectorContextWithForcedKind(ctx, "tcp")
+		}
 		return d.dialEncryptedConn(ctx, nodeURL.Address, d.TLSOptions.ClientTLSConfig(nodeURL.ID))
 	})
 }
@@ -124,12 +123,11 @@ func (d Dialer) DialAddressInsecure(ctx context.Context, address string) (_ *Con
 		return nil, Error.New("tls options not set when required for this dial")
 	}
 
-	// check for a quic rollout, and if not, force tcp.
-	if !checkQUICRolloutState(ctx, storj.NodeID{}) {
-		ctx = hyrbidConnectorContextWithForcedKind(ctx, "tcp")
-	}
-
 	return d.dialPool(ctx, "insecure:"+address, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
+		// check for a quic rollout, and if not, force tcp.
+		if !checkQUICRolloutState(ctx, storj.NodeID{}) {
+			ctx = hyrbidConnectorContextWithForcedKind(ctx, "tcp")
+		}
 		return d.dialEncryptedConn(ctx, address, d.TLSOptions.UnverifiedClientTLSConfig())
 	})
 }
@@ -160,12 +158,11 @@ func (d Dialer) DialAddressHostnameVerification(ctx context.Context, address str
 		tlsConfig.ServerName = host
 	}
 
-	// check for a quic rollout, and if not, force tcp.
-	if !checkQUICRolloutState(ctx, storj.NodeID{}) {
-		ctx = hyrbidConnectorContextWithForcedKind(ctx, "tcp")
-	}
-
 	return d.dialPool(ctx, "hostname:"+address, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
+		// check for a quic rollout, and if not, force tcp.
+		if !checkQUICRolloutState(ctx, storj.NodeID{}) {
+			ctx = hyrbidConnectorContextWithForcedKind(ctx, "tcp")
+		}
 		return d.dialEncryptedConn(ctx, address, tlsConfig)
 	})
 }
@@ -177,12 +174,11 @@ func (d Dialer) DialAddressUnencrypted(ctx context.Context, address string) (_ *
 	// clear out TLS options so that the cache does not include it as part of the key.
 	d.TLSOptions = nil
 
-	// check for a quic rollout, and if not, force tcp.
-	if !checkQUICRolloutState(ctx, storj.NodeID{}) {
-		ctx = hyrbidConnectorContextWithForcedKind(ctx, "tcp")
-	}
-
 	return d.dialPool(ctx, "unencrypted:"+address, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
+		// check for a quic rollout, and if not, force tcp.
+		if !checkQUICRolloutState(ctx, storj.NodeID{}) {
+			ctx = hyrbidConnectorContextWithForcedKind(ctx, "tcp")
+		}
 		return d.dialUnencryptedConn(ctx, address)
 	})
 }
