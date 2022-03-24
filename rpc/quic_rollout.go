@@ -15,7 +15,7 @@ import (
 )
 
 // quicRolloutPercent is between 0 and 100.
-const quicRolloutPercentDefault = 5
+const quicRolloutPercentDefault = 0
 
 var quicRolloutPercent int
 
