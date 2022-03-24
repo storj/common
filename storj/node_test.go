@@ -188,8 +188,9 @@ func TestNodeID_UnmarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, nodeID.String(), "12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7")
 
-	assert.Error(t, nodeID.UnmarshalJSON([]byte(`""12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7""`)))
-	assert.Error(t, nodeID.UnmarshalJSON([]byte(`{}`)))
+	assert.Error(t, json.Unmarshal([]byte(`""12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7""`), &nodeID))
+	assert.Error(t, json.Unmarshal([]byte(`{}`), &nodeID))
+	assert.Error(t, json.Unmarshal([]byte(`"fajsd8ccj23m k,ladlf"`), &nodeID))
 }
 
 func TestNewVersionedID(t *testing.T) {

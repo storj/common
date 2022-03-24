@@ -7,7 +7,6 @@ import (
 	"crypto/x509/pkix"
 	"database/sql/driver"
 	"encoding/binary"
-	"encoding/json"
 	"math/bits"
 
 	"github.com/zeebo/errs"
@@ -252,11 +251,6 @@ func (id *NodeID) Size() int {
 	return len(id)
 }
 
-// MarshalJSON serializes a node ID to a json string as bytes.
-func (id NodeID) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + id.String() + `"`), nil
-}
-
 // Value converts a NodeID to a database field.
 func (id NodeID) Value() (driver.Value, error) {
 	return id.Bytes(), nil
@@ -273,15 +267,15 @@ func (id *NodeID) Scan(src interface{}) (err error) {
 	return err
 }
 
-// UnmarshalJSON deserializes a json string (as bytes) to a node ID.
-func (id *NodeID) UnmarshalJSON(data []byte) error {
-	var unquoted string
-	err := json.Unmarshal(data, &unquoted)
-	if err != nil {
-		return err
-	}
+// MarshalText serializes a node ID to a base58 string.
+func (id NodeID) MarshalText() ([]byte, error) {
+	return []byte(id.String()), nil
+}
 
-	*id, err = NodeIDFromString(unquoted)
+// UnmarshalText deserializes a base58 string to a node ID.
+func (id *NodeID) UnmarshalText(data []byte) error {
+	var err error
+	*id, err = NodeIDFromString(string(data))
 	if err != nil {
 		return err
 	}

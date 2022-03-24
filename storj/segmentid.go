@@ -4,23 +4,18 @@
 package storj
 
 import (
-	"encoding/base32"
-
 	"github.com/zeebo/errs"
 )
 
 // ErrSegmentID is used when something goes wrong with a segment ID.
 var ErrSegmentID = errs.Class("segment ID")
 
-// segmentIDEncoding is base32 without padding.
-var segmentIDEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)
-
 // SegmentID is the unique identifier for segment related to object.
 type SegmentID []byte
 
 // SegmentIDFromString decodes an base32 encoded.
 func SegmentIDFromString(s string) (SegmentID, error) {
-	idBytes, err := segmentIDEncoding.DecodeString(s)
+	idBytes, err := base32Encoding.DecodeString(s)
 	if err != nil {
 		return SegmentID{}, ErrSegmentID.Wrap(err)
 	}
@@ -41,7 +36,7 @@ func (id SegmentID) IsZero() bool {
 }
 
 // String representation of the segment ID.
-func (id SegmentID) String() string { return segmentIDEncoding.EncodeToString(id.Bytes()) }
+func (id SegmentID) String() string { return base32Encoding.EncodeToString(id.Bytes()) }
 
 // Bytes returns bytes of the segment ID.
 func (id SegmentID) Bytes() []byte { return id[:] }
@@ -68,13 +63,13 @@ func (id SegmentID) Size() int {
 	return len(id)
 }
 
-// MarshalJSON serializes a segment ID to a json string as bytes (implements gogo's custom type interface).
-func (id SegmentID) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + id.String() + `"`), nil
+// MarshalText serializes a segment ID to a base32 string.
+func (id SegmentID) MarshalText() ([]byte, error) {
+	return []byte(id.String()), nil
 }
 
-// UnmarshalJSON deserializes a json string (as bytes) to a segment ID (implements gogo's custom type interface).
-func (id *SegmentID) UnmarshalJSON(data []byte) error {
+// UnmarshalText deserializes a base32 string to a segment ID.
+func (id *SegmentID) UnmarshalText(data []byte) error {
 	var err error
 	*id, err = SegmentIDFromString(string(data))
 	return err

@@ -5,7 +5,6 @@ package storj
 
 import (
 	"database/sql/driver"
-	"encoding/base32"
 
 	"github.com/zeebo/errs"
 )
@@ -13,15 +12,12 @@ import (
 // ErrStreamID is used when something goes wrong with a stream ID.
 var ErrStreamID = errs.Class("stream ID")
 
-// streamIDEncoding is base32 without padding.
-var streamIDEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)
-
 // StreamID is the unique identifier for stream related to object.
 type StreamID []byte
 
 // StreamIDFromString decodes an base32 encoded.
 func StreamIDFromString(s string) (StreamID, error) {
-	idBytes, err := streamIDEncoding.DecodeString(s)
+	idBytes, err := base32Encoding.DecodeString(s)
 	if err != nil {
 		return StreamID{}, ErrStreamID.Wrap(err)
 	}
@@ -41,7 +37,7 @@ func (id StreamID) IsZero() bool {
 }
 
 // String representation of the stream ID.
-func (id StreamID) String() string { return streamIDEncoding.EncodeToString(id.Bytes()) }
+func (id StreamID) String() string { return base32Encoding.EncodeToString(id.Bytes()) }
 
 // Bytes returns bytes of the stream ID.
 func (id StreamID) Bytes() []byte { return id[:] }
@@ -69,13 +65,13 @@ func (id StreamID) Size() int {
 	return len(id)
 }
 
-// MarshalJSON serializes a stream ID to a json string as bytes.
-func (id StreamID) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + id.String() + `"`), nil
+// MarshalText serializes a stream ID to a base32 string.
+func (id StreamID) MarshalText() ([]byte, error) {
+	return []byte(id.String()), nil
 }
 
-// UnmarshalJSON deserializes a json string (as bytes) to a stream ID.
-func (id *StreamID) UnmarshalJSON(data []byte) error {
+// UnmarshalText deserializes a base32 string to a stream ID.
+func (id *StreamID) UnmarshalText(data []byte) error {
 	var err error
 	*id, err = StreamIDFromString(string(data))
 	if err != nil {

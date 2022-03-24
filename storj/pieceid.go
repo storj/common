@@ -8,18 +8,13 @@ import (
 	"crypto/rand"
 	"crypto/sha512"
 	"database/sql/driver"
-	"encoding/base32"
 	"encoding/binary"
-	"encoding/json"
 
 	"github.com/zeebo/errs"
 )
 
 // ErrPieceID is used when something goes wrong with a piece ID.
 var ErrPieceID = errs.Class("piece ID")
-
-// pieceIDEncoding is base32 without padding.
-var pieceIDEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)
 
 // PieceID is the unique identifier for pieces.
 type PieceID [32]byte
@@ -38,7 +33,7 @@ func NewPieceID() PieceID {
 
 // PieceIDFromString decodes a hex encoded piece ID string.
 func PieceIDFromString(s string) (PieceID, error) {
-	idBytes, err := pieceIDEncoding.DecodeString(s)
+	idBytes, err := base32Encoding.DecodeString(s)
 	if err != nil {
 		return PieceID{}, ErrPieceID.Wrap(err)
 	}
@@ -62,7 +57,7 @@ func (id PieceID) IsZero() bool {
 }
 
 // String representation of the piece ID.
-func (id PieceID) String() string { return pieceIDEncoding.EncodeToString(id.Bytes()) }
+func (id PieceID) String() string { return base32Encoding.EncodeToString(id.Bytes()) }
 
 // Bytes returns bytes of the piece ID.
 func (id PieceID) Bytes() []byte { return id[:] }
@@ -103,20 +98,15 @@ func (id *PieceID) Size() int {
 	return len(id)
 }
 
-// MarshalJSON serializes a piece ID to a json string as bytes.
-func (id PieceID) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + id.String() + `"`), nil
+// MarshalText serializes a piece ID to a base32 string.
+func (id PieceID) MarshalText() ([]byte, error) {
+	return []byte(id.String()), nil
 }
 
-// UnmarshalJSON deserializes a json string (as bytes) to a piece ID.
-func (id *PieceID) UnmarshalJSON(data []byte) error {
-	var unquoted string
-	err := json.Unmarshal(data, &unquoted)
-	if err != nil {
-		return err
-	}
-
-	*id, err = PieceIDFromString(unquoted)
+// UnmarshalText deserializes a base32 string to a piece ID.
+func (id *PieceID) UnmarshalText(data []byte) error {
+	var err error
+	*id, err = PieceIDFromString(string(data))
 	if err != nil {
 		return err
 	}

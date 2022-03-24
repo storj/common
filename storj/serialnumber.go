@@ -5,8 +5,6 @@ package storj
 
 import (
 	"database/sql/driver"
-	"encoding/base32"
-	"encoding/json"
 
 	"github.com/zeebo/errs"
 )
@@ -14,15 +12,12 @@ import (
 // ErrSerialNumber is used when something goes wrong with a serial number.
 var ErrSerialNumber = errs.Class("serial number")
 
-// serialNumberEncoding is base32 without padding.
-var serialNumberEncoding = base32.StdEncoding.WithPadding(base32.NoPadding)
-
 // SerialNumber is the unique identifier for pieces.
 type SerialNumber [16]byte
 
 // SerialNumberFromString decodes an base32 encoded.
 func SerialNumberFromString(s string) (SerialNumber, error) {
-	idBytes, err := serialNumberEncoding.DecodeString(s)
+	idBytes, err := base32Encoding.DecodeString(s)
 	if err != nil {
 		return SerialNumber{}, ErrSerialNumber.Wrap(err)
 	}
@@ -58,7 +53,7 @@ func (id SerialNumber) Less(other SerialNumber) bool {
 }
 
 // String representation of the serial number.
-func (id SerialNumber) String() string { return serialNumberEncoding.EncodeToString(id.Bytes()) }
+func (id SerialNumber) String() string { return base32Encoding.EncodeToString(id.Bytes()) }
 
 // Bytes returns bytes of the serial number.
 func (id SerialNumber) Bytes() []byte { return id[:] }
@@ -86,19 +81,15 @@ func (id *SerialNumber) Size() int {
 	return len(id)
 }
 
-// MarshalJSON serializes a serial number to a json string as bytes.
-func (id SerialNumber) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + id.String() + `"`), nil
+// MarshalText serializes a serial number to a base32 string.
+func (id SerialNumber) MarshalText() ([]byte, error) {
+	return []byte(id.String()), nil
 }
 
-// UnmarshalJSON deserializes a json string (as bytes) to a serial number.
-func (id *SerialNumber) UnmarshalJSON(data []byte) error {
-	var unquoted string
-	err := json.Unmarshal(data, &unquoted)
-	if err != nil {
-		return err
-	}
-	*id, err = SerialNumberFromString(unquoted)
+// UnmarshalText deserializes a base32 string to a serial number.
+func (id *SerialNumber) UnmarshalText(data []byte) error {
+	var err error
+	*id, err = SerialNumberFromString(string(data))
 	if err != nil {
 		return err
 	}

@@ -5,8 +5,6 @@ package storj
 
 import (
 	"database/sql/driver"
-	"encoding/base64"
-	"encoding/json"
 
 	"github.com/zeebo/errs"
 	"golang.org/x/crypto/ed25519"
@@ -164,22 +162,17 @@ func (key *PiecePrivateKey) Scan(src interface{}) (err error) {
 	return err
 }
 
-// MarshalJSON serializes a serial number to a json string as bytes.
-func (key *PiecePublicKey) MarshalJSON() ([]byte, error) {
-	base64Key := base64.URLEncoding.EncodeToString(key.Bytes())
-	return []byte(`"` + base64Key + `"`), nil
+// MarshalText serializes a piece public key to a base32 string.
+func (key *PiecePublicKey) MarshalText() ([]byte, error) {
+	text := base32Encoding.EncodeToString(key.Bytes())
+	return []byte(text), nil
 }
 
-// UnmarshalJSON deserializes a json string (as bytes) to a serial number.
-func (key *PiecePublicKey) UnmarshalJSON(data []byte) error {
-	var unquoted string
-	err := json.Unmarshal(data, &unquoted)
+// UnmarshalText deserializes a base32 string to a piece public key.
+func (key *PiecePublicKey) UnmarshalText(data []byte) error {
+	bytes, err := base32Encoding.DecodeString(string(data))
 	if err != nil {
 		return err
 	}
-	keyBytes, err := base64.URLEncoding.DecodeString(unquoted)
-	if err != nil {
-		return err
-	}
-	return key.Unmarshal(keyBytes)
+	return key.Unmarshal(bytes)
 }
