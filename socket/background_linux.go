@@ -4,11 +4,16 @@
 package socket
 
 import (
+	"os"
 	"syscall"
 )
 
+var linuxLowPrioCongController = os.Getenv("STORJ_SOCKET_LOWPRIO_CTL")
+
 func setLowPrioCongestionController(fd int) error {
-	// temporary behavior until we figure out better scavenger traffic
+	if linuxLowPrioCongController != "" {
+		return syscall.SetsockoptString(fd, syscall.IPPROTO_TCP, syscall.TCP_CONGESTION, linuxLowPrioCongController)
+	}
 	return nil
 }
 
