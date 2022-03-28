@@ -4,6 +4,7 @@
 package useragent
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 )
@@ -49,6 +50,7 @@ type Entry struct {
 
 // ParseEntries parses every entry in useragent string.
 func ParseEntries(data []byte) ([]Entry, error) {
+	data = bytes.TrimSpace(data)
 	if len(data) == 0 {
 		return []Entry{}, nil
 	}

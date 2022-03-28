@@ -21,6 +21,16 @@ func TestParseEntries(t *testing.T) {
 		in:  ``,
 		exp: []useragent.Entry{},
 	}, {
+		in: `  Mozilla`,
+		exp: []useragent.Entry{
+			{"Mozilla", "", ""},
+		},
+	}, {
+		in: `Mozilla   `,
+		exp: []useragent.Entry{
+			{"Mozilla", "", ""},
+		},
+	}, {
 		in: `Mozilla`,
 		exp: []useragent.Entry{
 			{"Mozilla", "", ""},
