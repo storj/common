@@ -14,8 +14,9 @@ import (
 	"storj.io/common/storj"
 )
 
-// quicRolloutPercent is between 0 and 100.
-const quicRolloutPercentDefault = 0
+// quicRolloutPercent is the node rollout between 0 and 100.
+// -1 means no satellites either.
+const quicRolloutPercentDefault = -1
 
 var quicRolloutPercent int
 
