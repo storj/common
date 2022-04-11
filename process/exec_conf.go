@@ -72,6 +72,11 @@ func ExecCustomDebug(cmd *cobra.Command) {
 
 // ExecWithCustomConfig runs a Cobra command. Custom configuration can be loaded.
 func ExecWithCustomConfig(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.Command, vip *viper.Viper) error) {
+	ExecWithCustomConfigAndLogger(cmd, debugEnabled, loadConfig, nil)
+}
+
+// ExecWithCustomConfigAndLogger runs a Cobra command with a custom logger. Custom configuration can be loaded.
+func ExecWithCustomConfigAndLogger(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.Command, vip *viper.Viper) error, loggerFactory func(*zap.Logger) *zap.Logger) {
 	cmd.AddCommand(&cobra.Command{
 		Use:         "version",
 		Short:       "output the version's build information, if any",
@@ -84,7 +89,7 @@ func ExecWithCustomConfig(cmd *cobra.Command, debugEnabled bool, loadConfig func
 	}
 
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
-	cleanup(cmd, debugEnabled, loadConfig)
+	cleanup(cmd, debugEnabled, loadConfig, loggerFactory)
 	err = cmd.Execute()
 
 	if err != nil {
@@ -189,9 +194,9 @@ func getRoot(cmd *cobra.Command) *cobra.Command {
 	return cmd
 }
 
-func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.Command, vip *viper.Viper) error) {
+func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.Command, vip *viper.Viper) error, loggerFactory func(*zap.Logger) *zap.Logger) {
 	for _, ccmd := range cmd.Commands() {
-		cleanup(ccmd, debugEnabled, loadConfig)
+		cleanup(ccmd, debugEnabled, loadConfig, loggerFactory)
 	}
 	if cmd.Run != nil {
 		panic("Please use cobra's RunE instead of Run")
@@ -267,6 +272,10 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 		}
 
 		logger, atomicLevel, err := NewLogger(getRoot(cmd).Use)
+		if loggerFactory != nil {
+			logger = loggerFactory(logger)
+		}
+
 		if err != nil {
 			return err
 		}
