@@ -59,9 +59,9 @@ func TestQuery(t *testing.T) {
 			{
 				Name: "users",
 				Columns: []*dbschema.Column{
-					{Name: "a", Type: "integer", IsNullable: false, Reference: nil},
-					{Name: "b", Type: "integer", IsNullable: false, Reference: nil},
-					{Name: "c", Type: "text", IsNullable: true, Reference: nil},
+					{Name: "a", Type: "INTEGER", IsNullable: false, Reference: nil},
+					{Name: "b", Type: "INTEGER", IsNullable: false, Reference: nil},
+					{Name: "c", Type: "TEXT", IsNullable: true, Reference: nil},
 				},
 				PrimaryKey: []string{"a"},
 				Unique: [][]string{
@@ -71,15 +71,15 @@ func TestQuery(t *testing.T) {
 			{
 				Name: "names",
 				Columns: []*dbschema.Column{
-					{Name: "users_a", Type: "integer", IsNullable: true,
+					{Name: "users_a", Type: "INTEGER", IsNullable: true,
 						Reference: &dbschema.Reference{
 							Table:    "users",
 							Column:   "a",
 							OnDelete: "CASCADE",
 						}},
-					{Name: "a", Type: "text", IsNullable: false, Reference: nil},
-					{Name: "x", Type: "text", IsNullable: false, Reference: nil}, // not null, because primary key
-					{Name: "b", Type: "text", IsNullable: true, Reference: nil},
+					{Name: "a", Type: "TEXT", IsNullable: false, Reference: nil},
+					{Name: "x", Type: "TEXT", IsNullable: false, Reference: nil}, // not null, because primary key
+					{Name: "b", Type: "TEXT", IsNullable: true, Reference: nil},
 				},
 				PrimaryKey: []string{"a", "x"},
 				Unique: [][]string{
