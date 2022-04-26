@@ -297,7 +297,11 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 				flags.BoolVar(fieldaddr.(*bool), flagname, val, help)
 			case reflect.TypeOf([]string(nil)):
 				// allow either a single string, or comma separated values for defaults
-				flags.StringArrayVar(fieldaddr.(*[]string), flagname, strings.Split(def, ","), help)
+				defaultValues := []string{}
+				if def != "" {
+					defaultValues = strings.Split(def, ",")
+				}
+				flags.StringArrayVar(fieldaddr.(*[]string), flagname, defaultValues, help)
 			default:
 				panic(fmt.Sprintf("invalid field type: %s", field.Type.String()))
 			}

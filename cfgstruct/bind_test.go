@@ -18,6 +18,7 @@ type TestStruct struct {
 	String              string         `default:"dev"`
 	StringArray         []string       `default:"dev"`
 	StringArrayMultiple []string       `default:"dev,test"`
+	StringArrayEmpty    []string       `default:""`
 	Bool                bool           `releaseDefault:"false" devDefault:"true"`
 	Int64               int64          `releaseDefault:"0" devDefault:"1" testDefault:"2"`
 	Int                 int            `default:"2"`
@@ -44,6 +45,7 @@ func TestBind(t *testing.T) {
 	require.Equal(t, c.String, string("dev"))
 	require.Equal(t, c.StringArray, []string{"dev"})
 	require.Equal(t, c.StringArrayMultiple, []string{"dev", "test"})
+	require.Equal(t, c.StringArrayEmpty, []string{})
 	require.Equal(t, c.Bool, bool(false))
 	require.Equal(t, c.Int64, int64(0))
 	require.Equal(t, c.Int, int(2))
@@ -84,6 +86,7 @@ func TestBind(t *testing.T) {
 	}
 	require.Equal(t, c.String, string("1"))
 	require.Equal(t, c.StringArray, []string{"1", "2"})
+	require.Equal(t, c.StringArrayEmpty, []string{})
 	require.Equal(t, c.Bool, bool(true))
 	require.Equal(t, c.Int64, int64(1))
 	require.Equal(t, c.Int, int(1))
