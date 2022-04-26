@@ -239,7 +239,11 @@ message ObjectCommitRequest {
 
     bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
 
-    bool override_encrypted_metadata = 5;
+    // skip_override_encrypted_metadata is used to control if we want to override metadata on commit
+    // message which can lead to overriding existing metadata. We need to have flag where default (false)
+    // value will be backward compatible with old uplinks, default false means metadata will be always
+    // set by older uplinks.
+    bool  skip_override_encrypted_metadata = 5;
     bytes encrypted_metadata_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes encrypted_metadata = 3; // TODO: set maximum size limit
     bytes encrypted_metadata_encrypted_key = 4;

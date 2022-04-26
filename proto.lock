@@ -2324,7 +2324,7 @@
               },
               {
                 "id": 5,
-                "name": "override_encrypted_metadata",
+                "name": "skip_override_encrypted_metadata",
                 "type": "bool"
               },
               {
