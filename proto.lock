@@ -5254,6 +5254,18 @@
             ]
           },
           {
+            "name": "PieceHashAlgorithm",
+            "enum_fields": [
+              {
+                "name": "SHA256"
+              },
+              {
+                "name": "BLAKE3",
+                "integer": 1
+              }
+            ]
+          },
+          {
             "name": "SettlementWithWindowResponse.Status",
             "enum_fields": [
               {
@@ -5690,6 +5702,11 @@
                 "id": 3,
                 "name": "signature",
                 "type": "bytes"
+              },
+              {
+                "id": 6,
+                "name": "hash_algorithm",
+                "type": "PieceHashAlgorithm"
               }
             ]
           },
@@ -5736,6 +5753,11 @@
                 "id": 3,
                 "name": "signature",
                 "type": "bytes"
+              },
+              {
+                "id": 6,
+                "name": "hash_algorithm",
+                "type": "PieceHashAlgorithm"
               }
             ]
           },
@@ -5835,6 +5857,11 @@
                 "id": 1,
                 "name": "limit",
                 "type": "orders.OrderLimit"
+              },
+              {
+                "id": 5,
+                "name": "hash_algorithm",
+                "type": "orders.PieceHashAlgorithm"
               },
               {
                 "id": 2,

@@ -32,6 +32,12 @@ service Piecestore {
 message PieceUploadRequest {
     // first message to show that we are allowed to upload
     orders.OrderLimit limit = 1;
+
+    // first message must have it if (!) not the default sha256 is used, as it
+    // should be initialized by the storagenode before upload.
+    // should match with the algorithm in the done field of the last message
+    orders.PieceHashAlgorithm hash_algorithm = 5;
+
     // order for uploading
     orders.Order      order = 2;
 

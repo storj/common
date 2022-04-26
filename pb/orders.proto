@@ -22,6 +22,12 @@ enum PieceAction {
     PUT_GRACEFUL_EXIT = 7;
 }
 
+// PieceHashAlgorithm defines how the hashes of the pieces are calculated.
+enum PieceHashAlgorithm {
+    SHA256 = 0;
+    BLAKE3 = 1;
+}
+
 // OrderLimit is provided by satellite to execute specific action on storage node within some limits.
 message OrderLimit {
     // unique serial to avoid replay attacks
@@ -127,6 +133,8 @@ message PieceHash {
     google.protobuf.Timestamp timestamp = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     // signature either satellite or storage node
     bytes signature = 3;
+    // hash algorithm used
+    PieceHashAlgorithm hash_algorithm = 6;
 }
 
 // PieceHashSigning provides piece hash signing format.
@@ -146,6 +154,8 @@ message PieceHashSigning {
     google.protobuf.Timestamp timestamp = 5 [(gogoproto.stdtime) = true];
     // signature either satellite or storage node
     bytes signature = 3;
+    // hash algorithm used
+    PieceHashAlgorithm hash_algorithm = 6;
 }
 
 service Orders {

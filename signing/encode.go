@@ -77,6 +77,7 @@ func EncodePieceHash(ctx context.Context, hash *pb.PieceHash) (_ []byte, err err
 	signing.PieceId = hash.PieceId
 	signing.Hash = hash.Hash
 	signing.PieceSize = hash.PieceSize
+	signing.HashAlgorithm = hash.HashAlgorithm
 	if !hash.Timestamp.IsZero() {
 		signing.Timestamp = &hash.Timestamp
 	}
