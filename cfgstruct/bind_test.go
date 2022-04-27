@@ -67,8 +67,9 @@ func TestBind(t *testing.T) {
 
 	err = f.Parse([]string{
 		"--string=1",
+		"--string-array-multiple=alpha,beta",
 		"--string-array=1",
-		"--string-array=2",
+		"--string-array=2,3",
 		"--bool=true",
 		"--int64=1",
 		"--int=1",
@@ -85,7 +86,8 @@ func TestBind(t *testing.T) {
 		panic(err)
 	}
 	require.Equal(t, c.String, string("1"))
-	require.Equal(t, c.StringArray, []string{"1", "2"})
+	require.Equal(t, c.StringArrayMultiple, []string{"alpha", "beta"})
+	require.Equal(t, c.StringArray, []string{"1", "2", "3"})
 	require.Equal(t, c.StringArrayEmpty, []string{})
 	require.Equal(t, c.Bool, bool(true))
 	require.Equal(t, c.Int64, int64(1))

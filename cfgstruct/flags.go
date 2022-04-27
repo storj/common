@@ -4,6 +4,7 @@
 package cfgstruct
 
 import (
+	"strings"
 	"time"
 
 	"github.com/spf13/pflag"
@@ -25,3 +26,31 @@ type FlagSet interface {
 }
 
 var _ FlagSet = (*pflag.FlagSet)(nil)
+
+// commaDelimitedStrings implements a flag value with comma delimited string list.
+type commaDelimitedStrings struct {
+	changed bool
+	// list uses a pointer to slice, so we can bind it to an existing config field.
+	list *[]string
+}
+
+// Type implements pflag.Value.
+func (*commaDelimitedStrings) Type() string { return "[]string" }
+
+// String returns the values as comma delimited.
+func (xs *commaDelimitedStrings) String() string {
+	return strings.Join(*xs.list, ",")
+}
+
+// Set implements flag.Value interface.
+func (xs *commaDelimitedStrings) Set(s string) error {
+	if s == "" {
+		return nil
+	}
+	if !xs.changed {
+		*xs.list = nil
+		xs.changed = true
+	}
+	*xs.list = append(*xs.list, strings.Split(s, ",")...)
+	return nil
+}
