@@ -72,6 +72,25 @@ func TimestampTZArray(timeSlice []time.Time) *pgtype.TimestamptzArray {
 	}
 }
 
+// NullTimestampTZArray returns an object usable by pg drivers for passing a []*time.Time
+// slice into a database as type TIMESTAMPTZ[].
+func NullTimestampTZArray(timeSlice []*time.Time) *pgtype.TimestamptzArray {
+	pgtypeTimestamptzArray := make([]pgtype.Timestamptz, len(timeSlice))
+	for i, t := range timeSlice {
+		if t == nil {
+			pgtypeTimestamptzArray[i].Status = pgtype.Null
+		} else {
+			pgtypeTimestamptzArray[i].Time = *t
+			pgtypeTimestamptzArray[i].Status = pgtype.Present
+		}
+	}
+	return &pgtype.TimestamptzArray{
+		Elements:   pgtypeTimestamptzArray,
+		Dimensions: []pgtype.ArrayDimension{{Length: int32(len(timeSlice)), LowerBound: 1}},
+		Status:     pgtype.Present,
+	}
+}
+
 // DateArray returns an object usable by pg drivers for passing a []time.Time
 // slice into a database as type Date[].
 func DateArray(timeSlice []time.Time) *pgtype.DateArray {
