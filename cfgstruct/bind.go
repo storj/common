@@ -301,9 +301,7 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 				if def != "" {
 					defaultValues = strings.Split(def, ",")
 				}
-				delimited := &commaDelimitedStrings{list: fieldaddr.(*[]string)}
-				*delimited.list = defaultValues
-				flags.Var(delimited, flagname, help)
+				flags.StringSliceVar(fieldaddr.(*[]string), flagname, defaultValues, help)
 			default:
 				panic(fmt.Sprintf("invalid field type: %s", field.Type.String()))
 			}

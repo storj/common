@@ -16,9 +16,9 @@ import (
 
 type TestStruct struct {
 	String              string         `default:"dev"`
-	StringArray         []string       `default:"dev"`
-	StringArrayMultiple []string       `default:"dev,test"`
-	StringArrayEmpty    []string       `default:""`
+	StringSlice         []string       `default:"dev"`
+	StringSliceMultiple []string       `default:"dev,test"`
+	StringSliceEmpty    []string       `default:""`
 	Bool                bool           `releaseDefault:"false" devDefault:"true"`
 	Int64               int64          `releaseDefault:"0" devDefault:"1" testDefault:"2"`
 	Int                 int            `default:"2"`
@@ -43,9 +43,9 @@ func TestBind(t *testing.T) {
 	Bind(f, &c, UseReleaseDefaults())
 
 	require.Equal(t, c.String, string("dev"))
-	require.Equal(t, c.StringArray, []string{"dev"})
-	require.Equal(t, c.StringArrayMultiple, []string{"dev", "test"})
-	require.Equal(t, c.StringArrayEmpty, []string{})
+	require.Equal(t, c.StringSlice, []string{"dev"})
+	require.Equal(t, c.StringSliceMultiple, []string{"dev", "test"})
+	require.Equal(t, c.StringSliceEmpty, []string{})
 	require.Equal(t, c.Bool, bool(false))
 	require.Equal(t, c.Int64, int64(0))
 	require.Equal(t, c.Int, int(2))
@@ -67,9 +67,9 @@ func TestBind(t *testing.T) {
 
 	err = f.Parse([]string{
 		"--string=1",
-		"--string-array-multiple=alpha,beta",
-		"--string-array=1",
-		"--string-array=2,3",
+		"--string-slice-multiple=alpha,beta",
+		"--string-slice=1",
+		"--string-slice=2,3",
 		"--bool=true",
 		"--int64=1",
 		"--int=1",
@@ -86,9 +86,9 @@ func TestBind(t *testing.T) {
 		panic(err)
 	}
 	require.Equal(t, c.String, string("1"))
-	require.Equal(t, c.StringArrayMultiple, []string{"alpha", "beta"})
-	require.Equal(t, c.StringArray, []string{"1", "2", "3"})
-	require.Equal(t, c.StringArrayEmpty, []string{})
+	require.Equal(t, c.StringSliceMultiple, []string{"alpha", "beta"})
+	require.Equal(t, c.StringSlice, []string{"1", "2", "3"})
+	require.Equal(t, c.StringSliceEmpty, []string{})
 	require.Equal(t, c.Bool, bool(true))
 	require.Equal(t, c.Int64, int64(1))
 	require.Equal(t, c.Int, int(1))
