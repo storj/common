@@ -31,20 +31,29 @@ func InitEventStatPublisherWithHostname(ctx context.Context, log *zap.Logger, r 
 		instanceID = instanceID[:maxInstanceLength]
 	}
 
+	return InitEventStatPublisher(ctx, log, r, func(opts *eventstat.ClientOpts) {
+		opts.Instance = instanceID
+	})
+}
+
+// InitEventStatPublisher initializes telemetry reporting.
+func InitEventStatPublisher(ctx context.Context, log *zap.Logger, r *eventstat.Registry, customization func(*eventstat.ClientOpts)) error {
 	collectors := strings.Split(*metricCollector, ",")
 	if len(collectors) > 1 {
 		log.Warn("Event stat can be published only to one collector server")
 	}
 	if len(collectors) == 1 {
-		publisher, err := eventstat.NewUDPPublisher(collectors[0], r, eventstat.ClientOpts{
+		opts := &eventstat.ClientOpts{
 			Interval: calcMetricInterval(),
-		})
+		}
+		customization(opts)
+		publisher, err := eventstat.NewUDPPublisher(collectors[0], r, *opts)
 		if err != nil {
 			return err
 		}
 
 		go publisher.Run(ctx)
-		log.Info("Event stat publisher is enabled", zap.String("instance ID", instanceID))
+		log.Info("Event stat publisher is enabled", zap.String("instance ID", opts.Instance))
 	}
 	return nil
 }
