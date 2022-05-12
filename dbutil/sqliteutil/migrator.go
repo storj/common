@@ -183,14 +183,17 @@ func dropTables(ctx context.Context, db tagsql.DB, tablesToKeep ...string) (err 
 
 		// Collect a list of the tables. We must do this because we can't do DDL
 		// statements like drop tables while a query result is open.
-		var tables []string
+		queryTablesToDrop := ""
 		for rows.Next() {
 			var tableName string
 			err = rows.Scan(&tableName)
 			if err != nil {
 				return errs.Combine(err, rows.Close())
 			}
-			tables = append(tables, tableName)
+
+			if !tableToKeep(tableName, tablesToKeep) {
+				queryTablesToDrop += fmt.Sprintf("DROP TABLE %s;", tableName)
+			}
 		}
 
 		err = errs.Combine(rows.Err(), rows.Close())
@@ -198,14 +201,11 @@ func dropTables(ctx context.Context, db tagsql.DB, tablesToKeep ...string) (err 
 			return err
 		}
 
-		// Loop over the list of tables and decide which ones to keep and which to drop.
-		for _, tableName := range tables {
-			if !tableToKeep(tableName, tablesToKeep) {
-				// Drop tables we aren't told to keep in the destination database.
-				_, err = tx.ExecContext(ctx, fmt.Sprintf("DROP TABLE %s;", tableName))
-				if err != nil {
-					return err
-				}
+		// Drop tables we aren't told to keep in the destination database.
+		if len(queryTablesToDrop) > 0 {
+			_, err = tx.ExecContext(ctx, queryTablesToDrop)
+			if err != nil {
+				return err
 			}
 		}
 
