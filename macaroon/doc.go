@@ -4,5 +4,5 @@
 // Package macaroon implements contextual caveats and authorization.
 package macaroon
 
-//go:generate protoc -I=../pb --lint_out=. --gogo_out=paths=source_relative,Mgoogle/protobuf/timestamp.proto=storj.io/common/pb:. -I=. types.proto
+//go:generate protoc  -I../pb -I. --pico_out=paths=source_relative:. types.proto
 //go:generate goimports -local storj.io -w .

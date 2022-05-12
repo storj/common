@@ -39,8 +39,12 @@
                 "type": "google.protobuf.Timestamp",
                 "options": [
                   {
-                    "name": "(gogoproto.stdtime)",
-                    "value": "true"
+                    "name": "(pico.field).custom_type",
+                    "value": "time.Time"
+                  },
+                  {
+                    "name": "(pico.field).custom_cast",
+                    "value": "storj.io/picobuf/picoconv.Timestamp"
                   }
                 ]
               },
@@ -50,8 +54,12 @@
                 "type": "google.protobuf.Timestamp",
                 "options": [
                   {
-                    "name": "(gogoproto.stdtime)",
-                    "value": "true"
+                    "name": "(pico.field).custom_type",
+                    "value": "time.Time"
+                  },
+                  {
+                    "name": "(pico.field).custom_cast",
+                    "value": "storj.io/picobuf/picoconv.Timestamp"
                   }
                 ]
               },
@@ -82,7 +90,7 @@
         ],
         "imports": [
           {
-            "path": "gogo.proto"
+            "path": "pico.proto"
           },
           {
             "path": "google/protobuf/timestamp.proto"
@@ -90,7 +98,13 @@
         ],
         "package": {
           "name": "macaroon"
-        }
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/macaroon"
+          }
+        ]
       }
     },
     {
@@ -6085,6 +6099,77 @@
           {
             "name": "go_package",
             "value": "storj.io/common/pb"
+          }
+        ]
+      }
+    },
+    {
+      "protopath": "pb:/:pico.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "MessageOptions",
+            "fields": [
+              {
+                "id": 1,
+                "name": "always_present",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "name": "google.protobuf.MessageOptions",
+            "fields": [
+              {
+                "id": 28980,
+                "name": "message",
+                "type": "MessageOptions"
+              }
+            ]
+          },
+          {
+            "name": "FieldOptions",
+            "fields": [
+              {
+                "id": 1,
+                "name": "always_present",
+                "type": "bool"
+              },
+              {
+                "id": 2,
+                "name": "custom_type",
+                "type": "string"
+              },
+              {
+                "id": 3,
+                "name": "custom_cast",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "google.protobuf.FieldOptions",
+            "fields": [
+              {
+                "id": 28980,
+                "name": "field",
+                "type": "FieldOptions"
+              }
+            ]
+          }
+        ],
+        "imports": [
+          {
+            "path": "google/protobuf/descriptor.proto"
+          }
+        ],
+        "package": {
+          "name": "pico"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/picobuf;main"
           }
         ]
       }

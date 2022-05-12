@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"storj.io/common/encryption"
-	"storj.io/common/pb"
 	"storj.io/common/storj"
+	"storj.io/picobuf"
 )
 
 // WithNonce returns a Caveat with the nonce set to a random value.
@@ -65,5 +65,5 @@ func ParseCaveat(data []byte) (*Caveat, error) {
 
 // UnmarshalBinary implements encoding.BinaryUnmarshaler.
 func (caveat *Caveat) UnmarshalBinary(data []byte) error {
-	return pb.Unmarshal(data, caveat)
+	return picobuf.Unmarshal(data, caveat)
 }

@@ -4,8 +4,9 @@
 syntax = "proto3";
 
 package macaroon;
+option go_package = "storj.io/common/macaroon";
 
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 
 message Caveat {
@@ -24,8 +25,8 @@ message Caveat {
   repeated Path allowed_paths = 10;
 
   // if set, the validity time window
-  google.protobuf.Timestamp not_after = 20 [(gogoproto.stdtime) = true];
-  google.protobuf.Timestamp not_before = 21 [(gogoproto.stdtime) = true];
+  google.protobuf.Timestamp not_after = 20  [(pico.field).custom_type = "time.Time", (pico.field).custom_cast = "storj.io/picobuf/picoconv.Timestamp"];
+  google.protobuf.Timestamp not_before = 21 [(pico.field).custom_type = "time.Time", (pico.field).custom_cast = "storj.io/picobuf/picoconv.Timestamp"];
 
   // nonce is set to some random bytes so that you can make arbitrarily
   // many restricted macaroons with the same (or no) restrictions.

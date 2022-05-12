@@ -12,7 +12,7 @@ import (
 	"github.com/zeebo/errs"
 
 	"storj.io/common/base58"
-	"storj.io/common/pb"
+	"storj.io/picobuf"
 )
 
 // revoker is supplied when checking a macaroon for validation.
@@ -213,7 +213,7 @@ func (a *APIKey) GetAllowedBuckets(ctx context.Context, action Action) (allowed 
 
 // Restrict generates a new APIKey with the provided Caveat attached.
 func (a *APIKey) Restrict(caveat Caveat) (*APIKey, error) {
-	buf, err := pb.Marshal(&caveat)
+	buf, err := picobuf.Marshal(&caveat)
 	if err != nil {
 		return nil, Error.Wrap(err)
 	}
