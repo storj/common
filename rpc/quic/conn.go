@@ -31,7 +31,7 @@ type Conn struct {
 	stream quic.Stream
 
 	acceptErr error
-	session   quic.Session
+	session   quic.Connection
 }
 
 // Read implements the Conn Read method.
