@@ -24,8 +24,9 @@ type Queryer interface {
 
 // Schema is the database structure.
 type Schema struct {
-	Tables  []*Table
-	Indexes []*Index
+	Tables    []*Table
+	Indexes   []*Index
+	Sequences []string
 }
 
 func (schema Schema) String() string {
@@ -39,9 +40,11 @@ func (schema Schema) String() string {
 		indexes = append(indexes, index.String())
 	}
 
-	return fmt.Sprintf("Tables:\n\t%s\nIndexes:\n\t%s",
+	return fmt.Sprintf("Tables:\n\t%s\nIndexes:\n\t%s\nSequences:\n\t%s\n",
 		indent(strings.Join(tables, "\n")),
-		indent(strings.Join(indexes, "\n")))
+		indent(strings.Join(indexes, "\n")),
+		indent(strings.Join(schema.Sequences, "\n")),
+	)
 }
 
 // Table is a sql table.
@@ -243,6 +246,16 @@ func (schema *Schema) Sort() {
 			return schema.Indexes[i].Name < schema.Indexes[k].Name
 		}
 	})
+}
+
+// HasSequence returns with true if sequence is added to the scheme.
+func (schema Schema) HasSequence(name string) bool {
+	for _, seq := range schema.Sequences {
+		if seq == name {
+			return true
+		}
+	}
+	return false
 }
 
 // Sort sorts columns, primary keys and unique.

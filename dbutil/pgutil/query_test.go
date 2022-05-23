@@ -51,7 +51,11 @@ func TestQuery(t *testing.T) {
 			CREATE INDEX users_a_b_c ON users (a, b DESC, c NULLS LAST) WHERE b > 10 AND c != '';
 			CREATE INDEX names_a_x ON names (a ASC, x NULLS FIRST) WHERE b != '';
 			CREATE INDEX names_b ON names (b);
-		`)
+			CREATE SEQUENCE node_alias_seq
+				INCREMENT BY 1
+				MINVALUE 1 MAXVALUE 2147483647 -- MaxInt32
+				START WITH 1;
+			`)
 		} else {
 			_, err = db.ExecContext(ctx, `
 			CREATE TABLE users (
@@ -75,7 +79,11 @@ func TestQuery(t *testing.T) {
 			CREATE INDEX users_a_b_c ON users (a, b DESC, c NULLS FIRST) WHERE b > 10 AND c != '';
 			CREATE INDEX names_a_x ON names (a ASC, x NULLS FIRST) STORING(b, c) WHERE b != '';
 			CREATE INDEX names_b ON names (b) STORING (c);
-		`)
+			CREATE SEQUENCE node_alias_seq
+				INCREMENT BY 1
+				MINVALUE 1 MAXVALUE 2147483647 -- MaxInt32
+				START WITH 1;
+			`)
 		}
 
 		require.NoError(t, err)
@@ -131,6 +139,7 @@ func TestQuery(t *testing.T) {
 				{Name: "users_pkey", Table: "users", Columns: []string{"a"}, Unique: true, Partial: ""},
 				{Name: "names_b", Table: "names", Columns: []string{"b"}, Unique: false, Partial: ""},
 			},
+			Sequences: []string{"node_alias_seq"},
 		}
 
 		if db.Implementation != dbutil.Cockroach {
