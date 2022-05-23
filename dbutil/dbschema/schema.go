@@ -50,6 +50,7 @@ type Table struct {
 	Columns    []*Column
 	PrimaryKey []string
 	Unique     [][]string
+	Checks     []string
 }
 
 func (table Table) String() string {
@@ -63,11 +64,13 @@ func (table Table) String() string {
 		uniques = append(uniques, strings.Join(unique, " "))
 	}
 
-	return fmt.Sprintf("Name: %s\nColumns:\n\t%s\nPrimaryKey: %s\nUniques:\n\t%s",
+	return fmt.Sprintf("Name: %s\nColumns:\n\t%s\nPrimaryKey: %s\nUniques:\n\t%s\nChecks:\n\t\t%s\n",
 		table.Name,
 		indent(strings.Join(columns, "\n")),
 		strings.Join(table.PrimaryKey, " "),
-		indent(strings.Join(uniques, "\n")))
+		indent(strings.Join(uniques, "\n")),
+		indent(strings.Join(table.Checks, "\n")),
+	)
 }
 
 // Column is a sql column.

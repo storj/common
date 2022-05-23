@@ -45,7 +45,8 @@ func TestQuery(t *testing.T) {
 				c bigint,
 				PRIMARY KEY (a, x),
 				UNIQUE ( x ),
-				UNIQUE ( a, b )
+				UNIQUE ( a, b ),
+				CONSTRAINT x_not_b CHECK (x != b)
 			);
 			CREATE INDEX users_a_b_c ON users (a, b DESC, c NULLS LAST) WHERE b > 10 AND c != '';
 			CREATE INDEX names_a_x ON names (a ASC, x NULLS FIRST) WHERE b != '';
@@ -68,7 +69,8 @@ func TestQuery(t *testing.T) {
 				c bigint,
 				PRIMARY KEY (a, x),
 				UNIQUE ( x ),
-				UNIQUE ( a, b )
+				UNIQUE ( a, b ),
+				CONSTRAINT x_not_b CHECK (x <> b)
 			);
 			CREATE INDEX users_a_b_c ON users (a, b DESC, c NULLS FIRST) WHERE b > 10 AND c != '';
 			CREATE INDEX names_a_x ON names (a ASC, x NULLS FIRST) STORING(b, c) WHERE b != '';
@@ -115,6 +117,9 @@ func TestQuery(t *testing.T) {
 					Unique: [][]string{
 						{"a", "b"},
 						{"x"},
+					},
+					Checks: []string{
+						"CHECK ((x <> b))",
 					},
 				},
 			},

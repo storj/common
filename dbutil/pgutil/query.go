@@ -139,8 +139,14 @@ func QuerySchema(ctx context.Context, db dbschema.Queryer) (*dbschema.Schema, er
 			case "u": // unique
 				table := schema.EnsureTable(tableName)
 				table.Unique = append(table.Unique, columns)
+			case "c": // unique
+				table := schema.EnsureTable(tableName)
+
+				// workaround for psql vs crdb differences
+				definition = strings.ReplaceAll(definition, "!=", "<>")
+				table.Checks = append(table.Checks, definition)
 			default:
-				return fmt.Errorf("unhandled constraint type %q", constraintType)
+				return errs.New("unhandled constraint type %q", constraintType)
 			}
 		}
 		return rows.Err()
