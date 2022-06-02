@@ -243,3 +243,31 @@ func TestCycle_ManuallyTriggered(t *testing.T) {
 	cycle.Stop()
 	require.NoError(t, group.Wait())
 }
+
+func TestCycle_DelayStart(t *testing.T) {
+	t.Parallel()
+	start := time.Now()
+	cycle := sync2.NewCycle(time.Second)
+	defer cycle.Close()
+	cycle.SetDelayStart()
+
+	ctx := context.Background()
+
+	var ranOnce sync2.Fence
+
+	var group errgroup.Group
+	cycle.Start(ctx, &group, func(ctx context.Context) error {
+		defer ranOnce.Release()
+
+		testDuration := time.Since(start)
+		if testDuration < time.Second {
+			return fmt.Errorf("start was not delayed %v, expected >= 1s", testDuration)
+		}
+		return nil
+	})
+
+	ranOnce.Wait(ctx)
+	cycle.Stop()
+
+	require.NoError(t, group.Wait())
+}
