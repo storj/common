@@ -13,8 +13,9 @@ import (
 // BackgroundDialer returns a net.Dialer configured to try
 // to set the lowest priority socket settings, changing the
 // congestion controller to a background congestion controller if
-// possible or available. On Linux, will use this kernel module if
-// loaded: https://github.com/silviov/TCP-LEDBAT/
+// possible or available. On Linux, will use the kernel module
+// specified by STORJ_SOCKET_LOWPRIO_CTL. On Linux, 'cdg' is
+// recommended, with module parameters use_shadow=0 and use_ineff=0.
 //
 // This is useful for configuring storj.io/uplink.Config.DialContext
 // to be background sockets. Expected usage like:
