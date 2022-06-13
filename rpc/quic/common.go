@@ -9,8 +9,6 @@ package quic
 import (
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/errs"
-
-	"storj.io/common/rpc"
 )
 
 var (
@@ -18,12 +16,7 @@ var (
 
 	// Error is a pkg/quic error.
 	Error = errs.Class("quic")
+
+	// ErrQuicDisabled indicates QUIC has been disabled at build time.
+	ErrQuicDisabled = Error.New("disabled at build time")
 )
-
-const quicConnectorPriority = 20
-
-func init() {
-	rpc.RegisterCandidateConnectorType("quic", func() rpc.Connector {
-		return NewDefaultConnector(nil)
-	}, quicConnectorPriority)
-}
