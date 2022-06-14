@@ -728,5 +728,5 @@ storj.io/common v0.0.0-20220216094301-b27f3c9d69e1 h1:RXm7iMw9GBn/esNrFFaVVRjlU7
 storj.io/common v0.0.0-20220216094301-b27f3c9d69e1/go.mod h1:xW3PPPGBo4bdMtEP9GREnmxQptmJNuDg1tEHcA4zqog=
 storj.io/drpc v0.0.29 h1:Ihd4ls/JQFr0lctefie3iu+3QM4duccCKr9uMzf4sKY=
 storj.io/drpc v0.0.29/go.mod h1:6rcOyR/QQkSTX/9L5ZGtlZaE2PtXTTZl8d+ulSeeYEg=
-storj.io/monkit-jaeger v0.0.0-20220131130547-dc4cb5a0d97a h1:qads+aZlFKm5gUxobfF9s2x8/byPaPPLe2Mz+J82R+k=
-storj.io/monkit-jaeger v0.0.0-20220131130547-dc4cb5a0d97a/go.mod h1:DGEycSjvzE0JqcD3+6IjwPEK6x30oOus6AApXzl7t0s=
+storj.io/monkit-jaeger v0.0.0-20220614151325-3ae4cae696b8 h1:GA8JmeZ6RDUzvQTo7MSkxIfo78tbdCgfdQaB6TaTg6o=
+storj.io/monkit-jaeger v0.0.0-20220614151325-3ae4cae696b8/go.mod h1:DGEycSjvzE0JqcD3+6IjwPEK6x30oOus6AApXzl7t0s=
