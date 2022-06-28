@@ -227,6 +227,9 @@ func (ctx *Context) File(elem ...string) string {
 // Cleanup waits everything to be completed,
 // checks errors and goroutines which haven't ended and tries to cleanup
 // directories.
+//
+// Since Go 1.14 this method isn't required anymore because the
+// https://pkg.go.dev/testing#T.Cleanup addition.
 func (ctx *Context) Cleanup() {
 	pprof.SetGoroutineLabels(ctx.parentctx)
 	ctx.test.Helper()
