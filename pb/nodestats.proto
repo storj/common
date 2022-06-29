@@ -48,8 +48,13 @@ message DailyStorageUsageRequest {
 
 message DailyStorageUsageResponse {
     message StorageUsage {
+        // at_rest_total is the sum of all at_rest_total per each metainfo loop for the day
         double at_rest_total = 1;
+        // timestamp represents one tally day
         google.protobuf.Timestamp timestamp = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+        // interval_end_time represents the timestamp for the last tally run time
+        //  (i.e. last interval_end_time) for the day
+        google.protobuf.Timestamp interval_end_time = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     }
 
     bytes node_id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];

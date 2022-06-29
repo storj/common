@@ -5092,6 +5092,21 @@
                         "value": "false"
                       }
                     ]
+                  },
+                  {
+                    "id": 3,
+                    "name": "interval_end_time",
+                    "type": "google.protobuf.Timestamp",
+                    "options": [
+                      {
+                        "name": "(gogoproto.stdtime)",
+                        "value": "true"
+                      },
+                      {
+                        "name": "(gogoproto.nullable)",
+                        "value": "false"
+                      }
+                    ]
                   }
                 ]
               }
