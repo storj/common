@@ -89,6 +89,8 @@ func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *
 	server.mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 	server.mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
+	server.mux.HandleFunc("/top", ServeTop)
+
 	server.mux.HandleFunc("/debug/run/trace/db", server.collectTraces)
 
 	server.mux.Handle("/mon/", http.StripPrefix("/mon", http.HandlerFunc(

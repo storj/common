@@ -51,4 +51,19 @@ m3{scope="test",field=""} 4
 	if body != m1+m2+m3 && body != m3+m2+m1 && body != m3+m1+m2 && body != m2+m1+m3 && body != m2+m3+m1 {
 		t.Fatalf("string not a combination of m1,m2,m3:\nbody:%q\nm1:%q\nm2:%q\nm3:%q", body, m1, m2, m3)
 	}
+
+	req, err = http.NewRequestWithContext(ctx, "GET", "/top", nil)
+	require.NoError(t, err)
+	rec = httptest.NewRecorder()
+
+	uriCounter := Top.NewTagCounter("http_requests", "uri")
+	uriCounter("/one")
+	uriCounter("/one")
+	uriCounter("/two")
+
+	ServeTop(rec, req)
+
+	s := rec.Body.String()
+	require.Contains(t, s, "http_requests_count uri=/one 2")
+
 }
