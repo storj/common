@@ -1809,6 +1809,11 @@
                 "type": "bytes"
               },
               {
+                "id": 3,
+                "name": "user_agent",
+                "type": "bytes"
+              },
+              {
                 "id": 2,
                 "name": "created_at",
                 "type": "google.protobuf.Timestamp",

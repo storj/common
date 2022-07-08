@@ -84,6 +84,7 @@ message Bucket {
 
 message BucketListItem {
     bytes             name = 1;
+    bytes             user_agent = 3;
 
     google.protobuf.Timestamp created_at = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
