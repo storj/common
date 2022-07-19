@@ -10,17 +10,15 @@ import (
 	"path/filepath"
 
 	"github.com/spacemonkeygo/monkit/v3"
-	"github.com/spacemonkeygo/monkit/v3/environment"
 	"go.uber.org/zap"
 
 	"storj.io/common/identity"
 	"storj.io/common/telemetry"
 	jaeger "storj.io/monkit-jaeger"
-	"storj.io/private/version"
 )
 
 var (
-	tracingEnabled      = flag.Bool("tracing.enabled", false, "whether tracing collector is enabled")
+	tracingEnabled      = flag.Bool("tracing.enabled", true, "whether tracing collector is enabled")
 	tracingSamplingRate = flag.Float64("tracing.sample", 0, "how frequent to sample traces")
 	tracingAgent        = flag.String("tracing.agent-addr", flagDefault("127.0.0.1:5775", "agent.tracing.datasci.storj.io:5775"), "address for jaeger agent")
 	tracingApp          = flag.String("tracing.app", filepath.Base(os.Args[0]), "application name for tracing identification")
@@ -65,8 +63,6 @@ func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	if r == nil {
 		r = monkit.Default
 	}
-	environment.Register(r)
-	r.ScopeNamed("env").Chain(monkit.StatSourceFunc(version.Build.Stats))
 
 	if !*tracingEnabled {
 		log.Debug("Anonymized tracing disabled")
