@@ -39,7 +39,7 @@ func (c *TracingWrapper) NewStream(ctx context.Context, rpc string, enc drpc.Enc
 // trace injects tracing related information into the context.
 func (c *TracingWrapper) trace(ctx context.Context) context.Context {
 	span := monkit.SpanFromCtx(ctx)
-	if span == nil || span.Parent() == nil {
+	if span == nil {
 		return ctx
 	}
 

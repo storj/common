@@ -4,7 +4,9 @@
 // Package rpctracing implements tracing for rpc.
 package rpctracing
 
-import "github.com/spacemonkeygo/monkit/v3"
+import (
+	"github.com/spacemonkeygo/monkit/v3"
+)
 
 const (
 	// TraceID is the key we use to store trace id value into context.

@@ -8,7 +8,7 @@ require (
 	github.com/google/pprof v0.0.0-20211108044417-e9b028704de0
 	github.com/lucas-clemente/quic-go v0.27.1
 	github.com/shopspring/decimal v1.2.0
-	github.com/spacemonkeygo/monkit/v3 v3.0.17
+	github.com/spacemonkeygo/monkit/v3 v3.0.18
 	github.com/stretchr/testify v1.7.0
 	github.com/zeebo/admission/v3 v3.0.3
 	github.com/zeebo/blake3 v0.2.3
