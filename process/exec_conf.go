@@ -156,7 +156,13 @@ func ViperWithCustomConfig(cmd *cobra.Command, loadConfig func(cmd *cobra.Comman
 	if err := vip.BindPFlags(cmd.Flags()); err != nil {
 		return nil, err
 	}
-	vip.SetEnvPrefix("storj")
+
+	prefix := os.Getenv("STORJ_ENV_PREFIX")
+	if prefix == "" {
+		prefix = "storj"
+	}
+
+	vip.SetEnvPrefix(prefix)
 	vip.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	vip.AutomaticEnv()
 
