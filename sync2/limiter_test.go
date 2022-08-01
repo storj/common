@@ -28,7 +28,7 @@ func TestLimiterLimiting(t *testing.T) {
 			atomic.AddInt32(&counter, -1)
 		})
 	}
-	limiter.Wait()
+	limiter.Close()
 }
 
 func TestLimiterCanceling(t *testing.T) {
@@ -66,8 +66,15 @@ func TestLimiterCanceling(t *testing.T) {
 	<-allreturned
 	close(block)
 
-	limiter.Wait()
+	limiter.Close()
 	if counter > Limit {
 		t.Fatal("too many times run")
+	}
+
+	started := limiter.Go(context.Background(), func() {
+		panic("should not start")
+	})
+	if started {
+		t.Fatal("should not start")
 	}
 }
