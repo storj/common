@@ -30,8 +30,8 @@ type Connector struct {
 func NewDefaultConnector(quicConfig *quic.Config) Connector {
 	if quicConfig == nil {
 		quicConfig = &quic.Config{
-			MaxIdleTimeout: 15 * time.Minute,
-			KeepAlive:      true,
+			MaxIdleTimeout:  15 * time.Minute,
+			KeepAlivePeriod: 15 * time.Second,
 		}
 	}
 	return Connector{
