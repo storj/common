@@ -334,11 +334,15 @@ message ObjectGetRequest {
     bytes  encrypted_path = 2;
     int32  version = 3;
 
-    // feature flag used by satellite to determine if uplink is
+    // Feature flag used by satellite to determine if uplink is
     // using RS per object or RS per segment. If flag is set to false
     // satellite will try to get RS from one of existing segments
     // (e.g. first). If flag is set to true satellite won't return RS
     // value in response for this request.
+    //
+    // Redundancy scheme on object level is a legacy feature:
+    // it is always determined per segment.
+    // Therefor, this flag should always be set to true.
     bool redundancy_scheme_per_segment = 4;
 }
 
