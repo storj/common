@@ -6093,6 +6093,11 @@
                 "type": "bytes"
               },
               {
+                "id": 6,
+                "name": "hash_algorithm",
+                "type": "orders.PieceHashAlgorithm"
+              },
+              {
                 "id": 3,
                 "name": "creation_time",
                 "type": "google.protobuf.Timestamp",

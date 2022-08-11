@@ -125,6 +125,9 @@ message PieceHeader {
     FormatVersion format_version = 1;
     // content hash of the piece
     bytes hash = 2;
+    // the algorithm of the hash
+    orders.PieceHashAlgorithm hash_algorithm = 6;
+
     // timestamp when upload occurred, as given by the "timestamp" field in the original orders.PieceHash
     google.protobuf.Timestamp creation_time = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     // signature from uplink over the original orders.PieceHash (the corresponding PieceHashSigning
