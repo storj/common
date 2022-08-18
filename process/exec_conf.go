@@ -278,13 +278,13 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 		}
 
 		logger, atomicLevel, err := NewLogger(getRoot(cmd).Use)
+		if err != nil {
+			return err
+		}
 		if loggerFactory != nil {
 			logger = loggerFactory(logger)
 		}
 
-		if err != nil {
-			return err
-		}
 		commandMtx.Lock()
 		atomicLevels[cmd] = atomicLevel
 		commandMtx.Unlock()
