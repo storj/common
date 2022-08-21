@@ -17,6 +17,7 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"storj.io/private/cfgstruct"
+	"storj.io/private/process/gcloudlogging"
 )
 
 var (
@@ -32,11 +33,15 @@ var (
 	logDev      = flag.Bool("log.development", isDev(), "if true, set logging to development mode")
 	logCaller   = flag.Bool("log.caller", isDev(), "if true, log function filename and line number")
 	logStack    = flag.Bool("log.stack", isDev(), "if true, log stack traces")
-	logEncoding = flag.String("log.encoding", "", "configures log encoding. can either be 'console', 'json', or 'pretty'.")
+	logEncoding = flag.String("log.encoding", "", "configures log encoding. can either be 'console', 'json', 'pretty', or 'gcloudlogging'.")
 	logOutput   = flag.String("log.output", "stderr", "can be stdout, stderr, or a filename")
 
 	defaultLogEncoding = map[string]string{
 		"uplink": "pretty",
+	}
+
+	defaultLogEncoderConfig = map[string]zapcore.EncoderConfig{
+		"gcloudlogging": gcloudlogging.NewEncoderConfig(),
 	}
 )
 
@@ -55,6 +60,12 @@ func init() {
 	})
 	if err != nil {
 		panic("Unable to register pretty encoder: " + err.Error())
+	}
+	err = zap.RegisterEncoder("gcloudlogging", func(config zapcore.EncoderConfig) (zapcore.Encoder, error) {
+		return gcloudlogging.NewEncoder(config), nil
+	})
+	if err != nil {
+		panic("Unable to register gcloudlogging encoder: " + err.Error())
 	}
 }
 
@@ -90,13 +101,13 @@ func NewLoggerWithOutputPathsAndAtomicLevel(processName string, outputPaths ...s
 	}
 
 	atomicLevel := zap.NewAtomicLevelAt(*logLevel)
-	logger, err := zap.Config{
-		Level:             atomicLevel,
-		Development:       *logDev,
-		DisableCaller:     !*logCaller,
-		DisableStacktrace: !*logStack,
-		Encoding:          encoding,
-		EncoderConfig: zapcore.EncoderConfig{
+
+	var encoderConfig zapcore.EncoderConfig
+
+	if v, ok := defaultLogEncoderConfig[*logEncoding]; ok {
+		encoderConfig = v
+	} else { // fallback to default config
+		encoderConfig = zapcore.EncoderConfig{
 			TimeKey:        timeKey,
 			LevelKey:       "L",
 			NameKey:        "N",
@@ -108,9 +119,18 @@ func NewLoggerWithOutputPathsAndAtomicLevel(processName string, outputPaths ...s
 			EncodeTime:     zapcore.ISO8601TimeEncoder,
 			EncodeDuration: zapcore.StringDurationEncoder,
 			EncodeCaller:   zapcore.ShortCallerEncoder,
-		},
-		OutputPaths:      outputPaths,
-		ErrorOutputPaths: outputPaths,
+		}
+	}
+
+	logger, err := zap.Config{
+		Level:             atomicLevel,
+		Development:       *logDev,
+		DisableCaller:     !*logCaller,
+		DisableStacktrace: !*logStack,
+		Encoding:          encoding,
+		EncoderConfig:     encoderConfig,
+		OutputPaths:       outputPaths,
+		ErrorOutputPaths:  outputPaths,
 	}.Build()
 
 	return logger, &atomicLevel, err
