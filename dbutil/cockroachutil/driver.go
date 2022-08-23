@@ -82,6 +82,7 @@ type connAll interface {
 	driver.ConnBeginTx
 	driver.ExecerContext
 	driver.QueryerContext
+	driver.Pinger
 }
 
 // cockroachConn is a connection to a database. It is not used concurrently by multiple goroutines.
@@ -98,6 +99,11 @@ func (c *cockroachConn) StdlibConn() *stdlib.Conn { return c.underlying }
 // Close closes the cockroachConn.
 func (c *cockroachConn) Close() error {
 	return c.underlying.Close()
+}
+
+// Ping checks if the cockroachConn is reachable.
+func (c *cockroachConn) Ping(ctx context.Context) error {
+	return c.underlying.Ping(ctx)
 }
 
 // ExecContext (when implemented by a driver.Conn) provides ExecContext
