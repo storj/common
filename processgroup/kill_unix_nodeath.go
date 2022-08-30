@@ -1,8 +1,8 @@
-// Copyright (C) 2019 Storj Labs, Inc.
+// Copyright (C) 2022 Storj Labs, Inc.
 // See LICENSE for copying information
 
-//go:build linux || freebsd
-// +build linux freebsd
+//go:build darwin || netbsd || openbsd
+// +build darwin netbsd openbsd
 
 package processgroup
 
@@ -15,8 +15,7 @@ import (
 // Setup sets up exec.Cmd such that it can be properly terminated.
 func Setup(c *exec.Cmd) {
 	c.SysProcAttr = &syscall.SysProcAttr{
-		Setpgid:   true,
-		Pdeathsig: syscall.SIGKILL,
+		Setpgid: true,
 	}
 }
 
