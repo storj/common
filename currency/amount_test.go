@@ -106,6 +106,11 @@ func TestAmountJSONMarshal(t *testing.T) {
 		JSON   string
 	}{
 		{
+			// empty value
+			Amount: Amount{},
+			JSON:   `{"value":"0","currency":""}`,
+		},
+		{
 			Amount: AmountFromBaseUnits(100000000000, StorjToken),
 			JSON:   fmt.Sprintf(`{"value":"1000","currency":"%s"}`, StorjToken.Symbol()),
 		},
@@ -135,6 +140,11 @@ func TestAmountJSONUnmarshal(t *testing.T) {
 		BaseUnits int64
 		Currency  *Currency
 	}{
+		{
+			JSON:      `{"value":"0","currency":""}`,
+			BaseUnits: 0,
+			Currency:  nil,
+		},
 		{
 			JSON:      fmt.Sprintf(`{"value":"100","currency":"%s"}`, StorjToken.Symbol()),
 			BaseUnits: 10000000000,

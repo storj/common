@@ -150,6 +150,11 @@ func (a *Amount) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	if amountJSON.Value.IsZero() && amountJSON.Currency == "" {
+		*a = Amount{}
+		return nil
+	}
+
 	curr, err := FromSymbol(amountJSON.Currency)
 	if err != nil {
 		return err
@@ -161,6 +166,10 @@ func (a *Amount) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON marshals amount into json.
 func (a Amount) MarshalJSON() ([]byte, error) {
+	if a == (Amount{}) {
+		return json.Marshal(amountJSON{})
+	}
+
 	amountJSON := amountJSON{
 		Value:    a.AsDecimal(),
 		Currency: a.currency.symbol,
