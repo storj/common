@@ -9,6 +9,7 @@ import (
 	"github.com/zeebo/errs"
 
 	"storj.io/common/pb"
+	"storj.io/common/rpc/rpctracing"
 	"storj.io/common/storj"
 )
 
@@ -45,7 +46,9 @@ func SignOrderLimit(ctx context.Context, satellite Signer, unsigned *pb.OrderLim
 // SignUplinkOrder signs the order using the specified signer.
 // Signer is an uplink.
 func SignUplinkOrder(ctx context.Context, privateKey storj.PiecePrivateKey, unsigned *pb.Order) (_ *pb.Order, err error) {
+	ctx = rpctracing.WithoutDistributedTracing(ctx)
 	defer mon.Task()(&ctx)(&err)
+
 	bytes, err := EncodeOrder(ctx, unsigned)
 	if err != nil {
 		return nil, Error.Wrap(err)
