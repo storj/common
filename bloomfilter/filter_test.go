@@ -21,7 +21,7 @@ func TestNoFalsePositive(t *testing.T) {
 	pieceIDs := generateTestIDs(numberOfPieces)
 
 	for _, ratio := range []float32{0.5, 1, 2} {
-		size := int(numberOfPieces * ratio)
+		size := int64(numberOfPieces * ratio)
 		filter := bloomfilter.NewOptimal(size, 0.1)
 		for _, pieceID := range pieceIDs {
 			filter.Add(pieceID)
@@ -33,9 +33,9 @@ func TestNoFalsePositive(t *testing.T) {
 }
 
 func TestBytes(t *testing.T) {
-	for _, count := range []int{0, 100, 1000, 10000} {
+	for _, count := range []int64{0, 100, 1000, 10000} {
 		filter := bloomfilter.NewOptimal(count, 0.1)
-		for i := 0; i < count; i++ {
+		for i := int64(0); i < count; i++ {
 			id := testrand.PieceID()
 			filter.Add(id)
 		}
@@ -73,7 +73,7 @@ func generateTestIDs(n int) []storj.PieceID {
 
 func BenchmarkFilterAdd(b *testing.B) {
 	ids := generateTestIDs(100000)
-	filter := bloomfilter.NewOptimal(len(ids), 0.1)
+	filter := bloomfilter.NewOptimal(int64(len(ids)), 0.1)
 
 	b.Run("Add", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
@@ -99,12 +99,12 @@ func TestApproximateFalsePositives(t *testing.T) {
 	const validation = 1000
 
 	for _, p := range []float64{0.01, 0.05, 0.1, 0.2, 0.3} {
-		for _, n := range []int{1000, 10000, 100000, 1000000} {
+		for _, n := range []int64{1000, 10000, 100000, 1000000} {
 			fpp := []float64{}
 
 			for k := 0; k < measurements; k++ {
 				filter := bloomfilter.NewOptimal(n, p)
-				for i := 0; i < n; i++ {
+				for i := int64(0); i < n; i++ {
 					filter.Add(testrand.PieceID())
 				}
 

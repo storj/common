@@ -40,7 +40,7 @@ func newExplicit(seed, hashCount byte, sizeInBytes int) *Filter {
 }
 
 // NewOptimal returns a filter based on expected element count and false positive rate.
-func NewOptimal(expectedElements int, falsePositiveRate float64) *Filter {
+func NewOptimal(expectedElements int64, falsePositiveRate float64) *Filter {
 	hashCount, sizeInBytes := getHashCountAndSize(expectedElements, falsePositiveRate)
 	seed := byte(rand.Intn(255))
 
@@ -48,7 +48,7 @@ func NewOptimal(expectedElements int, falsePositiveRate float64) *Filter {
 }
 
 // NewOptimalMaxSize returns a filter based on expected element count and false positive rate, capped at a maximum size in bytes.
-func NewOptimalMaxSize(expectedElements int, falsePositiveRate float64, maxSize memory.Size) *Filter {
+func NewOptimalMaxSize(expectedElements int64, falsePositiveRate float64, maxSize memory.Size) *Filter {
 	hashCount, sizeInBytes := getHashCountAndSize(expectedElements, falsePositiveRate)
 	seed := byte(rand.Intn(255))
 
@@ -59,7 +59,7 @@ func NewOptimalMaxSize(expectedElements int, falsePositiveRate float64, maxSize 
 	return newExplicit(seed, byte(hashCount), sizeInBytes)
 }
 
-func getHashCountAndSize(expectedElements int, falsePositiveRate float64) (hashCount, size int) {
+func getHashCountAndSize(expectedElements int64, falsePositiveRate float64) (hashCount, size int) {
 	// calculation based on https://en.wikipedia.org/wiki/Bloom_filter#Optimal_number_of_hash_functions
 	bitsPerElement := -1.44 * math.Log2(falsePositiveRate)
 	hashCount = int(math.Ceil(bitsPerElement * math.Log(2)))
