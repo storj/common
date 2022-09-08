@@ -11,6 +11,7 @@ import (
 
 	"github.com/zeebo/errs"
 
+	"storj.io/common/experiment"
 	"storj.io/common/peertls/tlsopts"
 	"storj.io/common/rpc/rpcpool"
 	"storj.io/common/rpc/rpctracing"
@@ -215,7 +216,7 @@ func (d Dialer) dialPool(ctx context.Context, key string, dialer rpcpool.Dialer)
 
 	return &Conn{
 		state: *state,
-		Conn:  rpctracing.NewTracingWrapper(conn),
+		Conn:  experiment.NewConnWrapper(rpctracing.NewTracingWrapper(conn)),
 	}, nil
 }
 
