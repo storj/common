@@ -59,14 +59,14 @@ type TCPConnector struct {
 // If no dialer is predefined, net.Dialer is used by default.
 //
 // Deprecated: Use NewHybridConnector wherever possible instead.
-func NewDefaultTCPConnector(dialer *ConnectorAdapter) TCPConnector {
+func NewDefaultTCPConnector(dialer *ConnectorAdapter) *TCPConnector {
 	if dialer == nil {
 		dialer = &ConnectorAdapter{
 			DialContext: new(net.Dialer).DialContext,
 		}
 	}
 
-	return TCPConnector{
+	return &TCPConnector{
 		TCPUserTimeout:    15 * time.Minute,
 		SendDRPCMuxHeader: true,
 		dialer:            dialer,
@@ -74,7 +74,7 @@ func NewDefaultTCPConnector(dialer *ConnectorAdapter) TCPConnector {
 }
 
 // DialContext creates a encrypted tcp connection using tls.
-func (t TCPConnector) DialContext(ctx context.Context, tlsConfig *tls.Config, address string) (_ ConnectorConn, err error) {
+func (t *TCPConnector) DialContext(ctx context.Context, tlsConfig *tls.Config, address string) (_ ConnectorConn, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	rawConn, err := t.DialContextUnencrypted(ctx, address)
@@ -108,7 +108,7 @@ func (t TCPConnector) DialContext(ctx context.Context, tlsConfig *tls.Config, ad
 }
 
 // DialContextUnencrypted creates a raw tcp connection.
-func (t TCPConnector) DialContextUnencrypted(ctx context.Context, address string) (_ net.Conn, err error) {
+func (t *TCPConnector) DialContextUnencrypted(ctx context.Context, address string) (_ net.Conn, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	conn, err := t.dialer.DialContext(ctx, "tcp", address)
