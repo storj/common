@@ -21,9 +21,9 @@ require (
 	go.uber.org/zap v1.14.1
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	gopkg.in/yaml.v2 v2.4.0
-	storj.io/common v0.0.0-20220802175255-aae0c09ec9d4
+	storj.io/common v0.0.0-20220915180246-7826900e2b06
 	storj.io/drpc v0.0.32
-	storj.io/monkit-jaeger v0.0.0-20220726162929-c3a9898b5bca
+	storj.io/monkit-jaeger v0.0.0-20220915074555-d100d7589f41
 )
 
 require (
