@@ -55,7 +55,7 @@ var (
 	// cents are not supported.
 	USDollars = New("US dollars", "USD", 2)
 	// USDollarsMicro is the currency of United States dollars, where fractional
-	// cents are supported with 2 decimal places.
+	// cents are supported with 4 decimal places.
 	USDollarsMicro = New("US dollars micro", "USDMicro", 6)
 	// Bitcoin is the currency for the well-known cryptocurrency Bitcoin
 	// (a.k.a. BTC).
