@@ -8,6 +8,7 @@ require (
 	github.com/jackc/pgtype v1.10.0
 	github.com/jackc/pgx/v4 v4.15.0
 	github.com/jtolds/tracetagger/v2 v2.0.0-rc5
+	github.com/jtolio/eventkit v0.0.0-20221004135224-074cf276595b
 	github.com/mattn/go-sqlite3 v1.14.12
 	github.com/spacemonkeygo/monkit/v3 v3.0.19
 	github.com/spf13/cast v1.3.1
@@ -19,7 +20,7 @@ require (
 	github.com/zeebo/errs v1.3.0
 	github.com/zeebo/structs v1.0.2
 	go.uber.org/zap v1.14.1
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
+	golang.org/x/sync v0.0.0-20220819030929-7fc1605a5dde
 	gopkg.in/yaml.v2 v2.4.0
 	storj.io/common v0.0.0-20220915180246-7826900e2b06
 	storj.io/drpc v0.0.32
@@ -69,7 +70,7 @@ require (
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/genproto v0.0.0-20200115191322-ca5a22157cba // indirect
 	google.golang.org/grpc v1.27.1 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.51.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )

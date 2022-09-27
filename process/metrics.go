@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jtolio/eventkit"
 	monkit "github.com/spacemonkeygo/monkit/v3"
 	"github.com/spacemonkeygo/monkit/v3/environment"
 	"github.com/zeebo/admission/v3/admproto"
@@ -25,8 +26,11 @@ import (
 )
 
 var (
-	metricInterval       = flag.Duration("metrics.interval", telemetry.DefaultInterval, "how frequently to send up telemetry. Ignored for certain applications.")
-	metricCollector      = flag.String("metrics.addr", flagDefault("", "collectora.storj.io:9000"), "address(es) to send telemetry to (comma-separated)")
+	metricInterval  = flag.Duration("metrics.interval", telemetry.DefaultInterval, "how frequently to send up telemetry. Ignored for certain applications.")
+	metricCollector = flag.String("metrics.addr", flagDefault("", "collectora.storj.io:9000"), "address(es) to send telemetry to (comma-separated)")
+
+	metricEventCollector = flag.String("metrics.event-addr", flagDefault("", "eventkitd.datasci.storj.io:9002"), "address(es) to send telemetry to (comma-separated)")
+
 	metricApp            = flag.String("metrics.app", filepath.Base(os.Args[0]), "application name for telemetry identification. Ignored for certain applications.")
 	metricAppSuffix      = flag.String("metrics.app-suffix", flagDefault("-dev", "-release"), "application suffix. Ignored for certain applications.")
 	metricInstancePrefix = flag.String("metrics.instance-prefix", "", "instance id prefix")
@@ -75,11 +79,6 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	environment.Register(r)
 	r.ScopeNamed("env").Chain(monkit.StatSourceFunc(version.Build.Stats))
 
-	if *metricCollector == "" || calcMetricInterval() == 0 {
-		log.Debug("Telemetry disabled")
-		return nil
-	}
-
 	if instanceID == "" {
 		instanceID = telemetry.DefaultInstanceID()
 	}
@@ -88,14 +87,19 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 		instanceID = instanceID[:maxInstanceLength]
 	}
 
-	log.Info("Telemetry enabled", zap.String("instance ID", instanceID))
-
 	appName := hardcodedAppName
 	if appName != "" {
 		appName += flagDefault("-dev", "-release")
 	} else {
 		appName = *metricApp + *metricAppSuffix
 	}
+
+	if *metricCollector == "" || calcMetricInterval() == 0 {
+		log.Debug("Telemetry disabled")
+		return nil
+	}
+
+	log.Info("Telemetry enabled", zap.String("instance ID", instanceID))
 
 	for _, address := range strings.Split(*metricCollector, ",") {
 		c, err := telemetry.NewClient(address, telemetry.ClientOpts{
@@ -111,6 +115,27 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 		clients = append(clients, c)
 		go c.Run(ctx)
 	}
+
+	if *metricEventCollector != "" {
+		eventRegistry := eventkit.DefaultRegistry
+
+		for _, address := range strings.Split(*metricEventCollector, ",") {
+			c := eventkit.NewUDPClient(
+				appName,
+				flagDefault(
+					version.Build.Timestamp.Format(time.RFC3339),
+					version.Build.Version.String()),
+				instanceID,
+				address,
+			)
+			eventRegistry.AddDestination(c)
+			go c.Run(ctx)
+		}
+
+		log.Info("Event collection enabled", zap.String("instance ID", instanceID))
+		eventRegistry.Scope("init").Event("init")
+	}
+
 	return nil
 }
 
