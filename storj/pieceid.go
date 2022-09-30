@@ -4,12 +4,8 @@
 package storj
 
 import (
-	"crypto/hmac"
 	"crypto/rand"
-	"crypto/sha512"
 	"database/sql/driver"
-	"encoding/binary"
-	"hash"
 
 	"github.com/zeebo/errs"
 )
@@ -68,13 +64,6 @@ func (id PieceID) Derive(storagenodeID NodeID, pieceNum int32) PieceID {
 	return id.Deriver().Derive(storagenodeID, pieceNum)
 }
 
-// Deriver creates piece ID dervier for multiple derive operations.
-func (id PieceID) Deriver() PieceIDDeriver {
-	return PieceIDDeriver{
-		mac: hmac.New(sha512.New, id.Bytes()),
-	}
-}
-
 // Marshal serializes a piece ID.
 func (id PieceID) Marshal() ([]byte, error) {
 	return id.Bytes(), nil
@@ -127,25 +116,4 @@ func (id *PieceID) Scan(src interface{}) (err error) {
 	n, err := PieceIDFromBytes(b)
 	*id = n
 	return err
-}
-
-// PieceIDDeriver can be used to for multiple derivation from the same PieceID
-// without need to initialize mac for each Derive call.
-type PieceIDDeriver struct {
-	mac hash.Hash
-}
-
-// Derive a new PieceID from the piece ID, the given storage node ID and piece number.
-// Initial mac is created from piece ID once while creating PieceDeriver and just
-// reset to initial state at the beginning of each call.
-func (pd PieceIDDeriver) Derive(storagenodeID NodeID, pieceNum int32) PieceID {
-	pd.mac.Reset()
-
-	_, _ = pd.mac.Write(storagenodeID.Bytes()) // on hash.Hash write never returns an error
-	num := make([]byte, 4)
-	binary.BigEndian.PutUint32(num, uint32(pieceNum))
-	_, _ = pd.mac.Write(num) // on hash.Hash write never returns an error
-	var derived PieceID
-	copy(derived[:], pd.mac.Sum(nil))
-	return derived
 }
