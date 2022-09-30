@@ -11,6 +11,7 @@ import (
 
 	"storj.io/common/identity/testidentity"
 	"storj.io/common/storj"
+	"storj.io/common/testrand"
 )
 
 func TestPieceID_PieceDeriver(t *testing.T) {
@@ -46,14 +47,32 @@ func BenchmarkDeriver(b *testing.B) {
 
 	b.Run("Derive", func(b *testing.B) {
 		for k := 0; k < b.N; k++ {
-			_ = pieceID.Derive(n0, 0)
+			sink = pieceID.Derive(n0, 0)
 		}
 	})
 
 	b.Run("Deriver", func(b *testing.B) {
 		deriver := pieceID.Deriver()
 		for k := 0; k < b.N; k++ {
-			_ = deriver.Derive(n0, 0)
+			sink = deriver.Derive(n0, 0)
 		}
 	})
+}
+
+var sink storj.PieceID
+
+func BenchmarkDeriver100(b *testing.B) {
+	nodes := make([]storj.NodeID, 100)
+	for i := range nodes {
+		nodes[i] = testrand.NodeID()
+	}
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		pieceID := storj.PieceID{byte(i), byte(i >> 8)}
+		deriver := pieceID.Deriver()
+		for i := range nodes {
+			sink = deriver.Derive(nodes[i], int32(i))
+		}
+	}
 }
