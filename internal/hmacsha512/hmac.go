@@ -22,7 +22,10 @@ func New(key []byte) Partial {
 // Init initializes the state with the specified key.
 func (hm *Partial) Init(key []byte) {
 	if len(key) > BlockSize {
-		panic("key too large")
+		hm.outer.Reset()
+		hm.outer.Write(key)
+		newKey := hm.outer.FinishAndSum()
+		key = newKey[:]
 	}
 
 	hm.outer.Reset()

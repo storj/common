@@ -26,17 +26,17 @@ var sinkBytes []byte
 
 func TestRandom(t *testing.T) {
 	for i := 0; i < 10; i++ {
-		pieceID := PieceID{}
+		key := make([]byte, 21*(i+1))
 		node1 := NodeID{}
 		node2 := NodeID{}
-		_, _ = rand.Read(pieceID[:])
+		_, _ = rand.Read(key)
 		_, _ = rand.Read(node1[:])
 		_, _ = rand.Read(node2[:])
 
 		var opt hmacsha512.Partial
-		opt.Init(pieceID[:])
+		opt.Init(key)
 
-		std := hmac.New(sha512.New, pieceID[:])
+		std := hmac.New(sha512.New, key)
 
 		opt.Write(node1[:])
 		opt.Write([]byte{1, 0, 0, 0})

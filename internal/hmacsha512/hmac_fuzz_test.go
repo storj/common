@@ -22,11 +22,6 @@ func FuzzPartial(f *testing.F) {
 	f.Add(pid[:], []byte{1, 2, 3, 4})
 
 	f.Fuzz(func(t *testing.T, key []byte, data []byte) {
-		if len(key) >= hmacsha512.BlockSize {
-			t.Skip()
-			return
-		}
-
 		var local hmacsha512.Partial
 		local.Init(key)
 		local.Write(data)
