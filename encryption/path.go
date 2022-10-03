@@ -4,13 +4,12 @@
 package encryption
 
 import (
-	"crypto/hmac"
-	"crypto/sha512"
 	"encoding/base64"
 	"strings"
 
 	"github.com/zeebo/errs"
 
+	"storj.io/common/internal/hmacsha512"
 	"storj.io/common/paths"
 	"storj.io/common/storj"
 )
@@ -320,14 +319,11 @@ func encryptPathComponent(comp string, cipher storj.CipherSuite, key *storj.Key)
 	}
 
 	// use the derived key to derive the nonce
-	mac := hmac.New(sha512.New, derivedKey[:])
-	_, err = mac.Write([]byte("nonce"))
-	if err != nil {
-		return "", Error.Wrap(err)
-	}
-
+	mac := hmacsha512.New(derivedKey[:])
+	mac.Write([]byte("nonce"))
 	nonce := new(storj.Nonce)
-	copy(nonce[:], mac.Sum(nil))
+	sum := mac.SumAndReset()
+	copy(nonce[:], sum[:])
 
 	// encrypt the path components with the parent's key and the derived nonce
 	cipherText, err := Encrypt([]byte(comp), cipher, key, nonce)
