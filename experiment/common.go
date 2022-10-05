@@ -6,6 +6,7 @@ package experiment
 
 import (
 	"context"
+	"strings"
 )
 
 type key int
@@ -16,21 +17,40 @@ const (
 )
 
 // WithExperiment registers the feature flag of an ongoing experiment.
-func WithExperiment(ctx context.Context, experiment string) context.Context {
-	if experiment != "" {
-		return context.WithValue(ctx, contextKey, experiment)
+func WithExperiment(ctx context.Context, exp string) context.Context {
+	existingValue := ctx.Value(contextKey)
+	if existingValue != nil {
+		if s, ok := existingValue.(string); ok {
+			return context.WithValue(ctx, contextKey, s+","+exp)
+		}
 	}
-	return ctx
+	return context.WithValue(ctx, contextKey, exp)
 }
 
-// GetExperiment returns the registered feature flag.
-func GetExperiment(ctx context.Context) string {
+// GetExperiment returns the registered feature flags.
+func GetExperiment(ctx context.Context) []string {
 	value := ctx.Value(contextKey)
 	if value == nil {
-		return ""
+		return []string{}
 	}
 	if s, ok := value.(string); ok {
-		return s
+		return strings.Split(s, ",")
 	}
-	return ""
+	return []string{}
+}
+
+// HasExperiment checks if the experiment registered to the comma separated list.
+func HasExperiment(ctx context.Context, exp string) bool {
+	value := ctx.Value(contextKey)
+	if value == nil {
+		return false
+	}
+	if s, ok := value.(string); ok {
+		for _, e := range strings.Split(s, ",") {
+			if e == exp {
+				return true
+			}
+		}
+	}
+	return false
 }
