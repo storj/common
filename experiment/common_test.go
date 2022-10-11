@@ -13,17 +13,17 @@ import (
 
 func TestGetExperimentInContext(t *testing.T) {
 	ctx := context.Background()
-	require.False(t, HasExperiment(ctx, "first"))
+	require.False(t, Has(ctx, "first"))
 
-	ctx = WithExperiment(ctx, "first")
-	require.True(t, HasExperiment(ctx, "first"))
-	require.False(t, HasExperiment(ctx, "second"))
+	ctx = With(ctx, "first")
+	require.True(t, Has(ctx, "first"))
+	require.False(t, Has(ctx, "second"))
 
-	ctx = WithExperiment(ctx, "second")
-	require.True(t, HasExperiment(ctx, "first"))
-	require.True(t, HasExperiment(ctx, "second"))
+	ctx = With(ctx, "second")
+	require.True(t, Has(ctx, "first"))
+	require.True(t, Has(ctx, "second"))
 
-	exps := GetExperiment(ctx)
+	exps := Get(ctx)
 	sort.Strings(exps)
 	require.Equal(t, []string{"first", "second"}, exps)
 

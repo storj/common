@@ -16,8 +16,8 @@ const (
 	drpcKey    string = "experiment"
 )
 
-// WithExperiment registers the feature flag of an ongoing experiment.
-func WithExperiment(ctx context.Context, exp string) context.Context {
+// With registers the feature flag of an ongoing experiment.
+func With(ctx context.Context, exp string) context.Context {
 	existingValue := ctx.Value(contextKey)
 	if existingValue != nil {
 		if s, ok := existingValue.(string); ok {
@@ -27,8 +27,8 @@ func WithExperiment(ctx context.Context, exp string) context.Context {
 	return context.WithValue(ctx, contextKey, exp)
 }
 
-// GetExperiment returns the registered feature flags.
-func GetExperiment(ctx context.Context) []string {
+// Get returns the registered feature flags.
+func Get(ctx context.Context) []string {
 	value := ctx.Value(contextKey)
 	if value == nil {
 		return []string{}
@@ -39,8 +39,8 @@ func GetExperiment(ctx context.Context) []string {
 	return []string{}
 }
 
-// HasExperiment checks if the experiment registered to the comma separated list.
-func HasExperiment(ctx context.Context, exp string) bool {
+// Has checks if the experiment registered to the comma separated list.
+func Has(ctx context.Context, exp string) bool {
 	value := ctx.Value(contextKey)
 	if value == nil {
 		return false
