@@ -18,6 +18,7 @@ import (
 
 	"github.com/blang/semver"
 	"github.com/zeebo/errs"
+	"go.uber.org/zap"
 
 	"storj.io/common/pb"
 	"storj.io/common/storj"
@@ -49,6 +50,7 @@ type Info struct {
 	CommitHash string    `json:"commitHash,omitempty"`
 	Version    SemVer    `json:"version"`
 	Release    bool      `json:"release,omitempty"`
+	Modified   bool      `json:"modified,omitempty"`
 }
 
 // SemVer represents a semantic version.
@@ -230,6 +232,39 @@ func (info Info) Proto() (*pb.NodeVersion, error) {
 	}, nil
 }
 
+// String returns with new line separated, printable information for humans.
+func (info Info) String() (out string) {
+	if info.Release {
+		out += fmt.Sprintln("Release build")
+	} else {
+		out += fmt.Sprintln("Development build")
+	}
+
+	if !info.Version.IsZero() {
+		out += fmt.Sprintln("Version:", info.Version.String())
+	}
+	if !info.Timestamp.IsZero() {
+		out += fmt.Sprintln("Build timestamp:", info.Timestamp.Format(time.RFC822))
+	}
+	if info.CommitHash != "" {
+		out += fmt.Sprintln("Git commit:", info.CommitHash)
+	}
+	if info.Modified {
+		out += fmt.Sprintln("Modified (dirty): true")
+	}
+	return out
+}
+
+// Log prints out the version information to a zap compatible log.
+func (info Info) Log(logger func(msg string, fields ...zap.Field)) {
+	logger("Version info",
+		zap.Stringer("Version", info.Version.Version),
+		zap.String("Commit Hash", info.CommitHash),
+		zap.Stringer("Build Timestamp", info.Timestamp),
+		zap.Bool("Release Build", info.Release),
+		zap.Bool("Modified", info.Modified))
+}
+
 // PercentageToCursor calculates the cursor value for the given percentage of nodes which should update.
 func PercentageToCursor(pct int) RolloutBytes {
 	// NB: convert the max value to a number, multiply by the percentage, convert back.
@@ -294,18 +329,19 @@ func ShouldUpdateVersion(currentVersion SemVer, nodeID storj.NodeID, requested P
 	return Version{}, "New version is being rolled out but hasn't made it to this node yet", nil
 }
 
-func init() {
+func getInfoFromBuildTags() Info {
 	if buildVersion == "" && buildTimestamp == "" && buildCommitHash == "" && buildRelease == "" {
-		return
+		return Info{}
 	}
 	timestamp, err := strconv.ParseInt(buildTimestamp, 10, 64)
 	if err != nil {
 		panic(VerError.Wrap(err))
 	}
-	Build = Info{
+	info := Info{
 		Timestamp:  time.Unix(timestamp, 0),
 		CommitHash: buildCommitHash,
 		Release:    strings.ToLower(buildRelease) == "true",
+		Modified:   strings.Contains(buildCommitHash, "dirty"),
 	}
 
 	sv, err := NewSemVer(buildVersion)
@@ -313,9 +349,10 @@ func init() {
 		panic(err)
 	}
 
-	Build.Version = sv
+	info.Version = sv
 
 	if Build.Timestamp.Unix() == 0 || Build.CommitHash == "" {
 		Build.Release = false
 	}
+	return info
 }

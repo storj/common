@@ -15,7 +15,6 @@ import (
 	"strings"
 	"sync"
 	"syscall"
-	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/spacemonkeygo/monkit/v3/collect"
@@ -421,20 +420,6 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 }
 
 func cmdVersion(cmd *cobra.Command, args []string) (err error) {
-	if version.Build.Release {
-		fmt.Println("Release build")
-	} else {
-		fmt.Println("Development build")
-	}
-
-	if !version.Build.Version.IsZero() {
-		fmt.Println("Version:", version.Build.Version.String())
-	}
-	if !version.Build.Timestamp.IsZero() {
-		fmt.Println("Build timestamp:", version.Build.Timestamp.Format(time.RFC822))
-	}
-	if version.Build.CommitHash != "" {
-		fmt.Println("Git commit:", version.Build.CommitHash)
-	}
-	return err
+	fmt.Println(version.Build)
+	return nil
 }
