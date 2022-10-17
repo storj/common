@@ -163,7 +163,7 @@ func collapsePrefixes(mac *macaroon.Macaroon) ([]*macaroon.Caveat_Path, bool, er
 	var prefixes []*macaroon.Caveat_Path
 	for _, cavData := range mac.Caveats() {
 		var cav macaroon.Caveat
-		if err := pb.Unmarshal(cavData, &cav); err != nil {
+		if err := cav.UnmarshalBinary(cavData); err != nil {
 			return nil, false, err
 		}
 		if len(cav.AllowedPaths) > 0 {

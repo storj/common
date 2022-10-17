@@ -135,8 +135,7 @@ func (a *APIKey) Check(ctx context.Context, secret []byte, action Action, revoke
 	caveats := a.mac.Caveats()
 	for _, cavbuf := range caveats {
 		var cav Caveat
-		err := pb.Unmarshal(cavbuf, &cav)
-		if err != nil {
+		if err := cav.UnmarshalBinary(cavbuf); err != nil {
 			return ErrFormat.New("invalid caveat format")
 		}
 		if !cav.Allows(action) {
@@ -177,8 +176,7 @@ func (a *APIKey) GetAllowedBuckets(ctx context.Context, action Action) (allowed 
 	// intersection of all of the buckets in the allowed paths.
 	for _, cavbuf := range a.mac.Caveats() {
 		var cav Caveat
-		err := pb.Unmarshal(cavbuf, &cav)
-		if err != nil {
+		if err := cav.UnmarshalBinary(cavbuf); err != nil {
 			return AllowedBuckets{}, ErrFormat.New("invalid caveat format: %v", err)
 		}
 		if !cav.Allows(action) {

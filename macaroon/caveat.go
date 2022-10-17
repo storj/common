@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"storj.io/common/encryption"
+	"storj.io/common/pb"
 	"storj.io/common/storj"
 )
 
@@ -50,4 +51,19 @@ func (cp *Caveat_Path) MarshalJSON() ([]byte, error) {
 		Bucket:              string(cp.Bucket),
 		EncryptedPathPrefix: prefix,
 	})
+}
+
+// ParseCaveat parses binary encoded caveat.
+func ParseCaveat(data []byte) (*Caveat, error) {
+	var caveat Caveat
+	err := caveat.UnmarshalBinary(data)
+	if err != nil {
+		return nil, err
+	}
+	return &caveat, nil
+}
+
+// UnmarshalBinary implements encoding.BinaryUnmarshaler.
+func (caveat *Caveat) UnmarshalBinary(data []byte) error {
+	return pb.Unmarshal(data, caveat)
 }
