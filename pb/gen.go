@@ -99,6 +99,15 @@ func main() {
 		check(err)
 	}
 
+	{
+		// also generate grant, which depends on the protobuf files in this folder
+		out, err := exec.Command("go", "generate", "storj.io/common/grant/...").CombinedOutput()
+		if len(out) > 0 {
+			fmt.Println(string(out))
+		}
+		check(err)
+	}
+
 	{ // regenerate proto.lock file
 		cmd := exec.Command(*protolock, "commit")
 		cmd.Dir = ".."

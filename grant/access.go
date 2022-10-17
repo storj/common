@@ -10,10 +10,11 @@ import (
 
 	"storj.io/common/base58"
 	"storj.io/common/encryption"
+	"storj.io/common/grant/internal/pb"
 	"storj.io/common/macaroon"
 	"storj.io/common/paths"
-	"storj.io/common/pb"
 	"storj.io/common/storj"
+	"storj.io/picobuf"
 )
 
 // An Access Grant contains everything to access a project and specific buckets.
@@ -36,8 +37,8 @@ func ParseAccess(access string) (*Access, error) {
 		return nil, errors.New("invalid access grant format")
 	}
 
-	p := new(pb.Scope)
-	if err := pb.Unmarshal(data, p); err != nil {
+	var p pb.Scope
+	if err := picobuf.Unmarshal(data, &p); err != nil {
 		return nil, fmt.Errorf("unable to unmarshal access grant: %w", err)
 	}
 
@@ -80,7 +81,7 @@ func (access *Access) Serialize() (string, error) {
 		return "", err
 	}
 
-	data, err := pb.Marshal(&pb.Scope{
+	data, err := picobuf.Marshal(&pb.Scope{
 		SatelliteAddr:    access.SatelliteAddress,
 		ApiKey:           access.APIKey.SerializeRaw(),
 		EncryptionAccess: enc,

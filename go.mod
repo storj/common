@@ -11,7 +11,7 @@ require (
 	github.com/jtolio/noiseconn v0.0.0-20230111204749-d7ec1a08b0b8
 	github.com/quic-go/quic-go v0.38.0
 	github.com/shopspring/decimal v1.2.0
-	github.com/spacemonkeygo/monkit/v3 v3.0.20
+	github.com/spacemonkeygo/monkit/v3 v3.0.22
 	github.com/stretchr/testify v1.7.0
 	github.com/zeebo/admission/v3 v3.0.3
 	github.com/zeebo/blake3 v0.2.3
