@@ -45,14 +45,17 @@ func WithQUICRolloutPercent(ctx context.Context, percent int) context.Context {
 	return context.WithValue(ctx, quicRolloutPercentKey{}, percent)
 }
 
-func checkQUICRolloutState(ctx context.Context, id storj.NodeID) bool {
-	var percent int
-
+// QUICRolloutPercent returns the currently configured QUIC rollout percent
+// for the given context.
+func QUICRolloutPercent(ctx context.Context) int {
 	if ctxpercent, ok := ctx.Value(quicRolloutPercentKey{}).(int); ok {
-		percent = ctxpercent
-	} else {
-		percent = quicRolloutPercent
+		return ctxpercent
 	}
+	return quicRolloutPercent
+}
+
+func checkQUICRolloutState(ctx context.Context, id storj.NodeID) bool {
+	percent := QUICRolloutPercent(ctx)
 
 	if percent >= 100 {
 		return true
