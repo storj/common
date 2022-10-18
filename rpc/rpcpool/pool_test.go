@@ -44,14 +44,22 @@ func TestGet(t *testing.T) {
 
 		_ = c1.Invoke(ctx, "somerpc", nil, nil, nil)
 		require.Equal(t, calls, counts[5])
+
+		_, err = pool.Get(ctx, "key3", nil, dial)
+		require.NoError(t, err)
+		require.Equal(t, calls, counts[6])
+
+		_, err = pool.Get(WithForceDial(ctx), "key4", nil, dial)
+		require.NoError(t, err)
+		require.Equal(t, calls, counts[7])
 	}
 
 	t.Run("Cached", func(t *testing.T) {
-		check(t, New(Options{}), 0, 0, 0, 1, 2, 2)
+		check(t, New(Options{}), 0, 0, 0, 1, 2, 2, 2, 3)
 	})
 
 	t.Run("Nil", func(t *testing.T) {
-		check(t, (*Pool)(nil), 0, 0, 0, 1, 2, 3)
+		check(t, (*Pool)(nil), 0, 0, 0, 1, 2, 3, 3, 4)
 	})
 }
 

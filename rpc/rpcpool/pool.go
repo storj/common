@@ -131,10 +131,25 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 		tlsOptions: tlsOptions,
 	}
 
+	if ctx.Value(forceDialKey{}) != nil {
+		pv, err := p.get(ctx, pk, dial)
+		if err != nil {
+			return nil, err
+		}
+		p.put(pk, pv)
+	}
+
 	return &poolConn{
 		closedChan: make(chan struct{}),
 		pk:         pk,
 		dial:       dial,
 		pool:       p,
 	}, nil
+}
+
+type forceDialKey struct{}
+
+// WithForceDial returns a context that when used to Get a conn will force a dial.
+func WithForceDial(ctx context.Context) context.Context {
+	return context.WithValue(ctx, forceDialKey{}, struct{}{})
 }
