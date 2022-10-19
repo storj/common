@@ -13,6 +13,9 @@
 package gcloudlogging
 
 import (
+	"fmt"
+	"strconv"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/buffer"
 	"go.uber.org/zap/zapcore"
@@ -22,38 +25,48 @@ type encoder struct {
 	zapcore.Encoder
 }
 
-// EncodeEntry encodes entry and its fields, moving all fields except
-// httpRequest (special case) as children of logging.googleapis.com/labels.
+// EncodeEntry encodes entry and its fields, moving all fields that can be
+// encoded to a safe string as children of logging.googleapis.com/labels.
 //
 // Fields aren't top level and exist under 'labels' (see specification).
 func (enc *encoder) EncodeEntry(ent zapcore.Entry, fields []zapcore.Field) (*buffer.Buffer, error) {
 	var newFields []zapcore.Field
 
 	for _, f := range fields {
-		if f.Key == "httpRequest" {
-			newFields = append(newFields, f)
-			break
+		switch f.Type {
+		case zapcore.ByteStringType, zapcore.StringType, zapcore.StringerType, zapcore.ErrorType:
+			continue
 		}
+		newFields = append(newFields, f)
 	}
 
 	newFields = append(newFields, zap.Object("logging.googleapis.com/labels", zapcore.ObjectMarshalerFunc(func(oe zapcore.ObjectEncoder) error {
 		for _, f := range fields {
-			if f.Key == "httpRequest" {
-				// NOTE(artur): Object is marshaled lazily, so we can't add this
-				// field to newFields here. Instead, we did it before.
-				continue
+			switch f.Type {
+			case zapcore.ByteStringType, zapcore.StringType, zapcore.StringerType, zapcore.ErrorType:
+				f.AddTo(oe)
 			}
-			f.AddTo(oe)
 		}
 		if ent.LoggerName != "" {
 			zap.String("name", ent.LoggerName).AddTo(oe)
 		} // It's better to have logger's name in labels.
-		if c := ent.Caller.TrimmedPath(); c != "" {
-			zap.String("caller", c).AddTo(oe)
-		} // It's better to have caller in labels.
 		return nil
 	})))
 
+	newFields = append(newFields, zap.Object("timestamp", zapcore.ObjectMarshalerFunc(func(oe zapcore.ObjectEncoder) error {
+		zap.Int64("seconds", ent.Time.Unix()).AddTo(oe)
+		zap.Int("nanos", ent.Time.Nanosecond()).AddTo(oe)
+		return nil
+	})))
+
+	if ent.Caller.Defined {
+		newFields = append(newFields, zap.Object("logging.googleapis.com/sourceLocation", zapcore.ObjectMarshalerFunc(func(oe zapcore.ObjectEncoder) error {
+			zap.String("file", ent.Caller.File).AddTo(oe)
+			zap.String("line", strconv.Itoa(ent.Caller.Line)).AddTo(oe)
+			zap.String("function", fmt.Sprint(ent.Caller.PC)).AddTo(oe)
+			return nil
+		})))
+	}
 	// Stack must be included in message. See:
 	// https://cloud.google.com/logging/docs/structured-logging#special-payload-fields
 	if ent.Stack != "" {
@@ -73,10 +86,10 @@ func NewEncoder(cfg zapcore.EncoderConfig) zapcore.Encoder {
 func NewEncoderConfig() zapcore.EncoderConfig {
 	return zapcore.EncoderConfig{
 		MessageKey:     "message",
-		LevelKey:       "severity",
-		TimeKey:        "time",
+		LevelKey:       "logging.googleapis.com/severity",
+		TimeKey:        "", // must be complex, so pushed to EncodeEntry
 		NameKey:        "", // collapsed into labels
-		CallerKey:      "", // collapsed into labels
+		CallerKey:      "", // must be complex, so pushed to EncodeEntry
 		StacktraceKey:  "", // collapsed into messsage
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeLevel:    encodeLevel,
