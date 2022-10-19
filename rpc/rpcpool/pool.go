@@ -137,6 +137,14 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 			return nil, err
 		}
 		p.put(pk, pv)
+
+		return &poolConn{
+			closedChan: make(chan struct{}),
+			pk:         pk,
+			dial:       dial,
+			pool:       p,
+			state:      pv.state,
+		}, nil
 	}
 
 	return &poolConn{
