@@ -131,6 +131,14 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 		tlsOptions: tlsOptions,
 	}
 
+	// if there is no pool, each conn gets it's own pool so that it doesn't
+	// need to dial for every rpc.
+	ownsPool := false
+	if p == nil {
+		p = New(Options{Capacity: 1, KeyCapacity: 1})
+		ownsPool = true
+	}
+
 	if ctx.Value(forceDialKey{}) != nil {
 		pv, err := p.get(ctx, pk, dial)
 		if err != nil {
@@ -142,8 +150,10 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 			closedChan: make(chan struct{}),
 			pk:         pk,
 			dial:       dial,
-			pool:       p,
 			state:      pv.state,
+
+			ownsPool: ownsPool,
+			pool:     p,
 		}, nil
 	}
 
@@ -151,7 +161,9 @@ func (p *Pool) Get(ctx context.Context, key string, tlsOptions *tlsopts.Options,
 		closedChan: make(chan struct{}),
 		pk:         pk,
 		dial:       dial,
-		pool:       p,
+
+		ownsPool: ownsPool,
+		pool:     p,
 	}, nil
 }
 

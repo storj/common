@@ -84,6 +84,7 @@ type Cache struct {
 	mu      sync.Mutex
 	entries map[interface{}][]*entry
 	order   []*entry
+	closed  bool
 }
 
 // New constructs a new Cache with the Options.
@@ -195,6 +196,7 @@ func (c *Cache) Close() (err error) {
 
 	c.entries = make(map[interface{}][]*entry)
 	c.order = nil
+	c.closed = true
 
 	return err
 }
@@ -235,6 +237,11 @@ func (c *Cache) Put(key, val interface{}) {
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
+
+	if c.closed {
+		_ = c.opts.close(val)
+		return
+	}
 
 	// ensure we have enough capacity in the key
 	for {

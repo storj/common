@@ -24,7 +24,9 @@ type Conn interface {
 type poolConn struct {
 	pk   poolKey
 	dial Dialer
-	pool *Pool
+
+	ownsPool bool
+	pool     *Pool
 
 	closedOnce sync.Once
 	closedChan chan struct{}
@@ -36,7 +38,14 @@ type poolConn struct {
 // Close marks the poolConn as closed and will not allow future calls to Invoke or NewStream
 // to proceed. It does not stop any ongoing calls to Invoke or NewStream.
 func (c *poolConn) Close() (err error) {
-	c.closedOnce.Do(func() { close(c.closedChan) })
+	c.closedOnce.Do(func() {
+		// if c.ownsPool is true, there is no other poolConn that has a reference to
+		// this pool. thus, we must close the pool when the conn is closed.
+		if c.ownsPool {
+			err = c.pool.Close()
+		}
+		close(c.closedChan)
+	})
 	return nil
 }
 

@@ -12,14 +12,13 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
-	"errors"
-	"io"
 	"math/big"
 	"net"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zeebo/errs"
 
@@ -27,6 +26,7 @@ import (
 	"storj.io/common/testcontext"
 	"storj.io/drpc"
 	"storj.io/drpc/drpcmigrate"
+	"storj.io/drpc/drpcserver"
 )
 
 func TestDialerUnencrypted(t *testing.T) {
@@ -43,6 +43,10 @@ func TestDialerUnencrypted(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, conn.Close())
 }
+
+type goodHandler struct{}
+
+func (goodHandler) HandleRPC(stream drpc.Stream, rpc string) error { return nil }
 
 func TestDialHostnameVerification(t *testing.T) {
 	ctx := testcontext.New(t)
@@ -73,21 +77,14 @@ func TestDialHostnameVerification(t *testing.T) {
 	drpcListener := tls.NewListener(listenMux.Route(drpcmigrate.DRPCHeader), serverTLSConfig)
 	defer ctx.Check(drpcListener.Close)
 
-	acceptConnectionSuccess := func() error {
+	acceptConnectionSuccess := func() (err error) {
 		conn, err := drpcListener.Accept()
 		if err != nil {
 			return errs.Wrap(err)
 		}
 		defer func() { _ = conn.Close() }()
 
-		buffer := make([]byte, 256)
-		_, err = conn.Read(buffer)
-		if errors.Is(err, io.EOF) {
-			err = nil
-		}
-		if err != nil {
-			return errs.Wrap(err)
-		}
+		_ = drpcserver.New(new(goodHandler)).ServeOne(ctx, conn)
 		return nil
 	}
 
@@ -119,7 +116,7 @@ func TestDialHostnameVerification(t *testing.T) {
 	certPool.AppendCertsFromPEM(certificatePEM)
 
 	// happy scenario 1 get hostname from address
-	require.Empty(t, sync2.Concurrently(
+	requireNoErrors(t, sync2.Concurrently(
 		acceptConnectionSuccess,
 		func() error {
 			dialer := NewDefaultDialer(nil)
@@ -144,7 +141,7 @@ func TestDialHostnameVerification(t *testing.T) {
 	))
 
 	// happy scenario 2
-	require.Empty(t, sync2.Concurrently(
+	requireNoErrors(t, sync2.Concurrently(
 		acceptConnectionSuccess,
 		func() error {
 			dialer := NewDefaultDialer(nil)
@@ -169,7 +166,7 @@ func TestDialHostnameVerification(t *testing.T) {
 	))
 
 	// failure scenario invalid certificate
-	require.Empty(t, sync2.Concurrently(
+	requireNoErrors(t, sync2.Concurrently(
 		acceptConnectionFailure,
 		func() error {
 			dialer := NewDefaultDialer(nil)
@@ -236,4 +233,14 @@ func createTestingCertificate(t *testing.T, hostname string) (certificatePEM []b
 	privateKeyPEM = pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: privateKeyBytes})
 
 	return certificatePEM, privateKeyPEM
+}
+
+func requireNoErrors(t *testing.T, errs []error) {
+	t.Helper()
+	if len(errs) > 0 {
+		for _, err := range errs {
+			assert.NoError(t, err)
+		}
+		t.Fatal()
+	}
 }

@@ -59,7 +59,7 @@ func TestGet(t *testing.T) {
 	})
 
 	t.Run("Nil", func(t *testing.T) {
-		check(t, (*Pool)(nil), 0, 0, 0, 1, 2, 3, 3, 4)
+		check(t, (*Pool)(nil), 0, 0, 0, 1, 2, 2, 2, 3)
 	})
 }
 
