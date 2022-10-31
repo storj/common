@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -92,9 +91,9 @@ func TestTransformer(t *testing.T) {
 	data := testrand.BytesInt(transformer.InBlockSize() * 10)
 
 	transformed := TransformReader(
-		ioutil.NopCloser(bytes.NewReader(data)),
+		io.NopCloser(bytes.NewReader(data)),
 		transformer, 0)
-	data2, err := ioutil.ReadAll(transformed)
+	data2, err := io.ReadAll(transformed)
 	if assert.NoError(t, err) {
 		assert.Equal(t, data, data2)
 	}
@@ -118,9 +117,9 @@ func TestTransformerSize(t *testing.T) {
 		transformer := NopTransformer(tt.blockSize)
 		data := testrand.BytesInt(transformer.InBlockSize() * tt.blocks)
 		transformed := TransformReaderSize(
-			ioutil.NopCloser(bytes.NewReader(data)),
+			io.NopCloser(bytes.NewReader(data)),
 			transformer, 0, tt.expectedSize)
-		data2, err := ioutil.ReadAll(transformed)
+		data2, err := io.ReadAll(transformed)
 		if tt.unexpectedEOF {
 			assert.EqualError(t, err, io.ErrUnexpectedEOF.Error(), errTag)
 		} else if assert.NoError(t, err, errTag) {

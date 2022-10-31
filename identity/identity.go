@@ -11,7 +11,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/asn1"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -220,7 +220,7 @@ func PeerIdentityFromContext(ctx context.Context) (*PeerIdentity, error) {
 // NodeIDFromCertPath loads a node ID from a certificate file path.
 func NodeIDFromCertPath(certPath string) (storj.NodeID, error) {
 	/* #nosec G304 */ // Subsequent calls ensure that the file is a certificate
-	certBytes, err := ioutil.ReadFile(certPath)
+	certBytes, err := os.ReadFile(certPath)
 	if err != nil {
 		return storj.NodeID{}, err
 	}
@@ -324,11 +324,11 @@ func (is SetupConfig) FullConfig() Config {
 
 // Load loads a FullIdentity from the config.
 func (ic Config) Load() (*FullIdentity, error) {
-	c, err := ioutil.ReadFile(ic.CertPath)
+	c, err := os.ReadFile(ic.CertPath)
 	if err != nil {
 		return nil, peertls.ErrNotExist.Wrap(err)
 	}
-	k, err := ioutil.ReadFile(ic.KeyPath)
+	k, err := os.ReadFile(ic.KeyPath)
 	if err != nil {
 		return nil, peertls.ErrNotExist.Wrap(err)
 	}
@@ -388,7 +388,7 @@ func (ic Config) PeerConfig() *PeerConfig {
 
 // Load loads a PeerIdentity from the config.
 func (ic PeerConfig) Load() (*PeerIdentity, error) {
-	c, err := ioutil.ReadFile(ic.CertPath)
+	c, err := os.ReadFile(ic.CertPath)
 	if err != nil {
 		return nil, peertls.ErrNotExist.Wrap(err)
 	}

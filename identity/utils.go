@@ -4,7 +4,6 @@
 package identity
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -55,7 +54,7 @@ func writeFile(path string, dirmode, filemode os.FileMode, data []byte) error {
 	if writable, err := fpath.IsWritable(filepath.Dir(path)); !writable || err != nil {
 		return errs.Wrap(errs.New("%s is not a writeable directory: %s\n", path, err))
 	}
-	if err := ioutil.WriteFile(path, data, filemode); err != nil {
+	if err := os.WriteFile(path, data, filemode); err != nil {
 		return errs.Wrap(err)
 	}
 

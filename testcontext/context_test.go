@@ -5,7 +5,7 @@ package testcontext_test
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
@@ -29,7 +29,7 @@ func TestBasic(t *testing.T) {
 func TestSubDir(t *testing.T) {
 	ctx := testcontext.New(t)
 	path := ctx.File("a", "w/c.txt")
-	err := ioutil.WriteFile(path, []byte{1}, 0644)
+	err := os.WriteFile(path, []byte{1}, 0644)
 	assert.NoError(t, err)
 }
 

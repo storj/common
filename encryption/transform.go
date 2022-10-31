@@ -8,7 +8,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"io/ioutil"
 
 	"github.com/spacemonkeygo/monkit/v3"
 
@@ -162,7 +161,7 @@ func (t *transformedRanger) Range(ctx context.Context, offset, length int64) (_ 
 	// If block count is 0, there is nothing to transform, so return a dumb
 	// reader that will just return io.EOF on read
 	if blockCount == 0 {
-		return ioutil.NopCloser(bytes.NewReader(nil)), nil
+		return io.NopCloser(bytes.NewReader(nil)), nil
 	}
 	// okay, now let's get the range on the underlying ranger for those blocks
 	// and then Transform it.
@@ -176,7 +175,7 @@ func (t *transformedRanger) Range(ctx context.Context, offset, length int64) (_ 
 	// the range we got potentially includes more than we wanted. if the
 	// offset started past the beginning of the first block, we need to
 	// swallow the first few bytes
-	_, err = io.CopyN(ioutil.Discard, tr,
+	_, err = io.CopyN(io.Discard, tr,
 		offset-firstBlock*int64(t.t.OutBlockSize()))
 	if err != nil {
 		if errors.Is(err, io.EOF) {

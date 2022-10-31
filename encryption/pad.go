@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/binary"
 	"io"
-	"io/ioutil"
 
 	"storj.io/common/ranger"
 	"storj.io/common/readcloser"
@@ -65,7 +64,7 @@ func PadReader(data io.ReadCloser, blockSize int) io.ReadCloser {
 	cr := newCountingReader(data)
 	return readcloser.MultiReadCloser(cr,
 		readcloser.LazyReadCloser(func() (io.ReadCloser, error) {
-			return ioutil.NopCloser(bytes.NewReader(makePadding(cr.N, blockSize))), nil
+			return io.NopCloser(bytes.NewReader(makePadding(cr.N, blockSize))), nil
 		}))
 }
 

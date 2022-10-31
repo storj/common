@@ -6,7 +6,7 @@ package httpranger
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -58,7 +58,7 @@ func TestHTTPRanger(t *testing.T) {
 			continue
 		}
 		assert.NoError(t, err, tag)
-		data, err := ioutil.ReadAll(r)
+		data, err := io.ReadAll(r)
 		if assert.NoError(t, err, tag) {
 			assert.Equal(t, []byte(tt.substr), data, tag)
 		}
@@ -125,7 +125,7 @@ func TestHTTPRangerSize(t *testing.T) {
 			continue
 		}
 		assert.NoError(t, err, tag)
-		data, err := ioutil.ReadAll(r)
+		data, err := io.ReadAll(r)
 		if assert.NoError(t, err, tag) {
 			assert.Equal(t, []byte(tt.substr), data, tag)
 		}

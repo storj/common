@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"errors"
 	"io"
-	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -38,7 +37,7 @@ func TestTee_Basic(t *testing.T) {
 		for i := 0; i < len(readers); i++ {
 			i := i
 			group.Go(func() error {
-				data, err := ioutil.ReadAll(readers[i])
+				data, err := io.ReadAll(readers[i])
 				assert.Equal(t, []byte{1, 2, 3, 1, 2, 3}, data)
 				if err != nil {
 					assert.Equal(t, io.EOF, err)
@@ -71,7 +70,7 @@ func TestTee_CloseWithError(t *testing.T) {
 		for i := 0; i < len(readers); i++ {
 			i := i
 			group.Go(func() error {
-				_, err := ioutil.ReadAll(readers[i])
+				_, err := io.ReadAll(readers[i])
 				if err != nil {
 					assert.Equal(t, failure, err)
 				}

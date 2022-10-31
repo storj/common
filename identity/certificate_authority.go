@@ -11,7 +11,7 @@ import (
 	"crypto/x509/pkix"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"os"
 	"sync"
 	"sync/atomic"
 
@@ -257,7 +257,7 @@ func (fc FullCAConfig) Load() (*FullCertificateAuthority, error) {
 		return nil, err
 	}
 
-	kb, err := ioutil.ReadFile(fc.KeyPath)
+	kb, err := os.ReadFile(fc.KeyPath)
 	if err != nil {
 		return nil, peertls.ErrNotExist.Wrap(err)
 	}
@@ -316,7 +316,7 @@ func (fc FullCAConfig) SaveBackup(ca *FullCertificateAuthority) error {
 
 // Load loads a CA from the given configuration.
 func (pc PeerCAConfig) Load() (*PeerCertificateAuthority, error) {
-	chainPEM, err := ioutil.ReadFile(pc.CertPath)
+	chainPEM, err := os.ReadFile(pc.CertPath)
 	if err != nil {
 		return nil, peertls.ErrNotExist.Wrap(err)
 	}

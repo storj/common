@@ -7,7 +7,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
-	"io/ioutil"
+	"os"
 
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/errs"
@@ -89,7 +89,7 @@ func (opts *Options) configure() (err error) {
 	if opts.Config.UsePeerCAWhitelist {
 		whitelist := []byte(DefaultPeerCAWhitelist)
 		if opts.Config.PeerCAWhitelistPath != "" {
-			whitelist, err = ioutil.ReadFile(opts.Config.PeerCAWhitelistPath)
+			whitelist, err = os.ReadFile(opts.Config.PeerCAWhitelistPath)
 			if err != nil {
 				return Error.New("unable to find whitelist file %v: %v", opts.Config.PeerCAWhitelistPath, err)
 			}

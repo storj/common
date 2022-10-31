@@ -6,7 +6,6 @@ package sync2_test
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -24,7 +23,7 @@ func TestCopy(t *testing.T) {
 
 	r := io.LimitReader(testrand.Reader(), 32*memory.KiB.Int64())
 
-	n, err := sync2.Copy(ctx, ioutil.Discard, r)
+	n, err := sync2.Copy(ctx, io.Discard, r)
 
 	assert.NoError(t, err)
 	assert.Equal(t, n, 32*memory.KiB.Int64())
@@ -38,7 +37,7 @@ func TestCopy_Cancel(t *testing.T) {
 
 	r := io.LimitReader(testrand.Reader(), 32*memory.KiB.Int64())
 
-	n, err := sync2.Copy(ctx, ioutil.Discard, r)
+	n, err := sync2.Copy(ctx, io.Discard, r)
 
 	assert.EqualError(t, err, context.Canceled.Error())
 	assert.EqualValues(t, n, 0)

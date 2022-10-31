@@ -4,7 +4,6 @@
 package fpath
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -16,7 +15,7 @@ func AtomicWriteFile(outfile string, data []byte, _ os.FileMode) (err error) {
 	// TODO: provide better atomicity guarantees, like fsyncing the parent
 	// directory and, on windows, using MoveFileEx with MOVEFILE_WRITE_THROUGH.
 
-	fh, err := ioutil.TempFile(filepath.Dir(outfile), filepath.Base(outfile))
+	fh, err := os.CreateTemp(filepath.Dir(outfile), filepath.Base(outfile))
 	if err != nil {
 		return errs.Wrap(err)
 	}

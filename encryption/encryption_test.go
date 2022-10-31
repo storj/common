@@ -6,7 +6,6 @@ package encryption_test
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -46,10 +45,10 @@ func TestCalcEncryptedSize(t *testing.T) {
 			encrypter, err := encryption.NewEncrypter(parameters.CipherSuite, new(storj.Key), new(storj.Nonce), int(parameters.BlockSize))
 			require.NoError(t, err, errTag)
 
-			randReader := ioutil.NopCloser(io.LimitReader(testrand.Reader(), dataSize))
+			randReader := io.NopCloser(io.LimitReader(testrand.Reader(), dataSize))
 			reader := encryption.TransformReader(encryption.PadReader(randReader, encrypter.InBlockSize()), encrypter, 0)
 
-			cipherData, err := ioutil.ReadAll(reader)
+			cipherData, err := io.ReadAll(reader)
 			assert.NoError(t, err, errTag)
 			assert.EqualValues(t, calculatedSize, len(cipherData), errTag)
 		}

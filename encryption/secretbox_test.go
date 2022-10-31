@@ -5,7 +5,7 @@ package encryption
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"storj.io/common/testrand"
@@ -22,7 +22,7 @@ func TestSecretbox(t *testing.T) {
 
 	data := testrand.BytesInt(encrypter.InBlockSize() * 10)
 
-	encrypted := TransformReader(ioutil.NopCloser(bytes.NewReader(data)), encrypter, 0)
+	encrypted := TransformReader(io.NopCloser(bytes.NewReader(data)), encrypter, 0)
 
 	decrypter, err := NewSecretboxDecrypter(&key, &firstNonce, 4*1024)
 	if err != nil {
@@ -30,7 +30,7 @@ func TestSecretbox(t *testing.T) {
 	}
 	decrypted := TransformReader(encrypted, decrypter, 0)
 
-	data2, err := ioutil.ReadAll(decrypted)
+	data2, err := io.ReadAll(decrypted)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -6,7 +6,7 @@ package ranger
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"io"
 	"os"
 	"strconv"
 	"testing"
@@ -70,7 +70,7 @@ func TestFileRanger(t *testing.T) {
 			t.Fatalf("unexpected err: %v", err)
 		}
 
-		data, err := ioutil.ReadAll(r)
+		data, err := io.ReadAll(r)
 		if err != nil {
 			t.Fatal(err)
 		}

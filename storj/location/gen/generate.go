@@ -6,7 +6,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -71,7 +71,7 @@ const (`)
 	}
 
 	body := resp.Body
-	content, err := ioutil.ReadAll(body)
+	content, err := io.ReadAll(body)
 	if err != nil {
 		return errs.Wrap(err)
 	}

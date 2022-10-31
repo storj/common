@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"io/ioutil"
 
 	"storj.io/common/readcloser"
 )
@@ -39,7 +38,7 @@ func (b ByteRanger) Range(ctx context.Context, offset, length int64) (_ io.ReadC
 		return nil, Error.New("buffer runoff")
 	}
 
-	return ioutil.NopCloser(bytes.NewReader(b[offset : offset+length])), nil
+	return io.NopCloser(bytes.NewReader(b[offset : offset+length])), nil
 }
 
 type concatReader struct {

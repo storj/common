@@ -7,7 +7,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,7 +47,7 @@ func TestByteRanger(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
-		data, err := ioutil.ReadAll(r)
+		data, err := io.ReadAll(r)
 		if err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
@@ -88,7 +88,7 @@ func TestConcatReader(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
-		data, err := ioutil.ReadAll(r)
+		data, err := io.ReadAll(r)
 		if err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}
@@ -127,7 +127,7 @@ func TestSubranger(t *testing.T) {
 			t.Fatalf("unexpected err: %v", err)
 		}
 
-		data, err := ioutil.ReadAll(r)
+		data, err := io.ReadAll(r)
 		if err != nil {
 			t.Fatalf("unexpected err: %v", err)
 		}

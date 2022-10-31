@@ -6,7 +6,7 @@ package encryption
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"io"
 	"strings"
 	"testing"
 
@@ -52,7 +52,7 @@ func TestPad(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error")
 		}
-		data, err := ioutil.ReadAll(r)
+		data, err := io.ReadAll(r)
 		if err != nil {
 			t.Fatalf("unexpected error")
 		}
@@ -67,7 +67,7 @@ func TestPad(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error")
 		}
-		data, err = ioutil.ReadAll(r)
+		data, err = io.ReadAll(r)
 		if err != nil {
 			t.Fatalf("unexpected error")
 		}

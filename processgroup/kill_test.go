@@ -4,7 +4,8 @@
 package processgroup_test
 
 import (
-	"io/ioutil"
+	"io"
+	"os"
 	"os/exec"
 	"testing"
 	"time"
@@ -20,7 +21,7 @@ func TestProcessGroup(t *testing.T) {
 
 	source := ctx.File("main.go")
 	binary := ctx.File("main.exe")
-	err := ioutil.WriteFile(source, []byte(code), 0644)
+	err := os.WriteFile(source, []byte(code), 0644)
 	require.NoError(t, err)
 
 	{
@@ -37,7 +38,7 @@ func TestProcessGroup(t *testing.T) {
 		/* #nosec G204 */ // This is a test and the parameter's values is controlled
 		cmd := exec.Command(binary)
 		cmd.Dir = ctx.Dir()
-		cmd.Stdout, cmd.Stderr = ioutil.Discard, ioutil.Discard
+		cmd.Stdout, cmd.Stderr = io.Discard, io.Discard
 		processgroup.Setup(cmd)
 
 		started := time.Now()

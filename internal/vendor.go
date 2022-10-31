@@ -8,7 +8,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -37,7 +36,7 @@ func run() error {
 	rxGoBuild := regexp.MustCompile("(?m)^//go:build .*$")
 
 	for _, match := range matches {
-		data, err := ioutil.ReadFile(match)
+		data, err := os.ReadFile(match)
 		if err != nil {
 			return err
 		}
@@ -52,19 +51,19 @@ func run() error {
 		// Ensure we preseve the old build tags to be compatible with old Go version.
 		data = rxGoBuild.ReplaceAll(data, []byte("$0\n// +build stub\n"))
 
-		err = ioutil.WriteFile(filepath.Join("hmacsha512", filepath.Base(match)), data, 0755)
+		err = os.WriteFile(filepath.Join("hmacsha512", filepath.Base(match)), data, 0755)
 		if err != nil {
 			return err
 		}
 	}
 
-	version, err := ioutil.ReadFile(filepath.Join(runtime.GOROOT(), "VERSION"))
+	version, err := os.ReadFile(filepath.Join(runtime.GOROOT(), "VERSION"))
 	if err != nil {
 		return err
 	}
 
 	doc := strings.ReplaceAll(doc, "{{.Version}}", strings.TrimSpace(string(version)))
-	err = ioutil.WriteFile(filepath.Join("hmacsha512", "doc.go"), []byte(doc), 0755)
+	err = os.WriteFile(filepath.Join("hmacsha512", "doc.go"), []byte(doc), 0755)
 	if err != nil {
 		return err
 	}

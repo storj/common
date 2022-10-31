@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -83,7 +82,7 @@ func (r *httpRanger) Range(ctx context.Context, offset, length int64) (_ io.Read
 		return nil, Error.New("range beyond end")
 	}
 	if length == 0 {
-		return ioutil.NopCloser(bytes.NewReader([]byte{})), nil
+		return io.NopCloser(bytes.NewReader([]byte{})), nil
 	}
 	client := &http.Client{}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, r.URL, nil)

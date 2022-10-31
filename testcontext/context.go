@@ -7,7 +7,6 @@ package testcontext
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -196,7 +195,7 @@ func (ctx *Context) Dir(elem ...string) string {
 		}, ctx.test.Name())
 
 		var err error
-		ctx.directory, err = ioutil.TempDir("", sanitized)
+		ctx.directory, err = os.MkdirTemp("", sanitized)
 		if err != nil {
 			ctx.test.Fatal(err)
 		}
