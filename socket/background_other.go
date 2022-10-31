@@ -1,9 +1,8 @@
 // Copyright (C) 2020 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-// +build !linux
-// +build !darwin
-// +build !windows
+//go:build !linux && !darwin && !windows
+// +build !linux,!darwin,!windows
 
 package socket
 

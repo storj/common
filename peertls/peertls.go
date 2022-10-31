@@ -141,10 +141,10 @@ func CreateSelfSignedCertificate(key crypto.PrivateKey, template *x509.Certifica
 // CreateCertificate creates a new X.509v3 certificate based on a template.
 // The new certificate:
 //
-//  * will have the public key given as 'signee'
-//  * will be signed by 'signer' (which should be the private key of 'issuer')
-//  * will be issued by 'issuer'
-//  * will have metadata fields copied from 'template'
+//   - will have the public key given as 'signee'
+//   - will be signed by 'signer' (which should be the private key of 'issuer')
+//   - will be issued by 'issuer'
+//   - will have metadata fields copied from 'template'
 //
 // Returns the new Certificate object.
 func CreateCertificate(signee crypto.PublicKey, signer crypto.PrivateKey, template, issuer *x509.Certificate) (*x509.Certificate, error) {

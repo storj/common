@@ -16,21 +16,21 @@ import (
 //
 // For example, if the Store contains the mappings
 //
-//    b1, u1/u2/u3    => <e1/e2/e3, k3>
-//    b1, u1/u2/u3/u4 => <e1/e2/e3/e4, k4>
-//    b1, u1/u5       => <e1/e5, k5>
-//    b1, u6          => <e6, k6>
-//    b1, u6/u7/u8    => <e6/e7/e8, k8>
-//    b2, u1          => <e1', k1'>
+//	b1, u1/u2/u3    => <e1/e2/e3, k3>
+//	b1, u1/u2/u3/u4 => <e1/e2/e3/e4, k4>
+//	b1, u1/u5       => <e1/e5, k5>
+//	b1, u6          => <e6, k6>
+//	b1, u6/u7/u8    => <e6/e7/e8, k8>
+//	b2, u1          => <e1', k1'>
 //
 // then the following lookups have outputs:
 //
-//    b1, u1          => <{e2:u2, e5:u5}, [], nil>
-//    b1, u1/u2/u3    => <{e4:u4}, [], <u1/u2/u3, e1/e2/e3, k3>>
-//    b1, u1/u2/u3/u6 => <{}, [u6], <u1/u2/u3, e1/e2/e3, k3>>
-//    b1, u1/u2/u3/u4 => <{}, [], <u1/u2/u3/u4, e1/e2/e3/e4, k4>>
-//    b1, u6/u7       => <{e8:u8}, [u7], <u6, e6, k6>>
-//    b2, u1          => <{}, [u1], <u1, e1', k1'>>
+//	b1, u1          => <{e2:u2, e5:u5}, [], nil>
+//	b1, u1/u2/u3    => <{e4:u4}, [], <u1/u2/u3, e1/e2/e3, k3>>
+//	b1, u1/u2/u3/u6 => <{}, [u6], <u1/u2/u3, e1/e2/e3, k3>>
+//	b1, u1/u2/u3/u4 => <{}, [], <u1/u2/u3/u4, e1/e2/e3/e4, k4>>
+//	b1, u6/u7       => <{e8:u8}, [u7], <u6, e6, k6>>
+//	b2, u1          => <{}, [u1], <u1, e1', k1'>>
 type Store struct {
 	roots             map[string]*node
 	defaultKey        *storj.Key

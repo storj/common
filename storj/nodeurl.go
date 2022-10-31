@@ -25,16 +25,16 @@ type NodeURL struct {
 //
 // Examples:
 //
-//    raw IP:
-//      33.20.0.1:7777
-//      [2001:db8:1f70::999:de8:7648:6e8]:7777
+//	raw IP:
+//	  33.20.0.1:7777
+//	  [2001:db8:1f70::999:de8:7648:6e8]:7777
 //
-//    with NodeID:
-//      12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@33.20.0.1:7777
-//      12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@[2001:db8:1f70::999:de8:7648:6e8]:7777
+//	with NodeID:
+//	  12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@33.20.0.1:7777
+//	  12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@[2001:db8:1f70::999:de8:7648:6e8]:7777
 //
-//    without host:
-//      12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@
+//	without host:
+//	  12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@
 func ParseNodeURL(s string) (NodeURL, error) {
 	if s == "" {
 		return NodeURL{}, nil

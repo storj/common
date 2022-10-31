@@ -93,7 +93,7 @@ func ParseEntries(data []byte) ([]Entry, error) {
 
 // parseEntry parses either a product or a comment.
 //
-//   Entry = ( product / comment )
+//	Entry = ( product / comment )
 func parseEntry(data []byte, from int) (e Entry, next int, err error) {
 	// We are at the start of a character. Example valid input:
 	// `Mozilla/5.0`
@@ -116,8 +116,8 @@ func parseEntry(data []byte, from int) (e Entry, next int, err error) {
 
 // parseProduct parses product with optional version.
 //
-//   product         = token ["/" product-version]
-//   product-version = token
+//	product         = token ["/" product-version]
+//	product-version = token
 func parseProduct(data []byte, from int) (product, version string, next int, err error) {
 	// Example valid input:
 	// `Mozilla`
@@ -148,7 +148,7 @@ func parseProduct(data []byte, from int) (product, version string, next int, err
 
 // parseToken parses a token.
 //
-//   token           = 1*tchar
+//	token           = 1*tchar
 func parseToken(data []byte, from int) (token string, next int, ok bool) {
 	// token is a sequence of token characters.
 	// See tchar for the allowed characters.
@@ -163,10 +163,10 @@ func parseToken(data []byte, from int) (token string, next int, ok bool) {
 
 // parseComment parses a potentially comment. This does not allow nesting.
 //
-//   comment         = "(" *( ctext / quoted-pair / comment ) ")"
-//   ctext           = HTAB / SP / %x21-27 / %x2A-5B / %x5D-7E / obs-text
-//   quoted-pair     = "\" ( HTAB / SP / VCHAR / obs-text )
-//   obs-text        = %x80-FF
+//	comment         = "(" *( ctext / quoted-pair / comment ) ")"
+//	ctext           = HTAB / SP / %x21-27 / %x2A-5B / %x5D-7E / obs-text
+//	quoted-pair     = "\" ( HTAB / SP / VCHAR / obs-text )
+//	obs-text        = %x80-FF
 func parseComment(data []byte, from int) (comment string, next int, err error) {
 	// `(Linux; U; Android 4.4.3;)`
 	// `(Linux; \(; Android)`
@@ -212,9 +212,9 @@ func parseComment(data []byte, from int) (comment string, next int, err error) {
 
 // parseCommentChar parses comment character.
 //
-//   ctext           = HTAB / SP / %x21-27 / %x2A-5B / %x5D-7E / obs-text
-//   quoted-pair     = "\" ( HTAB / SP / VCHAR / obs-text )
-//   obs-text        = %x80-FF
+//	ctext           = HTAB / SP / %x21-27 / %x2A-5B / %x5D-7E / obs-text
+//	quoted-pair     = "\" ( HTAB / SP / VCHAR / obs-text )
+//	obs-text        = %x80-FF
 func parseCommentChar(data []byte, from int) (ch byte, next int, err error) {
 	p := from
 	b := data[p]
@@ -271,10 +271,12 @@ func requireWhitespace(data []byte, from int) (next int, ok bool) {
 	return next, true
 }
 
-//   tchar         = "!" / "#" / "$" / "%" / "&" / "'" / "*"
-//                 / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
-//                 / DIGIT / ALPHA
-//                 ; any VCHAR, except delimiters
+// istchar checks for textual-character
+//
+//	tchar         = "!" / "#" / "$" / "%" / "&" / "'" / "*"
+//	/ "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
+//	/ DIGIT / ALPHA
+//	; any VCHAR, except delimiters
 func istchar(b byte) bool {
 	// DIGIT / ALPHA
 	if '0' <= b && b <= '9' || 'a' <= b && b <= 'z' || 'A' <= b && b <= 'Z' {

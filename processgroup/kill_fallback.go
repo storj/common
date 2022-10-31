@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information
 
+//go:build !windows && !linux && !darwin && !netbsd && !freebsd && !openbsd
 // +build !windows,!linux,!darwin,!netbsd,!freebsd,!openbsd
 
 package processgroup

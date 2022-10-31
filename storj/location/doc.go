@@ -3,3 +3,5 @@
 
 // Package location contains geolocation related constants and variables.
 package location
+
+//go:generate go run ./gen/generate.go

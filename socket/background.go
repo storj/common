@@ -20,10 +20,9 @@ import (
 // This is useful for configuring storj.io/uplink.Config.DialContext
 // to be background sockets. Expected usage like:
 //
-//   cfg := uplink.Config{
-//     DialContext: socket.BackgroundDialer().DialContext,
-//   }
-//
+//	cfg := uplink.Config{
+//	  DialContext: socket.BackgroundDialer().DialContext,
+//	}
 func BackgroundDialer() *net.Dialer {
 	return &net.Dialer{
 		Control: func(network, address string, c syscall.RawConn) error {

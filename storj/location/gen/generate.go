@@ -50,7 +50,6 @@ package location
 // license of the datasource: Creative Commons Attribution 4.0 License,
 // https://creativecommons.org/licenses/by/4.0/
 
-//go:generate go run ./gen/generate.go
 // country codes to two letter upper case ISO country code as uint16.
 const (`)
 	if err != nil {

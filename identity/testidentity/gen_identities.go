@@ -1,6 +1,7 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information
 
+//go:build ignore
 // +build ignore
 
 // gen_identities generates random identities table for testing
