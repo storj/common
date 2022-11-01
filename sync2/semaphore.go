@@ -11,7 +11,7 @@ import (
 
 // Semaphore implements a closable semaphore.
 type Semaphore struct {
-	noCopy noCopy // nolint: structcheck
+	noCopy noCopy //nolint:structcheck
 
 	ctx   context.Context
 	close func()

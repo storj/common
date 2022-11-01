@@ -16,7 +16,7 @@ import (
 // It notifies the caller when reached a specific successful threshold without
 // interrupting the remaining tasks.
 type SuccessThreshold struct {
-	noCopy noCopy // nolint: structcheck
+	noCopy noCopy //nolint:structcheck
 
 	toSucceed int64
 	pending   int64

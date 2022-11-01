@@ -14,7 +14,7 @@ import (
 // ReadCache implements refreshing of state based on a refresh timeout,
 // but also allows for stale reads up to a certain duration.
 type ReadCache struct {
-	noCopy noCopy // nolint: structcheck
+	noCopy noCopy //nolint:structcheck
 
 	started Fence
 	ctx     context.Context

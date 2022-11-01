@@ -57,7 +57,7 @@ func HTTPRanger(ctx context.Context, url string) (_ ranger.Ranger, err error) {
 // HTTPRangerSize creates an HTTPRanger with known size.
 // Use it if you know the content size. This will safe the extra HEAD request
 // for retrieving the content size.
-func HTTPRangerSize(url string, size int64) ranger.Ranger { // nolint:golint,revive
+func HTTPRangerSize(url string, size int64) ranger.Ranger { //nolint:golint,revive
 	return &httpRanger{
 		URL:  url,
 		size: size,

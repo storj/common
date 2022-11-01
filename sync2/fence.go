@@ -10,7 +10,7 @@ import (
 
 // Fence allows to wait for something to happen.
 type Fence struct {
-	noCopy noCopy // nolint: structcheck
+	noCopy noCopy //nolint:structcheck
 
 	setup   sync.Once
 	release sync.Once

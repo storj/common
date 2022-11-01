@@ -8,7 +8,7 @@ package sync2
 //
 // See https://golang.org/issues/8005#issuecomment-190753527.
 //
-// Currently users of noCopy must use "// nolint: structcheck",
+// Currently users of noCopy must use "//nolint:structcheck",
 // because golint-ci does not handle this correctly.
 type noCopy struct{}
 

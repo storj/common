@@ -416,7 +416,7 @@ func runBenchmarkFilterSlice(b *testing.B, n int) {
 	for i := 0; i < b.N; i++ {
 		ent := ents[0]
 		ents = filterEntry(ents, ent)
-		ents = append(ents, ent) //nolint: makezero // the test removes from slice and adds it back
+		ents = append(ents, ent) //nolint:makezero // the test removes from slice and adds it back
 	}
 }
 

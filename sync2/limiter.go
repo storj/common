@@ -13,7 +13,7 @@ import (
 // After calling Wait or Close, no new goroutines are allowed
 // to start.
 type Limiter struct {
-	noCopy noCopy // nolint: structcheck
+	noCopy noCopy //nolint:structcheck
 
 	limit  chan struct{}
 	close  sync.Once

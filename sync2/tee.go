@@ -91,7 +91,7 @@ func NewTeeInmemory(readers int, blockSize int64) ([]PipeReader, PipeWriter, err
 
 // tee synchronizes access to a shared buffer with one writer and multiple readers.
 type tee struct {
-	noCopy noCopy // nolint: structcheck
+	noCopy noCopy //nolint:structcheck
 
 	open *int64
 
