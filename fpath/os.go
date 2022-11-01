@@ -30,6 +30,8 @@ func IsRoot(path string) bool {
 func ApplicationDir(subdir ...string) string {
 	for i := range subdir {
 		if runtime.GOOS == "windows" || runtime.GOOS == "darwin" {
+			//lint:ignore SA1019 we cannot change the behavior and it doesn't make a big difference.
+			//nolint:staticcheck // see above
 			subdir[i] = strings.Title(subdir[i])
 		} else {
 			subdir[i] = strings.ToLower(subdir[i])
