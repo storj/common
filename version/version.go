@@ -46,11 +46,13 @@ type Info struct {
 	// sync/atomic cache
 	commitHashCRC uint32
 
-	Timestamp  time.Time `json:"timestamp,omitempty"`
-	CommitHash string    `json:"commitHash,omitempty"`
-	Version    SemVer    `json:"version"`
-	Release    bool      `json:"release,omitempty"`
-	Modified   bool      `json:"modified,omitempty"`
+	Application string    `json:"application,omitempty"`
+	Instance    string    `json:"instance,omitempty"`
+	Timestamp   time.Time `json:"timestamp,omitempty"`
+	CommitHash  string    `json:"commitHash,omitempty"`
+	Version     SemVer    `json:"version"`
+	Release     bool      `json:"release,omitempty"`
+	Modified    bool      `json:"modified,omitempty"`
 }
 
 // SemVer represents a semantic version.

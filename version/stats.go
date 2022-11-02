@@ -12,7 +12,9 @@ import (
 
 // Stats implements the monkit.StatSource interface.
 func (info *Info) Stats(cb func(key monkit.SeriesKey, field string, val float64)) {
-	key := monkit.NewSeriesKey("version_info")
+	key := monkit.NewSeriesKey("version_info").
+		WithTag("app", info.Application).
+		WithTag("instance", info.Instance)
 
 	if info.Release {
 		cb(key, "release", 1)

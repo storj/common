@@ -77,7 +77,6 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 		r = monkit.Default
 	}
 	environment.Register(r)
-	r.ScopeNamed("env").Chain(monkit.StatSourceFunc(version.Build.Stats))
 
 	if instanceID == "" {
 		instanceID = telemetry.DefaultInstanceID()
@@ -93,6 +92,10 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	} else {
 		appName = *metricApp + *metricAppSuffix
 	}
+
+	version.Build.Application = appName
+	version.Build.Instance = instanceID
+	r.ScopeNamed("env").Chain(monkit.StatSourceFunc(version.Build.Stats))
 
 	if *metricCollector == "" || calcMetricInterval() == 0 {
 		log.Debug("Telemetry disabled")
