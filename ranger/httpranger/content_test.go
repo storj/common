@@ -5,7 +5,9 @@ package httpranger
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -40,7 +42,8 @@ func TestServeContent(t *testing.T) {
 			writer.Header().Add(k, v)
 		}
 
-		ServeContent(context.Background(), writer, req, tt.name, tt.modtime, tt.content)
+		err := ServeContent(context.Background(), writer, req, tt.name, tt.modtime, tt.content)
+		assert.NoError(t, err)
 	}
 }
 
@@ -49,7 +52,8 @@ func TestServeContentContentSize(t *testing.T) {
 	writer := httptest.NewRecorder()
 	ranger := ranger.ByteRanger([]byte(""))
 
-	ServeContent(context.Background(), writer, req, "", time.Now().UTC(), ranger)
+	err := ServeContent(context.Background(), writer, req, "", time.Now().UTC(), ranger)
+	assert.NoError(t, err)
 
 	assert.Equal(t, http.StatusOK, writer.Code)
 }
@@ -66,12 +70,35 @@ func TestServeContentParseRange(t *testing.T) {
 	}
 	ranger := ranger.ByteRanger([]byte("bytes=1-5/0,bytes=1-5/8"))
 
-	ServeContent(context.Background(), writer, req, "", time.Now().UTC(), ranger)
+	err := ServeContent(context.Background(), writer, req, "", time.Now().UTC(), ranger)
+	assert.NoError(t, err)
 
 	assert.Equal(t, http.StatusOK, writer.Code)
 	result := writer.Result()
 	assert.NoError(t, result.Body.Close())
 	assert.Equal(t, "23", result.Header.Get("Content-Length"))
+}
+
+type errorRanger struct{}
+
+func (rr *errorRanger) Size() int64 { return 10 }
+func (rr *errorRanger) Range(ctx context.Context, offset, length int64) (io.ReadCloser, error) {
+	return nil, errors.New("test error")
+}
+
+func TestServeContentErrorRanger(t *testing.T) {
+	req := httptest.NewRequest("", "/", nil)
+	writer := httptest.NewRecorder()
+	ranger := new(errorRanger)
+
+	err := ServeContent(context.Background(), writer, req, "file.pdf", time.Now().UTC(), ranger)
+	assert.EqualError(t, err, "test error")
+
+	result := writer.Result()
+	assert.NoError(t, result.Body.Close())
+	assert.Empty(t, result.Header.Get("Content-Type"))
+	assert.Empty(t, result.Header.Get("Content-Length"))
+	assert.Empty(t, result.Header.Get("Last-Modified"))
 }
 
 func Test_isZeroTime(t *testing.T) {
@@ -875,7 +902,8 @@ func Test_contentType_detection(t *testing.T) {
 		writer := httptest.NewRecorder()
 		ranger := ranger.ByteRanger([]byte(""))
 
-		ServeContent(context.Background(), writer, req, tt.name, time.Now().UTC(), ranger)
+		err := ServeContent(context.Background(), writer, req, tt.name, time.Now().UTC(), ranger)
+		assert.NoError(t, err)
 
 		assert.Equal(t, http.StatusOK, writer.Code)
 

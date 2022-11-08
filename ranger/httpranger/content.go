@@ -22,13 +22,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zeebo/errs"
+
 	"storj.io/common/ranger"
 )
 
+// ErrInvalidRange is an error returned when an invalid HTTP range is requested.
+var ErrInvalidRange = errs.Class("invalid range")
+
 // ServeContent is the Go standard library's http.ServeContent but modified to
 // work with Rangers.
-func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, name string, modtime time.Time, content ranger.Ranger) {
-	defer mon.Task()(&ctx)(nil)
+func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, name string, modtime time.Time, content ranger.Ranger) (err error) {
+	defer mon.Task()(&ctx)(&err)
 
 	// If the Content-Type is specified, use it, otherwise do the cheap
 	// heuristic using the suffix lookup.
@@ -48,7 +53,7 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 	setLastModified(w, modtime)
 	done, rangeReq := checkPreconditions(w, r, modtime)
 	if done {
-		return
+		return nil
 	}
 
 	code := http.StatusOK
@@ -57,7 +62,7 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 
 	if size <= 0 {
 		w.WriteHeader(code)
-		return
+		return nil
 	}
 
 	// handle Content-Range header.
@@ -71,8 +76,7 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 		if errors.Is(err, errNoOverlap) {
 			w.Header().Set("Content-Range", fmt.Sprintf("bytes */%d", size))
 		}
-		http.Error(w, err.Error(), http.StatusRequestedRangeNotSatisfiable)
-		return
+		return err
 	}
 	if sumRangesSize(ranges) > size {
 		// The total number of bytes in all the ranges
@@ -162,22 +166,30 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 		w.Header().Set("Content-Length", strconv.FormatInt(sendSize, 10))
 	}
 
+	if r.Method == http.MethodHead {
+		w.WriteHeader(code)
+		return nil
+	}
+
+	rd, err := sendContent()
+	if err != nil {
+		delete(w.Header(), "Content-Type")
+		delete(w.Header(), "Content-Length")
+		delete(w.Header(), "Last-Modified")
+		return err
+	}
+
 	w.WriteHeader(code)
 
-	if r.Method != http.MethodHead {
-		r, err := sendContent()
-		if err != nil {
-			return
-		}
-
-		if _, err := io.CopyN(w, r, sendSize); err != nil {
-			log.Printf("Error Copying bytes: %s", err)
-		}
-
-		if err := r.Close(); err != nil {
-			log.Printf("Error closing: %s", err)
-		}
+	if _, err := io.CopyN(w, rd, sendSize); err != nil {
+		log.Printf("Error Copying bytes: %s", err)
 	}
+
+	if err := rd.Close(); err != nil {
+		log.Printf("Error closing: %s", err)
+	}
+
+	return nil
 }
 
 var unixEpochTime = time.Unix(0, 0)
@@ -448,7 +460,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 	}
 	const b = "bytes="
 	if !strings.HasPrefix(s, b) {
-		return nil, errors.New("invalid range")
+		return nil, ErrInvalidRange.New(s)
 	}
 
 	var ranges []HTTPRange
@@ -460,7 +472,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 		}
 		i := strings.Index(ra, "-")
 		if i < 0 {
-			return nil, errors.New("invalid range")
+			return nil, ErrInvalidRange.New(ra)
 		}
 		start, end := strings.TrimSpace(ra[:i]), strings.TrimSpace(ra[i+1:])
 		var r HTTPRange
@@ -472,7 +484,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 			// RFC 7233 Section 2.1 "Byte-Ranges".
 			i, err := strconv.ParseInt(end, 10, 64)
 			if err != nil {
-				return nil, errors.New("invalid range")
+				return nil, ErrInvalidRange.New(ra)
 			}
 			if i > size {
 				i = size
@@ -482,7 +494,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 		} else {
 			i, err := strconv.ParseInt(start, 10, 64)
 			if err != nil || i < 0 {
-				return nil, errors.New("invalid range")
+				return nil, ErrInvalidRange.New(ra)
 			}
 			if i >= size {
 				// If the range begins after the size of the content,
@@ -497,7 +509,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 			} else {
 				i, err := strconv.ParseInt(end, 10, 64)
 				if err != nil || r.Start > i {
-					return nil, errors.New("invalid range")
+					return nil, ErrInvalidRange.New(ra)
 				}
 				if i >= size {
 					i = size - 1
@@ -551,4 +563,4 @@ func sumRangesSize(ranges []HTTPRange) (size int64) {
 
 // errNoOverlap is returned by serveContent's ParseRange if first-byte-pos of
 // all of the byte-range-spec values is greater than the content size.
-var errNoOverlap = errors.New("invalid range: failed to overlap")
+var errNoOverlap = ErrInvalidRange.New("failed to overlap")
