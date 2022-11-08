@@ -4,6 +4,7 @@
 package debug
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,7 +12,6 @@ import (
 	"sort"
 	"strings"
 	"sync"
-	"text/template"
 	"unicode"
 
 	"go.uber.org/zap"
@@ -90,11 +90,7 @@ func (panel *Panel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if url == "/" {
-		err := buttonsTemplate.Execute(w, map[string]interface{}{
-			"Name":       panel.name,
-			"URL":        panel.url,
-			"Categories": panel.categories,
-		})
+		err := buttonsTemplateExecute(w, panel)
 		if err != nil {
 			panel.log.Error("buttons template failed", zap.Error(err))
 		}
@@ -119,7 +115,32 @@ func (panel *Panel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var buttonsTemplate = template.Must(template.New("").Parse(`<!DOCTYPE html>
+func buttonsTemplateExecute(w io.Writer, panel *Panel) error {
+	var b bytes.Buffer
+	pf := func(format string, args ...interface{}) {
+		_, _ = fmt.Fprintf(&b, format, args...)
+	}
+
+	pf(buttonsHead)
+	pf("<body>\n")
+
+	pf("<h1>%s Control Panel</h1>\n", panel.name)
+	for _, cat := range panel.categories {
+		pf("<div class='category'>\n")
+		pf("<h2>%s</h2>\n", cat.Name)
+		for _, but := range cat.Buttons {
+			pf("<a class='button' href='%s/%s/%s'>%s</a>\n", panel.url, cat.Slug, but.Slug, but.Name)
+		}
+		pf("</div>\n")
+	}
+
+	pf("</body></html>")
+
+	_, err := b.WriteTo(w)
+	return err
+}
+
+const buttonsHead = `<!DOCTYPE html>
 <html>
 <head>
 <title>Control Panel</title>
@@ -134,19 +155,7 @@ var buttonsTemplate = template.Must(template.New("").Parse(`<!DOCTYPE html>
 }
 </style>
 </head>
-<body>
-	<h1>{{ .Name }} Control Panel</h1>
-	{{ $url := .URL }}
-	{{ range $cat := .Categories }}
-	<div class="category">
-	<h2>{{$cat.Name}}</h2>
-	{{ range $but := $cat.Buttons }}
-	<a class="button" href="{{$url}}/{{$cat.Slug}}/{{$but.Slug}}">{{.Name}}</a>
-	{{ end }}
-	</div>
-	{{ end }}
-</body>
-</html>`))
+`
 
 // slugify converts text to a slug.
 func slugify(s string) string {
