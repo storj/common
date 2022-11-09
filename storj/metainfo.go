@@ -3,6 +3,16 @@
 
 package storj
 
+import "github.com/zeebo/errs"
+
+var (
+	// ErrNoPath is an error class for using empty path.
+	ErrNoPath = errs.Class("no path specified")
+
+	// ErrObjectNotFound is an error class for non-existing object.
+	ErrObjectNotFound = errs.Class("object not found")
+)
+
 // ListDirection specifies listing direction.
 type ListDirection int8
 
@@ -26,33 +36,6 @@ type ListOptions struct {
 	Direction ListDirection
 	Limit     int
 	Status    int32
-}
-
-// ObjectList is a list of objects.
-type ObjectList struct {
-	Bucket string
-	Prefix Path
-	More   bool
-
-	// Items paths are relative to Prefix
-	// To get the full path use list.Prefix + list.Items[0].Path
-	Items []Object
-}
-
-// NextPage returns options for listing the next page.
-func (opts ListOptions) NextPage(list ObjectList) ListOptions {
-	if !list.More || len(list.Items) == 0 {
-		return ListOptions{}
-	}
-
-	return ListOptions{
-		Prefix:    opts.Prefix,
-		Cursor:    list.Items[len(list.Items)-1].Path,
-		Delimiter: opts.Delimiter,
-		Recursive: opts.Recursive,
-		Direction: After,
-		Limit:     opts.Limit,
-	}
 }
 
 // BucketListOptions lists objects.
