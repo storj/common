@@ -2049,7 +2049,7 @@
               },
               {
                 "id": 2,
-                "name": "encrypted_path",
+                "name": "encrypted_object_key",
                 "type": "bytes"
               },
               {
@@ -2199,7 +2199,7 @@
               },
               {
                 "id": 2,
-                "name": "encrypted_path",
+                "name": "encrypted_object_key",
                 "type": "bytes"
               },
               {
@@ -2269,7 +2269,7 @@
               },
               {
                 "id": 2,
-                "name": "encrypted_path",
+                "name": "encrypted_object_key",
                 "type": "bytes"
               },
               {
@@ -2377,7 +2377,7 @@
               },
               {
                 "id": 2,
-                "name": "encrypted_path",
+                "name": "encrypted_object_key",
                 "type": "bytes"
               },
               {
@@ -2529,7 +2529,7 @@
               },
               {
                 "id": 2,
-                "name": "encrypted_path",
+                "name": "encrypted_object_key",
                 "type": "bytes"
               },
               {
@@ -2625,7 +2625,7 @@
             "fields": [
               {
                 "id": 1,
-                "name": "encrypted_path",
+                "name": "encrypted_object_key",
                 "type": "bytes"
               },
               {
@@ -2756,7 +2756,7 @@
               },
               {
                 "id": 2,
-                "name": "encrypted_path",
+                "name": "encrypted_object_key",
                 "type": "bytes"
               },
               {
@@ -2854,7 +2854,7 @@
               },
               {
                 "id": 2,
-                "name": "encrypted_path",
+                "name": "encrypted_object_key",
                 "type": "bytes"
               },
               {

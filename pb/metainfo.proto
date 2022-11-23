@@ -178,7 +178,7 @@ message Object {
     }
 
     bytes  bucket         = 1;
-    bytes  encrypted_path = 2;
+    bytes  encrypted_object_key = 2;
     int32  version        = 3;
     Status status         = 4;
 
@@ -211,7 +211,7 @@ message ObjectBeginRequest {
     RequestHeader header = 15;
 
     bytes  bucket = 1;
-    bytes  encrypted_path = 2;
+    bytes  encrypted_object_key = 2;
     int32  version = 3;
 
     google.protobuf.Timestamp expires_at = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
@@ -226,7 +226,7 @@ message ObjectBeginRequest {
 
 message ObjectBeginResponse {
     bytes  bucket = 1;
-    bytes  encrypted_path = 2;
+    bytes  encrypted_object_key = 2;
     int32  version = 3;
 
     bytes  stream_id = 4 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
@@ -256,7 +256,7 @@ message ObjectCommitResponse {
 message ObjectListPendingStreamsRequest {
     RequestHeader header = 15;
     bytes  bucket = 1;
-    bytes  encrypted_path = 2;
+    bytes  encrypted_object_key = 2;
     bytes  stream_id_cursor = 3;
     int32  limit = 4;
 }
@@ -331,7 +331,7 @@ message ObjectGetRequest {
     RequestHeader header = 15;
 
     bytes  bucket = 1;
-    bytes  encrypted_path = 2;
+    bytes  encrypted_object_key = 2;
     int32  version = 3;
 
     // Feature flag used by satellite to determine if uplink is
@@ -375,7 +375,7 @@ message ObjectListResponse {
 }
 
 message ObjectListItem {
-    bytes  encrypted_path = 1;
+    bytes  encrypted_object_key = 1;
     int32  version        = 2;
     Object.Status status  = 3;
 
@@ -405,7 +405,7 @@ message ObjectBeginDeleteRequest {
     RequestHeader header = 15;
 
     bytes  bucket = 1;
-    bytes  encrypted_path = 2;
+    bytes  encrypted_object_key = 2;
     int32  version = 3;
     int32  status = 4;
     bytes  stream_id = 5 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = true];
@@ -429,7 +429,7 @@ message ObjectGetIPsRequest {
     RequestHeader header = 15;
 
     bytes  bucket = 1;
-    bytes  encrypted_path = 2;
+    bytes  encrypted_object_key = 2;
     int32  version = 3;
 }
 
