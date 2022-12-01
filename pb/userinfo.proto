@@ -1,0 +1,19 @@
+// Copyright (C) 2022 Storj Labs, Inc.
+// See LICENSE for copying information.
+
+syntax = "proto3";
+option go_package = "storj.io/common/pb";
+
+package userinfo;
+
+service UserInfo {
+    rpc Get(GetRequest) returns (GetResponse);
+}
+
+message GetRequest {
+    bytes api_key = 1;
+}
+
+message GetResponse {
+    bool paid_tier = 1;
+}

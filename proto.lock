@@ -6602,6 +6602,54 @@
           }
         ]
       }
+    },
+    {
+      "protopath": "pb:/:userinfo.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "GetRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "api_key",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "GetResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "paid_tier",
+                "type": "bool"
+              }
+            ]
+          }
+        ],
+        "services": [
+          {
+            "name": "UserInfo",
+            "rpcs": [
+              {
+                "name": "Get",
+                "in_type": "GetRequest",
+                "out_type": "GetResponse"
+              }
+            ]
+          }
+        ],
+        "package": {
+          "name": "userinfo"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
+          }
+        ]
+      }
     }
   ]
 }
