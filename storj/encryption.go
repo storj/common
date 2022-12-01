@@ -97,7 +97,7 @@ func NonceFromString(s string) (Nonce, error) {
 // NonceFromBytes converts a byte slice into a nonce.
 func NonceFromBytes(b []byte) (Nonce, error) {
 	if len(b) != len(Nonce{}) {
-		return Nonce{}, ErrNonce.New("not enough bytes to make a nonce; have %d, need %d", len(b), len(NodeID{}))
+		return Nonce{}, ErrNonce.New("not enough bytes to make a nonce; have %d, need %d", len(b), len(Nonce{}))
 	}
 
 	var nonce Nonce
