@@ -42,7 +42,7 @@ func (drpcEncoding_File_userinfo_proto) JSONUnmarshal(buf []byte, msg drpc.Messa
 type DRPCUserInfoClient interface {
 	DRPCConn() drpc.Conn
 
-	Get(ctx context.Context, in *GetRequest) (*GetResponse, error)
+	Get(ctx context.Context, in *GetUserInfoRequest) (*GetUserInfoResponse, error)
 }
 
 type drpcUserInfoClient struct {
@@ -55,8 +55,8 @@ func NewDRPCUserInfoClient(cc drpc.Conn) DRPCUserInfoClient {
 
 func (c *drpcUserInfoClient) DRPCConn() drpc.Conn { return c.cc }
 
-func (c *drpcUserInfoClient) Get(ctx context.Context, in *GetRequest) (*GetResponse, error) {
-	out := new(GetResponse)
+func (c *drpcUserInfoClient) Get(ctx context.Context, in *GetUserInfoRequest) (*GetUserInfoResponse, error) {
+	out := new(GetUserInfoResponse)
 	err := c.cc.Invoke(ctx, "/userinfo.UserInfo/Get", drpcEncoding_File_userinfo_proto{}, in, out)
 	if err != nil {
 		return nil, err
@@ -65,12 +65,12 @@ func (c *drpcUserInfoClient) Get(ctx context.Context, in *GetRequest) (*GetRespo
 }
 
 type DRPCUserInfoServer interface {
-	Get(context.Context, *GetRequest) (*GetResponse, error)
+	Get(context.Context, *GetUserInfoRequest) (*GetUserInfoResponse, error)
 }
 
 type DRPCUserInfoUnimplementedServer struct{}
 
-func (s *DRPCUserInfoUnimplementedServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
+func (s *DRPCUserInfoUnimplementedServer) Get(context.Context, *GetUserInfoRequest) (*GetUserInfoResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
@@ -86,7 +86,7 @@ func (DRPCUserInfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 				return srv.(DRPCUserInfoServer).
 					Get(
 						ctx,
-						in1.(*GetRequest),
+						in1.(*GetUserInfoRequest),
 					)
 			}, DRPCUserInfoServer.Get, true
 	default:
@@ -100,14 +100,14 @@ func DRPCRegisterUserInfo(mux drpc.Mux, impl DRPCUserInfoServer) error {
 
 type DRPCUserInfo_GetStream interface {
 	drpc.Stream
-	SendAndClose(*GetResponse) error
+	SendAndClose(*GetUserInfoResponse) error
 }
 
 type drpcUserInfo_GetStream struct {
 	drpc.Stream
 }
 
-func (x *drpcUserInfo_GetStream) SendAndClose(m *GetResponse) error {
+func (x *drpcUserInfo_GetStream) SendAndClose(m *GetUserInfoResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_userinfo_proto{}); err != nil {
 		return err
 	}

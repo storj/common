@@ -6608,17 +6608,17 @@
       "def": {
         "messages": [
           {
-            "name": "GetRequest",
+            "name": "GetUserInfoRequest",
             "fields": [
               {
                 "id": 1,
-                "name": "api_key",
-                "type": "bytes"
+                "name": "header",
+                "type": "metainfo.RequestHeader"
               }
             ]
           },
           {
-            "name": "GetResponse",
+            "name": "GetUserInfoResponse",
             "fields": [
               {
                 "id": 1,
@@ -6634,10 +6634,15 @@
             "rpcs": [
               {
                 "name": "Get",
-                "in_type": "GetRequest",
-                "out_type": "GetResponse"
+                "in_type": "GetUserInfoRequest",
+                "out_type": "GetUserInfoResponse"
               }
             ]
+          }
+        ],
+        "imports": [
+          {
+            "path": "metainfo.proto"
           }
         ],
         "package": {

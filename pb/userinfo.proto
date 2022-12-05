@@ -4,16 +4,18 @@
 syntax = "proto3";
 option go_package = "storj.io/common/pb";
 
+import "metainfo.proto";
+
 package userinfo;
 
 service UserInfo {
-    rpc Get(GetRequest) returns (GetResponse);
+    rpc Get(GetUserInfoRequest) returns (GetUserInfoResponse);
 }
 
-message GetRequest {
-    bytes api_key = 1;
+message GetUserInfoRequest {
+    metainfo.RequestHeader header = 1;
 }
 
-message GetResponse {
+message GetUserInfoResponse {
     bool paid_tier = 1;
 }
