@@ -9,23 +9,40 @@ import (
 	"time"
 
 	"storj.io/common/sync2"
+	"storj.io/common/time2"
 )
 
 func TestSleep(t *testing.T) {
 	t.Parallel()
 
-	const sleepError = time.Second / 2 // should be larger than most system error with regards to sleep
+	t.Run("against the real clock", func(t *testing.T) {
+		const sleepError = time.Second / 2 // should be larger than most system error with regards to sleep
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 
-	start := time.Now()
-	if !sync2.Sleep(ctx, time.Second) {
-		t.Error("expected true as result")
-	}
-	if time.Since(start) < time.Second-sleepError {
-		t.Error("sleep took too little time")
-	}
+		start := time.Now()
+		if !sync2.Sleep(ctx, time.Second) {
+			t.Error("expected true as result")
+		}
+		if time.Since(start) < time.Second-sleepError {
+			t.Error("sleep took too little time")
+		}
+	})
+
+	t.Run("against a fake clock", func(t *testing.T) {
+		ctx, timeMachine := time2.WithNewMachine(context.Background())
+
+		defer sync2.Go(func() { timeMachine.BlockThenAdvance(1, time.Second) })()
+
+		start := timeMachine.Now()
+		if !sync2.Sleep(ctx, time.Second) {
+			t.Error("expected true as result")
+		}
+		if timeMachine.Since(start) != time.Second {
+			t.Error("sleep took too little time")
+		}
+	})
 }
 
 func TestSleep_Cancel(t *testing.T) {

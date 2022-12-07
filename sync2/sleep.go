@@ -6,17 +6,11 @@ package sync2
 import (
 	"context"
 	"time"
+
+	"storj.io/common/time2"
 )
 
 // Sleep implements sleeping with cancellation.
 func Sleep(ctx context.Context, duration time.Duration) bool {
-	timer := time.NewTimer(duration)
-	defer timer.Stop()
-
-	select {
-	case <-ctx.Done():
-		return false
-	case <-timer.C:
-		return true
-	}
+	return time2.Sleep(ctx, duration)
 }
