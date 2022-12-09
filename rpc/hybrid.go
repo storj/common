@@ -17,7 +17,8 @@ import (
 
 type hybridConnectorForcedKind struct{}
 
-func hyrbidConnectorContextWithForcedKind(ctx context.Context, kind string) context.Context {
+// WithForcedKind can force to use one specific type of connection (for example tcp or quic).
+func WithForcedKind(ctx context.Context, kind string) context.Context {
 	return context.WithValue(ctx, hybridConnectorForcedKind{}, kind)
 }
 
