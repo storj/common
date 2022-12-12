@@ -124,6 +124,58 @@ func TestApproximateFalsePositives(t *testing.T) {
 	}
 }
 
+func TestAddFilter(t *testing.T) {
+	doesNotContainAtLeastOne := func(filter *bloomfilter.Filter, ids []storj.PieceID) bool {
+		for _, id := range ids {
+			if !filter.Contains(id) {
+				return true
+			}
+		}
+		return false
+	}
+
+	ids1 := generateTestIDs(50000)
+	ids2 := generateTestIDs(50000)
+
+	filter1 := bloomfilter.NewOptimal(25000, 0.1)
+	for _, id := range ids1 {
+		filter1.Add(id)
+	}
+
+	filter2 := bloomfilter.NewExplicit(filter1.SeedAndParameters())
+	for _, id := range ids2 {
+		filter2.Add(id)
+	}
+
+	require.True(t, doesNotContainAtLeastOne(filter1, ids2), "at least one ID from the 2nd set should not be contained before merge")
+
+	err := filter1.AddFilter(filter2)
+	require.NoError(t, err)
+
+	require.False(t, doesNotContainAtLeastOne(filter1, ids2), "all IDs from the 2nd set should be contained after merge")
+}
+
+func TestAddFilter_Bad(t *testing.T) {
+	t.Run("mismatched seed", func(t *testing.T) {
+		filter1 := bloomfilter.NewExplicit(100, 4, 300)
+		filter2 := bloomfilter.NewExplicit(101, 4, 300)
+		err := filter1.AddFilter(filter2)
+		require.EqualError(t, err, "cannot merge: mismatched seed: expected 100 but got 101")
+	})
+	t.Run("mismatched heap count", func(t *testing.T) {
+		filter1 := bloomfilter.NewExplicit(100, 4, 300)
+		filter2 := bloomfilter.NewExplicit(100, 5, 300)
+		err := filter1.AddFilter(filter2)
+		require.EqualError(t, err, "cannot merge: mismatched hash count: expected 4 but got 5")
+	})
+	t.Run("mismatched table size", func(t *testing.T) {
+		filter1 := bloomfilter.NewExplicit(100, 4, 300)
+		filter2 := bloomfilter.NewExplicit(100, 4, 400)
+		err := filter1.AddFilter(filter2)
+		require.EqualError(t, err, "cannot merge: mismatched table size: expected 300 but got 400")
+	})
+}
+
 type stats struct {
 	avg, min, mean, max, mse float64
 }
