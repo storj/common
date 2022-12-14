@@ -6129,6 +6129,48 @@
                 ]
               }
             ]
+          },
+          {
+            "name": "VerifyOwnershipRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "piece_ids",
+                "type": "bytes",
+                "is_repeated": true,
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "PieceID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "VerifyOwnershipResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "not_found_piece_ids",
+                "type": "bytes",
+                "is_repeated": true,
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "PieceID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
           }
         ],
         "services": [
@@ -6173,6 +6215,11 @@
                 "name": "RestoreTrash",
                 "in_type": "RestoreTrashRequest",
                 "out_type": "RestoreTrashResponse"
+              },
+              {
+                "name": "VerifyOwnership",
+                "in_type": "VerifyOwnershipRequest",
+                "out_type": "VerifyOwnershipResponse"
               }
             ]
           }

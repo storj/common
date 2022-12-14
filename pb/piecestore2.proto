@@ -20,6 +20,9 @@ service Piecestore {
     rpc DeletePieces(DeletePiecesRequest) returns (DeletePiecesResponse);
     rpc Retain(RetainRequest) returns (RetainResponse);
     rpc RestoreTrash(RestoreTrashRequest) returns (RestoreTrashResponse) {}
+    // VerifyOwnership checks if requested pieces exists on storage node. Will check only
+    // pieces which belongs to the satellite that call this method.
+    rpc VerifyOwnership(VerifyOwnershipRequest) returns (VerifyOwnershipResponse);
 }
 
 // Expected order of messages from uplink:
@@ -137,4 +140,12 @@ message PieceHeader {
     // the OrderLimit authorizing storage of this piece, as signed by the satellite and sent by
     // the uplink
     orders.OrderLimit order_limit = 5 [(gogoproto.nullable) = false];
+}
+
+message VerifyOwnershipRequest {
+    repeated bytes piece_ids = 1 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+}
+
+message VerifyOwnershipResponse {
+    repeated bytes not_found_piece_ids = 1 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
 }

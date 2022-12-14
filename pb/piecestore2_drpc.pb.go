@@ -48,6 +48,7 @@ type DRPCPiecestoreClient interface {
 	DeletePieces(ctx context.Context, in *DeletePiecesRequest) (*DeletePiecesResponse, error)
 	Retain(ctx context.Context, in *RetainRequest) (*RetainResponse, error)
 	RestoreTrash(ctx context.Context, in *RestoreTrashRequest) (*RestoreTrashResponse, error)
+	VerifyOwnership(ctx context.Context, in *VerifyOwnershipRequest) (*VerifyOwnershipResponse, error)
 }
 
 type drpcPiecestoreClient struct {
@@ -172,6 +173,15 @@ func (c *drpcPiecestoreClient) RestoreTrash(ctx context.Context, in *RestoreTras
 	return out, nil
 }
 
+func (c *drpcPiecestoreClient) VerifyOwnership(ctx context.Context, in *VerifyOwnershipRequest) (*VerifyOwnershipResponse, error) {
+	out := new(VerifyOwnershipResponse)
+	err := c.cc.Invoke(ctx, "/piecestore.Piecestore/VerifyOwnership", drpcEncoding_File_piecestore2_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 type DRPCPiecestoreServer interface {
 	Upload(DRPCPiecestore_UploadStream) error
 	Download(DRPCPiecestore_DownloadStream) error
@@ -179,6 +189,7 @@ type DRPCPiecestoreServer interface {
 	DeletePieces(context.Context, *DeletePiecesRequest) (*DeletePiecesResponse, error)
 	Retain(context.Context, *RetainRequest) (*RetainResponse, error)
 	RestoreTrash(context.Context, *RestoreTrashRequest) (*RestoreTrashResponse, error)
+	VerifyOwnership(context.Context, *VerifyOwnershipRequest) (*VerifyOwnershipResponse, error)
 }
 
 type DRPCPiecestoreUnimplementedServer struct{}
@@ -207,9 +218,13 @@ func (s *DRPCPiecestoreUnimplementedServer) RestoreTrash(context.Context, *Resto
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
+func (s *DRPCPiecestoreUnimplementedServer) VerifyOwnership(context.Context, *VerifyOwnershipRequest) (*VerifyOwnershipResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
 type DRPCPiecestoreDescription struct{}
 
-func (DRPCPiecestoreDescription) NumMethods() int { return 6 }
+func (DRPCPiecestoreDescription) NumMethods() int { return 7 }
 
 func (DRPCPiecestoreDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -265,6 +280,15 @@ func (DRPCPiecestoreDescription) Method(n int) (string, drpc.Encoding, drpc.Rece
 						in1.(*RestoreTrashRequest),
 					)
 			}, DRPCPiecestoreServer.RestoreTrash, true
+	case 6:
+		return "/piecestore.Piecestore/VerifyOwnership", drpcEncoding_File_piecestore2_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCPiecestoreServer).
+					VerifyOwnership(
+						ctx,
+						in1.(*VerifyOwnershipRequest),
+					)
+			}, DRPCPiecestoreServer.VerifyOwnership, true
 	default:
 		return "", nil, nil, nil, false
 	}
@@ -387,6 +411,22 @@ type drpcPiecestore_RestoreTrashStream struct {
 }
 
 func (x *drpcPiecestore_RestoreTrashStream) SendAndClose(m *RestoreTrashResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_piecestore2_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCPiecestore_VerifyOwnershipStream interface {
+	drpc.Stream
+	SendAndClose(*VerifyOwnershipResponse) error
+}
+
+type drpcPiecestore_VerifyOwnershipStream struct {
+	drpc.Stream
+}
+
+func (x *drpcPiecestore_VerifyOwnershipStream) SendAndClose(m *VerifyOwnershipResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_piecestore2_proto{}); err != nil {
 		return err
 	}
