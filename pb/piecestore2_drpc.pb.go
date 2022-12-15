@@ -48,7 +48,7 @@ type DRPCPiecestoreClient interface {
 	DeletePieces(ctx context.Context, in *DeletePiecesRequest) (*DeletePiecesResponse, error)
 	Retain(ctx context.Context, in *RetainRequest) (*RetainResponse, error)
 	RestoreTrash(ctx context.Context, in *RestoreTrashRequest) (*RestoreTrashResponse, error)
-	VerifyOwnership(ctx context.Context, in *VerifyOwnershipRequest) (*VerifyOwnershipResponse, error)
+	Exists(ctx context.Context, in *ExistsRequest) (*ExistsResponse, error)
 }
 
 type drpcPiecestoreClient struct {
@@ -173,9 +173,9 @@ func (c *drpcPiecestoreClient) RestoreTrash(ctx context.Context, in *RestoreTras
 	return out, nil
 }
 
-func (c *drpcPiecestoreClient) VerifyOwnership(ctx context.Context, in *VerifyOwnershipRequest) (*VerifyOwnershipResponse, error) {
-	out := new(VerifyOwnershipResponse)
-	err := c.cc.Invoke(ctx, "/piecestore.Piecestore/VerifyOwnership", drpcEncoding_File_piecestore2_proto{}, in, out)
+func (c *drpcPiecestoreClient) Exists(ctx context.Context, in *ExistsRequest) (*ExistsResponse, error) {
+	out := new(ExistsResponse)
+	err := c.cc.Invoke(ctx, "/piecestore.Piecestore/Exists", drpcEncoding_File_piecestore2_proto{}, in, out)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +189,7 @@ type DRPCPiecestoreServer interface {
 	DeletePieces(context.Context, *DeletePiecesRequest) (*DeletePiecesResponse, error)
 	Retain(context.Context, *RetainRequest) (*RetainResponse, error)
 	RestoreTrash(context.Context, *RestoreTrashRequest) (*RestoreTrashResponse, error)
-	VerifyOwnership(context.Context, *VerifyOwnershipRequest) (*VerifyOwnershipResponse, error)
+	Exists(context.Context, *ExistsRequest) (*ExistsResponse, error)
 }
 
 type DRPCPiecestoreUnimplementedServer struct{}
@@ -218,7 +218,7 @@ func (s *DRPCPiecestoreUnimplementedServer) RestoreTrash(context.Context, *Resto
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
-func (s *DRPCPiecestoreUnimplementedServer) VerifyOwnership(context.Context, *VerifyOwnershipRequest) (*VerifyOwnershipResponse, error) {
+func (s *DRPCPiecestoreUnimplementedServer) Exists(context.Context, *ExistsRequest) (*ExistsResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
@@ -281,14 +281,14 @@ func (DRPCPiecestoreDescription) Method(n int) (string, drpc.Encoding, drpc.Rece
 					)
 			}, DRPCPiecestoreServer.RestoreTrash, true
 	case 6:
-		return "/piecestore.Piecestore/VerifyOwnership", drpcEncoding_File_piecestore2_proto{},
+		return "/piecestore.Piecestore/Exists", drpcEncoding_File_piecestore2_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCPiecestoreServer).
-					VerifyOwnership(
+					Exists(
 						ctx,
-						in1.(*VerifyOwnershipRequest),
+						in1.(*ExistsRequest),
 					)
-			}, DRPCPiecestoreServer.VerifyOwnership, true
+			}, DRPCPiecestoreServer.Exists, true
 	default:
 		return "", nil, nil, nil, false
 	}
@@ -417,16 +417,16 @@ func (x *drpcPiecestore_RestoreTrashStream) SendAndClose(m *RestoreTrashResponse
 	return x.CloseSend()
 }
 
-type DRPCPiecestore_VerifyOwnershipStream interface {
+type DRPCPiecestore_ExistsStream interface {
 	drpc.Stream
-	SendAndClose(*VerifyOwnershipResponse) error
+	SendAndClose(*ExistsResponse) error
 }
 
-type drpcPiecestore_VerifyOwnershipStream struct {
+type drpcPiecestore_ExistsStream struct {
 	drpc.Stream
 }
 
-func (x *drpcPiecestore_VerifyOwnershipStream) SendAndClose(m *VerifyOwnershipResponse) error {
+func (x *drpcPiecestore_ExistsStream) SendAndClose(m *ExistsResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_piecestore2_proto{}); err != nil {
 		return err
 	}

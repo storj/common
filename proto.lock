@@ -6131,7 +6131,7 @@
             ]
           },
           {
-            "name": "VerifyOwnershipRequest",
+            "name": "ExistsRequest",
             "fields": [
               {
                 "id": 1,
@@ -6152,23 +6152,13 @@
             ]
           },
           {
-            "name": "VerifyOwnershipResponse",
+            "name": "ExistsResponse",
             "fields": [
               {
                 "id": 1,
-                "name": "not_found_piece_ids",
-                "type": "bytes",
-                "is_repeated": true,
-                "options": [
-                  {
-                    "name": "(gogoproto.customtype)",
-                    "value": "PieceID"
-                  },
-                  {
-                    "name": "(gogoproto.nullable)",
-                    "value": "false"
-                  }
-                ]
+                "name": "missing",
+                "type": "uint32",
+                "is_repeated": true
               }
             ]
           }
@@ -6217,9 +6207,9 @@
                 "out_type": "RestoreTrashResponse"
               },
               {
-                "name": "VerifyOwnership",
-                "in_type": "VerifyOwnershipRequest",
-                "out_type": "VerifyOwnershipResponse"
+                "name": "Exists",
+                "in_type": "ExistsRequest",
+                "out_type": "ExistsResponse"
               }
             ]
           }
