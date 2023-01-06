@@ -3,7 +3,11 @@
 
 package sync2
 
-import "storj.io/common/errs2"
+import (
+	"sync"
+
+	"storj.io/common/errs2"
+)
 
 // Concurrently runs fns concurrently and returns the non-nil errors.
 func Concurrently(fns ...func() error) []error {
@@ -12,4 +16,20 @@ func Concurrently(fns ...func() error) []error {
 		g.Go(fn)
 	}
 	return g.Wait()
+}
+
+// Go runs fns concurrently and returns a func to wait for them to complete.
+//
+// See also Concurrently and errs2.Group.
+func Go(fns ...func()) (wait func()) {
+	var wg sync.WaitGroup
+	wg.Add(len(fns))
+	for _, fn := range fns {
+		fn := fn
+		go func() {
+			defer wg.Done()
+			fn()
+		}()
+	}
+	return wg.Wait
 }
