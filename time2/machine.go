@@ -4,8 +4,8 @@
 package time2
 
 import (
+	"container/heap"
 	"errors"
-	"sort"
 	"sync"
 	"time"
 )
@@ -85,7 +85,7 @@ type machineBackend struct {
 	cond      sync.Cond
 	now       time.Time
 	advancing bool
-	timers    []*fakeTimer
+	timers    timerHeap
 
 	// This variable is only used to aid detection of concurrent calls by
 	// the race detector. It is unused otherwise.
@@ -169,9 +169,9 @@ func (backend *machineBackend) blockThenAdvance(minimumTimerCount int, d time.Du
 		// Reschedule if the timer is on an interval (i.e. a ticker).
 		if timer.interval > 0 {
 			timer.when = timer.when.Add(timer.interval)
-			sortTimers(backend.timers)
+			heap.Fix(&backend.timers, 0)
 		} else {
-			backend.timers, _ = dropTimer(backend.timers, timer)
+			dropTimer(&backend.timers, timer)
 		}
 	}
 
@@ -196,13 +196,12 @@ func (backend *machineBackend) newTimer(interval time.Duration, oneShot bool) *f
 	}
 
 	// Add the new timer and broadcast to wake blockers.
-	backend.timers = append(backend.timers, timer)
-	sortTimers(backend.timers)
+	heap.Push(&backend.timers, timer)
 	backend.cond.Broadcast()
 	return timer
 }
 
-func (backend *machineBackend) resetTimer(timer *fakeTimer, d time.Duration) bool {
+func (backend *machineBackend) resetTimer(timer *fakeTimer, d time.Duration) (active bool) {
 	if d <= 0 {
 		panic(errors.New("non-positive interval for Reset"))
 	}
@@ -214,30 +213,23 @@ func (backend *machineBackend) resetTimer(timer *fakeTimer, d time.Duration) boo
 		timer.interval = d
 	}
 
-	// Add the timer if it isn't already present
-	active := false
-	for _, candidate := range backend.timers {
+	for i, candidate := range backend.timers {
 		if candidate == timer {
-			active = true
+			heap.Fix(&backend.timers, i)
+			return true
 		}
 	}
-	if !active {
-		backend.timers = append(backend.timers, timer)
-	}
-	sortTimers(backend.timers)
+
+	heap.Push(&backend.timers, timer)
 	backend.cond.Broadcast()
-	return active
+	return false
 }
 
 func (backend *machineBackend) stopTimer(timer *fakeTimer) bool {
 	backend.mu.Lock()
 	defer backend.mu.Unlock()
 
-	// Remove the timer from the list of timers.
-	var active bool
-	backend.timers, active = dropTimer(backend.timers, timer)
-
-	return active
+	return dropTimer(&backend.timers, timer)
 }
 
 type fakeTimer struct {
@@ -275,19 +267,27 @@ func (ticker *fakeTicker) Reset(d time.Duration) { ticker.timer.Reset(d) }
 // Stop provides functionality equivalent to the time.Ticker method of the same name.
 func (ticker *fakeTicker) Stop() { ticker.timer.Stop() }
 
-func sortTimers(timers []*fakeTimer) {
-	sort.Slice(timers, func(i, j int) bool {
-		return timers[i].when.Before(timers[j].when)
-	})
-}
-
-func dropTimer(timers []*fakeTimer, timer *fakeTimer) (_ []*fakeTimer, dropped bool) {
-	next := 0
-	for _, candidate := range timers {
-		if candidate != timer {
-			timers[next] = timer
-			next++
+func dropTimer(timers *timerHeap, timer *fakeTimer) (dropped bool) {
+	for i, candidate := range *timers {
+		if candidate == timer {
+			heap.Remove(timers, i)
+			return true
 		}
 	}
-	return timers[0:next], next < len(timers)
+	return false
+}
+
+type timerHeap []*fakeTimer
+
+func (h timerHeap) Len() int            { return len(h) }
+func (h timerHeap) Less(i, j int) bool  { return h[i].when.Before(h[j].when) }
+func (h timerHeap) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }
+func (h *timerHeap) Push(x interface{}) { *h = append(*h, x.(*fakeTimer)) }
+
+func (h *timerHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
 }
