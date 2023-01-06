@@ -86,18 +86,18 @@ func TestTicker(t *testing.T) {
 			default:
 			}
 
-			timeMachine.BlockThenAdvance(1, testDuration/2)
+			timeMachine.BlockThenAdvance(ctx, 1, testDuration/2)
 			select {
 			case <-ticker.Chan():
 				t.Fatal("ticker should not be ticked")
 			default:
 			}
 
-			timeMachine.BlockThenAdvance(1, testDuration/2)
+			timeMachine.BlockThenAdvance(ctx, 1, testDuration/2)
 			times = append(times, <-ticker.Chan())
-			timeMachine.BlockThenAdvance(1, testDuration)
+			timeMachine.BlockThenAdvance(ctx, 1, testDuration)
 			times = append(times, <-ticker.Chan())
-			timeMachine.BlockThenAdvance(1, testDuration)
+			timeMachine.BlockThenAdvance(ctx, 1, testDuration)
 			times = append(times, <-ticker.Chan())
 
 			select {
@@ -155,9 +155,9 @@ func TestTimer(t *testing.T) {
 				assertStopAndResetReturnValues(t, timer)
 			})
 
-			timeMachine.BlockThenAdvance(1, testDuration)
-			timeMachine.BlockThenAdvance(1, testDuration)
-			timeMachine.BlockThenAdvance(1, testDuration)
+			timeMachine.BlockThenAdvance(ctx, 1, testDuration)
+			timeMachine.BlockThenAdvance(ctx, 1, testDuration)
+			timeMachine.BlockThenAdvance(ctx, 1, testDuration)
 
 			wait()
 
@@ -177,7 +177,7 @@ func TestSleep(t *testing.T) {
 	})
 	t.Run("with override", func(t *testing.T) {
 		elapsed := testWithOverride(t, func(ctx context.Context, tb testing.TB, timeMachine *time2.Machine) {
-			defer sync2.Go(func() { timeMachine.BlockThenAdvance(1, testDuration) })()
+			defer sync2.Go(func() { timeMachine.BlockThenAdvance(ctx, 1, testDuration) })()
 			time2.Sleep(ctx, testDuration)
 		})
 		require.Less(t, elapsed, failAfter)
@@ -193,7 +193,10 @@ func TestSleep(t *testing.T) {
 }
 
 func testWithOverride(tb testing.TB, fn func(ctx context.Context, tb testing.TB, timeMachine *time2.Machine)) time.Duration {
-	ctx, timeMachine := time2.WithNewMachine(context.Background(), time2.WithTimeAt(testDate))
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	defer cancel()
+
+	ctx, timeMachine := time2.WithNewMachine(ctx, time2.WithTimeAt(testDate))
 	start := time.Now()
 	fn(ctx, tb, timeMachine)
 	return time.Since(start)

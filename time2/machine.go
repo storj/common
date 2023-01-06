@@ -5,6 +5,7 @@ package time2
 
 import (
 	"container/heap"
+	"context"
 	"errors"
 	"sync"
 	"time"
@@ -51,21 +52,23 @@ func (tm *Machine) Clock() Clock {
 // Advance advances the clock forward, triggering all expired timers/tickers
 // tracked by the time machine. It should not be called concurrently.
 func (tm *Machine) Advance(d time.Duration) {
-	tm.backend.blockThenAdvance(0, d)
+	tm.backend.blockThenAdvance(context.Background(), 0, d)
 }
 
 // Block blocks execution until the scheduled timer count reaches the provided
 // minimum. Timers are scheduled until triggered or stopped. Tickers are always
-// scheduled until stopped. It should not be called concurrently.
-func (tm *Machine) Block(minimumTimerCount int) {
-	tm.backend.blockThenAdvance(minimumTimerCount, 0)
+// scheduled until stopped. It should not be called concurrently. Returns false
+// if the context became done while blocking.
+func (tm *Machine) Block(ctx context.Context, minimumTimerCount int) bool {
+	return tm.backend.blockThenAdvance(ctx, minimumTimerCount, 0)
 }
 
 // BlockThenAdvance is a convenience method that blocks on the minimum timer
-// count and then advances the clock, triggering any expired timers/tickers.
-// It should not be called concurrently.
-func (tm *Machine) BlockThenAdvance(minimumTimerCount int, d time.Duration) {
-	tm.backend.blockThenAdvance(minimumTimerCount, d)
+// count and then advances the clock, triggering any expired timers/tickers. It
+// should not be called concurrently. Returns false if the context became done
+// while blocking.
+func (tm *Machine) BlockThenAdvance(ctx context.Context, minimumTimerCount int, d time.Duration) bool {
+	return tm.backend.blockThenAdvance(ctx, minimumTimerCount, d)
 }
 
 // Now provides functionality equivalent to time.Now according to the
@@ -124,7 +127,7 @@ func (backend *machineBackend) NewTimer(d time.Duration) Timer {
 	return backend.newTimer(d, true)
 }
 
-func (backend *machineBackend) blockThenAdvance(minimumTimerCount int, d time.Duration) {
+func (backend *machineBackend) blockThenAdvance(ctx context.Context, minimumTimerCount int, d time.Duration) bool {
 	if d < 0 {
 		// We cannot go back, marty!
 		panic(errors.New("negative delta for advance"))
@@ -146,7 +149,27 @@ func (backend *machineBackend) blockThenAdvance(minimumTimerCount int, d time.Du
 		backend.advancing = false
 	}()
 
+	ctx, cancel := context.WithCancel(ctx)
+
+	// Unblock the condition variable if the context is finished. It would
+	// be nice to use primitives from the sync2 package, but we can't since
+	// that would introduce an import cycle.
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		<-ctx.Done()
+		backend.cond.Broadcast()
+	}()
+	defer func() {
+		cancel()
+		wg.Wait()
+	}()
+
 	for len(backend.timers) < minimumTimerCount {
+		if ctx.Err() != nil {
+			return false
+		}
 		backend.cond.Wait()
 	}
 
@@ -176,6 +199,7 @@ func (backend *machineBackend) blockThenAdvance(minimumTimerCount int, d time.Du
 	}
 
 	backend.now = now
+	return true
 }
 
 func (backend *machineBackend) newTimer(interval time.Duration, oneShot bool) *fakeTimer {

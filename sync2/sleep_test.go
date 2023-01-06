@@ -33,7 +33,7 @@ func TestSleep(t *testing.T) {
 	t.Run("against a fake clock", func(t *testing.T) {
 		ctx, timeMachine := time2.WithNewMachine(context.Background())
 
-		defer sync2.Go(func() { timeMachine.BlockThenAdvance(1, time.Second) })()
+		defer sync2.Go(func() { timeMachine.BlockThenAdvance(ctx, 1, time.Second) })()
 
 		start := timeMachine.Now()
 		if !sync2.Sleep(ctx, time.Second) {
