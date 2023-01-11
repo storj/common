@@ -3179,6 +3179,63 @@
             ]
           },
           {
+            "name": "RetryBeginSegmentPiecesRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "segment_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "SegmentID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "retry_piece_numbers",
+                "type": "int32",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "RetryBeginSegmentPiecesResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "segment_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "SegmentID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "addressed_limits",
+                "type": "AddressedOrderLimit",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
             "name": "CommitSegmentRequest",
             "fields": [
               {
@@ -4513,6 +4570,11 @@
                 "name": "BeginSegment",
                 "in_type": "BeginSegmentRequest",
                 "out_type": "BeginSegmentResponse"
+              },
+              {
+                "name": "RetryBeginSegmentPieces",
+                "in_type": "RetryBeginSegmentPiecesRequest",
+                "out_type": "RetryBeginSegmentPiecesResponse"
               },
               {
                 "name": "CommitSegment",

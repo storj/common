@@ -57,6 +57,7 @@ type DRPCMetainfoClient interface {
 	DownloadObject(ctx context.Context, in *DownloadObjectRequest) (*DownloadObjectResponse, error)
 	UpdateObjectMetadata(ctx context.Context, in *UpdateObjectMetadataRequest) (*UpdateObjectMetadataResponse, error)
 	BeginSegment(ctx context.Context, in *BeginSegmentRequest) (*BeginSegmentResponse, error)
+	RetryBeginSegmentPieces(ctx context.Context, in *RetryBeginSegmentPiecesRequest) (*RetryBeginSegmentPiecesResponse, error)
 	CommitSegment(ctx context.Context, in *CommitSegmentRequest) (*CommitSegmentResponse, error)
 	MakeInlineSegment(ctx context.Context, in *MakeInlineSegmentRequest) (*MakeInlineSegmentResponse, error)
 	BeginDeleteSegment(ctx context.Context, in *BeginDeleteSegmentRequest) (*BeginDeleteSegmentResponse, error)
@@ -218,6 +219,15 @@ func (c *drpcMetainfoClient) BeginSegment(ctx context.Context, in *BeginSegmentR
 	return out, nil
 }
 
+func (c *drpcMetainfoClient) RetryBeginSegmentPieces(ctx context.Context, in *RetryBeginSegmentPiecesRequest) (*RetryBeginSegmentPiecesResponse, error) {
+	out := new(RetryBeginSegmentPiecesResponse)
+	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/RetryBeginSegmentPieces", drpcEncoding_File_metainfo_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *drpcMetainfoClient) CommitSegment(ctx context.Context, in *CommitSegmentRequest) (*CommitSegmentResponse, error) {
 	out := new(CommitSegmentResponse)
 	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/CommitSegment", drpcEncoding_File_metainfo_proto{}, in, out)
@@ -360,6 +370,7 @@ type DRPCMetainfoServer interface {
 	DownloadObject(context.Context, *DownloadObjectRequest) (*DownloadObjectResponse, error)
 	UpdateObjectMetadata(context.Context, *UpdateObjectMetadataRequest) (*UpdateObjectMetadataResponse, error)
 	BeginSegment(context.Context, *BeginSegmentRequest) (*BeginSegmentResponse, error)
+	RetryBeginSegmentPieces(context.Context, *RetryBeginSegmentPiecesRequest) (*RetryBeginSegmentPiecesResponse, error)
 	CommitSegment(context.Context, *CommitSegmentRequest) (*CommitSegmentResponse, error)
 	MakeInlineSegment(context.Context, *MakeInlineSegmentRequest) (*MakeInlineSegmentResponse, error)
 	BeginDeleteSegment(context.Context, *BeginDeleteSegmentRequest) (*BeginDeleteSegmentResponse, error)
@@ -438,6 +449,10 @@ func (s *DRPCMetainfoUnimplementedServer) BeginSegment(context.Context, *BeginSe
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
+func (s *DRPCMetainfoUnimplementedServer) RetryBeginSegmentPieces(context.Context, *RetryBeginSegmentPiecesRequest) (*RetryBeginSegmentPiecesResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
 func (s *DRPCMetainfoUnimplementedServer) CommitSegment(context.Context, *CommitSegmentRequest) (*CommitSegmentResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
@@ -496,7 +511,7 @@ func (s *DRPCMetainfoUnimplementedServer) FinishCopyObject(context.Context, *Fin
 
 type DRPCMetainfoDescription struct{}
 
-func (DRPCMetainfoDescription) NumMethods() int { return 29 }
+func (DRPCMetainfoDescription) NumMethods() int { return 30 }
 
 func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -636,6 +651,15 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 					)
 			}, DRPCMetainfoServer.BeginSegment, true
 	case 15:
+		return "/metainfo.Metainfo/RetryBeginSegmentPieces", drpcEncoding_File_metainfo_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCMetainfoServer).
+					RetryBeginSegmentPieces(
+						ctx,
+						in1.(*RetryBeginSegmentPiecesRequest),
+					)
+			}, DRPCMetainfoServer.RetryBeginSegmentPieces, true
+	case 16:
 		return "/metainfo.Metainfo/CommitSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -644,7 +668,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*CommitSegmentRequest),
 					)
 			}, DRPCMetainfoServer.CommitSegment, true
-	case 16:
+	case 17:
 		return "/metainfo.Metainfo/MakeInlineSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -653,7 +677,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*MakeInlineSegmentRequest),
 					)
 			}, DRPCMetainfoServer.MakeInlineSegment, true
-	case 17:
+	case 18:
 		return "/metainfo.Metainfo/BeginDeleteSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -662,7 +686,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BeginDeleteSegmentRequest),
 					)
 			}, DRPCMetainfoServer.BeginDeleteSegment, true
-	case 18:
+	case 19:
 		return "/metainfo.Metainfo/FinishDeleteSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -671,7 +695,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*FinishDeleteSegmentRequest),
 					)
 			}, DRPCMetainfoServer.FinishDeleteSegment, true
-	case 19:
+	case 20:
 		return "/metainfo.Metainfo/ListSegments", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -680,7 +704,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*ListSegmentsRequest),
 					)
 			}, DRPCMetainfoServer.ListSegments, true
-	case 20:
+	case 21:
 		return "/metainfo.Metainfo/DownloadSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -689,7 +713,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*DownloadSegmentRequest),
 					)
 			}, DRPCMetainfoServer.DownloadSegment, true
-	case 21:
+	case 22:
 		return "/metainfo.Metainfo/DeletePart", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -698,7 +722,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*DeletePartRequest),
 					)
 			}, DRPCMetainfoServer.DeletePart, true
-	case 22:
+	case 23:
 		return "/metainfo.Metainfo/Batch", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -707,7 +731,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BatchRequest),
 					)
 			}, DRPCMetainfoServer.Batch, true
-	case 23:
+	case 24:
 		return "/metainfo.Metainfo/ProjectInfo", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -716,7 +740,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*ProjectInfoRequest),
 					)
 			}, DRPCMetainfoServer.ProjectInfo, true
-	case 24:
+	case 25:
 		return "/metainfo.Metainfo/RevokeAPIKey", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -725,7 +749,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*RevokeAPIKeyRequest),
 					)
 			}, DRPCMetainfoServer.RevokeAPIKey, true
-	case 25:
+	case 26:
 		return "/metainfo.Metainfo/BeginMoveObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -734,7 +758,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BeginMoveObjectRequest),
 					)
 			}, DRPCMetainfoServer.BeginMoveObject, true
-	case 26:
+	case 27:
 		return "/metainfo.Metainfo/FinishMoveObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -743,7 +767,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*FinishMoveObjectRequest),
 					)
 			}, DRPCMetainfoServer.FinishMoveObject, true
-	case 27:
+	case 28:
 		return "/metainfo.Metainfo/BeginCopyObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -752,7 +776,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BeginCopyObjectRequest),
 					)
 			}, DRPCMetainfoServer.BeginCopyObject, true
-	case 28:
+	case 29:
 		return "/metainfo.Metainfo/FinishCopyObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -1004,6 +1028,22 @@ type drpcMetainfo_BeginSegmentStream struct {
 }
 
 func (x *drpcMetainfo_BeginSegmentStream) SendAndClose(m *BeginSegmentResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCMetainfo_RetryBeginSegmentPiecesStream interface {
+	drpc.Stream
+	SendAndClose(*RetryBeginSegmentPiecesResponse) error
+}
+
+type drpcMetainfo_RetryBeginSegmentPiecesStream struct {
+	drpc.Stream
+}
+
+func (x *drpcMetainfo_RetryBeginSegmentPiecesStream) SendAndClose(m *RetryBeginSegmentPiecesResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
 		return err
 	}
