@@ -42,6 +42,7 @@ service Metainfo {
     rpc UpdateObjectMetadata(ObjectUpdateMetadataRequest) returns (ObjectUpdateMetadataResponse);
 
     rpc BeginSegment(SegmentBeginRequest) returns (SegmentBeginResponse);
+    rpc ExchangeSegmentPieceOrders(SegmentExchangePieceOrdersRequest) returns (SegmentExchangePieceOrdersResponse);
     rpc CommitSegment(SegmentCommitRequest) returns (SegmentCommitResponse);
     rpc MakeInlineSegment(SegmentMakeInlineRequest) returns (SegmentMakeInlineResponse);
     rpc BeginDeleteSegment(SegmentBeginDeleteRequest) returns (SegmentBeginDeleteResponse);
@@ -507,6 +508,18 @@ message SegmentBeginResponse {
     repeated AddressedOrderLimit addressed_limits = 2;
     bytes                        private_key = 3 [(gogoproto.customtype) = "PiecePrivateKey", (gogoproto.nullable) = false];
     pointerdb.RedundancyScheme   redundancy_scheme = 4;
+}
+
+message SegmentExchangePieceOrdersRequest {
+    RequestHeader header = 15;
+
+    bytes           segment_id = 1 [(gogoproto.customtype) = "SegmentID", (gogoproto.nullable) = false];
+    repeated int32  piece_numbers = 2;
+}
+
+message SegmentExchangePieceOrdersResponse {
+    bytes                        segment_id = 1 [(gogoproto.customtype) = "SegmentID", (gogoproto.nullable) = false];
+    repeated AddressedOrderLimit addressed_limits = 2;
 }
 
 message SegmentCommitRequest {
