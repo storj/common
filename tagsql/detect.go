@@ -64,9 +64,11 @@ func DetectContextSupport(db *sql.DB) (ContextSupport, error) {
 	case typ.PkgPath() == "github.com/lib/pq" && typ.Name() == "Driver":
 		return SupportNone, nil
 	case typ.PkgPath() == "storj.io/private/dbutil/cockroachutil" && typ.Name() == "Driver":
-		return SupportTransactions, nil
+		return SupportAll, nil
 	case typ.PkgPath() == "github.com/jackc/pgx/v4/stdlib" && typ.Name() == "Driver":
-		return SupportTransactions, nil
+		return SupportAll, nil
+	case typ.PkgPath() == "github.com/jackc/pgx/v5/stdlib" && typ.Name() == "Driver":
+		return SupportAll, nil
 	default:
 		return SupportNone, errs.New("sql driver %q %q unsupported", typ.PkgPath(), typ.Name())
 	}

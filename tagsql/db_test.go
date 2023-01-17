@@ -46,7 +46,7 @@ func run(t *testing.T, fn func(*testcontext.Context, *testing.T, tagsql.DB, tags
 		db.SetMaxOpenConns(100)
 		db.SetMaxIdleConns(100)
 
-		fn(ctx, t, db.DB, tagsql.SupportNone)
+		fn(ctx, t, db.DB, tagsql.SupportAll)
 	})
 
 	t.Run("jackc-pgx-cockroach", func(t *testing.T) {
@@ -62,6 +62,6 @@ func run(t *testing.T, fn func(*testcontext.Context, *testing.T, tagsql.DB, tags
 		db.SetMaxOpenConns(100)
 		db.SetMaxIdleConns(100)
 
-		fn(ctx, t, db.DB, tagsql.SupportNone)
+		fn(ctx, t, db.DB, tagsql.SupportAll)
 	})
 }

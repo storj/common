@@ -52,7 +52,7 @@ func TestDetect(t *testing.T) {
 		if support.Transactions() {
 			var tx tagsql.Tx
 			tx, err = db.Begin(ctx)
-			require.Error(t, err)
+			require.NoError(t, err)
 			if tx != nil {
 				require.NoError(t, tx.Rollback())
 			}
