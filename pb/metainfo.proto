@@ -276,6 +276,15 @@ message ObjectDownloadRequest {
     int32 limit = 4;
     // range of the object to download.
     Range range = 3;
+
+    // Number of nodes requested to download from. This is a hint for satellite to request nodes more than the optimal number,
+    // calculated by the satellite. Satellite may or may not return with more nodes as requested.
+    //
+    // If you are not sure, use 0. In this case satellite will calculate the optimal number.
+    //
+    // In some specific cases it can be useful to request more nodes, downloading from more nodes can be faster, but also
+    // more expensive.
+    int32 desired_nodes = 5;
 }
 
 message Range {
@@ -614,6 +623,9 @@ message SegmentDownloadRequest {
 
     bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
     SegmentPosition cursor_position = 2;
+
+    // see ObjectDownloadRequest.desired_nodes for more explanation.
+    int32 desired_nodes = 3;
 }
 
 message SegmentDownloadResponse {

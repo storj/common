@@ -2435,6 +2435,11 @@
                 "id": 3,
                 "name": "range",
                 "type": "Range"
+              },
+              {
+                "id": 5,
+                "name": "desired_nodes",
+                "type": "int32"
               }
             ]
           },
@@ -3617,6 +3622,11 @@
                 "id": 2,
                 "name": "cursor_position",
                 "type": "SegmentPosition"
+              },
+              {
+                "id": 3,
+                "name": "desired_nodes",
+                "type": "int32"
               }
             ]
           },
