@@ -75,7 +75,7 @@ pipeline {
 
                 stage('Go Compatibility') {
                     steps {
-                        sh 'check-cross-compile -compiler "go,go1.17.13" storj.io/common/...'
+                        sh 'check-cross-compile -compiler "go,go.min" storj.io/common/...'
                     }
                 }
             }
