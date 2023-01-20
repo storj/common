@@ -5,9 +5,12 @@ package storj
 
 import (
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/zeebo/errs"
+
+	"storj.io/common/base58"
 )
 
 var (
@@ -17,8 +20,9 @@ var (
 
 // NodeURL defines a structure for connecting to a node.
 type NodeURL struct {
-	ID      NodeID
-	Address string
+	ID        NodeID
+	Address   string
+	NoiseInfo NoiseInfo
 }
 
 // ParseNodeURL parses node URL string.
@@ -35,6 +39,9 @@ type NodeURL struct {
 //
 //	without host:
 //	  12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@
+//
+//	with noise information:
+//	  12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@33.20.0.1:7777?noise_pub=12vha9oTFnerxY&noise_proto=1
 func ParseNodeURL(s string) (NodeURL, error) {
 	if s == "" {
 		return NodeURL{}, nil
@@ -62,30 +69,52 @@ func ParseNodeURL(s string) (NodeURL, error) {
 	}
 	node.Address = u.Host
 
+	query := u.Query()
+	if query.Get("noise_pub") != "" {
+		pubKey, _, err := base58.CheckDecode(query.Get("noise_pub"))
+		if err != nil {
+			return NodeURL{}, ErrNodeURL.Wrap(err)
+		}
+		node.NoiseInfo.PublicKey = string(pubKey)
+	}
+	if query.Get("noise_proto") != "" {
+		protoInt, err := strconv.Atoi(query.Get("noise_proto"))
+		if err != nil {
+			return NodeURL{}, ErrNodeURL.Wrap(err)
+		}
+		node.NoiseInfo.Proto = NoiseProto(protoInt)
+	}
+
 	return node, nil
 }
 
 // IsZero returns whether the url is empty.
-func (url NodeURL) IsZero() bool {
-	return url == NodeURL{}
+func (u NodeURL) IsZero() bool {
+	return u == NodeURL{}
 }
 
 // String converts NodeURL to a string.
-func (url NodeURL) String() string {
-	if url.ID.IsZero() {
-		return url.Address
+func (u NodeURL) String() string {
+	vals := url.Values{}
+	u.NoiseInfo.WriteTo(vals)
+	suffix := ""
+	if len(vals) > 0 {
+		suffix = "?" + vals.Encode()
 	}
-	return url.ID.String() + "@" + url.Address
+	if u.ID.IsZero() {
+		return u.Address + suffix
+	}
+	return u.ID.String() + "@" + u.Address + suffix
 }
 
 // Set implements flag.Value interface.
-func (url *NodeURL) Set(s string) error {
+func (u *NodeURL) Set(s string) error {
 	parsed, err := ParseNodeURL(s)
 	if err != nil {
 		return ErrNodeURL.Wrap(err)
 	}
 
-	*url = parsed
+	*u = parsed
 	return nil
 }
 

@@ -9,6 +9,7 @@ package contact;
 import "gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "node.proto";
+import "noise.proto";
 
 service Contact {
     rpc PingNode(ContactPingRequest) returns (ContactPingResponse);
@@ -25,6 +26,11 @@ message CheckInRequest {
     node.NodeVersion version = 2;
     node.NodeCapacity capacity = 3;
     node.NodeOperator operator = 4;
+
+    // CheckIn may happen over TLS, which means there is not necessarily an
+    // opportunity to use NoiseSessionAttestation instead of
+    // NoiseKeyAttestation.
+    noise.NoiseKeyAttestation noise_key_attestation = 5;
 }
 
 message CheckInResponse {
@@ -46,6 +52,11 @@ message ContactPingResponse {}
 message PingMeRequest {
     string address = 1;
     node.NodeTransport transport = 2;
+
+    // PingMe may happen over TLS, which means there is not necessarily an
+    // opportunity to use NoiseSessionAttestation instead of
+    // NoiseKeyAttestation.
+    noise.NoiseKeyAttestation noise_key_attestation = 3;
 }
 
 message PingMeResponse {}

@@ -173,6 +173,11 @@
                 "id": 4,
                 "name": "operator",
                 "type": "node.NodeOperator"
+              },
+              {
+                "id": 5,
+                "name": "noise_key_attestation",
+                "type": "noise.NoiseKeyAttestation"
               }
             ]
           },
@@ -237,6 +242,11 @@
                 "id": 2,
                 "name": "transport",
                 "type": "node.NodeTransport"
+              },
+              {
+                "id": 3,
+                "name": "noise_key_attestation",
+                "type": "noise.NoiseKeyAttestation"
               }
             ]
           },
@@ -285,6 +295,9 @@
           },
           {
             "path": "node.proto"
+          },
+          {
+            "path": "noise.proto"
           }
         ],
         "package": {
@@ -4643,11 +4656,15 @@
             "name": "NodeTransport",
             "enum_fields": [
               {
-                "name": "TCP_TLS_GRPC"
+                "name": "TCP_TLS_RPC"
               },
               {
-                "name": "QUIC_GRPC",
+                "name": "QUIC_RPC",
                 "integer": 1
+              },
+              {
+                "name": "TCP_NOISE_RPC",
+                "integer": 2
               }
             ]
           }
@@ -4675,17 +4692,6 @@
                 "id": 2,
                 "name": "address",
                 "type": "NodeAddress"
-              },
-              {
-                "id": 14,
-                "name": "deprecated_last_ip",
-                "type": "string",
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
               }
             ],
             "reserved_ids": [
@@ -4699,7 +4705,8 @@
               10,
               11,
               12,
-              13
+              13,
+              14
             ],
             "reserved_names": [
               "type",
@@ -4712,22 +4719,30 @@
               "update_latency",
               "update_audit_success",
               "update_uptime",
-              "version"
+              "version",
+              "last_ip",
+              "deprecated_last_ip"
             ]
           },
           {
             "name": "NodeAddress",
             "fields": [
               {
-                "id": 1,
-                "name": "transport",
-                "type": "NodeTransport"
-              },
-              {
                 "id": 2,
                 "name": "address",
                 "type": "string"
+              },
+              {
+                "id": 3,
+                "name": "noise_info",
+                "type": "noise.NoiseInfo"
               }
+            ],
+            "reserved_ids": [
+              1
+            ],
+            "reserved_names": [
+              "transport"
             ]
           },
           {
@@ -4844,6 +4859,9 @@
           },
           {
             "path": "google/protobuf/timestamp.proto"
+          },
+          {
+            "path": "noise.proto"
           }
         ],
         "package": {
@@ -5234,6 +5252,153 @@
         ],
         "package": {
           "name": "nodestats"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
+          }
+        ]
+      }
+    },
+    {
+      "protopath": "pb:/:noise.proto",
+      "def": {
+        "enums": [
+          {
+            "name": "NoiseProtocol",
+            "enum_fields": [
+              {
+                "name": "NOISE_UNSET"
+              },
+              {
+                "name": "NOISE_IK_25519_CHACHAPOLY_BLAKE2B",
+                "integer": 1
+              },
+              {
+                "name": "NOISE_IK_25519_AESGCM_BLAKE2B",
+                "integer": 2
+              }
+            ]
+          }
+        ],
+        "messages": [
+          {
+            "name": "NoiseInfo",
+            "fields": [
+              {
+                "id": 1,
+                "name": "proto",
+                "type": "NoiseProtocol"
+              },
+              {
+                "id": 2,
+                "name": "public_key",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "NoiseKeyAttestation",
+            "fields": [
+              {
+                "id": 1,
+                "name": "node_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "NodeID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "node_certchain",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "noise_proto",
+                "type": "NoiseProtocol"
+              },
+              {
+                "id": 4,
+                "name": "noise_public_key",
+                "type": "bytes"
+              },
+              {
+                "id": 5,
+                "name": "timestamp",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 6,
+                "name": "signature",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "NoiseSessionAttestation",
+            "fields": [
+              {
+                "id": 1,
+                "name": "node_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "NodeID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "node_certchain",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "noise_handshake_hash",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "signature",
+                "type": "bytes"
+              }
+            ]
+          }
+        ],
+        "imports": [
+          {
+            "path": "gogo.proto"
+          },
+          {
+            "path": "google/protobuf/timestamp.proto"
+          }
+        ],
+        "package": {
+          "name": "noise"
         },
         "options": [
           {
@@ -5934,6 +6099,11 @@
                 "id": 1,
                 "name": "done",
                 "type": "orders.PieceHash"
+              },
+              {
+                "id": 2,
+                "name": "node_certchain",
+                "type": "bytes"
               }
             ]
           },

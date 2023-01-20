@@ -8,15 +8,16 @@ package node;
 
 import "gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "noise.proto";
 
-// Node represents a node in the overlay network.
-// Node is info for a updating a single storagenode, used in the Update rpc calls.
+// Node represents a serialized NodeURL. A NodeURL should be able to be
+// converted to a pb.Node and vice versa.
 message Node {
     bytes id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
     NodeAddress address = 2;
-    reserved 3 to 13;
-    string deprecated_last_ip = 14 [deprecated=true];
-    reserved "type", "restrictions", "reputation", "metadata", "latency_list", "audit_success", "is_up", "update_latency", "update_audit_success", "update_uptime", "version";
+
+    reserved 3 to 14;
+    reserved "type", "restrictions", "reputation", "metadata", "latency_list", "audit_success", "is_up", "update_latency", "update_audit_success", "update_uptime", "version", "last_ip", "deprecated_last_ip";
 }
 
 // NodeType is an enum of possible node types.
@@ -28,16 +29,22 @@ enum NodeType {
     BOOTSTRAP = 4 [deprecated=true];
 }
 
-// NodeAddress contains the information needed to communicate with a node on the network.
+// NodeAddress contains the information needed to communicate with a node on
+// the network.
 message NodeAddress {
-    NodeTransport transport = 1;
     string address = 2;
+
+    noise.NoiseInfo noise_info = 3;
+
+    reserved 1;
+    reserved "transport";
 }
 
 // NodeTransport is an enum of possible transports for the overlay network.
 enum NodeTransport {
-    TCP_TLS_GRPC = 0;
-    QUIC_GRPC = 1;
+    TCP_TLS_RPC = 0;
+    QUIC_RPC = 1;
+    TCP_NOISE_RPC = 2;
 }
 
 // NodeOperator contains info about the storage node operator.

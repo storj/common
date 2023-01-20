@@ -56,6 +56,9 @@ message PieceUploadRequest {
 
 message PieceUploadResponse {
     orders.PieceHash done = 1;
+    // this is for validating the PieceHash signature if the cert chain is
+    // unable to be pulled off the connection (Noise instead of TLS).
+    bytes node_certchain = 2;
 }
 
 // Expected order of messages from uplink:
