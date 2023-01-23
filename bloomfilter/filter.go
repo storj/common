@@ -9,6 +9,7 @@ import (
 	"math"
 	"math/rand"
 
+	"github.com/bmkessler/fastdiv"
 	"github.com/zeebo/errs"
 
 	"storj.io/common/memory"
@@ -33,6 +34,8 @@ type Filter struct {
 	seed      byte
 	hashCount byte
 	table     []byte
+
+	tableSize fastdiv.Uint64
 }
 
 // NewExplicit returns a new filter with the explicit seed and parameters.
@@ -41,6 +44,8 @@ func NewExplicit(seed, hashCount byte, sizeInBytes int) *Filter {
 		seed:      seed,
 		hashCount: hashCount,
 		table:     make([]byte, sizeInBytes),
+
+		tableSize: fastdiv.NewUint64(uint64(sizeInBytes)),
 	}
 }
 
@@ -81,7 +86,7 @@ func (filter *Filter) Add(pieceID storj.PieceID) {
 		hash, bit := binary.LittleEndian.Uint64(id[offset:offset+8]), id[offset+8]
 		offset = (offset + rangeOffset) % len(storj.PieceID{})
 
-		bucket := hash % uint64(len(filter.table))
+		bucket := filter.tableSize.Mod(hash)
 		filter.table[bucket] |= 1 << (bit % 8)
 	}
 }
@@ -114,7 +119,7 @@ func (filter *Filter) Contains(pieceID storj.PieceID) bool {
 		hash, bit := binary.LittleEndian.Uint64(id[offset:offset+8]), id[offset+8]
 		offset = (offset + rangeOffset) % len(storj.PieceID{})
 
-		bucket := hash % uint64(len(filter.table))
+		bucket := filter.tableSize.Mod(hash)
 		if filter.table[bucket]&(1<<(bit%8)) == 0 {
 			return false
 		}
@@ -149,6 +154,8 @@ func NewFromBytes(data []byte) (*Filter, error) {
 		return nil, errs.New("invalid hash count %d", filter.hashCount)
 	}
 
+	filter.tableSize = fastdiv.NewUint64(uint64(len(filter.table)))
+
 	return filter, nil
 }
 
@@ -175,6 +182,12 @@ func OptimalParameters(expectedElements int64, falsePositiveRate float64, maxSiz
 	hashCount, sizeInBytes = getHashCountAndSize(expectedElements, falsePositiveRate)
 	if maxSize > 0 && sizeInBytes > maxSize.Int() {
 		sizeInBytes = maxSize.Int()
+	}
+	if hashCount <= 0 {
+		hashCount = 1
+	}
+	if sizeInBytes <= 0 {
+		sizeInBytes = 1
 	}
 	return hashCount, sizeInBytes
 }
