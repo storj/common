@@ -72,15 +72,14 @@ func (filter *Filter) SeedAndParameters() (seed, hashCount byte, size int) {
 
 // Add adds an element to the bloom filter.
 func (filter *Filter) Add(pieceID storj.PieceID) {
+	var id [len(pieceID) * 2]byte
+	copy(id[:], pieceID[:])
+	copy(id[len(pieceID):], pieceID[:])
+
 	offset, rangeOffset := initialConditions(filter.seed)
-
 	for k := byte(0); k < filter.hashCount; k++ {
-		hash, bit := subrange(offset, pieceID)
-
-		offset += rangeOffset
-		if offset >= len(storj.PieceID{}) {
-			offset -= len(storj.PieceID{})
-		}
+		hash, bit := binary.LittleEndian.Uint64(id[offset:offset+8]), id[offset+8]
+		offset = (offset + rangeOffset) % len(storj.PieceID{})
 
 		bucket := hash % uint64(len(filter.table))
 		filter.table[bucket] |= 1 << (bit % 8)
@@ -106,15 +105,14 @@ func (filter *Filter) AddFilter(operand *Filter) error {
 
 // Contains return true if pieceID may be in the set.
 func (filter *Filter) Contains(pieceID storj.PieceID) bool {
+	var id [len(pieceID) * 2]byte
+	copy(id[:], pieceID[:])
+	copy(id[len(pieceID):], pieceID[:])
+
 	offset, rangeOffset := initialConditions(filter.seed)
-
 	for k := byte(0); k < filter.hashCount; k++ {
-		hash, bit := subrange(offset, pieceID)
-
-		offset += rangeOffset
-		if offset >= len(storj.PieceID{}) {
-			offset -= len(storj.PieceID{})
-		}
+		hash, bit := binary.LittleEndian.Uint64(id[offset:offset+8]), id[offset+8]
+		offset = (offset + rangeOffset) % len(storj.PieceID{})
 
 		bucket := hash % uint64(len(filter.table))
 		if filter.table[bucket]&(1<<(bit%8)) == 0 {
@@ -129,16 +127,6 @@ func initialConditions(seed byte) (initialOffset, rangeOffset int) {
 	initialOffset = int(seed % 32)
 	rangeOffset = int(rangeOffsets[int(seed/32)%len(rangeOffsets)])
 	return initialOffset, rangeOffset
-}
-
-func subrange(seed int, id storj.PieceID) (uint64, byte) {
-	if seed > len(id)-9 {
-		var unwrap [9]byte
-		n := copy(unwrap[:], id[seed:])
-		copy(unwrap[n:], id[:])
-		return binary.LittleEndian.Uint64(unwrap[:]), unwrap[8]
-	}
-	return binary.LittleEndian.Uint64(id[seed : seed+8]), id[seed+8]
 }
 
 // NewFromBytes decodes the filter from a sequence of bytes.
