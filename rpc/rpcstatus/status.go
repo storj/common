@@ -14,6 +14,8 @@ import (
 	"storj.io/drpc/drpcerr"
 )
 
+//go:generate stringer -type StatusCode .
+
 // StatusCode is an enumeration of rpc status codes.
 type StatusCode uint64
 
