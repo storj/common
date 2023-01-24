@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"storj.io/common/testrand"
 )
@@ -96,6 +97,42 @@ func TestTransformer(t *testing.T) {
 	data2, err := io.ReadAll(transformed)
 	if assert.NoError(t, err) {
 		assert.Equal(t, data, data2)
+	}
+}
+
+func TestTransformWriter(t *testing.T) {
+	for i := 0; i < 100; i++ {
+		tr := NopTransformer(64)
+		data := testrand.BytesInt(tr.InBlockSize()*100 + testrand.Intn(tr.InBlockSize()))
+
+		var buf bytes.Buffer
+		trw := TransformWriterPadded(&buf, tr)
+
+		for d := data; len(d) > 0; {
+			n := len(d)
+			if largest := 10 * tr.InBlockSize(); n > largest {
+				n = 10 * tr.InBlockSize()
+			}
+			n = testrand.Intn(n + 1)
+
+			_, err := trw.Write(d[:n])
+			require.NoError(t, err)
+			d = d[n:]
+		}
+
+		require.NoError(t, trw.Close())
+
+		// ensure that after Close no more writes can happen
+		_, err := trw.Write([]byte{1})
+		require.Error(t, err)
+		require.NoError(t, trw.Close())
+
+		pad := PadReader(io.NopCloser(bytes.NewBuffer(data)), tr.InBlockSize())
+		trr := TransformReader(pad, tr, 0)
+		exp, err := io.ReadAll(trr)
+		require.NoError(t, err)
+
+		require.Equal(t, exp, buf.Bytes())
 	}
 }
 

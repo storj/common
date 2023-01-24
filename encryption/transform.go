@@ -186,3 +186,77 @@ func (t *transformedRanger) Range(ctx context.Context, offset, length int64) (_ 
 	// the range might have been too long. only return what was requested
 	return readcloser.LimitReadCloser(tr, length), nil
 }
+
+// TransformWriterPadded applies a Transformer to a Writer. It also applies
+// padding to the output bytes.
+func TransformWriterPadded(w io.Writer, t Transformer) io.WriteCloser {
+	inbuf := make([]byte, t.InBlockSize())
+	return &transformedWriter{
+		w:      w,
+		t:      t,
+		inbuf:  inbuf,
+		cursor: inbuf,
+		outbuf: make([]byte, 0, t.OutBlockSize()),
+	}
+}
+
+type transformedWriter struct {
+	w        io.Writer
+	t        Transformer
+	blockNum int64
+	inbuf    []byte
+	cursor   []byte
+	outbuf   []byte
+	closed   bool
+	err      error
+}
+
+func (t *transformedWriter) storeErr(err error) error {
+	t.err = err
+	return err
+}
+
+func (t *transformedWriter) Write(p []byte) (n int, err error) {
+	if t.err != nil {
+		return 0, t.err
+	} else if t.closed {
+		return 0, Error.New("write after closed")
+	}
+
+	for len(p) > 0 {
+		cn := copy(t.cursor, p)
+		p = p[cn:]
+		t.cursor = t.cursor[cn:]
+		n += cn
+
+		if len(t.cursor) == 0 {
+			t.outbuf, err = t.t.Transform(t.outbuf[:0], t.inbuf, t.blockNum)
+			if err != nil {
+				return n, t.storeErr(Error.Wrap(err))
+			}
+			if _, err := t.w.Write(t.outbuf); err != nil {
+				return n, t.storeErr(Error.Wrap(err))
+			}
+			t.cursor = t.inbuf
+			t.blockNum++
+		}
+	}
+
+	return n, nil
+}
+
+func (t *transformedWriter) Close() error {
+	if t.err != nil {
+		return t.err
+	} else if t.closed {
+		return nil
+	}
+	padding := makePadding(int64(len(t.inbuf))-int64(len(t.cursor)), len(t.inbuf))
+	if _, err := t.Write(padding); err != nil {
+		return t.storeErr(Error.Wrap(err))
+	} else if len(t.cursor) != len(t.inbuf) {
+		return t.storeErr(Error.New("programmer error: padding didn't cause output buffer flush"))
+	}
+	t.closed = true
+	return nil
+}
