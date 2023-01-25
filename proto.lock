@@ -1844,7 +1844,7 @@
             ]
           },
           {
-            "name": "BucketCreateRequest",
+            "name": "CreateBucketRequest",
             "fields": [
               {
                 "id": 15,
@@ -1884,7 +1884,7 @@
             ]
           },
           {
-            "name": "BucketCreateResponse",
+            "name": "CreateBucketResponse",
             "fields": [
               {
                 "id": 1,
@@ -1894,7 +1894,7 @@
             ]
           },
           {
-            "name": "BucketGetRequest",
+            "name": "GetBucketRequest",
             "fields": [
               {
                 "id": 15,
@@ -1909,7 +1909,7 @@
             ]
           },
           {
-            "name": "BucketGetResponse",
+            "name": "GetBucketResponse",
             "fields": [
               {
                 "id": 1,
@@ -1919,7 +1919,7 @@
             ]
           },
           {
-            "name": "BucketDeleteRequest",
+            "name": "DeleteBucketRequest",
             "fields": [
               {
                 "id": 15,
@@ -1939,7 +1939,7 @@
             ]
           },
           {
-            "name": "BucketDeleteResponse",
+            "name": "DeleteBucketResponse",
             "fields": [
               {
                 "id": 1,
@@ -1954,7 +1954,7 @@
             ]
           },
           {
-            "name": "BucketListRequest",
+            "name": "ListBucketsRequest",
             "fields": [
               {
                 "id": 15,
@@ -1979,7 +1979,7 @@
             ]
           },
           {
-            "name": "BucketListResponse",
+            "name": "ListBucketsResponse",
             "fields": [
               {
                 "id": 1,
@@ -2198,7 +2198,7 @@
             ]
           },
           {
-            "name": "ObjectBeginRequest",
+            "name": "BeginObjectRequest",
             "fields": [
               {
                 "id": 15,
@@ -2273,7 +2273,7 @@
             ]
           },
           {
-            "name": "ObjectBeginResponse",
+            "name": "BeginObjectResponse",
             "fields": [
               {
                 "id": 1,
@@ -2318,7 +2318,7 @@
             ]
           },
           {
-            "name": "ObjectCommitRequest",
+            "name": "CommitObjectRequest",
             "fields": [
               {
                 "id": 15,
@@ -2373,10 +2373,10 @@
             ]
           },
           {
-            "name": "ObjectCommitResponse"
+            "name": "CommitObjectResponse"
           },
           {
-            "name": "ObjectListPendingStreamsRequest",
+            "name": "ListPendingObjectStreamsRequest",
             "fields": [
               {
                 "id": 15,
@@ -2406,7 +2406,7 @@
             ]
           },
           {
-            "name": "ObjectListPendingStreamsResponse",
+            "name": "ListPendingObjectStreamsResponse",
             "fields": [
               {
                 "id": 1,
@@ -2422,7 +2422,7 @@
             ]
           },
           {
-            "name": "ObjectDownloadRequest",
+            "name": "DownloadObjectRequest",
             "fields": [
               {
                 "id": 15,
@@ -2512,7 +2512,7 @@
             ]
           },
           {
-            "name": "ObjectDownloadResponse",
+            "name": "DownloadObjectResponse",
             "fields": [
               {
                 "id": 1,
@@ -2522,18 +2522,18 @@
               {
                 "id": 2,
                 "name": "segment_list",
-                "type": "SegmentListResponse"
+                "type": "ListSegmentsResponse"
               },
               {
                 "id": 3,
                 "name": "segment_download",
-                "type": "SegmentDownloadResponse",
+                "type": "DownloadSegmentResponse",
                 "is_repeated": true
               }
             ]
           },
           {
-            "name": "ObjectGetRequest",
+            "name": "GetObjectRequest",
             "fields": [
               {
                 "id": 15,
@@ -2563,7 +2563,7 @@
             ]
           },
           {
-            "name": "ObjectGetResponse",
+            "name": "GetObjectResponse",
             "fields": [
               {
                 "id": 1,
@@ -2573,7 +2573,7 @@
             ]
           },
           {
-            "name": "ObjectListRequest",
+            "name": "ListObjectsRequest",
             "fields": [
               {
                 "id": 15,
@@ -2623,7 +2623,7 @@
             ]
           },
           {
-            "name": "ObjectListResponse",
+            "name": "ListObjectsResponse",
             "fields": [
               {
                 "id": 1,
@@ -2760,7 +2760,7 @@
             ]
           },
           {
-            "name": "ObjectBeginDeleteRequest",
+            "name": "BeginDeleteObjectRequest",
             "fields": [
               {
                 "id": 15,
@@ -2805,7 +2805,7 @@
             ]
           },
           {
-            "name": "ObjectBeginDeleteResponse",
+            "name": "BeginDeleteObjectResponse",
             "fields": [
               {
                 "id": 1,
@@ -2830,7 +2830,7 @@
             ]
           },
           {
-            "name": "ObjectFinishDeleteRequest",
+            "name": "FinishDeleteObjectRequest",
             "fields": [
               {
                 "id": 15,
@@ -2855,10 +2855,10 @@
             ]
           },
           {
-            "name": "ObjectFinishDeleteResponse"
+            "name": "FinishDeleteObjectResponse"
           },
           {
-            "name": "ObjectGetIPsRequest",
+            "name": "GetObjectIPsRequest",
             "fields": [
               {
                 "id": 15,
@@ -2883,7 +2883,7 @@
             ]
           },
           {
-            "name": "ObjectGetIPsResponse",
+            "name": "GetObjectIPsResponse",
             "fields": [
               {
                 "id": 1,
@@ -2909,7 +2909,7 @@
             ]
           },
           {
-            "name": "ObjectUpdateMetadataRequest",
+            "name": "UpdateObjectMetadataRequest",
             "fields": [
               {
                 "id": 15,
@@ -2974,7 +2974,7 @@
             ]
           },
           {
-            "name": "ObjectUpdateMetadataResponse"
+            "name": "UpdateObjectMetadataResponse"
           },
           {
             "name": "SatStreamID",
@@ -3098,7 +3098,7 @@
             ]
           },
           {
-            "name": "SegmentBeginRequest",
+            "name": "BeginSegmentRequest",
             "fields": [
               {
                 "id": 15,
@@ -3133,7 +3133,7 @@
             ]
           },
           {
-            "name": "SegmentBeginResponse",
+            "name": "BeginSegmentResponse",
             "fields": [
               {
                 "id": 1,
@@ -3179,7 +3179,7 @@
             ]
           },
           {
-            "name": "SegmentCommitRequest",
+            "name": "CommitSegmentRequest",
             "fields": [
               {
                 "id": 15,
@@ -3275,7 +3275,7 @@
             ]
           },
           {
-            "name": "SegmentCommitResponse",
+            "name": "CommitSegmentResponse",
             "fields": [
               {
                 "id": 1,
@@ -3285,7 +3285,7 @@
             ]
           },
           {
-            "name": "SegmentMakeInlineRequest",
+            "name": "MakeInlineSegmentRequest",
             "fields": [
               {
                 "id": 15,
@@ -3350,10 +3350,10 @@
             ]
           },
           {
-            "name": "SegmentMakeInlineResponse"
+            "name": "MakeInlineSegmentResponse"
           },
           {
-            "name": "SegmentBeginDeleteRequest",
+            "name": "BeginDeleteSegmentRequest",
             "fields": [
               {
                 "id": 15,
@@ -3383,7 +3383,7 @@
             ]
           },
           {
-            "name": "SegmentBeginDeleteResponse",
+            "name": "BeginDeleteSegmentResponse",
             "fields": [
               {
                 "id": 1,
@@ -3424,7 +3424,7 @@
             ]
           },
           {
-            "name": "SegmentFinishDeleteRequest",
+            "name": "FinishDeleteSegmentRequest",
             "fields": [
               {
                 "id": 15,
@@ -3485,10 +3485,10 @@
             ]
           },
           {
-            "name": "SegmentFinishDeleteResponse"
+            "name": "FinishDeleteSegmentResponse"
           },
           {
-            "name": "SegmentListRequest",
+            "name": "ListSegmentsRequest",
             "fields": [
               {
                 "id": 15,
@@ -3528,7 +3528,7 @@
             ]
           },
           {
-            "name": "SegmentListResponse",
+            "name": "ListSegmentsResponse",
             "fields": [
               {
                 "id": 1,
@@ -3609,7 +3609,7 @@
             ]
           },
           {
-            "name": "SegmentDownloadRequest",
+            "name": "DownloadSegmentRequest",
             "fields": [
               {
                 "id": 15,
@@ -3644,7 +3644,7 @@
             ]
           },
           {
-            "name": "SegmentDownloadResponse",
+            "name": "DownloadSegmentResponse",
             "fields": [
               {
                 "id": 1,
@@ -3740,7 +3740,7 @@
             ]
           },
           {
-            "name": "PartDeleteRequest",
+            "name": "DeletePartRequest",
             "fields": [
               {
                 "id": 15,
@@ -3770,7 +3770,7 @@
             ]
           },
           {
-            "name": "PartDeleteResponse"
+            "name": "DeletePartResponse"
           },
           {
             "name": "BatchRequest",
@@ -3794,132 +3794,132 @@
               {
                 "id": 1,
                 "name": "bucket_create",
-                "type": "BucketCreateRequest"
+                "type": "CreateBucketRequest"
               },
               {
                 "id": 2,
                 "name": "bucket_get",
-                "type": "BucketGetRequest"
+                "type": "GetBucketRequest"
               },
               {
                 "id": 3,
                 "name": "bucket_delete",
-                "type": "BucketDeleteRequest"
+                "type": "DeleteBucketRequest"
               },
               {
                 "id": 4,
                 "name": "bucket_list",
-                "type": "BucketListRequest"
+                "type": "ListBucketsRequest"
               },
               {
                 "id": 6,
                 "name": "object_begin",
-                "type": "ObjectBeginRequest"
+                "type": "BeginObjectRequest"
               },
               {
                 "id": 7,
                 "name": "object_commit",
-                "type": "ObjectCommitRequest"
+                "type": "CommitObjectRequest"
               },
               {
                 "id": 8,
                 "name": "object_get",
-                "type": "ObjectGetRequest"
+                "type": "GetObjectRequest"
               },
               {
                 "id": 9,
                 "name": "object_list",
-                "type": "ObjectListRequest"
+                "type": "ListObjectsRequest"
               },
               {
                 "id": 10,
                 "name": "object_begin_delete",
-                "type": "ObjectBeginDeleteRequest"
+                "type": "BeginDeleteObjectRequest"
               },
               {
                 "id": 11,
                 "name": "object_finish_delete",
-                "type": "ObjectFinishDeleteRequest"
+                "type": "FinishDeleteObjectRequest"
               },
               {
                 "id": 20,
                 "name": "object_get_ips",
-                "type": "ObjectGetIPsRequest"
+                "type": "GetObjectIPsRequest"
               },
               {
                 "id": 22,
                 "name": "object_list_pending_streams",
-                "type": "ObjectListPendingStreamsRequest"
+                "type": "ListPendingObjectStreamsRequest"
               },
               {
                 "id": 23,
                 "name": "object_download",
-                "type": "ObjectDownloadRequest"
+                "type": "DownloadObjectRequest"
               },
               {
                 "id": 24,
                 "name": "object_update_metadata",
-                "type": "ObjectUpdateMetadataRequest"
+                "type": "UpdateObjectMetadataRequest"
               },
               {
                 "id": 26,
                 "name": "object_begin_move",
-                "type": "ObjectBeginMoveRequest"
+                "type": "BeginMoveObjectRequest"
               },
               {
                 "id": 27,
                 "name": "object_finish_move",
-                "type": "ObjectFinishMoveRequest"
+                "type": "FinishMoveObjectRequest"
               },
               {
                 "id": 28,
                 "name": "object_begin_copy",
-                "type": "ObjectBeginCopyRequest"
+                "type": "BeginCopyObjectRequest"
               },
               {
                 "id": 29,
                 "name": "object_finish_copy",
-                "type": "ObjectFinishCopyRequest"
+                "type": "FinishCopyObjectRequest"
               },
               {
                 "id": 12,
                 "name": "segment_begin",
-                "type": "SegmentBeginRequest"
+                "type": "BeginSegmentRequest"
               },
               {
                 "id": 13,
                 "name": "segment_commit",
-                "type": "SegmentCommitRequest"
+                "type": "CommitSegmentRequest"
               },
               {
                 "id": 14,
                 "name": "segment_make_inline",
-                "type": "SegmentMakeInlineRequest"
+                "type": "MakeInlineSegmentRequest"
               },
               {
                 "id": 15,
                 "name": "segment_begin_delete",
-                "type": "SegmentBeginDeleteRequest"
+                "type": "BeginDeleteSegmentRequest"
               },
               {
                 "id": 16,
                 "name": "segment_finish_delete",
-                "type": "SegmentFinishDeleteRequest"
+                "type": "FinishDeleteSegmentRequest"
               },
               {
                 "id": 17,
                 "name": "segment_list",
-                "type": "SegmentListRequest"
+                "type": "ListSegmentsRequest"
               },
               {
                 "id": 18,
                 "name": "segment_download",
-                "type": "SegmentDownloadRequest"
+                "type": "DownloadSegmentRequest"
               },
               {
                 "id": 25,
                 "name": "part_delete",
-                "type": "PartDeleteRequest"
+                "type": "DeletePartRequest"
               },
               {
                 "id": 19,
@@ -3945,132 +3945,132 @@
               {
                 "id": 1,
                 "name": "bucket_create",
-                "type": "BucketCreateResponse"
+                "type": "CreateBucketResponse"
               },
               {
                 "id": 2,
                 "name": "bucket_get",
-                "type": "BucketGetResponse"
+                "type": "GetBucketResponse"
               },
               {
                 "id": 3,
                 "name": "bucket_delete",
-                "type": "BucketDeleteResponse"
+                "type": "DeleteBucketResponse"
               },
               {
                 "id": 4,
                 "name": "bucket_list",
-                "type": "BucketListResponse"
+                "type": "ListBucketsResponse"
               },
               {
                 "id": 6,
                 "name": "object_begin",
-                "type": "ObjectBeginResponse"
+                "type": "BeginObjectResponse"
               },
               {
                 "id": 7,
                 "name": "object_commit",
-                "type": "ObjectCommitResponse"
+                "type": "CommitObjectResponse"
               },
               {
                 "id": 8,
                 "name": "object_get",
-                "type": "ObjectGetResponse"
+                "type": "GetObjectResponse"
               },
               {
                 "id": 9,
                 "name": "object_list",
-                "type": "ObjectListResponse"
+                "type": "ListObjectsResponse"
               },
               {
                 "id": 10,
                 "name": "object_begin_delete",
-                "type": "ObjectBeginDeleteResponse"
+                "type": "BeginDeleteObjectResponse"
               },
               {
                 "id": 11,
                 "name": "object_finish_delete",
-                "type": "ObjectFinishDeleteResponse"
+                "type": "FinishDeleteObjectResponse"
               },
               {
                 "id": 20,
                 "name": "object_get_ips",
-                "type": "ObjectGetIPsResponse"
+                "type": "GetObjectIPsResponse"
               },
               {
                 "id": 22,
                 "name": "object_list_pending_streams",
-                "type": "ObjectListPendingStreamsResponse"
+                "type": "ListPendingObjectStreamsResponse"
               },
               {
                 "id": 23,
                 "name": "object_download",
-                "type": "ObjectDownloadResponse"
+                "type": "DownloadObjectResponse"
               },
               {
                 "id": 24,
                 "name": "object_update_metadata",
-                "type": "ObjectUpdateMetadataResponse"
+                "type": "UpdateObjectMetadataResponse"
               },
               {
                 "id": 26,
                 "name": "object_begin_move",
-                "type": "ObjectBeginMoveResponse"
+                "type": "BeginMoveObjectResponse"
               },
               {
                 "id": 27,
                 "name": "object_finish_move",
-                "type": "ObjectFinishMoveResponse"
+                "type": "FinishMoveObjectResponse"
               },
               {
                 "id": 28,
                 "name": "object_begin_copy",
-                "type": "ObjectBeginCopyResponse"
+                "type": "BeginCopyObjectResponse"
               },
               {
                 "id": 29,
                 "name": "object_finish_copy",
-                "type": "ObjectFinishCopyResponse"
+                "type": "FinishCopyObjectResponse"
               },
               {
                 "id": 12,
                 "name": "segment_begin",
-                "type": "SegmentBeginResponse"
+                "type": "BeginSegmentResponse"
               },
               {
                 "id": 13,
                 "name": "segment_commit",
-                "type": "SegmentCommitResponse"
+                "type": "CommitSegmentResponse"
               },
               {
                 "id": 14,
                 "name": "segment_make_inline",
-                "type": "SegmentMakeInlineResponse"
+                "type": "MakeInlineSegmentResponse"
               },
               {
                 "id": 15,
                 "name": "segment_begin_delete",
-                "type": "SegmentBeginDeleteResponse"
+                "type": "BeginDeleteSegmentResponse"
               },
               {
                 "id": 16,
                 "name": "segment_finish_delete",
-                "type": "SegmentFinishDeleteResponse"
+                "type": "FinishDeleteSegmentResponse"
               },
               {
                 "id": 17,
                 "name": "segment_list",
-                "type": "SegmentListResponse"
+                "type": "ListSegmentsResponse"
               },
               {
                 "id": 18,
                 "name": "segment_download",
-                "type": "SegmentDownloadResponse"
+                "type": "DownloadSegmentResponse"
               },
               {
                 "id": 25,
                 "name": "part_delete",
-                "type": "PartDeleteResponse"
+                "type": "DeletePartResponse"
               },
               {
                 "id": 19,
@@ -4098,7 +4098,7 @@
             "name": "RevokeAPIKeyResponse"
           },
           {
-            "name": "ObjectBeginMoveRequest",
+            "name": "BeginMoveObjectRequest",
             "fields": [
               {
                 "id": 15,
@@ -4128,7 +4128,7 @@
             ]
           },
           {
-            "name": "ObjectBeginMoveResponse",
+            "name": "BeginMoveObjectResponse",
             "fields": [
               {
                 "id": 1,
@@ -4179,7 +4179,7 @@
             ]
           },
           {
-            "name": "ObjectFinishMoveRequest",
+            "name": "FinishMoveObjectRequest",
             "fields": [
               {
                 "id": 15,
@@ -4240,10 +4240,10 @@
             ]
           },
           {
-            "name": "ObjectFinishMoveResponse"
+            "name": "FinishMoveObjectResponse"
           },
           {
-            "name": "ObjectBeginCopyRequest",
+            "name": "BeginCopyObjectRequest",
             "fields": [
               {
                 "id": 15,
@@ -4273,7 +4273,7 @@
             ]
           },
           {
-            "name": "ObjectBeginCopyResponse",
+            "name": "BeginCopyObjectResponse",
             "fields": [
               {
                 "id": 1,
@@ -4324,7 +4324,7 @@
             ]
           },
           {
-            "name": "ObjectFinishCopyRequest",
+            "name": "FinishCopyObjectRequest",
             "fields": [
               {
                 "id": 15,
@@ -4395,7 +4395,7 @@
             ]
           },
           {
-            "name": "ObjectFinishCopyResponse",
+            "name": "FinishCopyObjectResponse",
             "fields": [
               {
                 "id": 1,
@@ -4441,113 +4441,113 @@
             "rpcs": [
               {
                 "name": "CreateBucket",
-                "in_type": "BucketCreateRequest",
-                "out_type": "BucketCreateResponse"
+                "in_type": "CreateBucketRequest",
+                "out_type": "CreateBucketResponse"
               },
               {
                 "name": "GetBucket",
-                "in_type": "BucketGetRequest",
-                "out_type": "BucketGetResponse"
+                "in_type": "GetBucketRequest",
+                "out_type": "GetBucketResponse"
               },
               {
                 "name": "DeleteBucket",
-                "in_type": "BucketDeleteRequest",
-                "out_type": "BucketDeleteResponse"
+                "in_type": "DeleteBucketRequest",
+                "out_type": "DeleteBucketResponse"
               },
               {
                 "name": "ListBuckets",
-                "in_type": "BucketListRequest",
-                "out_type": "BucketListResponse"
+                "in_type": "ListBucketsRequest",
+                "out_type": "ListBucketsResponse"
               },
               {
                 "name": "BeginObject",
-                "in_type": "ObjectBeginRequest",
-                "out_type": "ObjectBeginResponse"
+                "in_type": "BeginObjectRequest",
+                "out_type": "BeginObjectResponse"
               },
               {
                 "name": "CommitObject",
-                "in_type": "ObjectCommitRequest",
-                "out_type": "ObjectCommitResponse"
+                "in_type": "CommitObjectRequest",
+                "out_type": "CommitObjectResponse"
               },
               {
                 "name": "GetObject",
-                "in_type": "ObjectGetRequest",
-                "out_type": "ObjectGetResponse"
+                "in_type": "GetObjectRequest",
+                "out_type": "GetObjectResponse"
               },
               {
                 "name": "ListObjects",
-                "in_type": "ObjectListRequest",
-                "out_type": "ObjectListResponse"
+                "in_type": "ListObjectsRequest",
+                "out_type": "ListObjectsResponse"
               },
               {
                 "name": "BeginDeleteObject",
-                "in_type": "ObjectBeginDeleteRequest",
-                "out_type": "ObjectBeginDeleteResponse"
+                "in_type": "BeginDeleteObjectRequest",
+                "out_type": "BeginDeleteObjectResponse"
               },
               {
                 "name": "FinishDeleteObject",
-                "in_type": "ObjectFinishDeleteRequest",
-                "out_type": "ObjectFinishDeleteResponse"
+                "in_type": "FinishDeleteObjectRequest",
+                "out_type": "FinishDeleteObjectResponse"
               },
               {
                 "name": "GetObjectIPs",
-                "in_type": "ObjectGetIPsRequest",
-                "out_type": "ObjectGetIPsResponse"
+                "in_type": "GetObjectIPsRequest",
+                "out_type": "GetObjectIPsResponse"
               },
               {
                 "name": "ListPendingObjectStreams",
-                "in_type": "ObjectListPendingStreamsRequest",
-                "out_type": "ObjectListPendingStreamsResponse"
+                "in_type": "ListPendingObjectStreamsRequest",
+                "out_type": "ListPendingObjectStreamsResponse"
               },
               {
                 "name": "DownloadObject",
-                "in_type": "ObjectDownloadRequest",
-                "out_type": "ObjectDownloadResponse"
+                "in_type": "DownloadObjectRequest",
+                "out_type": "DownloadObjectResponse"
               },
               {
                 "name": "UpdateObjectMetadata",
-                "in_type": "ObjectUpdateMetadataRequest",
-                "out_type": "ObjectUpdateMetadataResponse"
+                "in_type": "UpdateObjectMetadataRequest",
+                "out_type": "UpdateObjectMetadataResponse"
               },
               {
                 "name": "BeginSegment",
-                "in_type": "SegmentBeginRequest",
-                "out_type": "SegmentBeginResponse"
+                "in_type": "BeginSegmentRequest",
+                "out_type": "BeginSegmentResponse"
               },
               {
                 "name": "CommitSegment",
-                "in_type": "SegmentCommitRequest",
-                "out_type": "SegmentCommitResponse"
+                "in_type": "CommitSegmentRequest",
+                "out_type": "CommitSegmentResponse"
               },
               {
                 "name": "MakeInlineSegment",
-                "in_type": "SegmentMakeInlineRequest",
-                "out_type": "SegmentMakeInlineResponse"
+                "in_type": "MakeInlineSegmentRequest",
+                "out_type": "MakeInlineSegmentResponse"
               },
               {
                 "name": "BeginDeleteSegment",
-                "in_type": "SegmentBeginDeleteRequest",
-                "out_type": "SegmentBeginDeleteResponse"
+                "in_type": "BeginDeleteSegmentRequest",
+                "out_type": "BeginDeleteSegmentResponse"
               },
               {
                 "name": "FinishDeleteSegment",
-                "in_type": "SegmentFinishDeleteRequest",
-                "out_type": "SegmentFinishDeleteResponse"
+                "in_type": "FinishDeleteSegmentRequest",
+                "out_type": "FinishDeleteSegmentResponse"
               },
               {
                 "name": "ListSegments",
-                "in_type": "SegmentListRequest",
-                "out_type": "SegmentListResponse"
+                "in_type": "ListSegmentsRequest",
+                "out_type": "ListSegmentsResponse"
               },
               {
                 "name": "DownloadSegment",
-                "in_type": "SegmentDownloadRequest",
-                "out_type": "SegmentDownloadResponse"
+                "in_type": "DownloadSegmentRequest",
+                "out_type": "DownloadSegmentResponse"
               },
               {
                 "name": "DeletePart",
-                "in_type": "PartDeleteRequest",
-                "out_type": "PartDeleteResponse"
+                "in_type": "DeletePartRequest",
+                "out_type": "DeletePartResponse"
               },
               {
                 "name": "Batch",
@@ -4566,23 +4566,23 @@
               },
               {
                 "name": "BeginMoveObject",
-                "in_type": "ObjectBeginMoveRequest",
-                "out_type": "ObjectBeginMoveResponse"
+                "in_type": "BeginMoveObjectRequest",
+                "out_type": "BeginMoveObjectResponse"
               },
               {
                 "name": "FinishMoveObject",
-                "in_type": "ObjectFinishMoveRequest",
-                "out_type": "ObjectFinishMoveResponse"
+                "in_type": "FinishMoveObjectRequest",
+                "out_type": "FinishMoveObjectResponse"
               },
               {
                 "name": "BeginCopyObject",
-                "in_type": "ObjectBeginCopyRequest",
-                "out_type": "ObjectBeginCopyResponse"
+                "in_type": "BeginCopyObjectRequest",
+                "out_type": "BeginCopyObjectResponse"
               },
               {
                 "name": "FinishCopyObject",
-                "in_type": "ObjectFinishCopyRequest",
-                "out_type": "ObjectFinishCopyResponse"
+                "in_type": "FinishCopyObjectRequest",
+                "out_type": "FinishCopyObjectResponse"
               }
             ]
           }
