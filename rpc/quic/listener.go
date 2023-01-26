@@ -42,11 +42,6 @@ func NewListener(conn *net.UDPConn, tlsConfig *tls.Config, quicConfig *quic.Conf
 	if quicConfig == nil {
 		quicConfig = &quic.Config{
 			MaxIdleTimeout: defaultIdleTimeout,
-			// disable address validation in QUIC (it costs an extra round-trip, and we believe
-			// it to be unnecessary given the low potential for traffic amplification attacks).
-			AcceptToken: func(clientAddr net.Addr, token *quic.Token) bool {
-				return true
-			},
 		}
 	}
 
