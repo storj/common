@@ -5,6 +5,7 @@ package version
 
 import (
 	"hash/crc32"
+	"runtime"
 	"sync/atomic"
 
 	"github.com/spacemonkeygo/monkit/v3"
@@ -35,4 +36,6 @@ func (info *Info) Stats(cb func(key monkit.SeriesKey, field string, val float64)
 	cb(key, "major", float64(info.Version.Major))
 	cb(key, "minor", float64(info.Version.Minor))
 	cb(key, "patch", float64(info.Version.Patch))
+	cb(key, "os_"+runtime.GOOS, 1)
+	cb(key, "arch_"+runtime.GOARCH, 1)
 }
