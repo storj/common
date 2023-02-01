@@ -18,7 +18,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
 	storj.io/drpc v0.0.32
-	storj.io/picobuf v0.0.0-20230119143432-1ca3d5fae9e5
+	storj.io/picobuf v0.0.1
 )
 
 require (
