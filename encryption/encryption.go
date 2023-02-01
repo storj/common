@@ -140,11 +140,14 @@ func CalcEncryptedSize(dataSize int64, parameters storj.EncryptionParameters) (i
 	if err != nil {
 		return 0, err
 	}
+	return CalcTransformerEncryptedSize(dataSize, transformer), nil
+}
 
+// CalcTransformerEncryptedSize calculates what would be the size of the
+// cipher data after encrypting data with dataSize using the given Transformer.
+func CalcTransformerEncryptedSize(dataSize int64, transformer Transformer) int64 {
 	inBlockSize := int64(transformer.InBlockSize())
 	blocks := (dataSize + uint32Size + inBlockSize - 1) / inBlockSize
-
 	encryptedSize := blocks * int64(transformer.OutBlockSize())
-
-	return encryptedSize, nil
+	return encryptedSize
 }
