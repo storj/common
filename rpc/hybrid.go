@@ -260,6 +260,22 @@ func (c HybridConnector) DialContextUnencrypted(ctx context.Context, address str
 	return nil, Error.New("unable to do unencrypted dial")
 }
 
+// DialContextUnencryptedUnprefixed creates a raw connection using the first registered
+// connector that has a DialContextUnencryptedUnprefixed method. Unless the tcp connector
+// is unregistered, this will be the tcp connector.
+func (c HybridConnector) DialContextUnencryptedUnprefixed(ctx context.Context, address string) (net.Conn, error) {
+	forcedKind, _ := ctx.Value(hybridConnectorForcedKind{}).(string)
+	for _, entry := range c.connectors {
+		if forcedKind != "" && forcedKind != entry.name {
+			continue
+		}
+		if entry, ok := entry.connector.(unencryptedConnector); ok {
+			return entry.DialContextUnencryptedUnprefixed(ctx, address)
+		}
+	}
+	return nil, Error.New("unable to do unencrypted dial")
+}
+
 // SetTransferRate calls SetTransferRate with the given transfer rate on all of
 // its candidate connectors (if they have a SetTransferRate method).
 func (c *HybridConnector) SetTransferRate(rate memory.Size) {

@@ -6,19 +6,25 @@ package rpc
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net"
+	"net/url"
 	"time"
 
+	"github.com/jtolio/noiseconn"
 	"github.com/zeebo/errs"
 
 	"storj.io/common/experiment"
+	"storj.io/common/pb"
 	"storj.io/common/peertls/tlsopts"
+	"storj.io/common/rpc/noise"
 	"storj.io/common/rpc/rpcpool"
 	"storj.io/common/rpc/rpctracing"
 	"storj.io/common/storj"
 	"storj.io/drpc"
 	"storj.io/drpc/drpcconn"
 	"storj.io/drpc/drpcmanager"
+	"storj.io/drpc/drpcmigrate"
 	"storj.io/drpc/drpcstream"
 )
 
@@ -99,9 +105,23 @@ func NewDefaultConnectionPool() *rpcpool.Pool {
 // dialing APIs
 //
 
-// DialNodeURL dials to the specified node url and asserts it has the given node id.
-func (d Dialer) DialNodeURL(ctx context.Context, nodeURL storj.NodeURL) (_ *Conn, err error) {
+// DialOptions provides a set of options around how to contact nodes.
+type DialOptions struct {
+	ReplaySafe bool
+}
+
+// DialNode dials to the specified node url using the provided options and asserts it has the given node id.
+func (d Dialer) DialNode(ctx context.Context, nodeURL storj.NodeURL, opts DialOptions) (_ *Conn, err error) {
 	defer mon.Task()(&ctx, "node: "+nodeURL.String())(&err)
+
+	if opts.ReplaySafe && nodeURL.NoiseInfo != (storj.NoiseInfo{}) {
+		vals := url.Values{}
+		nodeURL.NoiseInfo.WriteTo(vals)
+		key := fmt.Sprintf("node+noise:%s:%s", nodeURL.ID, vals.Encode())
+		return d.dialPool(ctx, key, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
+			return d.dialNoiseConn(ctx, nodeURL.Address, nodeURL.NoiseInfo)
+		})
+	}
 
 	if d.TLSOptions == nil {
 		return nil, Error.New("tls options not set when required for this dial")
@@ -114,6 +134,11 @@ func (d Dialer) DialNodeURL(ctx context.Context, nodeURL storj.NodeURL) (_ *Conn
 		}
 		return d.dialEncryptedConn(ctx, nodeURL.Address, d.TLSOptions.ClientTLSConfig(nodeURL.ID))
 	})
+}
+
+// DialNodeURL dials to the specified node url and asserts it has the given node id.
+func (d Dialer) DialNodeURL(ctx context.Context, nodeURL storj.NodeURL) (_ *Conn, err error) {
+	return d.DialNode(ctx, nodeURL, DialOptions{})
 }
 
 // DialAddressInsecure dials to the specified address and does not check the node id.
@@ -235,6 +260,7 @@ func (d Dialer) dialEncryptedConn(ctx context.Context, address string, tlsConfig
 
 type unencryptedConnector interface {
 	DialContextUnencrypted(context.Context, string) (net.Conn, error)
+	DialContextUnencryptedUnprefixed(context.Context, string) (net.Conn, error)
 }
 
 // dialUnencryptedConn performs dialing to the drpc endpoint with no tls.
@@ -261,5 +287,42 @@ func (d Dialer) dialUnencryptedConn(ctx context.Context, address string) (_ drpc
 		return drpcconn.NewWithOptions(conn, d.ConnectionOptions), nil, nil
 	}
 
-	return nil, nil, Error.New("unsupported transport type: %T, use TCPTransport", d.Connector)
+	return nil, nil, Error.New("unsupported transport type: %T, use TCPConnector", d.Connector)
+}
+
+// dialNoiseConn performs dialing to the drpc endpoint with noise.
+func (d Dialer) dialNoiseConn(ctx context.Context, address string, noiseInfo storj.NoiseInfo) (_ drpc.Conn, _ *tls.ConnectionState, err error) {
+	defer mon.Task()(&ctx)(&err)
+
+	if d.DialLatency > 0 {
+		timer := time.NewTimer(d.DialLatency)
+		select {
+		case <-timer.C:
+		case <-ctx.Done():
+			timer.Stop()
+			return nil, nil, Error.Wrap(ctx.Err())
+		}
+	}
+
+	if unencConnector, ok := d.Connector.(unencryptedConnector); ok {
+		// open the tcp socket to the address
+		conn, err := unencConnector.DialContextUnencryptedUnprefixed(ctx, address)
+		if err != nil {
+			return nil, nil, Error.Wrap(err)
+		}
+
+		noiseCfg, err := noise.GenerateInitiatorConf(pb.NoiseInfoConvert(noiseInfo))
+		if err != nil {
+			return nil, nil, Error.Wrap(err)
+		}
+
+		nconn, err := noiseconn.NewConn(drpcmigrate.NewHeaderConn(conn, noise.Header), noiseCfg)
+		if err != nil {
+			return nil, nil, Error.Wrap(err)
+		}
+
+		return drpcconn.NewWithOptions(nconn, d.ConnectionOptions), nil, nil
+	}
+
+	return nil, nil, Error.New("unsupported transport type: %T, use TCPConnector", d.Connector)
 }

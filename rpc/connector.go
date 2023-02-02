@@ -111,6 +111,22 @@ func (t *TCPConnector) DialContext(ctx context.Context, tlsConfig *tls.Config, a
 func (t *TCPConnector) DialContextUnencrypted(ctx context.Context, address string) (_ net.Conn, err error) {
 	defer mon.Task()(&ctx)(&err)
 
+	conn, err := t.DialContextUnencryptedUnprefixed(ctx, address)
+	if err != nil {
+		return nil, err
+	}
+
+	if t.SendDRPCMuxHeader {
+		conn = drpcmigrate.NewHeaderConn(conn, drpcmigrate.DRPCHeader)
+	}
+
+	return conn, nil
+}
+
+// DialContextUnencryptedUnprefixed creates a raw TCP connection without any prefixes.
+func (t *TCPConnector) DialContextUnencryptedUnprefixed(ctx context.Context, address string) (_ net.Conn, err error) {
+	defer mon.Task()(&ctx)(&err)
+
 	conn, err := t.dialer.DialContext(ctx, "tcp", address)
 	if err != nil {
 		return nil, Error.Wrap(err)
@@ -120,10 +136,6 @@ func (t *TCPConnector) DialContextUnencrypted(ctx context.Context, address strin
 		if err := netutil.SetUserTimeout(tcpconn, t.TCPUserTimeout); err != nil {
 			return nil, errs.Combine(Error.Wrap(err), Error.Wrap(conn.Close()))
 		}
-	}
-
-	if t.SendDRPCMuxHeader {
-		conn = drpcmigrate.NewHeaderConn(conn, drpcmigrate.DRPCHeader)
 	}
 
 	return &timedConn{

@@ -5,6 +5,7 @@ package noise
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/subtle"
 	"crypto/x509"
 	"encoding/binary"
@@ -99,11 +100,11 @@ func identityBasedEntropy(context string, ident *identity.FullIdentity) (io.Read
 
 // GenerateServerConf makes a server-side noise.Config from a full identity.
 func GenerateServerConf(proto pb.NoiseProtocol, ident *identity.FullIdentity) (noise.Config, error) {
-	noiseConf, err := ProtoToConfig(proto)
+	cfg, err := ProtoToConfig(proto)
 	if err != nil {
 		return noise.Config{}, err
 	}
-	noiseConf.Initiator = false
+	cfg.Initiator = false
 
 	// we need a server-side keypair, and the way we're going to get it is a bit unusual.
 	//
@@ -150,11 +151,27 @@ func GenerateServerConf(proto pb.NoiseProtocol, ident *identity.FullIdentity) (n
 	if err != nil {
 		return noise.Config{}, err
 	}
-	noiseConf.StaticKeypair, err = noiseConf.CipherSuite.GenerateKeypair(entropy)
+	cfg.StaticKeypair, err = cfg.CipherSuite.GenerateKeypair(entropy)
 	if err != nil {
 		return noise.Config{}, Error.Wrap(err)
 	}
-	return noiseConf, nil
+	return cfg, nil
+}
+
+// GenerateInitiatorConf makes an initiator noise.Config that talks to the provided peer.
+func GenerateInitiatorConf(peer *pb.NoiseInfo) (noise.Config, error) {
+	cfg, err := ProtoToConfig(peer.Proto)
+	if err != nil {
+		return noise.Config{}, err
+	}
+	keypair, err := cfg.CipherSuite.GenerateKeypair(rand.Reader)
+	if err != nil {
+		return noise.Config{}, err
+	}
+	cfg.StaticKeypair = keypair
+	cfg.PeerStatic = peer.PublicKey
+	cfg.Initiator = true
+	return cfg, nil
 }
 
 func signablePublicKey(ts time.Time, key []byte) []byte {
