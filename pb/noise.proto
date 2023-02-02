@@ -32,7 +32,6 @@ message NoiseInfo {
 // NoiseKeyAttestation, on the other hand, doubles as a more secure form of
 // NoiseInfo.
 message NoiseKeyAttestation {
-    bytes node_id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
     bytes node_certchain = 2;
     NoiseProtocol noise_proto = 3;
 
@@ -41,6 +40,10 @@ message NoiseKeyAttestation {
     google.protobuf.Timestamp timestamp = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 
     bytes signature = 6;
+
+    // signers should fill this in, validators should ignore this field
+    // and just use the node id computed by the cert chain.
+    bytes deprecated_node_id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
 }
 
 // NoiseSessionAttestation is a structure that shows the given Noise session
@@ -48,8 +51,11 @@ message NoiseKeyAttestation {
 // by the leaf key of the node's cert chain, where the node's cert chain is
 // validated to belong to the given node id.
 message NoiseSessionAttestation {
-    bytes node_id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
     bytes node_certchain = 2;
     bytes noise_handshake_hash = 3;
     bytes signature = 4;
+
+    // signers should fill this in, validators should ignore this field
+    // and just use the node id computed by the cert chain.
+    bytes deprecated_node_id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
 }

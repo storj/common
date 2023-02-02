@@ -167,17 +167,7 @@ func PeerIdentityFromPEM(chainPEM []byte) (*PeerIdentity, error) {
 	if len(chain) < peertls.CAIndex+1 {
 		return nil, pkcrypto.ErrChainLength.New("identity chain does not contain a CA certificate")
 	}
-	nodeID, err := NodeIDFromCert(chain[peertls.CAIndex])
-	if err != nil {
-		return nil, err
-	}
-
-	return &PeerIdentity{
-		RestChain: chain[peertls.CAIndex+1:],
-		CA:        chain[peertls.CAIndex],
-		Leaf:      chain[peertls.LeafIndex],
-		ID:        nodeID,
-	}, nil
+	return PeerIdentityFromChain(chain)
 }
 
 // PeerIdentityFromChain loads a PeerIdentity from an identity certificate chain.
@@ -187,12 +177,19 @@ func PeerIdentityFromChain(chain []*x509.Certificate) (*PeerIdentity, error) {
 		return nil, err
 	}
 
-	return &PeerIdentity{
+	peer := &PeerIdentity{
 		RestChain: chain[peertls.CAIndex+1:],
 		CA:        chain[peertls.CAIndex],
 		ID:        nodeID,
 		Leaf:      chain[peertls.LeafIndex],
-	}, nil
+	}
+
+	err = peer.Leaf.CheckSignatureFrom(peer.CA)
+	if err != nil {
+		return nil, Error.New("certificate chain invalid: %w", err)
+	}
+
+	return peer, nil
 }
 
 // PeerIdentityFromPeer loads a PeerIdentity from a peer connection.

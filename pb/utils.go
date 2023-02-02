@@ -44,6 +44,14 @@ func NodesToIDs(nodes []*Node) storj.NodeIDList {
 	return ids
 }
 
+// CopyNodeAddress returns a deep copy of a NodeAddress.
+func CopyNodeAddress(src *NodeAddress) (dst *NodeAddress) {
+	if src == nil {
+		return nil
+	}
+	return proto.Clone(src).(*NodeAddress)
+}
+
 // CopyNode returns a deep copy of a node
 // It would be better to use `proto.Clone` but it is curently incompatible
 // with gogo's customtype extension.
@@ -51,11 +59,7 @@ func NodesToIDs(nodes []*Node) storj.NodeIDList {
 func CopyNode(src *Node) (dst *Node) {
 	node := Node{Id: storj.NodeID{}}
 	copy(node.Id[:], src.Id[:])
-
-	if src.Address != nil {
-		node.Address = proto.Clone(src.Address).(*NodeAddress)
-	}
-
+	node.Address = CopyNodeAddress(src.Address)
 	return &node
 }
 
@@ -105,6 +109,9 @@ func (n *NoiseInfo) Convert() (rv storj.NoiseInfo) {
 	// make storj.io/common/pb broken up into a bunch of
 	// lightweight type definitions, so we can use them and only
 	// define them once. this switch statement could go away.
+	if n == nil {
+		return rv
+	}
 	rv.PublicKey = string(n.PublicKey)
 	switch n.Proto {
 	case NoiseProtocol_NOISE_UNSET:
@@ -121,6 +128,9 @@ func (n *NoiseInfo) Convert() (rv storj.NoiseInfo) {
 
 // NoiseInfoConvert converts a storj.NoiseInfo to a *NoiseInfo.
 func NoiseInfoConvert(info storj.NoiseInfo) (rv *NoiseInfo) {
+	if info.PublicKey == "" && info.Proto == storj.NoiseProto_Unset {
+		return nil
+	}
 	rv = &NoiseInfo{}
 	if info.PublicKey != "" {
 		rv.PublicKey = []byte(info.PublicKey)

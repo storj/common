@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/bmkessler/fastdiv v0.0.0-20190227075523-41d5178f2044
 	github.com/calebcase/tmpfile v1.0.3
+	github.com/flynn/noise v1.0.0
 	github.com/gogo/protobuf v1.3.2
 	github.com/google/pprof v0.0.0-20211108044417-e9b028704de0
 	github.com/quic-go/quic-go v0.32.0
