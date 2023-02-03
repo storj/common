@@ -1,8 +1,8 @@
 // Copyright (C) 2021 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-//go:build go1.16 && !noquic
-// +build go1.16,!noquic
+//go:build go1.18 && !go1.21 && !noquic
+// +build go1.18,!go1.21,!noquic
 
 package quic
 
@@ -11,7 +11,7 @@ import (
 	"crypto/tls"
 	"time"
 
-	"github.com/lucas-clemente/quic-go"
+	"github.com/quic-go/quic-go"
 
 	"storj.io/common/memory"
 	"storj.io/common/peertls/tlsopts"

@@ -1,8 +1,8 @@
 // Copyright (C) 2022 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-//go:build noquic
-// +build noquic
+//go:build go1.21 || noquic
+// +build go1.21 noquic
 
 package quic
 
