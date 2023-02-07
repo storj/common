@@ -11,26 +11,15 @@ import (
 
 // DRPCReplaySafePiecestoreClient is a client that exposes the replay safe
 // subset of DRPCPiecestoreClient methods.
-type DRPCReplaySafePiecestoreClient struct {
-	c DRPCPiecestoreClient
+type DRPCReplaySafePiecestoreClient interface {
+	DRPCConn() drpc.Conn
+	Upload(ctx context.Context) (DRPCPiecestore_UploadClient, error)
+	Download(ctx context.Context) (DRPCPiecestore_DownloadClient, error)
 }
 
 // NewDRPCReplaySafePiecestoreClient makes a DRPCReplaySafePiecestoreClient.
-func NewDRPCReplaySafePiecestoreClient(cc drpc.Conn) *DRPCReplaySafePiecestoreClient {
-	return &DRPCReplaySafePiecestoreClient{c: NewDRPCPiecestoreClient(cc)}
-}
-
-// DRPCConn returns the drpc.Conn.
-func (c *DRPCReplaySafePiecestoreClient) DRPCConn() drpc.Conn { return c.c.DRPCConn() }
-
-// Upload calls DRPCPiecestoreClient.Upload.
-func (c *DRPCReplaySafePiecestoreClient) Upload(ctx context.Context) (DRPCPiecestore_UploadClient, error) {
-	return c.c.Upload(ctx)
-}
-
-// Download calls DRPCPiecestoreClient.Download.
-func (c *DRPCReplaySafePiecestoreClient) Download(ctx context.Context) (DRPCPiecestore_DownloadClient, error) {
-	return c.c.Download(ctx)
+func NewDRPCReplaySafePiecestoreClient(cc drpc.Conn) DRPCReplaySafePiecestoreClient {
+	return NewDRPCPiecestoreClient(cc)
 }
 
 // DRPCReplaySafePiecestoreServer is a server that exposes the replay safe
