@@ -65,6 +65,17 @@ func (scheme RedundancyScheme) StripeCount(encryptedSegmentSize int32) int32 {
 	return (encryptedSegmentSize + stripeSize - 1) / stripeSize
 }
 
+// PieceSize calculates piece size for give size.
+func (scheme RedundancyScheme) PieceSize(size int64) int64 {
+	const uint32Size = 4
+	stripeSize := int64(scheme.StripeSize())
+	stripes := (size + uint32Size + stripeSize - 1) / stripeSize
+
+	encodedSize := stripes * int64(scheme.StripeSize())
+	pieceSize := encodedSize / int64(scheme.RequiredShares)
+	return pieceSize
+}
+
 // RedundancyAlgorithm is the algorithm used for redundancy.
 type RedundancyAlgorithm byte
 
