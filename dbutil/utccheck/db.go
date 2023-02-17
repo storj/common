@@ -70,7 +70,14 @@ func (d *Driver) Open(name string) (driver.Conn, error) {
 
 // Conn wraps a driver.Conn with utc checks.
 type Conn struct {
-	conn driver.Conn
+	conn driverConn
+}
+
+// driverConn mirrors database/sql/driver.Conn, to avoid deprecation warnings.
+type driverConn interface {
+	Prepare(query string) (driver.Stmt, error)
+	Close() error
+	Begin() (driver.Tx, error)
 }
 
 // WrapConn wraps a driver.Conn with utc checks.
@@ -94,8 +101,6 @@ func (c *Conn) Ping(ctx context.Context) error {
 
 // Begin returns a wrapped driver.Tx with utc checks.
 func (c *Conn) Begin() (driver.Tx, error) {
-	//lint:ignore SA1019 deprecated is fine. this is a wrapper.
-	//nolint
 	tx, err := c.conn.Begin()
 	if err != nil {
 		return nil, errs.Wrap(err)
@@ -120,10 +125,9 @@ func (c *Conn) Query(query string, args []driver.Value) (driver.Rows, error) {
 	}
 
 	// sqlite3 implements this
-	//
-	//lint:ignore SA1019 deprecated is fine. this is a wrapper.
-	//nolint
-	return c.conn.(driver.Queryer).Query(query, args)
+	return c.conn.(interface {
+		Query(query string, args []driver.Value) (driver.Rows, error)
+	}).Query(query, args)
 }
 
 // QueryContext checks the arguments for non-utc timestamps and returns the result.
@@ -143,10 +147,9 @@ func (c *Conn) Exec(query string, args []driver.Value) (driver.Result, error) {
 	}
 
 	// sqlite3 implements this
-	//
-	//lint:ignore SA1019 deprecated is fine. this is a wrapper.
-	//nolint
-	return c.conn.(driver.Execer).Exec(query, args)
+	return c.conn.(interface {
+		Exec(query string, args []driver.Value) (driver.Result, error)
+	}).Exec(query, args)
 }
 
 // ExecContext checks the arguments for non-utc timestamps and returns the result.
@@ -211,9 +214,9 @@ func (s *Stmt) Exec(args []driver.Value) (driver.Result, error) {
 		return nil, errs.Wrap(err)
 	}
 
-	//lint:ignore SA1019 deprecated is fine. this is a wrapper.
-	//nolint
-	return s.stmt.Exec(args)
+	return s.stmt.(interface {
+		Exec(args []driver.Value) (driver.Result, error)
+	}).Exec(args)
 }
 
 // Query checks the arguments for non-utc timestamps and returns the result.
@@ -222,9 +225,9 @@ func (s *Stmt) Query(args []driver.Value) (driver.Rows, error) {
 		return nil, errs.Wrap(err)
 	}
 
-	//lint:ignore SA1019 deprecated is fine. this is a wrapper.
-	//nolint
-	return s.stmt.Query(args)
+	return s.stmt.(interface {
+		Query(args []driver.Value) (driver.Rows, error)
+	}).Query(args)
 }
 
 //
