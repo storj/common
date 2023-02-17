@@ -11,16 +11,19 @@ import (
 	"github.com/zeebo/errs"
 )
 
-// ReadCache implements refreshing of state based on a refresh timeout,
+// ReadCache is a backwards compatible implementation.
+type ReadCache = ReadCacheOf[any]
+
+// ReadCacheOf implements refreshing of state based on a refresh timeout,
 // but also allows for stale reads up to a certain duration.
-type ReadCache struct {
+type ReadCacheOf[T any] struct {
 	noCopy noCopy //nolint:structcheck
 
 	started Fence
 	ctx     context.Context
 
 	// read is a func that's called when a new update is needed.
-	read func(ctx context.Context) (interface{}, error)
+	read func(ctx context.Context) (T, error)
 	// refresh defines when the state should be updated.
 	refresh time.Duration
 	// stale defines when we must wait for the new state.
@@ -32,21 +35,21 @@ type ReadCache struct {
 	closed bool
 	// result contains the last known state and any errors that
 	// occurred during refreshing.
-	result *readCacheResult
+	result *readCacheResult[T]
 	// pending is a channel for waiting for the current refresh.
 	// it is only present, when there is an ongoing refresh.
-	pending *readCacheWorker
+	pending *readCacheWorker[T]
 }
 
-// NewReadCache returns a new ReadCache.
-func NewReadCache(refresh time.Duration, stale time.Duration, read func(ctx context.Context) (interface{}, error)) (*ReadCache, error) {
-	cache := &ReadCache{}
+// NewReadCache returns a new ReadCacheOf.
+func NewReadCache[T any](refresh time.Duration, stale time.Duration, read func(ctx context.Context) (T, error)) (*ReadCacheOf[T], error) {
+	cache := &ReadCacheOf[T]{}
 	return cache, cache.Init(refresh, stale, read)
 }
 
 // Init initializes the cache for in-place initialization. This is only needed when NewReadCache
 // was not used to initialize it.
-func (cache *ReadCache) Init(refresh time.Duration, stale time.Duration, read func(ctx context.Context) (interface{}, error)) error {
+func (cache *ReadCacheOf[T]) Init(refresh time.Duration, stale time.Duration, read func(ctx context.Context) (T, error)) error {
 	if refresh > stale {
 		refresh = stale
 	}
@@ -60,20 +63,20 @@ func (cache *ReadCache) Init(refresh time.Duration, stale time.Duration, read fu
 }
 
 // readCacheWorker contains the pending result.
-type readCacheWorker struct {
+type readCacheWorker[T any] struct {
 	done   chan struct{}
-	result *readCacheResult
+	result *readCacheResult[T]
 }
 
 // readCacheResult contains the result of a read and info related to it.
-type readCacheResult struct {
+type readCacheResult[T any] struct {
 	start time.Time
-	state interface{}
+	state T
 	err   error
 }
 
 // Run starts the background process for the cache.
-func (cache *ReadCache) Run(ctx context.Context) error {
+func (cache *ReadCacheOf[T]) Run(ctx context.Context) error {
 	// set the root context
 	cache.ctx = ctx
 	cache.started.Release()
@@ -96,9 +99,10 @@ func (cache *ReadCache) Run(ctx context.Context) error {
 }
 
 // Get fetches the latest state and refreshes when it's needed.
-func (cache *ReadCache) Get(ctx context.Context, now time.Time) (state interface{}, err error) {
+func (cache *ReadCacheOf[T]) Get(ctx context.Context, now time.Time) (state T, err error) {
 	if !cache.started.Wait(ctx) {
-		return nil, ctx.Err()
+		var zero T
+		return zero, ctx.Err()
 	}
 
 	// check whether we need to start a refresh
@@ -112,7 +116,8 @@ func (cache *ReadCache) Get(ctx context.Context, now time.Time) (state interface
 		mustWait = cache.result == nil || cache.result.err != nil || now.Sub(cache.result.start) >= cache.stale
 		if err := cache.startRefresh(now); err != nil {
 			cache.mu.Unlock()
-			return nil, err
+			var zero T
+			return zero, err
 		}
 	}
 	result, pending := cache.result, cache.pending
@@ -123,7 +128,8 @@ func (cache *ReadCache) Get(ctx context.Context, now time.Time) (state interface
 		select {
 		case <-pending.done:
 		case <-ctx.Done():
-			return nil, ctx.Err()
+			var zero T
+			return zero, ctx.Err()
 		}
 		result = pending.result
 	}
@@ -132,15 +138,16 @@ func (cache *ReadCache) Get(ctx context.Context, now time.Time) (state interface
 }
 
 // RefreshAndGet refreshes the cache and returns the latest result.
-func (cache *ReadCache) RefreshAndGet(ctx context.Context, now time.Time) (state interface{}, err error) {
+func (cache *ReadCacheOf[T]) RefreshAndGet(ctx context.Context, now time.Time) (state T, err error) {
 	if !cache.started.Wait(ctx) {
-		return nil, ctx.Err()
+		return state, ctx.Err()
 	}
 
 	cache.mu.Lock()
 	if err := cache.startRefresh(now); err != nil {
 		cache.mu.Unlock()
-		return nil, err
+		var zero T
+		return zero, err
 	}
 	pending := cache.pending
 	cache.mu.Unlock()
@@ -148,16 +155,18 @@ func (cache *ReadCache) RefreshAndGet(ctx context.Context, now time.Time) (state
 	select {
 	case <-pending.done:
 	case <-ctx.Done():
-		return nil, ctx.Err()
+		var zero T
+		return zero, ctx.Err()
 	}
 
 	return pending.result.state, pending.result.err
 }
 
 // Wait waits for any pending refresh and returns the result.
-func (cache *ReadCache) Wait(ctx context.Context) (state interface{}, err error) {
+func (cache *ReadCacheOf[T]) Wait(ctx context.Context) (state T, err error) {
 	if !cache.started.Wait(ctx) {
-		return nil, ctx.Err()
+		var zero T
+		return zero, ctx.Err()
 	}
 
 	cache.mu.Lock()
@@ -168,7 +177,8 @@ func (cache *ReadCache) Wait(ctx context.Context) (state interface{}, err error)
 		select {
 		case <-pending.done:
 		case <-ctx.Done():
-			return nil, ctx.Err()
+			var zero T
+			return zero, ctx.Err()
 		}
 		return pending.result.state, pending.result.err
 	}
@@ -180,7 +190,7 @@ func (cache *ReadCache) Wait(ctx context.Context) (state interface{}, err error)
 // already. It will return an error when the cache is shutting down.
 //
 // Note: this must only be called when `cache.mu` is being held.
-func (cache *ReadCache) startRefresh(now time.Time) error {
+func (cache *ReadCacheOf[T]) startRefresh(now time.Time) error {
 	if cache.closed {
 		return context.Canceled
 	}
@@ -188,7 +198,7 @@ func (cache *ReadCache) startRefresh(now time.Time) error {
 		return nil
 	}
 
-	pending := &readCacheWorker{
+	pending := &readCacheWorker[T]{
 		done:   make(chan struct{}),
 		result: nil,
 	}
@@ -198,7 +208,7 @@ func (cache *ReadCache) startRefresh(now time.Time) error {
 
 		state, err := cache.read(cache.ctx)
 		cache.mu.Lock()
-		result := &readCacheResult{
+		result := &readCacheResult[T]{
 			start: now,
 			state: state,
 			err:   err,

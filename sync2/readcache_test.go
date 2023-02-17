@@ -29,7 +29,7 @@ func TestReadCache(t *testing.T) {
 
 	refresh := int64(0)
 	cache, err := sync2.NewReadCache(2*time.Second, 5*time.Second,
-		func(ctx context.Context) (interface{}, error) {
+		func(ctx context.Context) (int64, error) {
 			return atomic.AddInt64(&refresh, 1), nil
 		})
 	require.NoError(t, err)
@@ -79,7 +79,7 @@ func TestReadCache_Cancellation(t *testing.T) {
 	defer cacheCancel()
 
 	cache, err := sync2.NewReadCache(2*time.Second, 5*time.Second,
-		func(ctx context.Context) (interface{}, error) {
+		func(ctx context.Context) (any, error) {
 			<-ctx.Done()
 			return nil, ctx.Err()
 		})
@@ -107,15 +107,15 @@ func TestReadCache_Error(t *testing.T) {
 	result <- -1
 
 	cache, err := sync2.NewReadCache(2*time.Second, 5*time.Second,
-		func(ctx context.Context) (interface{}, error) {
+		func(ctx context.Context) (int, error) {
 			select {
 			case v := <-result:
 				if v == -1 {
-					return nil, errs.New("failure")
+					return 0, errs.New("failure")
 				}
 				return v, nil
 			case <-ctx.Done():
-				return nil, ctx.Err()
+				return 0, ctx.Err()
 			}
 		})
 	require.NoError(t, err)
@@ -127,7 +127,7 @@ func TestReadCache_Error(t *testing.T) {
 	// read an error
 	state, err := cache.Get(ctx, start)
 	require.Error(t, err)
-	require.Nil(t, state)
+	require.Zero(t, state)
 
 	// when cache gets the result early, there is going to be a write race.
 	testRace1, testRace2 := 0, 0
@@ -182,12 +182,12 @@ func TestReadCache_Concurrent(t *testing.T) {
 	result <- 1
 
 	cache, err := sync2.NewReadCache(2*time.Second, 5*time.Second,
-		func(ctx context.Context) (interface{}, error) {
+		func(ctx context.Context) (int, error) {
 			select {
 			case v := <-result:
 				return v, nil
 			case <-ctx.Done():
-				return nil, ctx.Err()
+				return 0, ctx.Err()
 			}
 		})
 	require.NoError(t, err)
