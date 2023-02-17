@@ -31,7 +31,7 @@ import (
 // NewDefaultManagerOptions returns the default options we use for drpc managers.
 func NewDefaultManagerOptions() drpcmanager.Options {
 	return drpcmanager.Options{
-		WriterBufferSize: 1024,
+		WriterBufferSize: 64 * 1000, // we want to stay under 64*1024 + some headroom.
 		Stream: drpcstream.Options{
 			SplitSize: (4096 * 2) - 256,
 		},
