@@ -6,13 +6,13 @@ package version_test
 import (
 	"encoding/json"
 	"math"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"storj.io/common/storj"
+	"storj.io/common/testrand"
 	"storj.io/private/version"
 )
 
@@ -145,14 +145,11 @@ func TestShouldUpdate(t *testing.T) {
 			Seed:   version.RolloutBytes{},
 			Cursor: cursor,
 		}
-		/* #nosec G404 */ // using weak random number generator is fine in tests
-		_, _ = rand.Read(rollout.Seed[:])
+		testrand.Read(rollout.Seed[:])
 
 		for i := 0; i < total; i++ {
 			var nodeID storj.NodeID
-
-			/* #nosec G404 */ // using weak random number generator is fine in tests
-			_, _ = rand.Read(nodeID[:])
+			testrand.Read(nodeID[:])
 
 			if version.ShouldUpdate(rollout, nodeID) {
 				rollouts++
