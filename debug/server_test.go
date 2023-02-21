@@ -29,7 +29,7 @@ func TestServer_PrometheusMetrics(t *testing.T) {
 		}))
 
 	rec := httptest.NewRecorder()
-	req, err := http.NewRequestWithContext(ctx, "GET", "/", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/", nil)
 	require.NoError(t, err)
 	srv.prometheusMetrics(rec, req)
 
@@ -52,7 +52,7 @@ m3{scope="test",field=""} 4
 		t.Fatalf("string not a combination of m1,m2,m3:\nbody:%q\nm1:%q\nm2:%q\nm3:%q", body, m1, m2, m3)
 	}
 
-	req, err = http.NewRequestWithContext(ctx, "GET", "/top", nil)
+	req, err = http.NewRequestWithContext(ctx, http.MethodGet, "/top", nil)
 	require.NoError(t, err)
 	rec = httptest.NewRecorder()
 
