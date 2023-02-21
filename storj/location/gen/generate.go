@@ -60,7 +60,7 @@ const (`)
 	if err != nil {
 		return errs.Wrap(err)
 	}
-	get, err := http.NewRequestWithContext(context.Background(), "GET", "https://download.geonames.org/export/dump/countryInfo.txt", nil)
+	get, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://download.geonames.org/export/dump/countryInfo.txt", nil)
 	if err != nil {
 		return errs.Wrap(err)
 	}
