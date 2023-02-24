@@ -163,6 +163,7 @@ message ProjectInfoRequest {
 
 message ProjectInfoResponse {
     bytes project_salt = 1;
+    bytes project_public_id = 2;
 }
 
 //---------------------------

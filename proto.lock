@@ -2144,6 +2144,11 @@
                 "id": 1,
                 "name": "project_salt",
                 "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "project_public_id",
+                "type": "bytes"
               }
             ]
           },
