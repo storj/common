@@ -9,6 +9,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/spacemonkeygo/monkit/v3"
+
 	"storj.io/common/peertls/tlsopts"
 	"storj.io/common/rpc/rpccache"
 	"storj.io/drpc"
@@ -25,32 +27,38 @@ type Options struct {
 	// IdleExpiration is how long a connection in the pool is allowed to be
 	// kept idle. If zero, connections do not expire.
 	IdleExpiration time.Duration
+
+	// Name is used to differentiate pools in monkit stat.
+	Name string
 }
 
 // Pool is a wrapper around a cache of connections that allows one to get or
 // create new cached connections.
 type Pool struct {
 	cache *rpccache.Cache
+	name  string
 }
 
 // New constructs a new Pool with the Options.
 func New(opts Options) *Pool {
-	p := &Pool{cache: rpccache.New(rpccache.Options{
-		Expiration:  opts.IdleExpiration,
-		Capacity:    opts.Capacity,
-		KeyCapacity: opts.KeyCapacity,
-		Close: func(pv interface{}) error {
-			return pv.(*poolValue).conn.Close()
-		},
-		Stale: func(pv interface{}) bool {
-			select {
-			case <-pv.(*poolValue).conn.Closed():
-				return true
-			default:
-				return false
-			}
-		},
-	})}
+	p := &Pool{
+		name: opts.Name,
+		cache: rpccache.New(rpccache.Options{
+			Expiration:  opts.IdleExpiration,
+			Capacity:    opts.Capacity,
+			KeyCapacity: opts.KeyCapacity,
+			Close: func(pv interface{}) error {
+				return pv.(*poolValue).conn.Close()
+			},
+			Stale: func(pv interface{}) bool {
+				select {
+				case <-pv.(*poolValue).conn.Closed():
+					return true
+				default:
+					return false
+				}
+			},
+		})}
 
 	// As much as I dislike finalizers, especially for cases where it handles
 	// file descriptors, I think it's important to add one here at least until
@@ -100,15 +108,19 @@ func (p *Pool) put(pk poolKey, pv *poolValue) {
 func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (pv *poolValue, err error) {
 	defer mon.Task()(&ctx)(&err)
 
+	var tags []monkit.SeriesTag
+	if p != nil && p.name != "" {
+		tags = append(tags, monkit.NewSeriesTag("name", p.name))
+	}
 	if p != nil {
 		pv, ok := p.cache.Take(pk).(*poolValue)
 		if ok {
-			mon.Event("connection_from_cache")
+			mon.Event("connection_from_cache", tags...)
 			return pv, nil
 		}
 	}
 
-	mon.Event("connection_dialed")
+	mon.Event("connection_dialed", tags...)
 	conn, state, err := dial(ctx)
 	if err != nil {
 		return nil, err
