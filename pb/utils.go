@@ -71,7 +71,7 @@ func AddressEqual(a1, a2 *NodeAddress) bool {
 	if a1 == nil {
 		return true
 	}
-	if a1.Address != a2.Address {
+	if a1.Address != a2.Address || a1.DebounceLimit != a2.DebounceLimit {
 		return false
 	}
 	if (a1.NoiseInfo == nil) != (a2.NoiseInfo == nil) {
@@ -152,9 +152,10 @@ func NoiseInfoConvert(info storj.NoiseInfo) (rv *NoiseInfo) {
 // NodeURL converts a *Node to a storj.NodeURL.
 func (n *Node) NodeURL() storj.NodeURL {
 	return storj.NodeURL{
-		ID:        n.Id,
-		Address:   n.Address.Address,
-		NoiseInfo: n.Address.NoiseInfo.Convert(),
+		ID:            n.Id,
+		Address:       n.Address.Address,
+		NoiseInfo:     n.Address.NoiseInfo.Convert(),
+		DebounceLimit: int(n.Address.DebounceLimit),
 	}
 }
 
@@ -163,8 +164,9 @@ func NodeFromNodeURL(u storj.NodeURL) *Node {
 	return &Node{
 		Id: u.ID,
 		Address: &NodeAddress{
-			Address:   u.Address,
-			NoiseInfo: NoiseInfoConvert(u.NoiseInfo),
+			Address:       u.Address,
+			NoiseInfo:     NoiseInfoConvert(u.NoiseInfo),
+			DebounceLimit: int32(u.DebounceLimit),
 		},
 	}
 }

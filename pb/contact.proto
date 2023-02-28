@@ -31,6 +31,8 @@ message CheckInRequest {
     // opportunity to use NoiseSessionAttestation instead of
     // NoiseKeyAttestation.
     noise.NoiseKeyAttestation noise_key_attestation = 5;
+
+    int32 debounce_limit = 6;
 }
 
 message CheckInResponse {

@@ -35,6 +35,8 @@ func TestNodeURL(t *testing.T) {
 			{"12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@example.com:7777", storj.NodeURL{ID: id, Address: "example.com:7777"}},
 			// node id
 			{"12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@", storj.NodeURL{ID: id}},
+			// debounce_limit
+			{"12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@?debounce=3", storj.NodeURL{ID: id, DebounceLimit: 3}},
 			// noise
 			{"12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@33.20.0.1:7777?noise_proto=2",
 				storj.NodeURL{

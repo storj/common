@@ -36,6 +36,10 @@ message NodeAddress {
 
     noise.NoiseInfo noise_info = 3;
 
+    // the number of concurrent identical messages this node knows how to
+    // debounce.
+    int32 debounce_limit = 4;
+
     reserved 1;
     reserved "transport";
 }

@@ -4,6 +4,7 @@
 package storj
 
 import (
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -20,9 +21,10 @@ var (
 
 // NodeURL defines a structure for connecting to a node.
 type NodeURL struct {
-	ID        NodeID
-	Address   string
-	NoiseInfo NoiseInfo
+	ID            NodeID
+	Address       string
+	NoiseInfo     NoiseInfo
+	DebounceLimit int
 }
 
 // ParseNodeURL parses node URL string.
@@ -84,6 +86,13 @@ func ParseNodeURL(s string) (NodeURL, error) {
 		}
 		node.NoiseInfo.Proto = NoiseProto(protoInt)
 	}
+	if query.Get("debounce") != "" {
+		debounceInt, err := strconv.Atoi(query.Get("debounce"))
+		if err != nil {
+			return NodeURL{}, ErrNodeURL.Wrap(err)
+		}
+		node.DebounceLimit = debounceInt
+	}
 
 	return node, nil
 }
@@ -96,6 +105,9 @@ func (u NodeURL) IsZero() bool {
 // String converts NodeURL to a string.
 func (u NodeURL) String() string {
 	vals := url.Values{}
+	if u.DebounceLimit > 0 {
+		vals.Set("debounce", fmt.Sprint(u.DebounceLimit))
+	}
 	u.NoiseInfo.WriteTo(vals)
 	suffix := ""
 	if len(vals) > 0 {

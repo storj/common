@@ -192,6 +192,11 @@
                 "id": 5,
                 "name": "noise_key_attestation",
                 "type": "noise.NoiseKeyAttestation"
+              },
+              {
+                "id": 6,
+                "name": "debounce_limit",
+                "type": "int32"
               }
             ]
           },
@@ -4888,6 +4893,11 @@
                 "id": 3,
                 "name": "noise_info",
                 "type": "noise.NoiseInfo"
+              },
+              {
+                "id": 4,
+                "name": "debounce_limit",
+                "type": "int32"
               }
             ],
             "reserved_ids": [
