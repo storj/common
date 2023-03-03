@@ -6,7 +6,9 @@ package version
 import (
 	"hash/crc32"
 	"runtime"
+	"runtime/debug"
 	"sync/atomic"
+	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
 )
@@ -23,6 +25,15 @@ func (info *Info) Stats(cb func(key monkit.SeriesKey, field string, val float64)
 	if !info.Timestamp.IsZero() {
 		cb(key, "timestamp", float64(info.Timestamp.Unix()))
 	}
+
+	vcsTime := getVcsTime()
+	if vcsTime != "" {
+		commitTime, err := time.Parse(time.RFC3339, vcsTime)
+		if err == nil {
+			cb(key, "age_sec", time.Since(commitTime).Seconds())
+		}
+	}
+
 	crc := atomic.LoadUint32(&info.commitHashCRC)
 	if crc == 0 {
 		c := crc32.NewIEEE()
@@ -38,4 +49,15 @@ func (info *Info) Stats(cb func(key monkit.SeriesKey, field string, val float64)
 	cb(key, "patch", float64(info.Version.Patch))
 	cb(key, "os_"+runtime.GOOS, 1)
 	cb(key, "arch_"+runtime.GOARCH, 1)
+}
+
+func getVcsTime() string {
+	if bi, ok := debug.ReadBuildInfo(); ok {
+		for _, s := range bi.Settings {
+			if s.Key == "vcs.time" {
+				return s.Value
+			}
+		}
+	}
+	return ""
 }
