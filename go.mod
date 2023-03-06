@@ -10,7 +10,7 @@ require (
 	github.com/jtolds/tracetagger/v2 v2.0.0-rc5
 	github.com/jtolio/eventkit v0.0.0-20221004135224-074cf276595b
 	github.com/mattn/go-sqlite3 v1.14.12
-	github.com/spacemonkeygo/monkit/v3 v3.0.19
+	github.com/spacemonkeygo/monkit/v3 v3.0.20-0.20230227152157-d00b379de191
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/pflag v1.0.5
