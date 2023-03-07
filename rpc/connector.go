@@ -15,6 +15,8 @@ import (
 
 	"storj.io/common/memory"
 	"storj.io/common/netutil"
+	"storj.io/common/rpc/multidial"
+	"storj.io/common/socket"
 	"storj.io/drpc/drpcmigrate"
 )
 
@@ -22,6 +24,9 @@ var (
 	// STORJ_RPC_SET_LINGER_0 defaults to false below.
 	enableSetLinger0, _ = strconv.ParseBool(os.Getenv("STORJ_RPC_SET_LINGER_0"))
 )
+
+type ctxKeyTCPFastOpenMultidial struct{}
+type ctxKeyBackgroundQoS struct{}
 
 // ConnectorConn is a type that creates a connection and establishes a tls
 // session.
@@ -37,10 +42,8 @@ type Connector interface {
 	DialContext(ctx context.Context, tlsconfig *tls.Config, address string) (ConnectorConn, error)
 }
 
-// ConnectorAdapter represents a dialer that can establish a net.Conn.
-type ConnectorAdapter struct {
-	DialContext func(ctx context.Context, network, address string) (net.Conn, error)
-}
+// DialFunc represents a dialer that can establish a net.Conn.
+type DialFunc func(ctx context.Context, network, address string) (net.Conn, error)
 
 // TCPConnector implements a dialer that creates an encrypted connection using tls.
 type TCPConnector struct {
@@ -59,24 +62,18 @@ type TCPConnector struct {
 	// This needs to be false when connecting through a TLS termination proxy.
 	SendDRPCMuxHeader bool
 
-	dialer *ConnectorAdapter
+	providedDialer DialFunc
 }
 
 // NewDefaultTCPConnector creates a new TCPConnector instance with provided tcp dialer.
 // If no dialer is predefined, net.Dialer is used by default.
 //
 // Deprecated: Use NewHybridConnector wherever possible instead.
-func NewDefaultTCPConnector(dialer *ConnectorAdapter) *TCPConnector {
-	if dialer == nil {
-		dialer = &ConnectorAdapter{
-			DialContext: new(net.Dialer).DialContext,
-		}
-	}
-
+func NewDefaultTCPConnector(dialer DialFunc) *TCPConnector {
 	return &TCPConnector{
 		TCPUserTimeout:    15 * time.Minute,
 		SendDRPCMuxHeader: true,
-		dialer:            dialer,
+		providedDialer:    dialer,
 	}
 }
 
@@ -122,7 +119,42 @@ func (t *TCPConnector) DialContextUnencrypted(ctx context.Context, address strin
 func (t *TCPConnector) DialContextUnencryptedUnprefixed(ctx context.Context, address string) (_ net.Conn, err error) {
 	defer mon.Task()(&ctx)(&err)
 
-	conn, err := t.dialer.DialContext(ctx, "tcp", address)
+	if t.providedDialer != nil {
+		return t.lowLevelDial(ctx, t.providedDialer, "provided", address)
+	}
+
+	getCtxBool := func(key interface{}) bool {
+		v, ok := ctx.Value(key).(bool)
+		return v && ok
+	}
+
+	dialer := socket.ExtendedDialer{
+		LowPrioCongestionControl: getCtxBool(ctxKeyBackgroundQoS{}),
+		LowEffortQoS:             getCtxBool(ctxKeyBackgroundQoS{}),
+	}
+
+	if !socket.TCPFastOpenConnectSupported || !getCtxBool(ctxKeyTCPFastOpenMultidial{}) {
+		return t.lowLevelDial(ctx, dialer.DialContext, "standard", address)
+	}
+
+	return multidial.NewMultidialer(
+		func(ctx context.Context, network, address string) (net.Conn, error) {
+			standard := dialer
+			standard.TCPFastOpenConnect = false
+			return t.lowLevelDial(ctx, standard.DialContext, "standard", address)
+		},
+		func(ctx context.Context, network, address string) (net.Conn, error) {
+			fastopen := dialer
+			fastopen.TCPFastOpenConnect = true
+			return t.lowLevelDial(ctx, fastopen.DialContext, "fastopen", address)
+		},
+	).DialContext(ctx, "", address)
+}
+
+func (t *TCPConnector) lowLevelDial(ctx context.Context, dial DialFunc, style, address string) (_ net.Conn, err error) {
+	defer mon.Task()(&ctx, style)(&err)
+
+	conn, err := dial(ctx, "tcp", address)
 	if err != nil {
 		return nil, Error.Wrap(err)
 	}

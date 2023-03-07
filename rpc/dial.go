@@ -67,6 +67,9 @@ type Dialer struct {
 	// ConnectionOptions controls the options that we pass to drpc connections.
 	ConnectionOptions drpcconn.Options
 
+	// AttemptBackgroundQoS controls whether QoS flags will be set on connection packets.
+	AttemptBackgroundQoS bool
+
 	// Connector is how sockets are opened. If nil, net.Dialer is used.
 	Connector Connector
 }
@@ -108,24 +111,41 @@ func NewDefaultConnectionPool() *rpcpool.Pool {
 // DialOptions provides a set of options around how to contact nodes.
 type DialOptions struct {
 	ReplaySafe bool
+
+	// ForceTCPFastOpenMultidialSupport, if true, tells the dialer that TCP_FASTOPEN
+	// multidialing should be considered for this node, even if the nodeURL doesn't
+	// have a debounce limit set. This does not mean that TCP_FASTOPEN or multidialing
+	// will definitely be used, but it will be considered.
+	ForceTCPFastOpenMultidialSupport bool
 }
 
 // DialNode dials to the specified node url using the provided options and asserts it has the given node id.
 func (d Dialer) DialNode(ctx context.Context, nodeURL storj.NodeURL, opts DialOptions) (_ *Conn, err error) {
 	defer mon.Task()(&ctx, "node: "+nodeURL.String())(&err)
 
-	// check for a quic rollout
-	useQuic := checkQUICRolloutState(ctx, nodeURL.ID)
+	setCtx := func(ctx context.Context) context.Context {
+		ctx = setQUICRollout(ctx, nodeURL)
+		if opts.ForceTCPFastOpenMultidialSupport ||
+			(nodeURL.DebounceLimit >= 2 && (nodeURL.Features&uint64(pb.NodeAddress_TCP_FASTOPEN_ENABLED) != 0)) {
+			ctx = context.WithValue(ctx, ctxKeyTCPFastOpenMultidial{}, true)
+		}
+		if d.AttemptBackgroundQoS {
+			ctx = context.WithValue(ctx, ctxKeyBackgroundQoS{}, true)
+		}
+		return ctx
+	}
 
+	// check for a quic rollout or a forced choice
+	useQuic := checkQUICRolloutState(ctx, nodeURL.ID)
 	forcedKind, _ := ctx.Value(hybridConnectorForcedKind{}).(string)
 
-	// we don't use noise, if the kind is already forced, or Quic is requested with rollout
+	// we don't use noise if the kind is already forced, or Quic is requested with rollout
 	if forcedKind == "" && !useQuic && opts.ReplaySafe && nodeURL.NoiseInfo != (storj.NoiseInfo{}) {
 		vals := url.Values{}
 		nodeURL.NoiseInfo.WriteTo(vals)
 		key := fmt.Sprintf("node+noise:%s:%s", nodeURL.ID, vals.Encode())
 		return d.dialPool(ctx, key, func(ctx context.Context) (rpcpool.RawConn, *tls.ConnectionState, error) {
-			return d.dialNoiseConn(ctx, nodeURL.Address, nodeURL.NoiseInfo)
+			return d.dialNoiseConn(setCtx(ctx), nodeURL.Address, nodeURL.NoiseInfo)
 		})
 	}
 
@@ -139,9 +159,7 @@ func (d Dialer) DialNode(ctx context.Context, nodeURL storj.NodeURL, opts DialOp
 	}
 
 	return d.dialPool(ctx, "node:"+nodeURL.ID.String(), func(ctx context.Context) (rpcpool.RawConn, *tls.ConnectionState, error) {
-		// check for a quic rollout, and if not, force tcp.
-		ctx = setQUICRollout(ctx, nodeURL)
-		return d.dialEncryptedConn(ctx, nodeURL.Address, d.TLSOptions.ClientTLSConfig(nodeURL.ID))
+		return d.dialEncryptedConn(setCtx(ctx), nodeURL.Address, d.TLSOptions.ClientTLSConfig(nodeURL.ID))
 	})
 }
 
@@ -281,6 +299,8 @@ func (d Dialer) dialUnencryptedConn(ctx context.Context, address string) (_ *drp
 	}
 
 	if unencConnector, ok := d.Connector.(unencryptedConnector); ok {
+		// make sure multidialing doesn't happen.
+		ctx = context.WithValue(ctx, ctxKeyTCPFastOpenMultidial{}, false)
 		// open the tcp socket to the address
 		conn, err := unencConnector.DialContextUnencrypted(ctx, address)
 		if err != nil {
