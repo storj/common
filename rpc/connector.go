@@ -82,20 +82,8 @@ func (t *TCPConnector) DialContext(ctx context.Context, tlsConfig *tls.Config, a
 		return nil, Error.Wrap(err)
 	}
 
-	// perform the handshake racing with the context closing. we use a buffer
-	// of size 1 so that the handshake can proceed even if no one is reading.
-	errCh := make(chan error, 1)
 	conn := tls.Client(rawConn, tlsConfig)
-	go func() { errCh <- conn.Handshake() }()
-
-	// see which wins and close the raw conn if there was any error. we can't
-	// close the tls connection concurrently with handshakes or it sometimes
-	// will panic. cool, huh?
-	select {
-	case <-ctx.Done():
-		err = ctx.Err()
-	case err = <-errCh:
-	}
+	err = conn.HandshakeContext(ctx)
 	if err != nil {
 		_ = rawConn.Close()
 		return nil, Error.Wrap(err)
