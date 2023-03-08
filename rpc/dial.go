@@ -21,7 +21,6 @@ import (
 	"storj.io/common/rpc/rpcpool"
 	"storj.io/common/rpc/rpctracing"
 	"storj.io/common/storj"
-	"storj.io/drpc"
 	"storj.io/drpc/drpcconn"
 	"storj.io/drpc/drpcmanager"
 	"storj.io/drpc/drpcmigrate"
@@ -31,6 +30,7 @@ import (
 // NewDefaultManagerOptions returns the default options we use for drpc managers.
 func NewDefaultManagerOptions() drpcmanager.Options {
 	return drpcmanager.Options{
+		SoftCancel:       true,
 		WriterBufferSize: 64 * 1000, // we want to stay under 64*1024 + some headroom.
 		Stream: drpcstream.Options{
 			SplitSize: (4096 * 2) - 256,
@@ -118,7 +118,7 @@ func (d Dialer) DialNode(ctx context.Context, nodeURL storj.NodeURL, opts DialOp
 		vals := url.Values{}
 		nodeURL.NoiseInfo.WriteTo(vals)
 		key := fmt.Sprintf("node+noise:%s:%s", nodeURL.ID, vals.Encode())
-		return d.dialPool(ctx, key, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
+		return d.dialPool(ctx, key, func(ctx context.Context) (rpcpool.RawConn, *tls.ConnectionState, error) {
 			return d.dialNoiseConn(ctx, nodeURL.Address, nodeURL.NoiseInfo)
 		})
 	}
@@ -127,7 +127,7 @@ func (d Dialer) DialNode(ctx context.Context, nodeURL storj.NodeURL, opts DialOp
 		return nil, Error.New("tls options not set when required for this dial")
 	}
 
-	return d.dialPool(ctx, "node:"+nodeURL.ID.String(), func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
+	return d.dialPool(ctx, "node:"+nodeURL.ID.String(), func(ctx context.Context) (rpcpool.RawConn, *tls.ConnectionState, error) {
 		// check for a quic rollout, and if not, force tcp.
 		ctx = setQUICRollout(ctx, nodeURL)
 		return d.dialEncryptedConn(ctx, nodeURL.Address, d.TLSOptions.ClientTLSConfig(nodeURL.ID))
@@ -147,7 +147,7 @@ func (d Dialer) DialAddressInsecure(ctx context.Context, address string) (_ *Con
 		return nil, Error.New("tls options not set when required for this dial")
 	}
 
-	return d.dialPool(ctx, "insecure:"+address, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
+	return d.dialPool(ctx, "insecure:"+address, func(ctx context.Context) (rpcpool.RawConn, *tls.ConnectionState, error) {
 		// check for a quic rollout, and if not, force tcp.
 		ctx = setQUICRollout(ctx, storj.NodeURL{})
 		return d.dialEncryptedConn(ctx, address, d.TLSOptions.UnverifiedClientTLSConfig())
@@ -180,7 +180,7 @@ func (d Dialer) DialAddressHostnameVerification(ctx context.Context, address str
 		tlsConfig.ServerName = host
 	}
 
-	return d.dialPool(ctx, "hostname:"+address, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
+	return d.dialPool(ctx, "hostname:"+address, func(ctx context.Context) (rpcpool.RawConn, *tls.ConnectionState, error) {
 		// check for a quic rollout, and if not, force tcp.
 		ctx = setQUICRollout(ctx, storj.NodeURL{})
 		return d.dialEncryptedConn(ctx, address, tlsConfig)
@@ -194,7 +194,7 @@ func (d Dialer) DialAddressUnencrypted(ctx context.Context, address string) (_ *
 	// clear out TLS options so that the cache does not include it as part of the key.
 	d.TLSOptions = nil
 
-	return d.dialPool(ctx, "unencrypted:"+address, func(ctx context.Context) (drpc.Conn, *tls.ConnectionState, error) {
+	return d.dialPool(ctx, "unencrypted:"+address, func(ctx context.Context) (rpcpool.RawConn, *tls.ConnectionState, error) {
 		// check for a quic rollout, and if not, force tcp.
 		ctx = setQUICRollout(ctx, storj.NodeURL{})
 		return d.dialUnencryptedConn(ctx, address)
@@ -228,7 +228,7 @@ func (d Dialer) dialPool(ctx context.Context, key string, dialer rpcpool.Dialer)
 }
 
 // dialEncryptedConn performs dialing to the drpc endpoint with tls.
-func (d Dialer) dialEncryptedConn(ctx context.Context, address string, tlsConfig *tls.Config) (_ drpc.Conn, _ *tls.ConnectionState, err error) {
+func (d Dialer) dialEncryptedConn(ctx context.Context, address string, tlsConfig *tls.Config) (_ *drpcconn.Conn, _ *tls.ConnectionState, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	if d.DialLatency > 0 {
@@ -256,7 +256,7 @@ type unencryptedConnector interface {
 }
 
 // dialUnencryptedConn performs dialing to the drpc endpoint with no tls.
-func (d Dialer) dialUnencryptedConn(ctx context.Context, address string) (_ drpc.Conn, _ *tls.ConnectionState, err error) {
+func (d Dialer) dialUnencryptedConn(ctx context.Context, address string) (_ *drpcconn.Conn, _ *tls.ConnectionState, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	if d.DialLatency > 0 {
@@ -283,7 +283,7 @@ func (d Dialer) dialUnencryptedConn(ctx context.Context, address string) (_ drpc
 }
 
 // dialNoiseConn performs dialing to the drpc endpoint with noise.
-func (d Dialer) dialNoiseConn(ctx context.Context, address string, noiseInfo storj.NoiseInfo) (_ drpc.Conn, _ *tls.ConnectionState, err error) {
+func (d Dialer) dialNoiseConn(ctx context.Context, address string, noiseInfo storj.NoiseInfo) (_ *drpcconn.Conn, _ *tls.ConnectionState, err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	if d.DialLatency > 0 {

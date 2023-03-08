@@ -13,7 +13,6 @@ import (
 
 	"storj.io/common/peertls/tlsopts"
 	"storj.io/common/rpc/rpccache"
-	"storj.io/drpc"
 )
 
 // Options controls the options for a connection pool.
@@ -58,6 +57,14 @@ func New(opts Options) *Pool {
 					return false
 				}
 			},
+			Unblocked: func(pv interface{}) bool {
+				select {
+				case <-pv.(*poolValue).conn.Unblocked():
+					return true
+				default:
+					return false
+				}
+			},
 		})}
 
 	// As much as I dislike finalizers, especially for cases where it handles
@@ -80,12 +87,12 @@ type poolKey struct {
 
 // poolValue is the type of values in the cache.
 type poolValue struct {
-	conn  drpc.Conn
+	conn  RawConn
 	state *tls.ConnectionState
 }
 
 // Dialer is the type of function to create a new connection.
-type Dialer = func(context.Context) (drpc.Conn, *tls.ConnectionState, error)
+type Dialer = func(context.Context) (RawConn, *tls.ConnectionState, error)
 
 // Close closes all of the cached connections. It is safe to call on a nil receiver.
 func (p *Pool) Close() error {

@@ -41,7 +41,7 @@ func Example() {
 
 	ctx = rpcpool.WithDialerWrapper(ctx, func(ctx context.Context, dialer rpcpool.Dialer) rpcpool.Dialer {
 
-		return func(context.Context) (conn drpc.Conn, state *tls.ConnectionState, err error) {
+		return func(context.Context) (conn rpcpool.RawConn, state *tls.ConnectionState, err error) {
 
 			// this is only for testing when connection is mocked
 			stub := rpctest.NewStubConnection()

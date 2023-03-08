@@ -47,11 +47,15 @@ type Options struct {
 	KeyCapacity int
 
 	// Stale is optionally called on values before they are returned
-	// to see if they should be ignored. Nil means no check is made.
+	// to see if they should be discarded. Nil means no check is made.
 	Stale func(interface{}) bool
 
 	// Close is optionally called on any value removed from the Cache.
 	Close func(interface{}) error
+
+	// Unblocked is optional and called on values before they are returned
+	// to see if they are available to be used. Nil means no check is made.
+	Unblocked func(interface{}) bool
 }
 
 func (c Options) close(val interface{}) error {
@@ -66,6 +70,13 @@ func (c Options) stale(val interface{}) bool {
 		return false
 	}
 	return c.Stale(val)
+}
+
+func (c Options) unblocked(val interface{}) bool {
+	if c.Unblocked == nil {
+		return true
+	}
+	return c.Unblocked(val)
 }
 
 //
@@ -156,20 +167,6 @@ func (c *Cache) filterCacheKey(key interface{}) {
 // internal accessors to get entries we care about
 //
 
-// firstCacheKeyEntryLocked returns the newest Put entry for the
-// given cache key.
-//
-// It should only be called with the mutex held.
-func (c *Cache) firstCacheKeyEntryLocked(key interface{}) *entry {
-	entries := c.entries[key]
-	if len(entries) == 0 {
-		return nil
-	}
-
-	ent := entries[len(entries)-1]
-	return ent
-}
-
 // oldestEntryLocked returns the oldest Put entry from the Cache or nil
 // if one does not exist.
 func (c *Cache) oldestEntryLocked() *entry {
@@ -207,10 +204,13 @@ func (c *Cache) Take(key interface{}) interface{} {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	for {
-		ent := c.firstCacheKeyEntryLocked(key)
-		if ent == nil {
-			return nil
+	entries := c.entries[key]
+	for i := len(entries) - 1; i >= 0; i-- {
+		ent := entries[i]
+
+		// if the entry is not unblocked, then skip considering it.
+		if !c.opts.unblocked(ent.val) {
+			continue
 		}
 		c.filterEntryLocked(ent)
 
@@ -225,6 +225,8 @@ func (c *Cache) Take(key interface{}) interface{} {
 
 		return ent.val
 	}
+
+	return nil
 }
 
 // Put places the connection in to the cache with the provided key. It

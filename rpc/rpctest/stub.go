@@ -48,6 +48,13 @@ func (s *StubConnection) Closed() <-chan struct{} {
 	return s.closed
 }
 
+// Unblocked returns a closed channel.
+func (s *StubConnection) Unblocked() <-chan struct{} {
+	x := make(chan struct{})
+	close(x)
+	return x
+}
+
 // Invoke the underlying connection but call the RequestHook/ResponseHook before and after.
 // When the Invoker is set it will be invoked instead of the original connection.
 func (s *StubConnection) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in, out drpc.Message) error {

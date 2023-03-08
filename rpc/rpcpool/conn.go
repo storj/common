@@ -13,6 +13,12 @@ import (
 	"storj.io/drpc"
 )
 
+// RawConn is the type of connections the dialer must return.
+type RawConn interface {
+	drpc.Conn
+	Unblocked() <-chan struct{}
+}
+
 // Conn is the type for connections returned from the pool.
 type Conn interface {
 	drpc.Conn

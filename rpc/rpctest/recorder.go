@@ -6,6 +6,7 @@ package rpctest
 import (
 	"sync"
 
+	"storj.io/common/rpc/rpcpool"
 	"storj.io/drpc"
 )
 
@@ -57,7 +58,7 @@ func (r *CallRecorder) History() []string {
 }
 
 // Attach wraps a drpc.Conn connection and returns with one where the counters are hooked in.
-func (r *CallRecorder) Attach(conn drpc.Conn) drpc.Conn {
+func (r *CallRecorder) Attach(conn rpcpool.RawConn) rpcpool.RawConn {
 	interceptor := MessageInterceptor{
 		delegate: conn,
 		RequestHook: func(rpc string, message drpc.Message, err error) {

@@ -6,6 +6,7 @@ package rpctest
 import (
 	"context"
 
+	"storj.io/common/rpc/rpcpool"
 	"storj.io/drpc"
 )
 
@@ -14,13 +15,13 @@ type MessageHook func(rpc string, message drpc.Message, err error)
 
 // MessageInterceptor is a drpc.Conn which wraps an original connection with more functionality.
 type MessageInterceptor struct {
-	delegate     drpc.Conn
+	delegate     rpcpool.RawConn
 	RequestHook  MessageHook
 	ResponseHook MessageHook
 }
 
 // NewMessageInterceptor creates a MessageInterceptor, a connection which delegates all the call to the specific drpc.Conn.
-func NewMessageInterceptor(conn drpc.Conn) MessageInterceptor {
+func NewMessageInterceptor(conn rpcpool.RawConn) MessageInterceptor {
 	return MessageInterceptor{
 		delegate: conn,
 	}
@@ -34,6 +35,11 @@ func (l *MessageInterceptor) Close() error {
 // Closed returns a channel that is closed if the underlying connection is definitely closed.
 func (l *MessageInterceptor) Closed() <-chan struct{} {
 	return l.delegate.Closed()
+}
+
+// Unblocked returns the unblocked channel from the delegate.
+func (l *MessageInterceptor) Unblocked() <-chan struct{} {
+	return l.delegate.Unblocked()
 }
 
 // Invoke the underlying connection but call the RequestHook/ResponseHook before and after.
