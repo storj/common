@@ -55,11 +55,12 @@ func (c Clock) NewTimer(d time.Duration) Timer {
 // if the timer expired or false if the context was done.
 func (c Clock) Sleep(ctx context.Context, d time.Duration) bool {
 	timer := c.NewTimer(d)
+	defer timer.Stop()
+
 	select {
 	case <-timer.Chan():
 		return true
 	case <-ctx.Done():
-		timer.Stop()
 		return false
 	}
 }
