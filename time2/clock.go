@@ -4,6 +4,7 @@
 package time2
 
 import (
+	"context"
 	"time"
 )
 
@@ -47,6 +48,20 @@ func (c Clock) NewTimer(d time.Duration) Timer {
 		return c.backend.NewTimer(d)
 	}
 	return realTimer{timer: time.NewTimer(d)}
+}
+
+// Sleep is a convenience function that provides functionality equivalent to
+// time.Sleep, except that it respects context cancellation. True is returned
+// if the timer expired or false if the context was done.
+func (c Clock) Sleep(ctx context.Context, d time.Duration) bool {
+	timer := c.NewTimer(d)
+	select {
+	case <-timer.Chan():
+		return true
+	case <-ctx.Done():
+		timer.Stop()
+		return false
+	}
 }
 
 // Timer provides functionality equivalent to time.Timer.

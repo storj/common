@@ -37,15 +37,7 @@ func NewTimer(ctx context.Context, d time.Duration) Timer {
 // Sleep implements sleeping with cancellation using the clock set on the
 // context or the real clock when unset.
 func Sleep(ctx context.Context, duration time.Duration) bool {
-	timer := NewTimer(ctx, duration)
-	defer timer.Stop()
-
-	select {
-	case <-ctx.Done():
-		return false
-	case <-timer.Chan():
-		return true
-	}
+	return getClock(ctx).Sleep(ctx, duration)
 }
 
 // WithClock returns a context that will use the given clock.
