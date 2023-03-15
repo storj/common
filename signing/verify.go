@@ -11,6 +11,8 @@ import (
 	"storj.io/common/storj"
 )
 
+var verifyOrderLimitSignatureMon = mon.Task()
+
 // Signee is able to verify that the data signature belongs to the signee.
 type Signee interface {
 	ID() storj.NodeID
@@ -20,7 +22,7 @@ type Signee interface {
 // VerifyOrderLimitSignature verifies that the signature inside order limit is valid and  belongs to the satellite.
 func VerifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb.OrderLimit) (err error) {
 	ctx = rpctracing.WithoutDistributedTracing(ctx)
-	defer mon.Task()(&ctx)(&err)
+	defer verifyOrderLimitSignatureMon(&ctx)(&err)
 
 	bytes, err := EncodeOrderLimit(ctx, signed)
 	if err != nil {
