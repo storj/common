@@ -455,13 +455,13 @@ func decodeSegment(segment []byte) ([]byte, error) {
 func validateEncodedSegment(segment []byte) error {
 	switch {
 	case len(segment) == 0:
-		return errs.New("encoded segment cannot be empty")
+		return ErrDecryptFailed.New("encoded segment cannot be empty")
 	case segment[0] != emptyComponentPrefix && segment[0] != notEmptyComponentPrefix:
-		return errs.New("invalid segment prefix")
+		return ErrDecryptFailed.New("invalid segment prefix")
 	case segment[0] == emptyComponentPrefix && len(segment) > 1:
-		return errs.New("segment encoded as empty but contains data")
+		return ErrDecryptFailed.New("segment encoded as empty but contains data")
 	case segment[0] == notEmptyComponentPrefix && len(segment) == 1:
-		return errs.New("segment encoded as not empty but doesn't contain data")
+		return ErrDecryptFailed.New("segment encoded as not empty but doesn't contain data")
 	}
 
 	if len(segment) == 1 {
@@ -475,18 +475,18 @@ func validateEncodedSegment(segment []byte) error {
 				index++
 				continue
 			}
-			return errs.New("invalid escape sequence")
+			return ErrDecryptFailed.New("invalid escape sequence")
 		}
 		if isDisallowedByte(segment[index]) {
-			return errs.New("invalid character in segment")
+			return ErrDecryptFailed.New("invalid character in segment")
 		}
 	}
 	if index == len(segment)-1 {
 		if isEscapeByte(segment[index]) {
-			return errs.New("invalid escape sequence")
+			return ErrDecryptFailed.New("invalid escape sequence")
 		}
 		if isDisallowedByte(segment[index]) {
-			return errs.New("invalid character")
+			return ErrDecryptFailed.New("invalid character")
 		}
 	}
 

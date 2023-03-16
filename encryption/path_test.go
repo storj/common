@@ -251,6 +251,7 @@ func TestInvalidSegmentDecoding(t *testing.T) {
 	// first byte should be '\x01' or '\x02'
 	_, err := decodeSegment(encoded)
 	require.Error(t, err)
+	assert.True(t, ErrDecryptFailed.Has(err), "invalid error class")
 }
 
 func TestValidateEncodedSegment(t *testing.T) {
@@ -271,6 +272,7 @@ func TestValidateEncodedSegment(t *testing.T) {
 	for i, segment := range encodedSegments {
 		_, err := decodeSegment(segment)
 		require.Error(t, err, "#%d", i)
+		assert.True(t, ErrDecryptFailed.Has(err), "invalid error class #%d", i)
 	}
 }
 
