@@ -21,27 +21,36 @@ type Options struct {
 }
 
 // cacheState contains all of the state for a cached entry.
-type cacheState struct {
-	once  sync.Once
-	when  time.Time
-	order *list.Element
-	value interface{}
+type cacheState[T any] struct {
+	once   sync.Once
+	when   time.Time
+	order  *list.Element
+	value  T
+	loaded bool
 }
 
-// ExpiringLRU caches values for string keys with a time based expiration and
+// ExpiringLRU is a backwards compatible implementation of ExpiringLRU.
+type ExpiringLRU = ExpiringLRUOf[any]
+
+// ExpiringLRUOf caches values for string keys with a time based expiration and
 // an LRU based eviciton policy.
-type ExpiringLRU struct {
+type ExpiringLRUOf[T any] struct {
 	mu    sync.Mutex
 	opts  Options
-	data  map[string]*cacheState
+	data  map[string]*cacheState[T]
 	order *list.List
 }
 
 // New constructs an ExpiringLRU with the given options.
 func New(opts Options) *ExpiringLRU {
-	return &ExpiringLRU{
+	return NewOf[any](opts)
+}
+
+// NewOf constructs an ExpiringLRU with the given options.
+func NewOf[T any](opts Options) *ExpiringLRUOf[T] {
+	return &ExpiringLRUOf[T]{
 		opts:  opts,
-		data:  make(map[string]*cacheState, opts.Capacity),
+		data:  make(map[string]*cacheState[T], opts.Capacity),
 		order: list.New(),
 	}
 }
@@ -50,8 +59,7 @@ func New(opts Options) *ExpiringLRU {
 // it will call the provided function. Concurrent calls will dedupe as
 // best as they are able. If the function returns an error, it is not
 // cached and further calls will try again.
-func (e *ExpiringLRU) Get(key string, fn func() (interface{}, error)) (
-	value interface{}, err error) {
+func (e *ExpiringLRUOf[T]) Get(key string, fn func() (T, error)) (value T, err error) {
 	if e.opts.Capacity <= 0 {
 		return fn()
 	}
@@ -67,7 +75,7 @@ func (e *ExpiringLRU) Get(key string, fn func() (interface{}, error)) (
 				delete(e.data, back.Value.(string))
 				e.order.Remove(back)
 			}
-			state = &cacheState{
+			state = &cacheState[T]{
 				when:  time.Now(),
 				order: e.order.PushFront(key),
 			}
@@ -94,6 +102,7 @@ func (e *ExpiringLRU) Get(key string, fn func() (interface{}, error)) (
 				// careful because we don't want a `(*T)(nil) != nil` situation
 				// that's why we only assign to state.value if err == nil.
 				state.value = value
+				state.loaded = true
 			} else {
 				// the once has been used. delete it so that any other waiters
 				// will retry.
@@ -106,14 +115,14 @@ func (e *ExpiringLRU) Get(key string, fn func() (interface{}, error)) (
 			}
 		})
 
-		if called || state.value != nil {
+		if called || state.loaded {
 			return state.value, err
 		}
 	}
 }
 
 // Delete explicitly removes a key from the cache if it exists.
-func (e *ExpiringLRU) Delete(key string) {
+func (e *ExpiringLRUOf[T]) Delete(key string) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
@@ -129,7 +138,7 @@ func (e *ExpiringLRU) Delete(key string) {
 //
 // replaced is true if the key already existed in the cache and was valid, hence
 // the value is replaced.
-func (e *ExpiringLRU) Add(key string, value interface{}) (replaced bool) {
+func (e *ExpiringLRUOf[T]) Add(key string, value T) (replaced bool) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
@@ -140,7 +149,7 @@ func (e *ExpiringLRU) Add(key string, value interface{}) (replaced bool) {
 			delete(e.data, item.Value.(string))
 		}
 
-		e.data[key] = &cacheState{
+		e.data[key] = &cacheState[T]{
 			when:  time.Now(),
 			order: e.order.PushFront(key),
 			value: value,
@@ -150,7 +159,7 @@ func (e *ExpiringLRU) Add(key string, value interface{}) (replaced bool) {
 	}
 
 	e.order.Remove(state.order)
-	e.data[key] = &cacheState{
+	e.data[key] = &cacheState[T]{
 		when:  time.Now(),
 		order: e.order.PushFront(key),
 		value: value,
@@ -161,13 +170,14 @@ func (e *ExpiringLRU) Add(key string, value interface{}) (replaced bool) {
 
 // GetCached returns the value associated with key and true if it exists and
 // hasn't expired, otherwise nil and false.
-func (e *ExpiringLRU) GetCached(key string) (value interface{}, cached bool) {
+func (e *ExpiringLRUOf[T]) GetCached(key string) (value T, cached bool) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
 	state, _ := e.peek(key)
 	if state == nil {
-		return nil, false
+		var zero T
+		return zero, false
 	}
 
 	e.order.MoveToFront(state.order)
@@ -182,7 +192,7 @@ func (e *ExpiringLRU) GetCached(key string) (value interface{}, cached bool) {
 //
 // NOTE the caller must always lock and unlock the mutex before calling this
 // method.
-func (e *ExpiringLRU) peek(key string) (state *cacheState, evicted bool) {
+func (e *ExpiringLRUOf[T]) peek(key string) (state *cacheState[T], evicted bool) {
 	state, ok := e.data[key]
 	if !ok {
 		return nil, false

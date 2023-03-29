@@ -18,7 +18,7 @@ import (
 )
 
 func TestCache_LRU(t *testing.T) {
-	cache := New(Options{Capacity: 2})
+	cache := NewOf[string](Options{Capacity: 2})
 	check := newChecker(t, cache)
 
 	check("a", 1)
@@ -32,7 +32,7 @@ func TestCache_LRU(t *testing.T) {
 }
 
 func TestCache_Expires(t *testing.T) {
-	cache := New(Options{Capacity: 2, Expiration: time.Nanosecond})
+	cache := NewOf[string](Options{Capacity: 2, Expiration: time.Nanosecond})
 	check := newChecker(t, cache)
 
 	check("a", 1)
@@ -160,7 +160,7 @@ func TestCache_Add_and_GetCached_Fuzz(t *testing.T) {
 	require.Zero(t, numEntries%2) // Ensure that numEntries is even.
 
 	ctx := testcontext.New(t)
-	cache := New(Options{Capacity: numEntries})
+	cache := NewOf[int64](Options{Capacity: numEntries})
 
 	// Spin up 2 Goroutines that add values and counts the added elements for
 	// each one.
@@ -235,16 +235,16 @@ func TestCache_Add_and_GetCached_Fuzz(t *testing.T) {
 
 type checker struct {
 	t     *testing.T
-	cache *ExpiringLRU
+	cache *ExpiringLRUOf[string]
 	calls int
 }
 
-func newChecker(t *testing.T, cache *ExpiringLRU) func(string, int) {
+func newChecker(t *testing.T, cache *ExpiringLRUOf[string]) func(string, int) {
 	return (&checker{t: t, cache: cache}).Check
 }
 
-func (c *checker) makeCallback(v interface{}) func() (interface{}, error) {
-	return func() (interface{}, error) {
+func (c *checker) makeCallback(v string) func() (string, error) {
+	return func() (string, error) {
 		c.calls++
 		return v, nil
 	}
