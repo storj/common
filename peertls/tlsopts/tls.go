@@ -4,12 +4,14 @@
 package tlsopts
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 
 	"storj.io/common/identity"
 	"storj.io/common/peertls"
 	"storj.io/common/storj"
+	"storj.io/common/tracing"
 )
 
 // StorjApplicationProtocol defines storj's application protocol.
@@ -76,7 +78,8 @@ func (opts *Options) tlsConfig(isServer bool, verificationFuncs ...peertls.PeerC
 
 func verifyIdentity(id storj.NodeID) peertls.PeerCertVerificationFunc {
 	return func(_ [][]byte, parsedChains [][]*x509.Certificate) (err error) {
-		defer mon.TaskNamed("verifyIdentity")(nil)(&err)
+		ctx := tracing.WithoutDistributedTracing(context.Background())
+		defer mon.TaskNamed("verifyIdentity")(&ctx)(&err)
 		peer, err := identity.PeerIdentityFromChain(parsedChains[0])
 		if err != nil {
 			return err

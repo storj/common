@@ -7,8 +7,8 @@ import (
 	"context"
 
 	"storj.io/common/pb"
-	"storj.io/common/rpc/rpctracing"
 	"storj.io/common/storj"
+	"storj.io/common/tracing"
 )
 
 var verifyOrderLimitSignatureMon = mon.Task()
@@ -21,7 +21,7 @@ type Signee interface {
 
 // VerifyOrderLimitSignature verifies that the signature inside order limit is valid and  belongs to the satellite.
 func VerifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb.OrderLimit) (err error) {
-	ctx = rpctracing.WithoutDistributedTracing(ctx)
+	ctx = tracing.WithoutDistributedTracing(ctx)
 	defer verifyOrderLimitSignatureMon(&ctx)(&err)
 
 	bytes, err := EncodeOrderLimit(ctx, signed)
@@ -50,7 +50,7 @@ func VerifyOrderSignature(ctx context.Context, uplink Signee, signed *pb.Order) 
 
 // VerifyUplinkOrderSignature verifies that the signature inside order is valid and belongs to the uplink.
 func VerifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.Order) (err error) {
-	ctx = rpctracing.WithoutDistributedTracing(ctx)
+	ctx = tracing.WithoutDistributedTracing(ctx)
 	defer mon.Task()(&ctx)(&err)
 
 	if len(signed.XXX_unrecognized) > 0 {
@@ -67,7 +67,7 @@ func VerifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublic
 
 // VerifyPieceHashSignature verifies that the signature inside piece hash is valid and belongs to the signer, which is either uplink or storage node.
 func VerifyPieceHashSignature(ctx context.Context, signee Signee, signed *pb.PieceHash) (err error) {
-	ctx = rpctracing.WithoutDistributedTracing(ctx)
+	ctx = tracing.WithoutDistributedTracing(ctx)
 	defer mon.Task()(&ctx)(&err)
 
 	if len(signed.XXX_unrecognized) > 0 {
@@ -84,7 +84,7 @@ func VerifyPieceHashSignature(ctx context.Context, signee Signee, signed *pb.Pie
 
 // VerifyUplinkPieceHashSignature verifies that the signature inside piece hash is valid and belongs to the signer, which is either uplink or storage node.
 func VerifyUplinkPieceHashSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.PieceHash) (err error) {
-	ctx = rpctracing.WithoutDistributedTracing(ctx)
+	ctx = tracing.WithoutDistributedTracing(ctx)
 	defer mon.Task()(&ctx)(&err)
 
 	if len(signed.XXX_unrecognized) > 0 {

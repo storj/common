@@ -1,24 +1,27 @@
 // Copyright (C) 2022 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-package rpctracing
+package tracing
 
 import (
 	"context"
 
 	"github.com/spacemonkeygo/monkit/v3"
+)
 
-	"storj.io/common/tracing"
+type contextKey int
+
+var (
+	excludeFromTracing contextKey = 1
 )
 
 // WithoutDistributedTracing disables distributed tracing for the current span.
-// Deprecated: use tracing.WithoutDistributedTracing.
 func WithoutDistributedTracing(ctx context.Context) context.Context {
-	return tracing.WithoutDistributedTracing(ctx)
+	return context.WithValue(ctx, excludeFromTracing, true)
 }
 
 // IsExcluded check if span shouldn't be reported to remote location.
-// Deprecated: use tracing.IsExcluded.
 func IsExcluded(span *monkit.Span) bool {
-	return tracing.IsExcluded(span)
+	val, ok := span.Value(excludeFromTracing).(bool)
+	return ok && val
 }
