@@ -7,7 +7,11 @@ import (
 	"container/list"
 	"sync"
 	"time"
+
+	"github.com/spacemonkeygo/monkit/v3"
 )
+
+var mon = monkit.Package()
 
 // Options controls the details of the expiration policy.
 type Options struct {
@@ -18,6 +22,9 @@ type Options struct {
 
 	// Capacity is how many objects to keep in memory.
 	Capacity int
+
+	// Name is used to differentiate cache in monkit stat.
+	Name string
 }
 
 // cacheState contains all of the state for a cached entry.
@@ -61,6 +68,7 @@ func NewOf[T any](opts Options) *ExpiringLRUOf[T] {
 // cached and further calls will try again.
 func (e *ExpiringLRUOf[T]) Get(key string, fn func() (T, error)) (value T, err error) {
 	if e.opts.Capacity <= 0 {
+		e.monitorCache(false)
 		return fn()
 	}
 
@@ -116,8 +124,22 @@ func (e *ExpiringLRUOf[T]) Get(key string, fn func() (T, error)) (value T, err e
 		})
 
 		if called || state.loaded {
+			e.monitorCache(!called)
 			return state.value, err
 		}
+	}
+}
+
+func (e *ExpiringLRUOf[T]) monitorCache(valueFromCache bool) {
+	if e.opts.Name == "" {
+		return
+	}
+
+	nameTag := monkit.NewSeriesTag("name", e.opts.Name)
+	if valueFromCache {
+		mon.Event("cache_hit", nameTag)
+	} else {
+		mon.Event("cache_miss", nameTag)
 	}
 }
 
