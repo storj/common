@@ -166,6 +166,9 @@ func (s *sqlDB) Close() error {
 }
 
 func (s *sqlDB) Conn(ctx context.Context) (Conn, error) {
+	monConnWaiting.Inc(1)
+	defer monConnWaiting.Dec(1)
+
 	traces.Tag(ctx, traces.TagDB)
 	var conn *sql.Conn
 	var err error
@@ -178,6 +181,8 @@ func (s *sqlDB) Conn(ctx context.Context) (Conn, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	monConnOpen.Inc(1)
 	return &sqlConn{
 		conn:         conn,
 		useContext:   s.useContext,

@@ -14,6 +14,11 @@ import (
 	"storj.io/private/traces"
 )
 
+var (
+	monConnWaiting = mon.Counter("sql_conn_waiting")
+	monConnOpen    = mon.Counter("sql_conn_open")
+)
+
 // Conn is an interface for *sql.Conn-like connections.
 type Conn interface {
 	BeginTx(ctx context.Context, txOptions *sql.TxOptions) (Tx, error)
@@ -24,11 +29,6 @@ type Conn interface {
 	QueryContext(ctx context.Context, query string, args ...interface{}) (Rows, error)
 	QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
 	Raw(ctx context.Context, f func(driverConn interface{}) error) (err error)
-}
-
-// ConnWithoutTxContext wraps *sql.Conn.
-func ConnWithoutTxContext(conn *sql.Conn) Conn {
-	return &sqlConn{conn: conn, useContext: true, useTxContext: false}
 }
 
 // TODO:
@@ -42,6 +42,7 @@ type sqlConn struct {
 	useContext   bool
 	useTxContext bool
 	tracker      *tracker
+	monReleased  bool
 }
 
 func (s *sqlConn) BeginTx(ctx context.Context, txOptions *sql.TxOptions) (Tx, error) {
@@ -65,6 +66,10 @@ func (s *sqlConn) BeginTx(ctx context.Context, txOptions *sql.TxOptions) (Tx, er
 }
 
 func (s *sqlConn) Close() error {
+	if !s.monReleased {
+		monConnOpen.Dec(1)
+		s.monReleased = true
+	}
 	return errs.Combine(s.tracker.close(), s.conn.Close())
 }
 
