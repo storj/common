@@ -76,6 +76,27 @@ func ExecWithCustomConfig(cmd *cobra.Command, debugEnabled bool, loadConfig func
 
 // ExecWithCustomConfigAndLogger runs a Cobra command with a custom logger. Custom configuration can be loaded.
 func ExecWithCustomConfigAndLogger(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.Command, vip *viper.Viper) error, loggerFactory func(*zap.Logger) *zap.Logger) {
+	ExecWithCustomOptions(cmd, ExecOptions{
+		InitDefaultDebugServer: debugEnabled,
+		InitProfiler:           true,
+		InitTracing:            true,
+		LoadConfig:             loadConfig,
+		LoggerFactory:          loggerFactory,
+	})
+}
+
+// ExecOptions contains options for ExecWithCustomOptions.
+type ExecOptions struct {
+	InitDefaultDebugServer bool // enable default debug server.
+	InitTracing            bool
+	InitProfiler           bool
+
+	LoadConfig    func(cmd *cobra.Command, vip *viper.Viper) error
+	LoggerFactory func(*zap.Logger) *zap.Logger
+}
+
+// ExecWithCustomOptions runs a Cobra command with custom options.
+func ExecWithCustomOptions(cmd *cobra.Command, opts ExecOptions) {
 	cmd.AddCommand(&cobra.Command{
 		Use:         "version",
 		Short:       "output the version's build information, if any",
@@ -88,7 +109,7 @@ func ExecWithCustomConfigAndLogger(cmd *cobra.Command, debugEnabled bool, loadCo
 	}
 
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
-	cleanup(cmd, debugEnabled, loadConfig, loggerFactory)
+	cleanup(cmd, &opts)
 	err = cmd.Execute()
 
 	if err != nil {
@@ -199,9 +220,9 @@ func getRoot(cmd *cobra.Command) *cobra.Command {
 	return cmd
 }
 
-func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.Command, vip *viper.Viper) error, loggerFactory func(*zap.Logger) *zap.Logger) {
+func cleanup(cmd *cobra.Command, opts *ExecOptions) {
 	for _, ccmd := range cmd.Commands() {
-		cleanup(ccmd, debugEnabled, loadConfig, loggerFactory)
+		cleanup(ccmd, opts)
 	}
 	if cmd.Run != nil {
 		panic("Please use cobra's RunE instead of Run")
@@ -215,7 +236,7 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 		ctx := context.Background()
 		defer mon.TaskNamed("root")(&ctx)(&err)
 
-		vip, err := ViperWithCustomConfig(cmd, loadConfig)
+		vip, err := ViperWithCustomConfig(cmd, opts.LoadConfig)
 		if err != nil {
 			return err
 		}
@@ -280,8 +301,8 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 		if err != nil {
 			return err
 		}
-		if loggerFactory != nil {
-			logger = loggerFactory(logger)
+		if opts.LoggerFactory != nil {
+			logger = opts.LoggerFactory(logger)
 		}
 
 		commandMtx.Lock()
@@ -312,41 +333,42 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 			logger.Info("Invalid configuration file value for key", zap.String("Key", key))
 		}
 
-		var certPath string
-		certPathFlag := cmd.Flags().Lookup("identity.cert-path")
-		if certPathFlag != nil {
-			certPath = certPathFlag.Value.String()
-		}
-		collector, unregister, err := InitTracingWithHostname(ctx, logger, nil, certPath)
-		if err != nil {
-			logger.Debug("failed to initialize tracing collector", zap.Error(err))
-			err = nil
-		} else if collector != nil {
-			ctx, cancel := context.WithCancel(ctx)
-			var eg errgroup.Group
-			eg.Go(func() error {
-				collector.Run(ctx)
-				return nil
-			})
-			defer func() {
-				cancel()
-				unregister()
-				err := eg.Wait()
-				if err != nil {
-					logger.Debug("failed to stop tracing collector", zap.Error(err))
-				}
-				err = collector.Send(context2.WithoutCancellation(ctx))
-				if err != nil {
-					logger.Debug("failed to flush tracing collector", zap.Error(err))
-				}
-				err = collector.Close()
-				if err != nil {
-					logger.Debug("failed to close tracing collector", zap.Error(err))
-				}
-			}()
+		if opts.InitTracing {
+			var certPath string
+			certPathFlag := cmd.Flags().Lookup("identity.cert-path")
+			if certPathFlag != nil {
+				certPath = certPathFlag.Value.String()
+			}
+			collector, unregister, err := InitTracingWithHostname(ctx, logger, nil, certPath)
+			if err != nil {
+				logger.Debug("failed to initialize tracing collector", zap.Error(err))
+			} else if collector != nil {
+				ctx, cancel := context.WithCancel(ctx)
+				var eg errgroup.Group
+				eg.Go(func() error {
+					collector.Run(ctx)
+					return nil
+				})
+				defer func() {
+					cancel()
+					unregister()
+					err := eg.Wait()
+					if err != nil {
+						logger.Debug("failed to stop tracing collector", zap.Error(err))
+					}
+					err = collector.Send(context2.WithoutCancellation(ctx))
+					if err != nil {
+						logger.Debug("failed to flush tracing collector", zap.Error(err))
+					}
+					err = collector.Close()
+					if err != nil {
+						logger.Debug("failed to close tracing collector", zap.Error(err))
+					}
+				}()
+			}
 		}
 
-		if debugEnabled {
+		if opts.InitDefaultDebugServer {
 			err = initDebug(logger, monkit.Default, atomicLevel)
 			if err != nil {
 				withoutStack := errors.New(err.Error())
@@ -355,7 +377,7 @@ func cleanup(cmd *cobra.Command, debugEnabled bool, loadConfig func(cmd *cobra.C
 			}
 		}
 
-		if initProfiler != nil {
+		if opts.InitProfiler && initProfiler != nil {
 			profilerErr := initProfiler(logger)
 			if profilerErr != nil {
 				logger.Debug("failed to init debug profiler", zap.Error(profilerErr))
