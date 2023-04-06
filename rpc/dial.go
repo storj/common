@@ -114,13 +114,24 @@ type DialOptions struct {
 func (d Dialer) DialNode(ctx context.Context, nodeURL storj.NodeURL, opts DialOptions) (_ *Conn, err error) {
 	defer mon.Task()(&ctx, "node: "+nodeURL.String())(&err)
 
-	if opts.ReplaySafe && nodeURL.NoiseInfo != (storj.NoiseInfo{}) {
+	// check for a quic rollout
+	useQuic := checkQUICRolloutState(ctx, nodeURL.ID)
+
+	forcedKind, _ := ctx.Value(hybridConnectorForcedKind{}).(string)
+
+	// we don't use noise, if the kind is already forced, or Quic is requested with rollout
+	if forcedKind == "" && !useQuic && opts.ReplaySafe && nodeURL.NoiseInfo != (storj.NoiseInfo{}) {
 		vals := url.Values{}
 		nodeURL.NoiseInfo.WriteTo(vals)
 		key := fmt.Sprintf("node+noise:%s:%s", nodeURL.ID, vals.Encode())
 		return d.dialPool(ctx, key, func(ctx context.Context) (rpcpool.RawConn, *tls.ConnectionState, error) {
 			return d.dialNoiseConn(ctx, nodeURL.Address, nodeURL.NoiseInfo)
 		})
+	}
+
+	// no pre-defined preference, no Quic rollout, no noise --> TCP is the only option
+	if !useQuic && forcedKind == "" {
+		ctx = WithForcedKind(ctx, "tcp")
 	}
 
 	if d.TLSOptions == nil {
