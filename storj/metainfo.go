@@ -37,29 +37,3 @@ type ListOptions struct {
 	Limit     int
 	Status    int32
 }
-
-// BucketListOptions lists objects.
-type BucketListOptions struct {
-	Cursor    string
-	Direction ListDirection
-	Limit     int
-}
-
-// BucketList is a list of buckets.
-type BucketList struct {
-	More  bool
-	Items []Bucket
-}
-
-// NextPage returns options for listing the next page.
-func (opts BucketListOptions) NextPage(list BucketList) BucketListOptions {
-	if !list.More || len(list.Items) == 0 {
-		return BucketListOptions{}
-	}
-
-	return BucketListOptions{
-		Cursor:    list.Items[len(list.Items)-1].Name,
-		Direction: After,
-		Limit:     opts.Limit,
-	}
-}
