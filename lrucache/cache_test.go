@@ -4,6 +4,7 @@
 package lrucache
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"runtime"
@@ -15,29 +16,38 @@ import (
 	"github.com/zeebo/errs"
 
 	"storj.io/common/testcontext"
+	"storj.io/common/time2"
 )
 
 func TestCache_LRU(t *testing.T) {
+	ctx := testcontext.New(t)
+	defer ctx.Cleanup()
+
 	cache := NewOf[string](Options{Capacity: 2})
 	check := newChecker(t, cache)
 
-	check("a", 1)
-	check("a", 1)
-	check("b", 2)
-	check("a", 2)
-	check("c", 3)
-	check("b", 4)
-	check("c", 4)
-	check("a", 5)
+	check(ctx, "a", 1)
+	check(ctx, "a", 1)
+	check(ctx, "b", 2)
+	check(ctx, "a", 2)
+	check(ctx, "c", 3)
+	check(ctx, "b", 4)
+	check(ctx, "c", 4)
+	check(ctx, "a", 5)
 }
 
 func TestCache_Expires(t *testing.T) {
-	cache := NewOf[string](Options{Capacity: 2, Expiration: time.Nanosecond})
+	ctx := testcontext.New(t)
+	defer ctx.Cleanup()
+
+	cache := NewOf[string](Options{Capacity: 2, Expiration: time.Second})
 	check := newChecker(t, cache)
 
-	check("a", 1)
-	time.Sleep(time.Second)
-	check("a", 2)
+	now := time.Now()
+	check(ctx, "a", 1)
+
+	timeCtx, _ := time2.WithNewMachine(ctx, time2.WithTimeAt(now.Add(2*time.Second)))
+	check(timeCtx, "a", 2)
 }
 
 func TestCache_Get_Fuzz(t *testing.T) {
@@ -63,7 +73,7 @@ func TestCache_Get_Fuzz(t *testing.T) {
 				kidx := rng.Intn(len(keys))
 				key := keys[kidx : kidx+1]
 
-				value, err := cache.Get(key, func() (interface{}, error) {
+				value, err := cache.Get(ctx, key, func() (interface{}, error) {
 					ran = true
 					if shouldErr {
 						return nil, errs.New("random error")
@@ -97,7 +107,7 @@ func TestCache_Get_Dedup(t *testing.T) {
 	fnCalled := make(chan struct{})
 
 	ctx.Go(func() error {
-		_, _ = cache.Get("key", func() (interface{}, error) {
+		_, _ = cache.Get(ctx, "key", func() (interface{}, error) {
 			fnCalled <- struct{}{}
 			time.Sleep(time.Millisecond * 10)
 			return 1, nil
@@ -108,7 +118,7 @@ func TestCache_Get_Dedup(t *testing.T) {
 
 	<-fnCalled
 
-	value, err := cache.Get("key", func() (interface{}, error) {
+	value, err := cache.Get(ctx, "key", func() (interface{}, error) {
 		return 0, nil
 	})
 
@@ -117,40 +127,43 @@ func TestCache_Get_Dedup(t *testing.T) {
 }
 
 func TestCache_Add_and_GetCached(t *testing.T) {
+	ctx := testcontext.New(t)
+	defer ctx.Cleanup()
+
 	cache := New(Options{Capacity: 2, Expiration: time.Millisecond})
 
 	// Never added.
-	_, cached := cache.GetCached("key1")
+	_, cached := cache.GetCached(ctx, "key1")
 	require.False(t, cached, "GetCached -> cached")
 
 	// Never added before.
-	replaced := cache.Add("key1", 1)
+	replaced := cache.Add(ctx, "key1", 1)
 	require.False(t, replaced, "Add -> replaced")
-	value, cached := cache.GetCached("key1")
+	value, cached := cache.GetCached(ctx, "key1")
 	require.True(t, cached, "GetCached -> cached")
 	require.Equal(t, 1, value)
 	// Added before.
-	replaced = cache.Add("key1", 1)
+	replaced = cache.Add(ctx, "key1", 1)
 	require.True(t, replaced, "Add -> replaced")
 
 	// Added before but expired.
 	time.Sleep(time.Millisecond)
-	replaced = cache.Add("key1", 1)
+	replaced = cache.Add(ctx, "key1", 1)
 	require.False(t, replaced, "Add -> replaced")
 
 	// Never added before.
-	replaced = cache.Add("key2", 2)
+	replaced = cache.Add(ctx, "key2", 2)
 	require.False(t, replaced, "Add -> replaced")
-	replaced = cache.Add("key3", 3)
+	replaced = cache.Add(ctx, "key3", 3)
 	require.False(t, replaced, "Add -> replaced")
 
 	// Evicted because of capacity limit.
-	_, cached = cache.GetCached("key1")
+	_, cached = cache.GetCached(ctx, "key1")
 	require.False(t, cached, "GetCached -> cached (evicted because it was the least recently used)")
-	value, cached = cache.GetCached("key2")
+	value, cached = cache.GetCached(ctx, "key2")
 	require.True(t, cached, "GetCached -> cached")
 	require.Equal(t, 2, value)
-	value, cached = cache.GetCached("key3")
+	value, cached = cache.GetCached(ctx, "key3")
 	require.True(t, cached, "GetCached -> cached")
 	require.Equal(t, 3, value)
 }
@@ -168,7 +181,7 @@ func TestCache_Add_and_GetCached_Fuzz(t *testing.T) {
 	var addCounter1 int64 = -1
 	ctx.Go(func() error {
 		for e := int64(0); e < numEntries/2; e++ {
-			replaced := cache.Add(fmt.Sprintf("%d", e), e)
+			replaced := cache.Add(ctx, fmt.Sprintf("%d", e), e)
 			atomic.AddInt64(&addCounter1, 1)
 
 			require.False(t, replaced, "replaced")
@@ -180,7 +193,7 @@ func TestCache_Add_and_GetCached_Fuzz(t *testing.T) {
 	var addCounter2 int64 = (numEntries / 2) - 1
 	ctx.Go(func() error {
 		for e := int64(numEntries / 2); e < numEntries; e++ {
-			replaced := cache.Add(fmt.Sprintf("%d", e), e)
+			replaced := cache.Add(ctx, fmt.Sprintf("%d", e), e)
 			atomic.AddInt64(&addCounter2, 1)
 
 			require.False(t, replaced, "replaced")
@@ -205,7 +218,7 @@ func TestCache_Add_and_GetCached_Fuzz(t *testing.T) {
 			}
 
 			e++
-			value, cached := cache.GetCached(fmt.Sprintf("%d", expVal))
+			value, cached := cache.GetCached(ctx, fmt.Sprintf("%d", expVal))
 			require.True(t, cached, "cached")
 			require.Equal(t, expVal, value, "value")
 		}
@@ -219,7 +232,7 @@ func TestCache_Add_and_GetCached_Fuzz(t *testing.T) {
 		for e := uint64(0); e < numEntries; e++ {
 			key := rng.Int63n(numEntries) + numEntries
 
-			_, cached := cache.GetCached(fmt.Sprintf("%d", key))
+			_, cached := cache.GetCached(ctx, fmt.Sprintf("%d", key))
 			require.False(t, cached, "cached")
 		}
 
@@ -239,7 +252,7 @@ type checker struct {
 	calls int
 }
 
-func newChecker(t *testing.T, cache *ExpiringLRUOf[string]) func(string, int) {
+func newChecker(t *testing.T, cache *ExpiringLRUOf[string]) func(ctx context.Context, key string, calls int) {
 	return (&checker{t: t, cache: cache}).Check
 }
 
@@ -250,8 +263,8 @@ func (c *checker) makeCallback(v string) func() (string, error) {
 	}
 }
 
-func (c *checker) Check(key string, calls int) {
-	value, err := c.cache.Get(key, c.makeCallback(key))
+func (c *checker) Check(ctx context.Context, key string, calls int) {
+	value, err := c.cache.Get(ctx, key, c.makeCallback(key))
 	require.Equal(c.t, c.calls, calls)
 	require.Equal(c.t, value, key)
 	require.NoError(c.t, err)

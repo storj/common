@@ -5,10 +5,13 @@ package lrucache
 
 import (
 	"container/list"
+	"context"
 	"sync"
 	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
+
+	"storj.io/common/time2"
 )
 
 var mon = monkit.Package()
@@ -66,7 +69,7 @@ func NewOf[T any](opts Options) *ExpiringLRUOf[T] {
 // it will call the provided function. Concurrent calls will dedupe as
 // best as they are able. If the function returns an error, it is not
 // cached and further calls will try again.
-func (e *ExpiringLRUOf[T]) Get(key string, fn func() (T, error)) (value T, err error) {
+func (e *ExpiringLRUOf[T]) Get(ctx context.Context, key string, fn func() (T, error)) (value T, err error) {
 	if e.opts.Capacity <= 0 {
 		e.monitorCache(false)
 		return fn()
@@ -84,12 +87,12 @@ func (e *ExpiringLRUOf[T]) Get(key string, fn func() (T, error)) (value T, err e
 				e.order.Remove(back)
 			}
 			state = &cacheState[T]{
-				when:  time.Now(),
+				when:  time2.Now(ctx),
 				order: e.order.PushFront(key),
 			}
 			e.data[key] = state
 
-		case e.opts.Expiration > 0 && time.Since(state.when) > e.opts.Expiration:
+		case e.opts.Expiration > 0 && time2.Since(ctx, state.when) > e.opts.Expiration:
 			delete(e.data, key)
 			e.order.Remove(state.order)
 			e.mu.Unlock()
@@ -144,7 +147,7 @@ func (e *ExpiringLRUOf[T]) monitorCache(valueFromCache bool) {
 }
 
 // Delete explicitly removes a key from the cache if it exists.
-func (e *ExpiringLRUOf[T]) Delete(key string) {
+func (e *ExpiringLRUOf[T]) Delete(ctx context.Context, key string) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
@@ -160,11 +163,11 @@ func (e *ExpiringLRUOf[T]) Delete(key string) {
 //
 // replaced is true if the key already existed in the cache and was valid, hence
 // the value is replaced.
-func (e *ExpiringLRUOf[T]) Add(key string, value T) (replaced bool) {
+func (e *ExpiringLRUOf[T]) Add(ctx context.Context, key string, value T) (replaced bool) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
-	state, evicted := e.peek(key)
+	state, evicted := e.peek(ctx, key)
 	if state == nil {
 		if !evicted && e.order.Len() >= e.opts.Capacity {
 			item := e.order.Back()
@@ -172,7 +175,7 @@ func (e *ExpiringLRUOf[T]) Add(key string, value T) (replaced bool) {
 		}
 
 		e.data[key] = &cacheState[T]{
-			when:  time.Now(),
+			when:  time2.Now(ctx),
 			order: e.order.PushFront(key),
 			value: value,
 		}
@@ -182,7 +185,7 @@ func (e *ExpiringLRUOf[T]) Add(key string, value T) (replaced bool) {
 
 	e.order.Remove(state.order)
 	e.data[key] = &cacheState[T]{
-		when:  time.Now(),
+		when:  time2.Now(ctx),
 		order: e.order.PushFront(key),
 		value: value,
 	}
@@ -192,11 +195,11 @@ func (e *ExpiringLRUOf[T]) Add(key string, value T) (replaced bool) {
 
 // GetCached returns the value associated with key and true if it exists and
 // hasn't expired, otherwise nil and false.
-func (e *ExpiringLRUOf[T]) GetCached(key string) (value T, cached bool) {
+func (e *ExpiringLRUOf[T]) GetCached(ctx context.Context, key string) (value T, cached bool) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
-	state, _ := e.peek(key)
+	state, _ := e.peek(ctx, key)
 	if state == nil {
 		var zero T
 		return zero, false
@@ -214,13 +217,13 @@ func (e *ExpiringLRUOf[T]) GetCached(key string) (value T, cached bool) {
 //
 // NOTE the caller must always lock and unlock the mutex before calling this
 // method.
-func (e *ExpiringLRUOf[T]) peek(key string) (state *cacheState[T], evicted bool) {
+func (e *ExpiringLRUOf[T]) peek(ctx context.Context, key string) (state *cacheState[T], evicted bool) {
 	state, ok := e.data[key]
 	if !ok {
 		return nil, false
 	}
 
-	if e.opts.Expiration > 0 && time.Since(state.when) > e.opts.Expiration {
+	if e.opts.Expiration > 0 && time2.Since(ctx, state.when) > e.opts.Expiration {
 		e.order.Remove(state.order)
 		delete(e.data, key)
 
