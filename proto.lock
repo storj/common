@@ -1818,6 +1818,22 @@
       "def": {
         "enums": [
           {
+            "name": "ListDirection",
+            "enum_fields": [
+              {
+                "name": "UNSET"
+              },
+              {
+                "name": "FORWARD",
+                "integer": 1
+              },
+              {
+                "name": "AFTER",
+                "integer": 2
+              }
+            ]
+          },
+          {
             "name": "Object.Status",
             "enum_fields": [
               {
@@ -2069,7 +2085,7 @@
               {
                 "id": 3,
                 "name": "direction",
-                "type": "int32"
+                "type": "ListDirection"
               }
             ]
           },

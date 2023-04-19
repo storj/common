@@ -26,6 +26,7 @@ service Piecestore {
 }
 
 // Expected order of messages from uplink:
+//
 //   OrderLimit ->
 //   repeated
 //      Order ->
@@ -62,6 +63,7 @@ message PieceUploadResponse {
 }
 
 // Expected order of messages from uplink:
+//
 //   {OrderLimit, Chunk} ->
 //   go repeated
 //      Order -> (async)

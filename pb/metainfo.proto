@@ -134,7 +134,19 @@ message ListBucketsRequest {
 
     bytes cursor = 1;
     int32 limit = 2;
-    int32 direction = 3;
+    ListDirection direction = 3;
+}
+
+enum ListDirection {
+    UNSET = 0;
+    // Before = -2 lists backwards from cursor, without cursor. Deprecated.
+    // Backward = -1 lists backwards from cursor, including cursor. Deprecated.
+    // reserved -2, -1; // protolock doesn't like this, so let's not define it.
+
+    // Forward lists forwards from cursor, including cursor.
+    FORWARD = 1;
+    // After lists forwards from cursor, without cursor.
+    AFTER = 2;
 }
 
 message ListBucketsResponse {

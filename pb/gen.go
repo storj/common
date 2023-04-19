@@ -22,6 +22,7 @@ var (
 
 var ignoreProto = map[string]bool{
 	"gogo.proto": true,
+	"pico.proto": true,
 }
 
 func ignore(files []string) []string {
