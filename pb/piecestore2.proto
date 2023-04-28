@@ -83,6 +83,11 @@ message PieceDownloadRequest {
 
     // request for the chunk
     Chunk chunk = 3;
+
+    // maximum_chunk_size is an advisory request from the uplink to
+    // the storage node on how big the chunks should be. smaller
+    // maximum sizes may reduce time to first byte and peak memory usage.
+    int32 maximum_chunk_size = 4;
 }
 
 message PieceDownloadResponse {

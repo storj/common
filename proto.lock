@@ -6378,6 +6378,11 @@
                 "id": 3,
                 "name": "chunk",
                 "type": "Chunk"
+              },
+              {
+                "id": 4,
+                "name": "maximum_chunk_size",
+                "type": "int32"
               }
             ],
             "messages": [
