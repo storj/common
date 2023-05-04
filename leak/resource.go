@@ -68,6 +68,11 @@ func (parent *Resource) del(child *Resource) {
 	delete(parent.open, child)
 }
 
+// StartStack returns formatted stack where the resource was created.
+func (parent *Resource) StartStack() string {
+	return parent.callers.String()
+}
+
 // Close closes the resource and checks whether all the children have been closed.
 func (parent *Resource) Close() error {
 	if parent.parent != nil {

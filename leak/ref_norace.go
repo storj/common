@@ -23,6 +23,11 @@ func (ref Ref) Child(name string, skipCallers int) Ref {
 	return Ref{}
 }
 
+// StartStack returns formatted stack where the resource was created.
+func (ref Ref) StartStack() string {
+	return ""
+}
+
 // Close closes the ref and checks whether all the children have been closed.
 //
 // The caller should close the ref with [Ref.Close].
