@@ -19,6 +19,7 @@ import (
 	"github.com/zeebo/errs"
 
 	"storj.io/common/context2"
+	"storj.io/common/leak"
 	"storj.io/private/traces"
 )
 
@@ -56,7 +57,7 @@ func Wrap(db *sql.DB) DB {
 		db:           db,
 		useContext:   support.Basic(),
 		useTxContext: support.Transactions(),
-		tracker:      rootTracker(1),
+		tracker:      leak.Root(1),
 	}
 }
 
@@ -66,7 +67,7 @@ func WithoutContext(db *sql.DB) DB {
 		db:           db,
 		useContext:   false,
 		useTxContext: false,
-		tracker:      rootTracker(1),
+		tracker:      leak.Root(1),
 	}
 }
 
@@ -76,7 +77,7 @@ func AllowContext(db *sql.DB) DB {
 		db:           db,
 		useContext:   true,
 		useTxContext: true,
-		tracker:      rootTracker(1),
+		tracker:      leak.Root(1),
 	}
 }
 
@@ -118,7 +119,7 @@ type sqlDB struct {
 	db           *sql.DB
 	useContext   bool
 	useTxContext bool
-	tracker      *tracker
+	tracker      leak.Ref
 }
 
 func (s *sqlDB) Internal() *sql.DB { return s.db }
@@ -132,7 +133,7 @@ func (s *sqlDB) Begin(ctx context.Context) (Tx, error) {
 	return &sqlTx{
 		tx:         tx,
 		useContext: s.useContext && s.useTxContext,
-		tracker:    s.tracker.child(1),
+		tracker:    s.tracker.Child("sqlTx", 1),
 	}, err
 }
 
@@ -157,12 +158,12 @@ func (s *sqlDB) BeginTx(ctx context.Context, txOptions *sql.TxOptions) (Tx, erro
 	return &sqlTx{
 		tx:         tx,
 		useContext: s.useContext && s.useTxContext,
-		tracker:    s.tracker.child(1),
+		tracker:    s.tracker.Child("sqlTx", 1),
 	}, err
 }
 
 func (s *sqlDB) Close() error {
-	return errs.Combine(s.tracker.close(), s.db.Close())
+	return errs.Combine(s.tracker.Close(), s.db.Close())
 }
 
 func (s *sqlDB) Conn(ctx context.Context) (Conn, error) {
@@ -187,7 +188,7 @@ func (s *sqlDB) Conn(ctx context.Context) (Conn, error) {
 		conn:         conn,
 		useContext:   s.useContext,
 		useTxContext: s.useTxContext,
-		tracker:      s.tracker.child(1),
+		tracker:      s.tracker.Child("sqlConn", 1),
 	}, nil
 }
 
@@ -237,7 +238,7 @@ func (s *sqlDB) Prepare(ctx context.Context, query string) (_ Stmt, err error) {
 		query:      query,
 		stmt:       stmt,
 		useContext: s.useContext,
-		tracker:    s.tracker.child(1),
+		tracker:    s.tracker.Child("sqlStmt", 1),
 	}, nil
 }
 
@@ -261,7 +262,7 @@ func (s *sqlDB) PrepareContext(ctx context.Context, query string) (_ Stmt, err e
 		query:      query,
 		stmt:       stmt,
 		useContext: s.useContext,
-		tracker:    s.tracker.child(1),
+		tracker:    s.tracker.Child("sqlStmt", 1),
 	}, nil
 }
 
@@ -269,7 +270,7 @@ func (s *sqlDB) Query(ctx context.Context, query string, args ...interface{}) (_
 	traces.Tag(ctx, traces.TagDB)
 	defer mon.Task()(&ctx, query, args)(&err)
 
-	return s.tracker.wrapRows(s.db.Query(query, args...))
+	return s.wrapRows(s.db.Query(query, args...))
 }
 
 func (s *sqlDB) QueryContext(ctx context.Context, query string, args ...interface{}) (_ Rows, err error) {
@@ -277,9 +278,9 @@ func (s *sqlDB) QueryContext(ctx context.Context, query string, args ...interfac
 	defer mon.Task()(&ctx, query, args)(&err)
 
 	if !s.useContext {
-		return s.tracker.wrapRows(s.db.Query(query, args...))
+		return s.wrapRows(s.db.Query(query, args...))
 	}
-	return s.tracker.wrapRows(s.db.QueryContext(ctx, query, args...))
+	return s.wrapRows(s.db.QueryContext(ctx, query, args...))
 }
 
 func (s *sqlDB) QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row {

@@ -9,6 +9,7 @@ import (
 
 	"github.com/zeebo/errs"
 
+	"storj.io/common/leak"
 	"storj.io/private/traces"
 )
 
@@ -36,11 +37,11 @@ type sqlStmt struct {
 	query      string
 	stmt       *sql.Stmt
 	useContext bool
-	tracker    *tracker
+	tracker    leak.Ref
 }
 
 func (s *sqlStmt) Close() error {
-	return errs.Combine(s.tracker.close(), s.stmt.Close())
+	return errs.Combine(s.tracker.Close(), s.stmt.Close())
 }
 
 func (s *sqlStmt) Exec(ctx context.Context, args ...interface{}) (_ sql.Result, err error) {
@@ -64,7 +65,7 @@ func (s *sqlStmt) Query(ctx context.Context, args ...interface{}) (_ Rows, err e
 	traces.Tag(ctx, traces.TagDB)
 	defer mon.Task()(&ctx, s.query, args)(&err)
 
-	return s.tracker.wrapRows(s.stmt.Query(args...))
+	return s.wrapRows(s.stmt.Query(args...))
 }
 
 func (s *sqlStmt) QueryContext(ctx context.Context, args ...interface{}) (_ Rows, err error) {
@@ -72,9 +73,9 @@ func (s *sqlStmt) QueryContext(ctx context.Context, args ...interface{}) (_ Rows
 	defer mon.Task()(&ctx, s.query, args)(&err)
 
 	if !s.useContext {
-		return s.tracker.wrapRows(s.stmt.Query(args...))
+		return s.wrapRows(s.stmt.Query(args...))
 	}
-	return s.tracker.wrapRows(s.stmt.QueryContext(ctx, args...))
+	return s.wrapRows(s.stmt.QueryContext(ctx, args...))
 }
 
 func (s *sqlStmt) QueryRow(ctx context.Context, args ...interface{}) *sql.Row {

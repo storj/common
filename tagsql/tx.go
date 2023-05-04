@@ -9,6 +9,7 @@ import (
 
 	"github.com/zeebo/errs"
 
+	"storj.io/common/leak"
 	"storj.io/private/traces"
 )
 
@@ -38,7 +39,7 @@ type Tx interface {
 type sqlTx struct {
 	tx         *sql.Tx
 	useContext bool
-	tracker    *tracker
+	tracker    leak.Ref
 }
 
 func (s *sqlTx) Exec(ctx context.Context, query string, args ...interface{}) (_ sql.Result, err error) {
@@ -70,7 +71,7 @@ func (s *sqlTx) Prepare(ctx context.Context, query string) (_ Stmt, err error) {
 		query:      query,
 		stmt:       stmt,
 		useContext: s.useContext,
-		tracker:    s.tracker.child(1),
+		tracker:    s.tracker.Child("sqlStmt", 1),
 	}, nil
 }
 
@@ -94,7 +95,7 @@ func (s *sqlTx) PrepareContext(ctx context.Context, query string) (_ Stmt, err e
 		query:      query,
 		stmt:       stmt,
 		useContext: s.useContext,
-		tracker:    s.tracker.child(1),
+		tracker:    s.tracker.Child("sqlStmt", 1),
 	}, err
 }
 
@@ -102,7 +103,7 @@ func (s *sqlTx) Query(ctx context.Context, query string, args ...interface{}) (_
 	traces.Tag(ctx, traces.TagDB)
 	defer mon.Task()(&ctx, query, args)(&err)
 
-	return s.tracker.wrapRows(s.tx.Query(query, args...))
+	return s.wrapRows(s.tx.Query(query, args...))
 }
 
 func (s *sqlTx) QueryContext(ctx context.Context, query string, args ...interface{}) (_ Rows, err error) {
@@ -110,9 +111,9 @@ func (s *sqlTx) QueryContext(ctx context.Context, query string, args ...interfac
 	defer mon.Task()(&ctx, query, args)(&err)
 
 	if !s.useContext {
-		return s.tracker.wrapRows(s.tx.Query(query, args...))
+		return s.wrapRows(s.tx.Query(query, args...))
 	}
-	return s.tracker.wrapRows(s.tx.QueryContext(ctx, query, args...))
+	return s.wrapRows(s.tx.QueryContext(ctx, query, args...))
 }
 
 func (s *sqlTx) QueryRow(ctx context.Context, query string, args ...interface{}) *sql.Row {
@@ -133,9 +134,9 @@ func (s *sqlTx) QueryRowContext(ctx context.Context, query string, args ...inter
 }
 
 func (s *sqlTx) Commit() error {
-	return errs.Combine(s.tracker.close(), s.tx.Commit())
+	return errs.Combine(s.tracker.Close(), s.tx.Commit())
 }
 
 func (s *sqlTx) Rollback() error {
-	return errs.Combine(s.tracker.close(), s.tx.Rollback())
+	return errs.Combine(s.tracker.Close(), s.tx.Rollback())
 }

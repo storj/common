@@ -11,6 +11,7 @@ import (
 	"github.com/zeebo/errs"
 
 	"storj.io/common/context2"
+	"storj.io/common/leak"
 	"storj.io/private/traces"
 )
 
@@ -41,7 +42,7 @@ type sqlConn struct {
 	conn         *sql.Conn
 	useContext   bool
 	useTxContext bool
-	tracker      *tracker
+	tracker      leak.Ref
 	monReleased  bool
 }
 
@@ -61,7 +62,7 @@ func (s *sqlConn) BeginTx(ctx context.Context, txOptions *sql.TxOptions) (Tx, er
 	return &sqlTx{
 		tx:         tx,
 		useContext: s.useContext && s.useTxContext,
-		tracker:    s.tracker.child(1),
+		tracker:    s.tracker.Child("sqlTx", 1),
 	}, nil
 }
 
@@ -70,7 +71,7 @@ func (s *sqlConn) Close() error {
 		monConnOpen.Dec(1)
 		s.monReleased = true
 	}
-	return errs.Combine(s.tracker.close(), s.conn.Close())
+	return errs.Combine(s.tracker.Close(), s.conn.Close())
 }
 
 func (s *sqlConn) ExecContext(ctx context.Context, query string, args ...interface{}) (_ sql.Result, err error) {
@@ -105,7 +106,7 @@ func (s *sqlConn) PrepareContext(ctx context.Context, query string) (_ Stmt, err
 	return &sqlStmt{
 		stmt:       stmt,
 		useContext: s.useContext,
-		tracker:    s.tracker.child(1),
+		tracker:    s.tracker.Child("sqlStmt", 1),
 	}, nil
 }
 
@@ -116,7 +117,7 @@ func (s *sqlConn) QueryContext(ctx context.Context, query string, args ...interf
 	if !s.useContext {
 		ctx = context2.WithoutCancellation(ctx)
 	}
-	return s.tracker.wrapRows(s.conn.QueryContext(ctx, query, args...))
+	return s.wrapRows(s.conn.QueryContext(ctx, query, args...))
 }
 
 func (s *sqlConn) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
