@@ -27,6 +27,11 @@ func New() (UUID, error) {
 	return newRandomFromReader(rand.Reader)
 }
 
+// Max returns the maximum value of a UUID.
+func Max() UUID {
+	return UUID{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}
+}
+
 // newRandomFromReader returns a random UUID  (version 4 variant 2)
 // using a custom reader.
 func newRandomFromReader(r io.Reader) (UUID, error) {
