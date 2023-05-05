@@ -19,7 +19,7 @@ require (
 	golang.org/x/crypto v0.5.0
 	golang.org/x/sync v0.1.0
 	golang.org/x/sys v0.4.0
-	storj.io/drpc v0.0.33-0.20230417171205-2ca712ef4ab5
+	storj.io/drpc v0.0.33
 	storj.io/picobuf v0.0.1
 )
 
