@@ -7,6 +7,8 @@ import (
 	"context"
 	"crypto/tls"
 	"net"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/zeebo/errs"
@@ -14,6 +16,11 @@ import (
 	"storj.io/common/memory"
 	"storj.io/common/netutil"
 	"storj.io/drpc/drpcmigrate"
+)
+
+var (
+	// STORJ_RPC_SET_LINGER_0 defaults to false below.
+	enableSetLinger0, _ = strconv.ParseBool(os.Getenv("STORJ_RPC_SET_LINGER_0"))
 )
 
 // ConnectorConn is a type that creates a connection and establishes a tls
@@ -192,9 +199,12 @@ func (t *TCPConnector) DialContextUnencryptedUnprefixed(ctx context.Context, add
 			     that we can't handle clean connection closes.
 
 			Setting SetLinger(0) is option b.
+			enableSetLinger0 defaults to false so that we can pursue option c.
 		*/
-		if err := tcpconn.SetLinger(0); err != nil {
-			return nil, errs.Combine(Error.Wrap(err), Error.Wrap(conn.Close()))
+		if enableSetLinger0 {
+			if err := tcpconn.SetLinger(0); err != nil {
+				return nil, errs.Combine(Error.Wrap(err), Error.Wrap(conn.Close()))
+			}
 		}
 
 		if t.TCPUserTimeout > 0 {
