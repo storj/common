@@ -56,6 +56,18 @@ func TestPlacement_Geofencing(t *testing.T) {
 			placement: US,
 			expected:  false,
 		},
+		{
+			name:      "Russia doesn't match NR",
+			country:   location.Russia,
+			placement: NR,
+			expected:  false,
+		},
+		{
+			name:      "Germany is allowed with NR",
+			country:   location.Germany,
+			placement: NR,
+			expected:  true,
+		},
 	}
 
 	for _, c := range cases {

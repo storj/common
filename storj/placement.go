@@ -33,6 +33,9 @@ const (
 
 	// InvalidPlacement is used when there is no information about the stored placement.
 	InvalidPlacement PlacementConstraint = 5
+
+	// NR placement uses nodes that are not in RU or other countries sanctioned because of the RU/UA War.
+	NR PlacementConstraint = 6
 )
 
 // AllowedCountry checks if country is allowed by the placement policy.
@@ -62,6 +65,8 @@ func (p PlacementConstraint) AllowedCountry(isoCountryCode location.CountryCode)
 		return isoCountryCode.Equal(location.UnitedStates)
 	case DE:
 		return isoCountryCode.Equal(location.Germany)
+	case NR:
+		return !isoCountryCode.Equal(location.Russia) && !isoCountryCode.Equal(location.Belarus)
 	default:
 		return false
 	}
