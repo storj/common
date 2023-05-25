@@ -6,8 +6,9 @@ package rpctracing
 
 import (
 	"context"
-
 	"github.com/spacemonkeygo/monkit/v3"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 
 	"storj.io/drpc"
 	"storj.io/drpc/drpcmetadata"
@@ -51,6 +52,7 @@ func (handler *Handler) HandleRPC(stream drpc.Stream, rpc string) (err error) {
 	streamCtx := stream.Context()
 
 	metadata, ok := drpcmetadata.Get(streamCtx)
+	streamCtx = otel.GetTextMapPropagator().Extract(streamCtx, propagation.MapCarrier(metadata))
 	if ok {
 		trace, parentID := handler.cb(metadata)
 		defer mon.FuncNamed(rpc).RemoteTrace(&streamCtx, parentID, trace)(&err)

@@ -6,6 +6,8 @@ package rpctracing
 
 import (
 	"context"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"strconv"
 
 	"github.com/spacemonkeygo/monkit/v3"
@@ -39,6 +41,10 @@ func (c *TracingWrapper) NewStream(ctx context.Context, rpc string, enc drpc.Enc
 
 // trace injects tracing related information into the context.
 func (c *TracingWrapper) trace(ctx context.Context) context.Context {
+	metadata := make(map[string]string)
+	otel.GetTextMapPropagator().Inject(ctx, propagation.MapCarrier(metadata))
+	ctx = drpcmetadata.AddPairs(ctx, metadata)
+
 	span := monkit.SpanFromCtx(ctx)
 	if span == nil {
 		return ctx
