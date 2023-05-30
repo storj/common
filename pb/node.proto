@@ -37,8 +37,17 @@ message NodeAddress {
     noise.NoiseInfo noise_info = 3;
 
     // the number of concurrent identical messages this node knows how to
-    // debounce.
+    // debounce. restricted to a specific protocol (e.g. just TLS or just Noise).
     int32 debounce_limit = 4;
+
+    enum Feature {
+        NO_FEATURES = 0;
+
+        // these must all be powers of two, since they are bitwise ORed into
+        // the flags field.
+        TCP_FASTOPEN_ENABLED = 1;
+    }
+    uint64 features = 5;
 
     reserved 1;
     reserved "transport";

@@ -4831,6 +4831,18 @@
             ]
           },
           {
+            "name": "NodeAddress.Feature",
+            "enum_fields": [
+              {
+                "name": "NO_FEATURES"
+              },
+              {
+                "name": "TCP_FASTOPEN_ENABLED",
+                "integer": 1
+              }
+            ]
+          },
+          {
             "name": "NodeTransport",
             "enum_fields": [
               {
@@ -4919,6 +4931,11 @@
                 "id": 4,
                 "name": "debounce_limit",
                 "type": "int32"
+              },
+              {
+                "id": 5,
+                "name": "features",
+                "type": "uint64"
               }
             ],
             "reserved_ids": [
