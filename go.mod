@@ -18,7 +18,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/zeebo/admission/v3 v3.0.3
 	github.com/zeebo/errs v1.3.0
-	github.com/zeebo/structs v1.0.2
+	github.com/zeebo/structs v1.0.3-0.20230601144555-f2db46069602
 	go.uber.org/zap v1.14.1
 	golang.org/x/sync v0.1.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -56,6 +56,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.0.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/zeebo/blake3 v0.2.3 // indirect
+	github.com/zeebo/errs/v2 v2.0.0-20190904185908-02a9c27c76d3 // indirect
 	github.com/zeebo/float16 v0.1.0 // indirect
 	github.com/zeebo/incenc v0.0.0-20180505221441-0d92902eec54 // indirect
 	github.com/zeebo/mwc v0.0.4 // indirect
