@@ -92,7 +92,7 @@ type NodeAddress_Feature int32
 const (
 	NodeAddress_NO_FEATURES NodeAddress_Feature = 0
 	// these must all be powers of two, since they are bitwise ORed into
-	// the flags field.
+	// the features field.
 	NodeAddress_TCP_FASTOPEN_ENABLED NodeAddress_Feature = 1
 )
 

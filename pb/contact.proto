@@ -33,6 +33,9 @@ message CheckInRequest {
     noise.NoiseKeyAttestation noise_key_attestation = 5;
 
     int32 debounce_limit = 6;
+
+    // features is a set of bit flags of the NodeAddress.Features enum.
+    uint64 features = 7;
 }
 
 message CheckInResponse {

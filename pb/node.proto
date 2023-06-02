@@ -44,7 +44,7 @@ message NodeAddress {
         NO_FEATURES = 0;
 
         // these must all be powers of two, since they are bitwise ORed into
-        // the flags field.
+        // the features field.
         TCP_FASTOPEN_ENABLED = 1;
     }
     uint64 features = 5;

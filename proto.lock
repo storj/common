@@ -197,6 +197,11 @@
                 "id": 6,
                 "name": "debounce_limit",
                 "type": "int32"
+              },
+              {
+                "id": 7,
+                "name": "features",
+                "type": "uint64"
               }
             ]
           },
