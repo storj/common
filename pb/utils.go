@@ -156,6 +156,7 @@ func (n *Node) NodeURL() storj.NodeURL {
 		Address:       n.Address.Address,
 		NoiseInfo:     n.Address.NoiseInfo.Convert(),
 		DebounceLimit: int(n.Address.DebounceLimit),
+		Features:      n.Address.Features,
 	}
 }
 
@@ -167,6 +168,7 @@ func NodeFromNodeURL(u storj.NodeURL) *Node {
 			Address:       u.Address,
 			NoiseInfo:     NoiseInfoConvert(u.NoiseInfo),
 			DebounceLimit: int32(u.DebounceLimit),
+			Features:      u.Features,
 		},
 	}
 }

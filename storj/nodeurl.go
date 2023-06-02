@@ -25,6 +25,7 @@ type NodeURL struct {
 	Address       string
 	NoiseInfo     NoiseInfo
 	DebounceLimit int
+	Features      uint64 // this is a bitmask of pb.NodeAddress_Feature values.
 }
 
 // ParseNodeURL parses node URL string.
@@ -93,6 +94,13 @@ func ParseNodeURL(s string) (NodeURL, error) {
 		}
 		node.DebounceLimit = debounceInt
 	}
+	if query.Get("f") != "" {
+		features, err := strconv.ParseUint(query.Get("f"), 16, 64)
+		if err != nil {
+			return NodeURL{}, ErrNodeURL.Wrap(err)
+		}
+		node.Features = features
+	}
 
 	return node, nil
 }
@@ -107,6 +115,9 @@ func (u NodeURL) String() string {
 	vals := url.Values{}
 	if u.DebounceLimit > 0 {
 		vals.Set("debounce", fmt.Sprint(u.DebounceLimit))
+	}
+	if u.Features > 0 {
+		vals.Set("f", strconv.FormatUint(u.Features, 16))
 	}
 	u.NoiseInfo.WriteTo(vals)
 	suffix := ""
