@@ -4,6 +4,7 @@
 package version_test
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"math"
 	"testing"
@@ -133,8 +134,8 @@ func TestRollout_MarshalJSON_UnmarshalJSON(t *testing.T) {
 
 func TestShouldUpdate(t *testing.T) {
 	// NB: total and acceptable tolerance are negatively correlated.
-	total := 10000
-	tolerance := total * 2 / 100 // 2%
+	total := 20000
+	tolerance := total / 100 // 1%
 
 	for p := 10; p < 100; p += 10 {
 		var rollouts int
@@ -161,4 +162,16 @@ func TestShouldUpdate(t *testing.T) {
 			return int(math.Abs(float64(diff))) < tolerance
 		})
 	}
+}
+
+func TestPercentageToCursorF(t *testing.T) {
+	res := version.PercentageToCursorF(50)
+	assert.Equal(t, "7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb1e20", hex.EncodeToString(res[:]))
+}
+
+func TestPercentageToCursorF_Precision(t *testing.T) {
+	// check if we have enough precision to have small difference between 0.2% and 0
+	cursorSmall := version.PercentageToCursorF(0.002)
+	cursorZero := version.PercentageToCursorF(0)
+	assert.NotEqual(t, cursorZero, cursorSmall)
 }

@@ -265,7 +265,24 @@ func (info Info) Log(logger func(msg string, fields ...zap.Field)) {
 		zap.Bool("Modified", info.Modified))
 }
 
+// PercentageToCursorF calculates the cursor value for the given floating point percentage.
+func PercentageToCursorF(pct float64) RolloutBytes {
+	// NB: convert the max value to a number, multiply by the percentage, convert back.
+	var maxInt, maskInt big.Int
+	var maxBytes RolloutBytes
+	for i := 0; i < len(maxBytes); i++ {
+		maxBytes[i] = 255
+	}
+	maxInt.SetBytes(maxBytes[:])
+	maskInt.Mul(maskInt.Div(&maxInt, big.NewInt(100*10000)), big.NewInt(int64(pct*10000)))
+	var cursor RolloutBytes
+	copy(cursor[:], maskInt.Bytes())
+
+	return cursor
+}
+
 // PercentageToCursor calculates the cursor value for the given percentage of nodes which should update.
+// Deprecated: use PercentageToCursorF which is more precise.
 func PercentageToCursor(pct int) RolloutBytes {
 	// NB: convert the max value to a number, multiply by the percentage, convert back.
 	var maxInt, maskInt big.Int
