@@ -51,7 +51,7 @@ func TestEncoder(t *testing.T) {
 	assert.NotEmpty(t, sourceLocation["function"])
 
 	assert.Equal(t, "a", got["message"])
-	assert.Equal(t, "DEBUG", got["logging.googleapis.com/severity"])
+	assert.Equal(t, "DEBUG", got["severity"])
 
 	logger.Info("c", zap.String("d", "e"))
 	require.NoError(t, logger.Sync())
@@ -64,7 +64,7 @@ func TestEncoder(t *testing.T) {
 	assert.Equal(t, "e", labels["d"])
 
 	assert.Equal(t, "c", got["message"])
-	assert.Equal(t, "INFO", got["logging.googleapis.com/severity"])
+	assert.Equal(t, "INFO", got["severity"])
 
 	logger.Warn("f", zap.Stringer("g", bytes.NewBufferString("h")))
 	require.NoError(t, logger.Sync())
@@ -77,7 +77,7 @@ func TestEncoder(t *testing.T) {
 	assert.Equal(t, "h", labels["g"])
 
 	assert.Equal(t, "f", got["message"])
-	assert.Equal(t, "WARNING", got["logging.googleapis.com/severity"])
+	assert.Equal(t, "WARNING", got["severity"])
 
 	logger.Error("i", zap.Error(errors.New("j")))
 	require.NoError(t, logger.Sync())
@@ -90,5 +90,5 @@ func TestEncoder(t *testing.T) {
 	assert.Equal(t, "j", labels["error"])
 
 	assert.Equal(t, "i", got["message"])
-	assert.Equal(t, "ERROR", got["logging.googleapis.com/severity"])
+	assert.Equal(t, "ERROR", got["severity"])
 }

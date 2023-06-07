@@ -86,7 +86,7 @@ func NewEncoder(cfg zapcore.EncoderConfig) zapcore.Encoder {
 func NewEncoderConfig() zapcore.EncoderConfig {
 	return zapcore.EncoderConfig{
 		MessageKey:     "message",
-		LevelKey:       "logging.googleapis.com/severity",
+		LevelKey:       "severity",
 		TimeKey:        "", // must be complex, so pushed to EncodeEntry
 		NameKey:        "", // collapsed into labels
 		CallerKey:      "", // must be complex, so pushed to EncodeEntry

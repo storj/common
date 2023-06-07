@@ -44,7 +44,7 @@ func TestOperationEncoding(t *testing.T) {
 		"logging.googleapis.com/labels": {
 			"something": "else"
 		},
-		"logging.googleapis.com/severity": "INFO",
+		"severity": "INFO",
 		"message": "test",
 		"timestamp": {
 			"nanos": 0,
