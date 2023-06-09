@@ -44,7 +44,7 @@ func TestHTTPRequestEncoding(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.JSONEq(t, `{
-		"logging.googleapis.com/httpRequest": {
+		"httpRequest": {
 			"latency": "1234567890.123456717s",
 			"protocol": "HTTP/1.1",
 			"referer": "something",
