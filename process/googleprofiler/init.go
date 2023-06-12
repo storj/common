@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 
 	"storj.io/private/process"
+	"storj.io/private/version"
 )
 
 var (
@@ -23,9 +24,10 @@ func init() {
 	process.SetProfiler(func(log *zap.Logger) error {
 		name := *serviceName
 		if name != "" {
+			info := version.Build
 			if err := profiler.Start(profiler.Config{
 				Service:        name,
-				ServiceVersion: "",
+				ServiceVersion: info.Version.String(),
 			}); err != nil {
 				return errorClass.Wrap(err)
 			}
