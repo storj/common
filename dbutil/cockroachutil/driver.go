@@ -13,14 +13,14 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/jackc/pgx/v4/stdlib"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/zeebo/errs"
 
 	"storj.io/private/dbutil/pgutil/pgerrcode"
 )
 
 // Driver is the type for the "cockroach" sql/database driver. It uses
-// github.com/jackc/pgx/v4/stdlib under the covers because of Cockroach's
+// github.com/jackc/pgx/v5/stdlib under the covers because of Cockroach's
 // PostgreSQL compatibility, but allows differentiation between pg and crdb
 // connections.
 type Driver struct {

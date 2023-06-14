@@ -5,8 +5,8 @@ go 1.18
 require (
 	cloud.google.com/go/profiler v0.3.1
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/jackc/pgtype v1.10.0
-	github.com/jackc/pgx/v4 v4.15.0
+	github.com/jackc/pgtype v1.14.0
+	github.com/jackc/pgx/v5 v5.3.1
 	github.com/jtolds/tracetagger/v2 v2.0.0-rc5
 	github.com/jtolio/eventkit v0.0.0-20221004135224-074cf276595b
 	github.com/mattn/go-sqlite3 v1.14.12
@@ -45,12 +45,10 @@ require (
 	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
-	github.com/jackc/pgconn v1.11.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgproto3/v2 v2.2.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
+	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
+	github.com/jackc/pgx/v4 v4.15.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.12 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
