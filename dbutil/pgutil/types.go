@@ -29,11 +29,37 @@ import (
 
 // ByteaArray returns an object usable by pg drivers for passing a [][]byte slice
 // into a database as type BYTEA[].
+//
+// If any elements of bytesArray are nil, they will be represented in the
+// database as an empty bytes array (not NULL). See also NullByteaArray.
 func ByteaArray(bytesArray [][]byte) *pgtype.ByteaArray {
 	pgtypeByteaArray := make([]pgtype.Bytea, len(bytesArray))
 	for i, byteSlice := range bytesArray {
 		pgtypeByteaArray[i].Bytes = byteSlice
 		pgtypeByteaArray[i].Status = pgtype.Present
+	}
+	return &pgtype.ByteaArray{
+		Elements:   pgtypeByteaArray,
+		Dimensions: []pgtype.ArrayDimension{{Length: int32(len(bytesArray)), LowerBound: 1}},
+		Status:     pgtype.Present,
+	}
+}
+
+// NullByteaArray returns an object usable by pg drivers for passing a
+// [][]byte slice into a database as type BYTEA[]. It allows for elements of
+// bytesArray to be nil, which will correspond to a NULL value in the database.
+//
+// This is probably the way that ByteaArray should have worked all along, but
+// we won't change it now in case some things depend on the existing behavior.
+func NullByteaArray(bytesArray [][]byte) *pgtype.ByteaArray {
+	pgtypeByteaArray := make([]pgtype.Bytea, len(bytesArray))
+	for i, byteSlice := range bytesArray {
+		pgtypeByteaArray[i].Bytes = byteSlice
+		if byteSlice == nil {
+			pgtypeByteaArray[i].Status = pgtype.Null
+		} else {
+			pgtypeByteaArray[i].Status = pgtype.Present
+		}
 	}
 	return &pgtype.ByteaArray{
 		Elements:   pgtypeByteaArray,
@@ -102,6 +128,21 @@ func DateArray(timeSlice []time.Time) *pgtype.DateArray {
 	return &pgtype.DateArray{
 		Elements:   pgtypeDateArray,
 		Dimensions: []pgtype.ArrayDimension{{Length: int32(len(timeSlice)), LowerBound: 1}},
+		Status:     pgtype.Present,
+	}
+}
+
+// Int2Array returns an object usable by pg drivers for passing a []int16 slice
+// into a database as type INT2[].
+func Int2Array(ints []int16) *pgtype.Int2Array {
+	pgtypeInt2Array := make([]pgtype.Int2, len(ints))
+	for i, someInt := range ints {
+		pgtypeInt2Array[i].Int = someInt
+		pgtypeInt2Array[i].Status = pgtype.Present
+	}
+	return &pgtype.Int2Array{
+		Elements:   pgtypeInt2Array,
+		Dimensions: []pgtype.ArrayDimension{{Length: int32(len(ints)), LowerBound: 1}},
 		Status:     pgtype.Present,
 	}
 }
@@ -185,6 +226,21 @@ func UUIDArray(uuids []uuid.UUID) *pgtype.ByteaArray {
 	return &pgtype.ByteaArray{
 		Elements:   pgtypeByteaArray,
 		Dimensions: []pgtype.ArrayDimension{{Length: int32(len(uuids)), LowerBound: 1}},
+		Status:     pgtype.Present,
+	}
+}
+
+// PlacementConstraintArray returns an object usable by pg drivers for passing a
+// []storj.PlacementConstraint slice into a database as type INT2[].
+func PlacementConstraintArray(constraints []storj.PlacementConstraint) *pgtype.Int2Array {
+	pgtypeInt2Array := make([]pgtype.Int2, len(constraints))
+	for i, someInt := range constraints {
+		pgtypeInt2Array[i].Int = int16(someInt)
+		pgtypeInt2Array[i].Status = pgtype.Present
+	}
+	return &pgtype.Int2Array{
+		Elements:   pgtypeInt2Array,
+		Dimensions: []pgtype.ArrayDimension{{Length: int32(len(constraints)), LowerBound: 1}},
 		Status:     pgtype.Present,
 	}
 }
