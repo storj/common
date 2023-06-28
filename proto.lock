@@ -545,32 +545,27 @@
               {
                 "id": 62001,
                 "name": "goproto_enum_prefix",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 62021,
                 "name": "goproto_enum_stringer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 62022,
                 "name": "enum_stringer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 62023,
                 "name": "enum_customname",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 62024,
                 "name": "enumdecl",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               }
             ]
           },
@@ -580,8 +575,7 @@
               {
                 "id": 66001,
                 "name": "enumvalue_customname",
-                "type": "string",
-                "optional": true
+                "type": "string"
               }
             ]
           },
@@ -591,194 +585,162 @@
               {
                 "id": 63001,
                 "name": "goproto_getters_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63002,
                 "name": "goproto_enum_prefix_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63003,
                 "name": "goproto_stringer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63004,
                 "name": "verbose_equal_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63005,
                 "name": "face_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63006,
                 "name": "gostring_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63007,
                 "name": "populate_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63008,
                 "name": "stringer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63009,
                 "name": "onlyone_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63013,
                 "name": "equal_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63014,
                 "name": "description_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63015,
                 "name": "testgen_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63016,
                 "name": "benchgen_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63017,
                 "name": "marshaler_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63018,
                 "name": "unmarshaler_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63019,
                 "name": "stable_marshaler_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63020,
                 "name": "sizer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63021,
                 "name": "goproto_enum_stringer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63022,
                 "name": "enum_stringer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63023,
                 "name": "unsafe_marshaler_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63024,
                 "name": "unsafe_unmarshaler_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63025,
                 "name": "goproto_extensions_map_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63026,
                 "name": "goproto_unrecognized_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63027,
                 "name": "gogoproto_import",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63028,
                 "name": "protosizer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63029,
                 "name": "compare_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63030,
                 "name": "typedecl_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63031,
                 "name": "enumdecl_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63032,
                 "name": "goproto_registration",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63033,
                 "name": "messagename_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63034,
                 "name": "goproto_sizecache_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63035,
                 "name": "goproto_unkeyed_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               }
             ]
           },
@@ -788,152 +750,127 @@
               {
                 "id": 64001,
                 "name": "goproto_getters",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64003,
                 "name": "goproto_stringer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64004,
                 "name": "verbose_equal",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64005,
                 "name": "face",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64006,
                 "name": "gostring",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64007,
                 "name": "populate",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 67008,
                 "name": "stringer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64009,
                 "name": "onlyone",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64013,
                 "name": "equal",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64014,
                 "name": "description",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64015,
                 "name": "testgen",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64016,
                 "name": "benchgen",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64017,
                 "name": "marshaler",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64018,
                 "name": "unmarshaler",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64019,
                 "name": "stable_marshaler",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64020,
                 "name": "sizer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64023,
                 "name": "unsafe_marshaler",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64024,
                 "name": "unsafe_unmarshaler",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64025,
                 "name": "goproto_extensions_map",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64026,
                 "name": "goproto_unrecognized",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64028,
                 "name": "protosizer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64030,
                 "name": "typedecl",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64033,
                 "name": "messagename",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64034,
                 "name": "goproto_sizecache",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64035,
                 "name": "goproto_unkeyed",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               }
             ]
           },
@@ -943,80 +880,67 @@
               {
                 "id": 65001,
                 "name": "nullable",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 65002,
                 "name": "embed",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 65003,
                 "name": "customtype",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65004,
                 "name": "customname",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65005,
                 "name": "jsontag",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65006,
                 "name": "moretags",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65007,
                 "name": "casttype",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65008,
                 "name": "castkey",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65009,
                 "name": "castvalue",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65010,
                 "name": "stdtime",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 65011,
                 "name": "stdduration",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 65012,
                 "name": "wktpointer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 65013,
                 "name": "compare",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               }
             ]
           }
