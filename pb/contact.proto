@@ -10,6 +10,7 @@ import "gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "node.proto";
 import "noise.proto";
+import "nodetags.proto";
 
 service Contact {
     rpc PingNode(ContactPingRequest) returns (ContactPingResponse);
@@ -36,6 +37,8 @@ message CheckInRequest {
 
     // features is a set of bit flags of the NodeAddress.Features enum.
     uint64 features = 7;
+
+    node.SignedNodeTagSets signed_tags = 8;
 }
 
 message CheckInResponse {
