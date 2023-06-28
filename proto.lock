@@ -202,6 +202,11 @@
                 "id": 7,
                 "name": "features",
                 "type": "uint64"
+              },
+              {
+                "id": 8,
+                "name": "SignedTags",
+                "type": "node.SignedNodeTagSets"
               }
             ]
           },
@@ -322,6 +327,9 @@
           },
           {
             "path": "noise.proto"
+          },
+          {
+            "path": "nodetags.proto"
           }
         ],
         "package": {
@@ -5381,6 +5389,89 @@
         ],
         "package": {
           "name": "nodestats"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
+          }
+        ]
+      }
+    },
+    {
+      "protopath": "pb:/:nodetags.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "Tag",
+            "fields": [
+              {
+                "id": 1,
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "value",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "NodeTagSet",
+            "fields": [
+              {
+                "id": 1,
+                "name": "node_id",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "tags",
+                "type": "Tag",
+                "is_repeated": true
+              },
+              {
+                "id": 3,
+                "name": "timestamp",
+                "type": "int64"
+              }
+            ]
+          },
+          {
+            "name": "SignedNodeTagSet",
+            "fields": [
+              {
+                "id": 1,
+                "name": "serialized_tag",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "public_key",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "signature",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "SignedNodeTagSets",
+            "fields": [
+              {
+                "id": 1,
+                "name": "tags",
+                "type": "SignedNodeTagSet",
+                "is_repeated": true
+              }
+            ]
+          }
+        ],
+        "package": {
+          "name": "node"
         },
         "options": [
           {
