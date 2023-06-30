@@ -24,7 +24,7 @@ if go list -deps $(go list ./... | grep -v "test") | grep -q "testing"; then
     exit -1;
 fi
 
-if go list -deps $(go list ./... | grep -v -E "httpranger|test|gen") | grep -q "net/http"; then
-    echo "common must not have a dependency to net/http (except for httpranger)";
+if go list -deps $(go list ./... | grep -v -E "httpranger|requestid|test|gen") | grep -q "net/http"; then
+    echo "common must not have a dependency to net/http (except for httpranger or requestid)";
     exit -1;
 fi
