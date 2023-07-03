@@ -116,7 +116,7 @@ func NewLoggerWithOutputPathsAndAtomicLevel(processName string, outputPaths ...s
 			StacktraceKey:  "S",
 			LineEnding:     zapcore.DefaultLineEnding,
 			EncodeLevel:    levelEncoder,
-			EncodeTime:     zapcore.ISO8601TimeEncoder,
+			EncodeTime:     zapcore.RFC3339TimeEncoder,
 			EncodeDuration: zapcore.StringDurationEncoder,
 			EncodeCaller:   zapcore.ShortCallerEncoder,
 		}
