@@ -227,6 +227,16 @@
                 "id": 3,
                 "name": "ping_node_success_quic",
                 "type": "bool"
+              },
+              {
+                "id": 4,
+                "name": "node_tag_success",
+                "type": "bool"
+              },
+              {
+                "id": 5,
+                "name": "node_tag_error_message",
+                "type": "string"
               }
             ]
           },
@@ -5509,7 +5519,7 @@
               },
               {
                 "id": 3,
-                "name": "timestamp",
+                "name": "signed_at",
                 "type": "int64"
               }
             ]

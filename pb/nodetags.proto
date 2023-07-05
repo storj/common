@@ -19,7 +19,7 @@ message NodeTagSet {
   repeated Tag tags = 2;
   // must always be set. this makes sure the signature is signing the
   // timestamp inside.
-  int64 timestamp = 3;
+  int64 signed_at = 3;
 }
 
 // SignedNodeTagSet is a tag set with additional signature.
