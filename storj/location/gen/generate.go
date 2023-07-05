@@ -4,14 +4,15 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"go/format"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/zeebo/errs"
@@ -20,26 +21,32 @@ import (
 )
 
 func main() {
-	err := run()
-	if err != nil {
-		_ = os.Remove("country.go.work")
+	ctx := context.Background()
+
+	var buf bytes.Buffer
+	if err := run(ctx, &buf); err != nil {
 		log.Fatalf("%+v", err)
 	}
-	err = os.Rename("country.go.work", "country.go")
+
+	formatted, err := format.Source(buf.Bytes())
 	if err != nil {
+		log.Fatalf("%+v", err)
+	}
+
+	if err := os.WriteFile("country.go", formatted, 0644); err != nil {
 		log.Fatalf("%+v", err)
 	}
 }
 
-func run() error {
-	out, err := os.Create("country.go.work")
-	if err != nil {
-		return errs.Wrap(err)
+func run(ctx context.Context, out *bytes.Buffer) error {
+	p := func(s string) {
+		_, _ = out.WriteString(s)
 	}
-	defer func(out *os.File) {
-		_ = out.Close()
-	}(out)
-	_, err = out.WriteString(`// Copyright (C) 2021 Storj Labs, Inc.
+	pf := func(format string, args ...any) {
+		_, _ = fmt.Fprintf(out, format, args...)
+	}
+
+	p(`// Copyright (C) 2021 Storj Labs, Inc.
 // See LICENSE for copying information
 //
 
@@ -51,40 +58,70 @@ package location
 // https://creativecommons.org/licenses/by/4.0/
 
 // country codes to two letter upper case ISO country code as uint16.
-const (`)
+const (
+`)
+
+	countryCodes, err := fetchCountryCodes(ctx)
 	if err != nil {
 		return errs.Wrap(err)
 	}
 
-	_, err = out.WriteString("\n")
-	if err != nil {
-		return errs.Wrap(err)
-	}
-	get, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://download.geonames.org/export/dump/countryInfo.txt", nil)
-	if err != nil {
-		return errs.Wrap(err)
-	}
+	sort.Slice(countryCodes, func(i, k int) bool {
+		return countryCodes[i].Country < countryCodes[k].Country
+	})
+	withNone := append([]CountryCode{{ISO: "", Country: "None"}}, countryCodes...)
 
-	resp, err := http.DefaultClient.Do(get)
-	if err != nil {
-		return errs.Wrap(err)
+	for _, countryCode := range withNone {
+		pf("\t%s = CountryCode(%d)\n",
+			countryCode.SanitizedName(),
+			countryCode.NumericValue())
 	}
+	p(")\n\n")
 
-	body := resp.Body
-	content, err := io.ReadAll(body)
-	if err != nil {
-		return errs.Wrap(err)
-	}
-
-	err = body.Close()
-	if err != nil {
-		return errs.Wrap(err)
+	maxValue := countryCodes[0].NumericValue()
+	for _, countryCode := range countryCodes[1:] {
+		val := countryCode.NumericValue()
+		if val > maxValue {
+			maxValue = val
+		}
 	}
 
-	countries := make(map[string]location.CountryCode)
-	var countryNames []string
+	pf("\nvar countryISOCode = [...]string{\n")
+	for _, countryCode := range countryCodes {
+		pf("\t%s: %q,\n", countryCode.SanitizedName(), countryCode.ISO)
+	}
+	p("}\n")
 
-	maxCountryName := 0
+	return nil
+}
+
+type CountryCode struct {
+	ISO     string
+	Country string
+}
+
+func (cc CountryCode) SanitizedName() string {
+	country := strings.ReplaceAll(cc.Country, " ", "")
+	country = strings.ReplaceAll(country, ",", "")
+	country = strings.ReplaceAll(country, "-", "")
+	country = strings.ReplaceAll(country, ".", "")
+	return country
+}
+
+func (cc CountryCode) NumericValue() location.CountryCode {
+	if cc.ISO == "" {
+		return 0
+	}
+	return location.ToCountryCode(cc.ISO)
+}
+
+func fetchCountryCodes(ctx context.Context) ([]CountryCode, error) {
+	content, err := fetchCountryCodesText(ctx)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+
+	var codes []CountryCode
 	for _, line := range strings.Split(string(content), "\n") {
 		if strings.HasPrefix(line, "#") {
 			continue
@@ -94,32 +131,31 @@ const (`)
 			continue
 		}
 
-		country := strings.ReplaceAll(fields[4], " ", "")
-		country = strings.ReplaceAll(country, ",", "")
-		country = strings.ReplaceAll(country, "-", "")
-		country = strings.ReplaceAll(country, ".", "")
-
-		countries[country] = location.ToCountryCode(fields[0])
-		if len(country) > maxCountryName {
-			maxCountryName = len(country)
-		}
-		countryNames = append(countryNames, country)
+		codes = append(codes, CountryCode{
+			ISO:     fields[0],
+			Country: fields[4],
+		})
 	}
 
-	sort.Strings(countryNames)
+	return codes, nil
+}
 
-	countries["None"] = location.CountryCode(0)
-	countryNames = append([]string{"None"}, countryNames...)
-
-	for _, country := range countryNames {
-		_, err = out.WriteString(fmt.Sprintf("\t%-"+strconv.Itoa(maxCountryName)+"s = CountryCode(%d)\n", country, countries[country]))
-		if err != nil {
-			return errs.Wrap(err)
-		}
-	}
-	_, err = out.WriteString("\n\n)\n")
+func fetchCountryCodesText(ctx context.Context) ([]byte, error) {
+	get, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://download.geonames.org/export/dump/countryInfo.txt", nil)
 	if err != nil {
-		return errs.Wrap(err)
+		return nil, errs.Wrap(err)
 	}
-	return nil
+
+	resp, err := http.DefaultClient.Do(get)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	content, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+
+	return content, nil
 }

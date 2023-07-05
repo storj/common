@@ -10,17 +10,32 @@ import (
 	"github.com/zeebo/errs"
 )
 
-// CountryCode stores upper case ISO code of countries.
+// CountryCode stores ISO code of countries.
+//
+// It's encoded as a base-26. For example,
+// code "QR" is encoded as `('Q'-'A')*('Z'-'A'+1) + ('R'-'A') + 1`.
+// This encoding allows for smaller lookup tables for countries.
 type CountryCode uint16
 
 // ToCountryCode convert string to CountryCode.
 // encoding is based on the ASCII representation of the country code.
 func ToCountryCode(s string) CountryCode {
 	if len(s) != 2 {
-		return CountryCode(0)
+		return None
 	}
 	upper := strings.ToUpper(s)
-	return CountryCode(uint16(upper[0])*uint16(256) + uint16(upper[1]))
+	if !isUpperAsciiLetter(upper[0]) || !isUpperAsciiLetter(upper[1]) {
+		return None
+	}
+
+	return CountryCode(uint16(upper[0]-'A')*asciiLetterCount + uint16(upper[1]-'A') + 1)
+}
+
+const asciiLetterCount = 'Z' - 'A' + 1
+
+// isUpperAsciiLetter verifies whether v is a valid character for ISO code.
+func isUpperAsciiLetter(v byte) bool {
+	return 'A' <= v && v <= 'Z'
 }
 
 // Equal compares two country code.
@@ -30,10 +45,17 @@ func (c CountryCode) Equal(o CountryCode) bool {
 
 // String returns with the upper-case (two letter) ISO code of the country.
 func (c CountryCode) String() string {
-	if c == 0 {
+	if c == None {
 		return ""
 	}
-	return string([]byte{byte(c / 256), byte(c % 256)})
+	if int(c) < len(countryISOCode) {
+		iso := countryISOCode[c]
+		if iso != "" {
+			return iso
+		}
+	}
+	c--
+	return string([]byte{byte(c/asciiLetterCount) + 'A', byte(c%asciiLetterCount) + 'A'})
 }
 
 // Value implements the driver.Valuer interface.

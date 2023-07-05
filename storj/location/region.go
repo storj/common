@@ -17,7 +17,7 @@ var EuCountries = []CountryCode{
 	Bulgaria,
 	Croatia,
 	Cyprus,
-	CzechRepublic,
+	Czechia,
 	Denmark,
 	Estonia,
 	Finland,

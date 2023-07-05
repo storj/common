@@ -33,3 +33,12 @@ func TestCountryCode_SQLConversion(t *testing.T) {
 	err = res.Scan(123)
 	require.Error(t, err)
 }
+
+var sink string
+
+func BenchmarkCountryCode_String(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		code := EuCountries[i%len(EuCountries)]
+		sink = code.String()
+	}
+}
