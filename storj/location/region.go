@@ -3,15 +3,8 @@
 
 package location
 
-// EeaNonEuCountries defined the EEA countries in addition to the EU members.
-var EeaNonEuCountries = []CountryCode{
-	Iceland,
-	Liechtenstein,
-	Norway,
-}
-
 // EuCountries defines the 27 member country of European Union.
-var EuCountries = []CountryCode{
+var EuCountries = NewSet(
 	Austria,
 	Belgium,
 	Bulgaria,
@@ -39,4 +32,13 @@ var EuCountries = []CountryCode{
 	Slovakia,
 	Spain,
 	Sweden,
-}
+)
+
+// EeaCountries defined the EEA countries.
+var EeaCountries = func() Set {
+	r := EuCountries
+	r.Include(Iceland)
+	r.Include(Liechtenstein)
+	r.Include(Norway)
+	return r
+}()

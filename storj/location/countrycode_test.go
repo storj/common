@@ -36,9 +36,16 @@ func TestCountryCode_SQLConversion(t *testing.T) {
 
 var sink string
 
+var countriesForTesting = []CountryCode{
+	Austria, Belgium, Bulgaria, Croatia, Cyprus, Czechia, Denmark, Estonia,
+	Finland, France, Germany, Greece, Hungary, Ireland, Italy, Lithuania,
+	Latvia, Luxembourg, Malta, Netherlands, Poland, Portugal, Romania, Slovenia,
+	Slovakia, Spain, Sweden,
+}
+
 func BenchmarkCountryCode_String(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		code := EuCountries[i%len(EuCountries)]
+		code := countriesForTesting[i%len(countriesForTesting)]
 		sink = code.String()
 	}
 }

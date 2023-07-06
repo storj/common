@@ -15,7 +15,6 @@ import (
 type PlacementConstraint uint16
 
 const (
-
 	// EveryCountry includes all countries.
 	EveryCountry PlacementConstraint = 0
 
@@ -43,24 +42,12 @@ func (p PlacementConstraint) AllowedCountry(isoCountryCode location.CountryCode)
 	if p == EveryCountry {
 		return true
 	}
+
 	switch p {
 	case EEA:
-		for _, c := range location.EuCountries {
-			if c == isoCountryCode {
-				return true
-			}
-		}
-		for _, c := range location.EeaNonEuCountries {
-			if c == isoCountryCode {
-				return true
-			}
-		}
+		return location.EeaCountries.Contains(isoCountryCode)
 	case EU:
-		for _, c := range location.EuCountries {
-			if c == isoCountryCode {
-				return true
-			}
-		}
+		return location.EuCountries.Contains(isoCountryCode)
 	case US:
 		return isoCountryCode.Equal(location.UnitedStates)
 	case DE:
@@ -70,7 +57,6 @@ func (p PlacementConstraint) AllowedCountry(isoCountryCode location.CountryCode)
 	default:
 		return false
 	}
-	return false
 }
 
 // Value implements the driver.Valuer interface.

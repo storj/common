@@ -94,3 +94,25 @@ func TestPlacement_SQLConversion(t *testing.T) {
 	err = res.Scan("")
 	require.Error(t, err)
 }
+
+var sink int
+
+func BenchmarkPlacementConstraint_AllowedCountry(b *testing.B) {
+	constraints := []PlacementConstraint{
+		EveryCountry,
+		EU,
+		EEA,
+		US,
+		DE,
+		InvalidPlacement,
+		NR,
+	}
+
+	for i := 0; i < b.N; i++ {
+		for _, c := range constraints {
+			if c.AllowedCountry(location.Russia) {
+				sink++
+			}
+		}
+	}
+}
