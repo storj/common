@@ -37,26 +37,21 @@ const (
 	NR PlacementConstraint = 6
 )
 
+var placementConstraintLookup = [...]location.Set{
+	EveryCountry: location.NewFullSet(),
+	EU:           location.EuCountries,
+	EEA:          location.EeaCountries,
+	US:           location.NewSet(location.UnitedStates),
+	DE:           location.NewSet(location.Germany),
+	NR:           location.NewFullSet().Without(location.Russia, location.Belarus),
+}
+
 // AllowedCountry checks if country is allowed by the placement policy.
 func (p PlacementConstraint) AllowedCountry(isoCountryCode location.CountryCode) bool {
-	if p == EveryCountry {
-		return true
-	}
-
-	switch p {
-	case EEA:
-		return location.EeaCountries.Contains(isoCountryCode)
-	case EU:
-		return location.EuCountries.Contains(isoCountryCode)
-	case US:
-		return isoCountryCode.Equal(location.UnitedStates)
-	case DE:
-		return isoCountryCode.Equal(location.Germany)
-	case NR:
-		return !isoCountryCode.Equal(location.Russia) && !isoCountryCode.Equal(location.Belarus)
-	default:
+	if int(p) > len(placementConstraintLookup) {
 		return false
 	}
+	return placementConstraintLookup[p].Contains(isoCountryCode)
 }
 
 // Value implements the driver.Valuer interface.

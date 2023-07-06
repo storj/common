@@ -59,3 +59,19 @@ func (set *Set) Count() int {
 	}
 	return total
 }
+
+// With implements a fluid interface for constructing a set.
+func (set Set) With(countries ...CountryCode) Set {
+	for _, c := range countries {
+		set.Include(c)
+	}
+	return set
+}
+
+// Without implements a fluid interface for constructing a set.
+func (set Set) Without(countries ...CountryCode) Set {
+	for _, c := range countries {
+		set.Remove(c)
+	}
+	return set
+}

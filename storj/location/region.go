@@ -35,10 +35,8 @@ var EuCountries = NewSet(
 )
 
 // EeaCountries defined the EEA countries.
-var EeaCountries = func() Set {
-	r := EuCountries
-	r.Include(Iceland)
-	r.Include(Liechtenstein)
-	r.Include(Norway)
-	return r
-}()
+var EeaCountries = EuCountries.With(
+	Iceland,
+	Liechtenstein,
+	Norway,
+)
