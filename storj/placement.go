@@ -48,7 +48,7 @@ var placementConstraintLookup = [...]location.Set{
 
 // AllowedCountry checks if country is allowed by the placement policy.
 func (p PlacementConstraint) AllowedCountry(isoCountryCode location.CountryCode) bool {
-	if int(p) > len(placementConstraintLookup) {
+	if int(p) >= len(placementConstraintLookup) {
 		return false
 	}
 	return placementConstraintLookup[p].Contains(isoCountryCode)

@@ -68,6 +68,12 @@ func TestPlacement_Geofencing(t *testing.T) {
 			placement: NR,
 			expected:  true,
 		},
+		{
+			name:      "Invalid placement should return false",
+			country:   location.Germany,
+			placement: NR + 1,
+			expected:  false,
+		},
 	}
 
 	for _, c := range cases {
