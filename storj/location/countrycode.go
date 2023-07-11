@@ -32,6 +32,8 @@ func ToCountryCode(s string) CountryCode {
 }
 
 const asciiLetterCount = 'Z' - 'A' + 1
+const countryCodeZZ = asciiLetterCount * asciiLetterCount
+const countryCodeCount = countryCodeZZ + 1
 
 // isUpperAsciiLetter verifies whether v is a valid character for ISO code.
 func isUpperAsciiLetter(v byte) bool {

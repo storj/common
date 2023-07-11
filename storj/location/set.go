@@ -5,8 +5,10 @@ package location
 
 import "math/bits"
 
+const bitsPerBucket = 32
+
 // Set implements a data-structure for fast lookups for country codes.
-type Set [(len(countryISOCode) + 31) / 32]uint32
+type Set [(countryCodeCount + bitsPerBucket - 1) / bitsPerBucket]uint32
 
 // NewSet returns a set that has the specific countries set.
 func NewSet(countries ...CountryCode) (r Set) {
@@ -26,7 +28,7 @@ func NewFullSet() (r Set) {
 
 // Contains checks whether c exists in the set.
 func (set *Set) Contains(c CountryCode) bool {
-	bucket, bit := c/32, c%32
+	bucket, bit := c/bitsPerBucket, c%bitsPerBucket
 	if int(bucket) >= len(*set) {
 		return false
 	}
@@ -35,7 +37,7 @@ func (set *Set) Contains(c CountryCode) bool {
 
 // Include adds c to the set.
 func (set *Set) Include(c CountryCode) {
-	bucket, bit := c/32, c%32
+	bucket, bit := c/bitsPerBucket, c%bitsPerBucket
 	if int(bucket) >= len(*set) {
 		return
 	}
@@ -44,7 +46,7 @@ func (set *Set) Include(c CountryCode) {
 
 // Remove removes c from the set.
 func (set *Set) Remove(c CountryCode) {
-	bucket, bit := c/32, c%32
+	bucket, bit := c/bitsPerBucket, c%bitsPerBucket
 	if int(bucket) >= len(*set) {
 		return
 	}

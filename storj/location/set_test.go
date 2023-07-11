@@ -14,20 +14,23 @@ func TestSet(t *testing.T) {
 	set.Include(Belgium)
 	set.Include(Hungary)
 	set.Include(Netherlands)
+	set.Include(ToCountryCode("ZZ"))
 
 	require.True(t, set.Contains(Belgium))
 	require.True(t, set.Contains(Hungary))
 	require.True(t, set.Contains(Netherlands))
+	require.True(t, set.Contains(ToCountryCode("ZZ")))
+
 	require.False(t, set.Contains(Estonia))
 	require.False(t, set.Contains(Austria))
 
-	require.Equal(t, 3, set.Count())
+	require.Equal(t, 4, set.Count())
 
 	set.Remove(Hungary)
 	// removing non-existent things should be fine
 	set.Remove(Estonia)
 	set.Remove(Austria)
-	require.Equal(t, 2, set.Count())
+	require.Equal(t, 3, set.Count())
 }
 
 func TestSet_Full(t *testing.T) {

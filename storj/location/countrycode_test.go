@@ -10,9 +10,11 @@ import (
 )
 
 func TestCountryCode_String(t *testing.T) {
+	require.Equal(t, CountryCode(countryCodeZZ), ToCountryCode("ZZ"))
 	require.Equal(t, "HU", ToCountryCode("HU").String())
 	require.Equal(t, "DE", ToCountryCode("DE").String())
 	require.Equal(t, "XX", ToCountryCode("XX").String())
+	require.Equal(t, "ZZ", ToCountryCode("ZZ").String())
 	require.Equal(t, "", None.String())
 }
 
