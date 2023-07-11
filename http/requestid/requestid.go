@@ -6,12 +6,9 @@ package requestid
 import (
 	"context"
 	"crypto/rand"
-	"encoding/base64"
-	"fmt"
-	"log"
 	"net/http"
 
-	"github.com/spacemonkeygo/monkit/v3"
+	"storj.io/common/base58"
 )
 
 // contextKey is the key that holds the unique request ID in a request context.
@@ -20,13 +17,25 @@ type contextKey struct{}
 // HeaderKey is the header key for the request ID.
 const HeaderKey = "X-Request-Id"
 
+// MaxRequestID is the maximum allowed length for a request id.
+const MaxRequestID = 64
+
 // AddToContext uses adds a unique requestid to the context and the response headers
 // of each request.
 func AddToContext(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestID := r.Header.Get(HeaderKey)
+		if len(requestID) > MaxRequestID {
+			requestID = ""
+		}
 		if requestID == "" {
-			requestID = generateRequestID()
+			var err error
+			requestID, err = generateRandomID()
+			if err != nil {
+				// If we fail to generate a random ID, then don't use one.
+				h.ServeHTTP(w, r)
+				return
+			}
 		}
 
 		w.Header().Set(HeaderKey, requestID)
@@ -48,15 +57,11 @@ func Propagate(ctx context.Context, req *http.Request) {
 	req.Header.Set(HeaderKey, FromContext(ctx))
 }
 
-// generateRequestID generates a random request ID using crypto/rand.
-// in case of an unlikely error, it falls back to using monkit.NewId().
-func generateRequestID() string {
-	idBytes := make([]byte, 16)
-	_, err := rand.Read(idBytes)
+func generateRandomID() (string, error) {
+	var data [8]byte
+	_, err := rand.Read(data[:])
 	if err != nil {
-		log.Printf("error generating request ID: %v", err)
-		return fmt.Sprintf("%x", monkit.NewId())
+		return "", err
 	}
-
-	return base64.RawURLEncoding.EncodeToString(idBytes)
+	return base58.Encode(data[:]), nil
 }
