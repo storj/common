@@ -58,15 +58,25 @@ func NewListener(conn *net.UDPConn, tlsConfig *tls.Config, quicConfig *quic.Conf
 
 // Accept waits for and returns the next available quic session to the listener.
 func (l *Listener) Accept() (net.Conn, error) {
-	ctx := context.Background()
-	session, err := l.listener.Accept(ctx)
-	if err != nil {
-		return nil, err
+	for {
+		ctx := context.Background()
+		session, err := l.listener.Accept(ctx)
+		if err != nil {
+			// This check is necessary until quic-go starts filtering it out upstream;
+			// otherwise, a specially crafted IPv4+UDP packet can cause Accept to return
+			// an error, prompting the node to think something is wrong with the socket
+			// and exit.
+			//
+			// See https://github.com/quic-go/quic-go/issues/1737#issuecomment-1631672219
+			if isMsgSizeErr(err) {
+				continue
+			}
+			return nil, err
+		}
+		return &Conn{
+			session: session,
+		}, nil
 	}
-
-	return &Conn{
-		session: session,
-	}, nil
 }
 
 // Close closes the QUIC listener.
