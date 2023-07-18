@@ -10,9 +10,11 @@ import (
 	"storj.io/common/tracing"
 )
 
+var encodeOrderLimitTask = mon.Task()
+
 // EncodeOrderLimit encodes order limit into bytes for signing. Removes signature from serialized limit.
 func EncodeOrderLimit(ctx context.Context, limit *pb.OrderLimit) (_ []byte, err error) {
-	defer mon.Task()(&ctx)(&err)
+	defer encodeOrderLimitTask(&ctx)(&err)
 
 	// protobuf has problems with serializing types with nullable=false
 	// this uses a different message for signing, such that the rest of the code
