@@ -20,10 +20,12 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/zeebo/errs"
 
+	"storj.io/common/errs2"
 	"storj.io/common/ranger"
 )
 
@@ -181,15 +183,26 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 
 	w.WriteHeader(code)
 
-	if _, err := io.CopyN(w, rd, sendSize); err != nil {
+	if _, err := io.CopyN(w, rd, sendSize); err != nil && shouldLogErr(ctx, err) {
 		log.Printf("Error Copying bytes: %s", err)
 	}
 
-	if err := rd.Close(); err != nil {
+	if err := rd.Close(); err != nil && shouldLogErr(ctx, err) {
 		log.Printf("Error closing: %s", err)
 	}
 
 	return nil
+}
+
+func shouldLogErr(ctx context.Context, err error) bool {
+	switch {
+	case errs.Is(err, syscall.ECONNRESET), errs.Is(err, syscall.EPIPE):
+		return false
+	case errs2.IsCanceled(ctx.Err()), errs2.IsCanceled(err):
+		return false
+	default:
+		return true
+	}
 }
 
 var unixEpochTime = time.Unix(0, 0)
