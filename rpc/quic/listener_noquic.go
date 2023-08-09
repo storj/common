@@ -12,6 +12,10 @@ import (
 	"sync"
 )
 
+// Ignore unused warnings when building without quic.
+var _ = isMsgSizeErr
+var _ = mon
+
 // Listener implements a stub/noop listener.
 type Listener struct {
 	isClosed    bool
