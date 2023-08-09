@@ -1,8 +1,8 @@
 // Copyright (C) 2021 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-//go:build go1.18 && !go1.21 && !noquic
-// +build go1.18,!go1.21,!noquic
+//go:build go1.20 && !noquic
+// +build go1.20,!noquic
 
 package quic
 
@@ -49,7 +49,7 @@ func (c Connector) DialContext(ctx context.Context, tlsConfig *tls.Config, addre
 	tlsConfigCopy := tlsConfig.Clone()
 	tlsConfigCopy.NextProtos = []string{tlsopts.StorjApplicationProtocol}
 
-	sess, err := quic.DialAddrContext(ctx, address, tlsConfigCopy, c.config)
+	sess, err := quic.DialAddr(ctx, address, tlsConfigCopy, c.config)
 	if err != nil {
 		return nil, Error.Wrap(err)
 	}

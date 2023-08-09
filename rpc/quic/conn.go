@@ -1,8 +1,8 @@
 // Copyright (C) 2021 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-//go:build go1.18 && !go1.21 && !noquic
-// +build go1.18,!go1.21,!noquic
+//go:build go1.20 && !noquic
+// +build go1.20,!noquic
 
 package quic
 
@@ -98,7 +98,7 @@ func (c *Conn) getStream() (quic.Stream, error) {
 
 // ConnectionState converts quic session state to tls connection state and returns tls state.
 func (c *Conn) ConnectionState() tls.ConnectionState {
-	return c.session.ConnectionState().TLS.ConnectionState
+	return c.session.ConnectionState().TLS
 }
 
 // Close closes the quic connection.

@@ -1,8 +1,8 @@
 // Copyright (C) 2021 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-//go:build go1.18 && !go1.21 && !noquic
-// +build go1.18,!go1.21,!noquic
+//go:build go1.20 && !noquic
+// +build go1.20,!noquic
 
 package quic
 
@@ -22,7 +22,7 @@ const defaultIdleTimeout = 60 * time.Second
 
 // Listener implements listener for QUIC.
 type Listener struct {
-	listener quic.Listener
+	listener *quic.Listener
 	conn     *net.UDPConn
 }
 
