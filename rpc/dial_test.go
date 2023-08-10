@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-package rpc
+package rpc_test
 
 import (
 	"context"
@@ -22,6 +22,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/zeebo/errs"
 
+	"storj.io/common/rpc"
 	"storj.io/common/sync2"
 	"storj.io/common/testcontext"
 	"storj.io/drpc"
@@ -33,7 +34,7 @@ func TestDialerUnencrypted(t *testing.T) {
 	ctx := testcontext.New(t)
 	defer ctx.Cleanup()
 
-	d := NewDefaultPooledDialer(nil)
+	d := rpc.NewDefaultPooledDialer(nil)
 
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
@@ -119,7 +120,7 @@ func TestDialHostnameVerification(t *testing.T) {
 	requireNoErrors(t, sync2.Concurrently(
 		acceptConnectionSuccess,
 		func() error {
-			dialer := NewDefaultDialer(nil)
+			dialer := rpc.NewDefaultDialer(nil)
 			dialer.HostnameTLSConfig = &tls.Config{
 				RootCAs: certPool,
 			}
@@ -144,7 +145,7 @@ func TestDialHostnameVerification(t *testing.T) {
 	requireNoErrors(t, sync2.Concurrently(
 		acceptConnectionSuccess,
 		func() error {
-			dialer := NewDefaultDialer(nil)
+			dialer := rpc.NewDefaultDialer(nil)
 			dialer.HostnameTLSConfig = &tls.Config{
 				RootCAs:    certPool,
 				ServerName: "localhost",
@@ -169,7 +170,7 @@ func TestDialHostnameVerification(t *testing.T) {
 	requireNoErrors(t, sync2.Concurrently(
 		acceptConnectionFailure,
 		func() error {
-			dialer := NewDefaultDialer(nil)
+			dialer := rpc.NewDefaultDialer(nil)
 			dialer.HostnameTLSConfig = &tls.Config{
 				RootCAs:    certPool,
 				ServerName: "storj.test",
@@ -193,7 +194,7 @@ func TestDialHostnameVerification(t *testing.T) {
 	))
 
 	// test invalid hostname
-	dialer := NewDefaultDialer(nil)
+	dialer := rpc.NewDefaultDialer(nil)
 	_, err = dialer.DialAddressHostnameVerification(ctx, "storj.test")
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "missing port in address")

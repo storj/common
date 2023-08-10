@@ -284,13 +284,11 @@ func TestRevocation_Unmarshal(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, rev.Signature)
 
-	encodedRev := new(bytes.Buffer)
-	encoder := gob.NewEncoder(encodedRev)
-	err = encoder.Encode(rev)
+	marshaled, err := rev.Marshal()
 	require.NoError(t, err)
 
 	unmarshaledRev := new(extensions.Revocation)
-	err = unmarshaledRev.Unmarshal(encodedRev.Bytes())
+	err = unmarshaledRev.Unmarshal(marshaled)
 	require.NoError(t, err)
 	require.NotNil(t, rev)
 	require.Equal(t, rev, *unmarshaledRev)

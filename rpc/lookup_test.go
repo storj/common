@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-package rpc
+package rpc_test
 
 import (
 	"context"
@@ -10,12 +10,13 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"storj.io/common/rpc"
 	"storj.io/common/testcontext"
 )
 
 func TestLookupNodeAddress_Host(t *testing.T) {
 	// When we provide a host to LookupHostFirstAddress we should get a valid IP address back.
-	address := LookupNodeAddress(context.Background(), "google.com")
+	address := rpc.LookupNodeAddress(context.Background(), "google.com")
 
 	// Verify we get a properly formatted IP address back.
 	ip := net.ParseIP(address)
@@ -24,7 +25,7 @@ func TestLookupNodeAddress_Host(t *testing.T) {
 
 func TestLookupNodeAddress_HostAndPort(t *testing.T) {
 	// When we provide a host to LookupHostFirstAddress we should get a valid IP address and port back.
-	address := LookupNodeAddress(context.Background(), "google.com:8888")
+	address := rpc.LookupNodeAddress(context.Background(), "google.com:8888")
 
 	// Verify we get a properly formatted IP address back.
 	host, port, err := net.SplitHostPort(address)
@@ -43,7 +44,7 @@ func TestLookupNodeAddress_IP(t *testing.T) {
 		"[2001:4860:4860::8888]:8888",
 	}
 	for _, test := range tests {
-		address := LookupNodeAddress(ctx, test)
+		address := rpc.LookupNodeAddress(ctx, test)
 		assert.Equal(t, test, address)
 	}
 }
