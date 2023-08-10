@@ -1,6 +1,6 @@
 module storj.io/common
 
-go 1.18
+go 1.19
 
 require (
 	github.com/bmkessler/fastdiv v0.0.0-20190227075523-41d5178f2044
