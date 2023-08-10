@@ -9,7 +9,7 @@ require (
 	github.com/gogo/protobuf v1.3.2
 	github.com/google/pprof v0.0.0-20211108044417-e9b028704de0
 	github.com/jtolio/noiseconn v0.0.0-20230111204749-d7ec1a08b0b8
-	github.com/quic-go/quic-go v0.37.4
+	github.com/quic-go/quic-go v0.38.0
 	github.com/shopspring/decimal v1.2.0
 	github.com/spacemonkeygo/monkit/v3 v3.0.20-0.20230227152157-d00b379de191
 	github.com/stretchr/testify v1.7.0
@@ -31,7 +31,7 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/quic-go/qtls-go1-20 v0.3.1 // indirect
+	github.com/quic-go/qtls-go1-20 v0.3.2 // indirect
 	github.com/zeebo/float16 v0.1.0 // indirect
 	github.com/zeebo/incenc v0.0.0-20180505221441-0d92902eec54 // indirect
 	golang.org/x/exp v0.0.0-20221205204356-47842c84f3db // indirect
