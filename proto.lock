@@ -2053,6 +2053,31 @@
             ]
           },
           {
+            "name": "GetBucketLocationRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "name",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "GetBucketLocationResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "location",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
             "name": "DeleteBucketRequest",
             "fields": [
               {
@@ -3998,6 +4023,11 @@
                 "type": "GetBucketRequest"
               },
               {
+                "id": 30,
+                "name": "bucket_get_location",
+                "type": "GetBucketLocationRequest"
+              },
+              {
                 "id": 3,
                 "name": "bucket_delete",
                 "type": "DeleteBucketRequest"
@@ -4147,6 +4177,11 @@
                 "id": 2,
                 "name": "bucket_get",
                 "type": "GetBucketResponse"
+              },
+              {
+                "id": 30,
+                "name": "bucket_get_location",
+                "type": "GetBucketLocationResponse"
               },
               {
                 "id": 3,
@@ -4644,6 +4679,11 @@
                 "name": "GetBucket",
                 "in_type": "GetBucketRequest",
                 "out_type": "GetBucketResponse"
+              },
+              {
+                "name": "GetBucketLocation",
+                "in_type": "GetBucketLocationRequest",
+                "out_type": "GetBucketLocationResponse"
               },
               {
                 "name": "DeleteBucket",
