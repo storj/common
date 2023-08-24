@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	mainpkg = flag.String("pkg", "storj.io/common/pb", "main package name")
-	protoc  = flag.String("protoc", "protoc", "protoc compiler")
+	mainpkg   = flag.String("pkg", "storj.io/common/pb", "main package name")
+	protoc    = flag.String("protoc", "protoc", "protoc compiler")
+	protolock = flag.String("protolock", "protolock", "protolock tool")
 )
 
 var ignoreProto = map[string]bool{
@@ -43,8 +44,6 @@ func ignore(files []string) []string {
 
 func main() {
 	flag.Parse()
-
-	// TODO: protolock
 
 	{
 		// cleanup previous files
@@ -94,6 +93,17 @@ func main() {
 	{
 		// format code to get rid of extra imports
 		out, err := exec.Command("goimports", "-local", "storj.io", "-w", ".").CombinedOutput()
+		if len(out) > 0 {
+			fmt.Println(string(out))
+		}
+		check(err)
+	}
+
+	{ // regenerate proto.lock file
+		cmd := exec.Command(*protolock, "commit")
+		cmd.Dir = ".."
+		fmt.Println(strings.Join(cmd.Args, " "))
+		out, err := cmd.CombinedOutput()
 		if len(out) > 0 {
 			fmt.Println(string(out))
 		}
