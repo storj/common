@@ -5,35 +5,37 @@ package process
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"net"
 
 	"github.com/spacemonkeygo/monkit/v3"
+	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 
+	"storj.io/private/cfgstruct"
 	"storj.io/private/debug"
 )
 
-var (
-	// DebugAddrFlag for --debug.addr.
-	DebugAddrFlag = flag.String("debug.addr", "127.0.0.1:0", "address to listen on for debug endpoints")
-)
+var debugConfig struct {
+	Debug debug.Config
+}
+
+func init() {
+	cfgstruct.Bind(pflag.CommandLine, &debugConfig)
+}
 
 func initDebug(log *zap.Logger, r *monkit.Registry, atomicLevel *zap.AtomicLevel) (err error) {
-	if *DebugAddrFlag == "" {
+	if debugConfig.Debug.Addr == "" {
 		return nil
 	}
 
-	ln, err := net.Listen("tcp", *DebugAddrFlag)
+	ln, err := net.Listen("tcp", debugConfig.Debug.Addr)
 	if err != nil {
 		return err
 	}
 
 	go func() {
-		server := debug.NewServerWithAtomicLevel(log, ln, r, debug.Config{
-			Address: *DebugAddrFlag,
-		}, atomicLevel)
+		server := debug.NewServerWithAtomicLevel(log, ln, r, debugConfig.Debug, atomicLevel)
 		log.Debug(fmt.Sprintf("debug server listening on %s", ln.Addr().String()))
 		err := server.Run(context.TODO())
 		if err != nil {

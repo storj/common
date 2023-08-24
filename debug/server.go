@@ -9,17 +9,23 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/http/pprof"
+	"reflect"
 	"strings"
 	"time"
 
+	"github.com/jtolio/crawlspace"
+	"github.com/jtolio/crawlspace/reflectlang"
+	"github.com/jtolio/crawlspace/tools"
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/spacemonkeygo/monkit/v3/present"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
+	"storj.io/drpc/drpcmigrate"
 	"storj.io/private/traces"
 	"storj.io/private/version"
 )
@@ -32,15 +38,18 @@ func init() {
 
 // Config defines configuration for debug server.
 type Config struct {
-	Address string `internal:"true"`
+	Addr string `help:"address to listen on for debug endpoints" default:"127.0.0.1:0"`
 
-	ControlTitle string `internal:"true"`
-	Control      bool   `help:"expose control panel" releaseDefault:"false" devDefault:"true"`
+	ControlTitle string `hidden:"true"`
+	Control      bool   `releaseDefault:"false" devDefault:"true" hidden:"true"`
+
+	Crawlspace bool `help:"if true, enable crawlspace on debug port" default:"false" hidden:"true"`
 }
 
 // Server provides endpoints for debugging.
 type Server struct {
-	log *zap.Logger
+	log    *zap.Logger
+	config Config
 
 	listener net.Listener
 	server   http.Server
@@ -62,6 +71,7 @@ func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *
 		log:                log,
 		listener:           listener,
 		PrometheusEndpoint: NewPrometheusEndpoint(registry),
+		config:             config,
 	}
 
 	server.server.Handler = &server.mux
@@ -147,22 +157,49 @@ func (server *Server) Run(ctx context.Context) error {
 		return nil
 	}
 
+	lmux := drpcmigrate.NewListenMux(server.listener, 5)
+
 	ctx, cancel := context.WithCancel(ctx)
 	var group errgroup.Group
+
+	var crawlLis net.Listener
+	if server.config.Crawlspace {
+		crawlLis = lmux.Route("crawl")
+		space := crawlspace.New(func(out io.Writer) reflectlang.Environment {
+			env := tools.Env(out)
+			env["debugServer"] = reflect.ValueOf(server)
+			return env
+		})
+
+		group.Go(func() error {
+			defer cancel()
+			_ = space.Serve(crawlLis)
+			return nil
+		})
+	}
+
 	group.Go(func() error {
 		<-ctx.Done()
 		return Error.Wrap(server.server.Shutdown(context.Background()))
 	})
 	group.Go(func() error {
+		err := Error.Wrap(lmux.Run(ctx))
+		if crawlLis != nil {
+			_ = crawlLis.Close()
+		}
+		return err
+	})
+	group.Go(func() error {
 		defer cancel()
 
-		err := server.server.Serve(server.listener)
+		err := server.server.Serve(lmux.Default())
 		if errors.Is(err, http.ErrServerClosed) {
 			err = nil
 		}
 
 		return Error.Wrap(err)
 	})
+
 	return group.Wait()
 }
 

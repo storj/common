@@ -8,6 +8,8 @@ require (
 	github.com/jackc/pgtype v1.14.0
 	github.com/jackc/pgx/v5 v5.3.1
 	github.com/jtolds/tracetagger/v2 v2.0.0-rc5
+	github.com/jtolio/crawlspace v0.0.0-20231116162947-3ec5cc6b36c5
+	github.com/jtolio/crawlspace/tools v0.0.0-20231115161146-57d90b78ce62
 	github.com/jtolio/eventkit v0.0.0-20221004135224-074cf276595b
 	github.com/mattn/go-sqlite3 v1.14.12
 	github.com/spacemonkeygo/monkit/v3 v3.0.20-0.20230227152157-d00b379de191
@@ -50,6 +52,7 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v4 v4.15.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.12 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
@@ -62,8 +65,10 @@ require (
 	github.com/zeebo/blake3 v0.2.3 // indirect
 	github.com/zeebo/errs/v2 v2.0.0-20190904185908-02a9c27c76d3 // indirect
 	github.com/zeebo/float16 v0.1.0 // indirect
+	github.com/zeebo/goof v0.0.0-20230830143729-8a73f2ee257d // indirect
 	github.com/zeebo/incenc v0.0.0-20180505221441-0d92902eec54 // indirect
 	github.com/zeebo/mwc v0.0.4 // indirect
+	github.com/zeebo/sudo v1.0.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
 	go.uber.org/multierr v1.5.0 // indirect
