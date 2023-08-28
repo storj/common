@@ -321,3 +321,13 @@ func TestBindTestDefaults(t *testing.T) {
 	require.Equal(t, c.Fields[0].AnotherInt, int(6))
 	require.Equal(t, c.Fields[3].AnotherInt, int(1))
 }
+
+func TestWrongSyntax(t *testing.T) {
+	f := pflag.NewFlagSet("test", pflag.ContinueOnError)
+	var c TestStruct
+	Bind(f, &c, UseReleaseDefaults())
+	err := f.Parse([]string{
+		"--node-url=foo@bar",
+	})
+	require.Error(t, err)
+}

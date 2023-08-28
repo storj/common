@@ -89,6 +89,7 @@ type ExecOptions struct {
 	InitDefaultDebugServer bool // enable default debug server.
 	InitTracing            bool
 	InitProfiler           bool
+	FailOnValueError       bool
 
 	LoadConfig    func(cmd *cobra.Command, vip *viper.Viper) error
 	LoggerFactory func(*zap.Logger) *zap.Logger
@@ -329,6 +330,9 @@ func cleanup(cmd *cobra.Command, opts *ExecOptions) {
 			}
 		}
 		for key := range brokenKeys {
+			if opts.FailOnValueError {
+				return errs.New("Invalid configuration file value for key: %s", key)
+			}
 			logger.Info("Invalid configuration file value for key", zap.String("Key", key))
 		}
 
