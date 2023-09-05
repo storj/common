@@ -266,7 +266,7 @@ const (
 	Zimbabwe                               = CountryCode(673)
 )
 
-var countryISOCode = [...]string{
+var CountryISOCode = [...]string{
 	Afghanistan:                            "AF",
 	AlandIslands:                           "AX",
 	Albania:                                "AL",
