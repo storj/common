@@ -35,12 +35,12 @@ func TestSet(t *testing.T) {
 
 func TestSet_Full(t *testing.T) {
 	var set Set
-	for c := CountryCode(0); int(c) < len(countryISOCode); c++ {
+	for c := CountryCode(0); int(c) < len(CountryISOCode); c++ {
 		set.Include(c)
 	}
-	require.Equal(t, len(countryISOCode), set.Count())
+	require.Equal(t, len(CountryISOCode), set.Count())
 
-	for c := CountryCode(0); int(c) < len(countryISOCode); c++ {
+	for c := CountryCode(0); int(c) < len(CountryISOCode); c++ {
 		set.Remove(c)
 	}
 	require.Equal(t, 0, set.Count())

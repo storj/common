@@ -50,8 +50,8 @@ func (c CountryCode) String() string {
 	if c == None {
 		return ""
 	}
-	if int(c) < len(countryISOCode) {
-		iso := countryISOCode[c]
+	if int(c) < len(CountryISOCode) {
+		iso := CountryISOCode[c]
 		if iso != "" {
 			return iso
 		}

@@ -86,7 +86,7 @@ const (
 		}
 	}
 
-	pf("\nvar countryISOCode = [...]string{\n")
+	pf("\nvar CountryISOCode = [...]string{\n")
 	for _, countryCode := range countryCodes {
 		pf("\t%s: %q,\n", countryCode.SanitizedName(), countryCode.ISO)
 	}
