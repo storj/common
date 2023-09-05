@@ -111,3 +111,55 @@ func TestNodeURLs(t *testing.T) {
 
 	require.Equal(t, s, urls.String())
 }
+
+var z int
+
+func BenchmarkNodeURLString(b *testing.B) {
+	all, err := storj.ParseNodeURL("12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@33.20.0.1:7777?debounce=3&f=ff&noise_proto=1&noise_pub=12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7")
+	require.NoError(b, err)
+	b.Run("All", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			z += len(all.String())
+		}
+	})
+
+	nodeid, err := storj.ParseNodeURL("12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7")
+	require.NoError(b, err)
+	b.Run("NodeID", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			z += len(nodeid.String())
+		}
+	})
+
+	addr, err := storj.ParseNodeURL("33.20.0.1:7777")
+	require.NoError(b, err)
+	b.Run("Addr", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			z += len(addr.String())
+		}
+	})
+
+	noisepub, err := storj.ParseNodeURL("33.20.0.1:7777?noise_pub=12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7")
+	require.NoError(b, err)
+	b.Run("NoiseKey", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			z += len(noisepub.String())
+		}
+	})
+
+	noiseaddr, err := storj.ParseNodeURL("33.20.0.1:7777?debounce=3&f=ff&noise_proto=1&noise_pub=12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7")
+	require.NoError(b, err)
+	b.Run("AddrNoiseFeatures", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			z += len(noiseaddr.String())
+		}
+	})
+
+	noisesimple, err := storj.ParseNodeURL("12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7@33.20.0.1:7777?noise_proto=1&noise_pub=12vha9oTFnerxYRgeQ2BZqoFrLrnmmf5UWTCY2jA77dF3YvWew7")
+	require.NoError(b, err)
+	b.Run("IDAddrNoise", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			z += len(noisesimple.String())
+		}
+	})
+}
