@@ -193,6 +193,57 @@ func TestGetAllowedBuckets(t *testing.T) {
 	})
 }
 
+func TestGetMaxObjectTTL(t *testing.T) {
+	ctx := context.Background()
+
+	secret, err := NewSecret()
+	require.NoError(t, err)
+	key, err := NewAPIKey(secret)
+	require.NoError(t, err)
+
+	ttl, err := key.GetMaxObjectTTL(ctx)
+	require.NoError(t, err)
+	require.Nil(t, ttl)
+
+	oneHour := time.Hour
+	twoHours := 2 * time.Hour
+	threeHours := 3 * time.Hour
+
+	restricted, err := key.Restrict(WithNonce(Caveat{
+		MaxObjectTtl: &twoHours,
+	}))
+	require.NoError(t, err)
+
+	ttl, err = restricted.GetMaxObjectTTL(ctx)
+	require.NoError(t, err)
+	require.Equal(t, twoHours, *ttl)
+
+	restricted, err = restricted.Restrict(WithNonce(Caveat{
+		MaxObjectTtl: &oneHour,
+	}))
+	require.NoError(t, err)
+
+	ttl, err = restricted.GetMaxObjectTTL(ctx)
+	require.NoError(t, err)
+	require.Equal(t, oneHour, *ttl)
+
+	restricted, err = restricted.Restrict(WithNonce(Caveat{
+		MaxObjectTtl: &threeHours,
+	}))
+	require.NoError(t, err)
+
+	ttl, err = restricted.GetMaxObjectTTL(ctx)
+	require.NoError(t, err)
+	require.Equal(t, oneHour, *ttl)
+
+	restricted, err = restricted.Restrict(WithNonce(Caveat{DisallowWrites: true}))
+	require.NoError(t, err)
+
+	ttl, err = restricted.GetMaxObjectTTL(ctx)
+	require.NoError(t, err)
+	require.Equal(t, oneHour, *ttl)
+}
+
 func TestNonce(t *testing.T) {
 	secret, err := NewSecret()
 	require.NoError(t, err)

@@ -64,6 +64,21 @@
                 ]
               },
               {
+                "id": 22,
+                "name": "max_object_ttl",
+                "type": "google.protobuf.Duration",
+                "options": [
+                  {
+                    "name": "(pico.field).custom_type",
+                    "value": "time.Duration"
+                  },
+                  {
+                    "name": "(pico.field).custom_cast",
+                    "value": "storj.io/picobuf/picoconv.Duration"
+                  }
+                ]
+              },
+              {
                 "id": 30,
                 "name": "nonce",
                 "type": "bytes"
@@ -91,6 +106,9 @@
         "imports": [
           {
             "path": "pico.proto"
+          },
+          {
+            "path": "google/protobuf/duration.proto"
           },
           {
             "path": "google/protobuf/timestamp.proto"
