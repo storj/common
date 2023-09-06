@@ -2778,6 +2778,11 @@
                 "type": "bytes"
               },
               {
+                "id": 10,
+                "name": "version_cursor",
+                "type": "bytes"
+              },
+              {
                 "id": 4,
                 "name": "recursive",
                 "type": "bool"
@@ -2800,6 +2805,11 @@
               {
                 "id": 8,
                 "name": "use_object_includes",
+                "type": "bool"
+              },
+              {
+                "id": 9,
+                "name": "include_all_versions",
                 "type": "bool"
               }
             ]

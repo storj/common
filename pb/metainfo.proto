@@ -390,6 +390,7 @@ message ListObjectsRequest {
     bytes  bucket           = 1;
     bytes  encrypted_prefix = 2;
     bytes  encrypted_cursor = 3;
+    bytes  version_cursor   = 10;
     bool   recursive        = 4;
     int32  limit            = 5;
     Object.Status status    = 7;
@@ -401,6 +402,13 @@ message ListObjectsRequest {
     // otherwise old uplinks can break. Newer uplinks should
     // set this value always to true.
     bool use_object_includes = 8;
+
+    // if include_all_versions is true, then the response will include all
+    // versions of the object. If it is false (default), then the response
+    // will only include the latest version of the object. An optional
+    // version_cursor can be provided to include all versions starting after
+    // that version.
+    bool include_all_versions = 9;
 }
 
 message ListObjectsResponse {
