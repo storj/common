@@ -43,7 +43,7 @@ func TestExec_PropagatesSettings(t *testing.T) {
 	}
 	Bind(cmd, &config)
 	y := cmd.Flags().Int("y", 0, "y flag (command)")
-	fmt.Println(y)
+
 	// Set some environment variables for viper.
 	defer setenv("STORJ_X", "1")()
 	defer setenv("STORJ_Y", "2")()
