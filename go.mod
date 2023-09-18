@@ -24,7 +24,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	storj.io/common v0.0.0-20230822112919-e5441f1061f5
 	storj.io/drpc v0.0.33
-	storj.io/monkit-jaeger v0.0.0-20220915074555-d100d7589f41
+	storj.io/monkit-jaeger v0.0.0-20230707083646-f15e6e8b7e8c
 )
 
 require (

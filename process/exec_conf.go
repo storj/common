@@ -27,7 +27,6 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
-	"storj.io/common/context2"
 	"storj.io/private/cfgstruct"
 	"storj.io/private/version"
 )
@@ -358,14 +357,6 @@ func cleanup(cmd *cobra.Command, opts *ExecOptions) {
 					err := eg.Wait()
 					if err != nil {
 						logger.Debug("failed to stop tracing collector", zap.Error(err))
-					}
-					err = collector.Send(context2.WithoutCancellation(ctx))
-					if err != nil {
-						logger.Debug("failed to flush tracing collector", zap.Error(err))
-					}
-					err = collector.Close()
-					if err != nil {
-						logger.Debug("failed to close tracing collector", zap.Error(err))
 					}
 				}()
 			}

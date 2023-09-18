@@ -35,17 +35,17 @@ const (
 )
 
 // InitTracing initializes distributed tracing with an instance ID.
-func InitTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string) (*jaeger.UDPCollector, func(), error) {
+func InitTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string) (*jaeger.ThriftCollector, func(), error) {
 	return initTracing(ctx, log, r, instanceID, []jaeger.Tag{})
 }
 
 // InitTracingWithCertPath initializes distributed tracing with certificate path.
-func InitTracingWithCertPath(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (*jaeger.UDPCollector, func(), error) {
+func InitTracingWithCertPath(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (*jaeger.ThriftCollector, func(), error) {
 	return initTracing(ctx, log, r, nodeIDFromCertPath(ctx, log, certDir), []jaeger.Tag{})
 }
 
 // InitTracingWithHostname initializes distributed tracing with nodeID and hostname.
-func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (*jaeger.UDPCollector, func(), error) {
+func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (*jaeger.ThriftCollector, func(), error) {
 	var processInfo []jaeger.Tag
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -60,7 +60,7 @@ func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Reg
 	return initTracing(ctx, log, r, nodeIDFromCertPath(ctx, log, certDir), processInfo)
 }
 
-func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string, processInfo []jaeger.Tag) (collector *jaeger.UDPCollector, cancel func(), err error) {
+func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string, processInfo []jaeger.Tag) (collector *jaeger.ThriftCollector, cancel func(), err error) {
 	if r == nil {
 		r = monkit.Default
 	}
@@ -84,7 +84,7 @@ func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	if len(processName) > maxInstanceLength {
 		processName = processName[:maxInstanceLength]
 	}
-	collector, err = jaeger.NewUDPCollector(log, *tracingAgent, processName, processInfo, *tracingBufferSize, *tracingQueueSize, *tracingInterval)
+	collector, err = jaeger.NewThriftCollector(log, *tracingAgent, processName, processInfo, *tracingBufferSize, *tracingQueueSize, *tracingInterval)
 	if err != nil {
 		return nil, nil, err
 	}
