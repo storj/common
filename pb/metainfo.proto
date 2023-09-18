@@ -294,8 +294,9 @@ message ListPendingObjectStreamsResponse {
 message DownloadObjectRequest {
     RequestHeader header = 15;
 
-    bytes  bucket = 1;
-    bytes  encrypted_object_key = 2;
+    bytes bucket = 1;
+    bytes encrypted_object_key = 2;
+    bytes version = 6;
 
     // limit specifies the maximum number of segments to return.
     int32 limit = 4;
