@@ -204,7 +204,8 @@ message Object {
 
     bytes  bucket         = 1;
     bytes  encrypted_object_key = 2;
-    int32  version        = 3;
+    int32  version        = 3; // deprecated
+    bytes  object_version = 19;
     Status status         = 4;
 
     bytes  stream_id = 5 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
@@ -237,7 +238,7 @@ message BeginObjectRequest {
 
     bytes  bucket = 1;
     bytes  encrypted_object_key = 2;
-    int32  version = 3;
+    int32  version = 3; // deprecated
 
     google.protobuf.Timestamp expires_at = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 
@@ -252,7 +253,7 @@ message BeginObjectRequest {
 message BeginObjectResponse {
     bytes  bucket = 1;
     bytes  encrypted_object_key = 2;
-    int32  version = 3;
+    int32  version = 3; // deprecated
 
     bytes  stream_id = 4 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
 
@@ -296,7 +297,7 @@ message DownloadObjectRequest {
 
     bytes bucket = 1;
     bytes encrypted_object_key = 2;
-    bytes version = 6;
+    bytes object_version = 6;
 
     // limit specifies the maximum number of segments to return.
     int32 limit = 4;
@@ -367,7 +368,8 @@ message GetObjectRequest {
 
     bytes  bucket = 1;
     bytes  encrypted_object_key = 2;
-    int32  version = 3;
+    int32  version = 3; // deprecated
+    bytes  object_version = 5;
 
     // Feature flag used by satellite to determine if uplink is
     // using RS per object or RS per segment. If flag is set to false
@@ -419,7 +421,8 @@ message ListObjectsResponse {
 
 message ObjectListItem {
     bytes  encrypted_object_key = 1;
-    int32  version        = 2;
+    int32  version        = 2; // deprecated
+    bytes  object_version = 12;
     Object.Status status  = 3;
 
     google.protobuf.Timestamp created_at = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
@@ -447,11 +450,12 @@ message ObjectListItemIncludes {
 message BeginDeleteObjectRequest {
     RequestHeader header = 15;
 
-    bytes  bucket = 1;
-    bytes  encrypted_object_key = 2;
-    int32  version = 3;
-    int32  status = 4;
-    bytes  stream_id = 5 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = true];
+    bytes bucket = 1;
+    bytes encrypted_object_key = 2;
+    int32 version = 3; // deprecated
+    bytes object_version = 6;
+    int32 status = 4;
+    bytes stream_id = 5 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = true];
 }
 
 message BeginDeleteObjectResponse {
@@ -462,7 +466,7 @@ message BeginDeleteObjectResponse {
 message FinishDeleteObjectRequest {
     RequestHeader header = 15;
 
-    bytes  stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
 }
 
 message FinishDeleteObjectResponse {
@@ -471,9 +475,10 @@ message FinishDeleteObjectResponse {
 message GetObjectIPsRequest {
     RequestHeader header = 15;
 
-    bytes  bucket = 1;
-    bytes  encrypted_object_key = 2;
-    int32  version = 3;
+    bytes bucket = 1;
+    bytes encrypted_object_key = 2;
+    int32 version = 3; // deprecated
+    bytes object_version = 4;
 }
 
 message GetObjectIPsResponse {
@@ -486,9 +491,10 @@ message GetObjectIPsResponse {
 message UpdateObjectMetadataRequest {
     RequestHeader header = 15;
 
-    bytes  bucket = 1;
-    bytes  encrypted_object_key = 2;
-    int32  version = 3;
+    bytes bucket = 1;
+    bytes encrypted_object_key = 2;
+    int32 version = 3; // deprecated
+    bytes object_version = 8;
 
     bytes stream_id = 7 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
 

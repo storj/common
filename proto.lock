@@ -2253,6 +2253,11 @@
                 "type": "int32"
               },
               {
+                "id": 19,
+                "name": "object_version",
+                "type": "bytes"
+              },
+              {
                 "id": 4,
                 "name": "status",
                 "type": "Status"
@@ -2623,7 +2628,7 @@
               },
               {
                 "id": 6,
-                "name": "version",
+                "name": "object_version",
                 "type": "bytes"
               },
               {
@@ -2743,6 +2748,11 @@
                 "type": "int32"
               },
               {
+                "id": 5,
+                "name": "object_version",
+                "type": "bytes"
+              },
+              {
                 "id": 4,
                 "name": "redundancy_scheme_per_segment",
                 "type": "bool"
@@ -2847,6 +2857,11 @@
                 "id": 2,
                 "name": "version",
                 "type": "int32"
+              },
+              {
+                "id": 12,
+                "name": "object_version",
+                "type": "bytes"
               },
               {
                 "id": 3,
@@ -2980,6 +2995,11 @@
                 "type": "int32"
               },
               {
+                "id": 6,
+                "name": "object_version",
+                "type": "bytes"
+              },
+              {
                 "id": 4,
                 "name": "status",
                 "type": "int32"
@@ -3076,6 +3096,11 @@
                 "id": 3,
                 "name": "version",
                 "type": "int32"
+              },
+              {
+                "id": 4,
+                "name": "object_version",
+                "type": "bytes"
               }
             ]
           },
@@ -3127,6 +3152,11 @@
                 "id": 3,
                 "name": "version",
                 "type": "int32"
+              },
+              {
+                "id": 8,
+                "name": "object_version",
+                "type": "bytes"
               },
               {
                 "id": 7,
