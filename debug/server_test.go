@@ -31,7 +31,7 @@ func TestServer_PrometheusMetrics(t *testing.T) {
 	rec := httptest.NewRecorder()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/", nil)
 	require.NoError(t, err)
-	srv.prometheusMetrics(rec, req)
+	srv.PrometheusEndpoint.PrometheusMetrics(rec, req)
 
 	const (
 		m1 = `# TYPE m1 gauge
