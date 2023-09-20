@@ -115,6 +115,19 @@ func NewEncryptionAccessWithDefaultKey(defaultKey *storj.Key) *EncryptionAccess 
 	return ec
 }
 
+// Clone returns a deep copy of EncrytionAccess.
+func (s *EncryptionAccess) Clone() *EncryptionAccess {
+	if s == nil {
+		return nil
+	}
+
+	clone := &EncryptionAccess{
+		Store: s.Store.Clone(),
+	}
+
+	return clone
+}
+
 // SetDefaultKey sets the default key for the encryption access context.
 // Use (*Project).SaltedKeyFromPassphrase to generate a default key.
 func (s *EncryptionAccess) SetDefaultKey(defaultKey *storj.Key) {

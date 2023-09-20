@@ -44,6 +44,32 @@ type Store struct {
 	EncryptionBypass bool
 }
 
+// Clone returns a deep copy of Store.
+func (s *Store) Clone() *Store {
+	if s == nil {
+		return s
+	}
+
+	clone := &Store{
+		roots:             make(map[string]*node),
+		defaultPathCipher: s.defaultPathCipher,
+		EncryptionBypass:  s.EncryptionBypass,
+	}
+
+	// Deep copy the defaultKey if it's not nil
+	if s.defaultKey != nil {
+		keyCopy := *s.defaultKey
+		clone.defaultKey = &keyCopy
+	}
+
+	// Deep copy the roots map
+	for bucket, root := range s.roots {
+		clone.roots[bucket] = root.clone()
+	}
+
+	return clone
+}
+
 // node is a node in the Store graph. It may contain an encryption key and encrypted path,
 // a list of children nodes, and data to ensure a bijection between encrypted and unencrypted
 // path entries.
@@ -53,6 +79,43 @@ type node struct {
 	enc      map[string]*node  // enc => node
 	encMap   map[string]string // enc => unenc
 	base     *Base
+}
+
+// clone returns a deep copy of node.
+func (n *node) clone() *node {
+	if n == nil {
+		return nil
+	}
+
+	clone := &node{
+		unenc:    make(map[string]*node),
+		unencMap: make(map[string]string),
+		enc:      make(map[string]*node),
+		encMap:   make(map[string]string),
+		base:     n.base.clone(),
+	}
+
+	// Deep copy the unenc map
+	for k, v := range n.unenc {
+		clone.unenc[k] = v.clone()
+	}
+
+	// Deep copy the unencMap map
+	for k, v := range n.unencMap {
+		clone.unencMap[k] = v
+	}
+
+	// Deep copy the enc map
+	for k, v := range n.enc {
+		clone.enc[k] = v.clone()
+	}
+
+	// Deep copy the encMap map
+	for k, v := range n.encMap {
+		clone.encMap[k] = v
+	}
+
+	return clone
 }
 
 // Base represents a key with which to derive further keys at some encrypted/unencrypted path.

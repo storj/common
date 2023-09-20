@@ -98,12 +98,6 @@ func (access *Access) Restrict(permission Permission, prefixes ...SharePrefix) (
 		MaxObjectTtl:    permission.MaxObjectTTL,
 	})
 
-	encAccess := NewEncryptionAccess()
-	encAccess.SetDefaultPathCipher(access.EncAccess.Store.GetDefaultPathCipher())
-	if len(prefixes) == 0 {
-		encAccess.SetDefaultKey(access.EncAccess.Store.GetDefaultKey())
-	}
-
 	for _, prefix := range prefixes {
 		// If the share prefix ends in a `/` we need to remove this final slash.
 		// Otherwise, if we the shared prefix is `/bob/`, the encrypted shared
@@ -115,14 +109,7 @@ func (access *Access) Restrict(permission Permission, prefixes ...SharePrefix) (
 		if err != nil {
 			return nil, err
 		}
-		derivedKey, err := encryption.DerivePathKey(prefix.Bucket, unencPath, access.EncAccess.Store)
-		if err != nil {
-			return nil, err
-		}
 
-		if err := encAccess.Store.Add(prefix.Bucket, unencPath, encPath, *derivedKey); err != nil {
-			return nil, err
-		}
 		caveat.AllowedPaths = append(caveat.AllowedPaths, &macaroon.Caveat_Path{
 			Bucket:              []byte(prefix.Bucket),
 			EncryptedPathPrefix: []byte(encPath.Raw()),
@@ -134,10 +121,12 @@ func (access *Access) Restrict(permission Permission, prefixes ...SharePrefix) (
 		return nil, err
 	}
 
-	restrictedAccess := &Access{
+	encAccess := access.EncAccess.Clone()
+	encAccess.LimitTo(restrictedAPIKey)
+
+	return &Access{
 		SatelliteAddress: access.SatelliteAddress,
 		APIKey:           restrictedAPIKey,
 		EncAccess:        encAccess,
-	}
-	return restrictedAccess, nil
+	}, nil
 }

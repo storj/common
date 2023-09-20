@@ -7,11 +7,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"storj.io/common/macaroon"
 	"storj.io/common/paths"
 	"storj.io/common/storj"
+	"storj.io/common/testrand"
 )
 
 func TestLimitTo(t *testing.T) {
@@ -103,4 +105,29 @@ func TestLimitTo(t *testing.T) {
 			require.Nil(t, base, "searched for %q", invalid)
 		}
 	}
+}
+
+func TestEncryptionAccessClone(t *testing.T) {
+	defaultKey := testrand.Key()
+
+	caveat := macaroon.Caveat{}
+	caveat.AllowedPaths = append(caveat.AllowedPaths, &macaroon.Caveat_Path{
+		Bucket:              []byte("bucket1"),
+		EncryptedPathPrefix: []byte("encPath1"),
+	})
+
+	apiKey, err := macaroon.NewAPIKey(nil)
+	require.NoError(t, err)
+
+	apiKey, err = apiKey.Restrict(caveat)
+	require.NoError(t, err)
+
+	encAccess := NewEncryptionAccess()
+	encAccess.SetDefaultKey(&defaultKey)
+	encAccess.SetDefaultPathCipher(storj.EncAESGCM)
+	encAccess.LimitTo(apiKey)
+
+	clone := encAccess.Clone()
+	assert.NotSame(t, encAccess, clone)
+	assert.Equal(t, encAccess, clone)
 }

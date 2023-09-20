@@ -12,6 +12,7 @@ import (
 
 	"storj.io/common/paths"
 	"storj.io/common/storj"
+	"storj.io/common/testrand"
 )
 
 func consumeIter(iter paths.Iterator) string {
@@ -238,4 +239,49 @@ func TestStoreEncryptionBypass(t *testing.T) {
 		_, _, base := s.LookupUnencrypted("bucket", paths.NewUnencrypted(""))
 		require.Equal(t, base.PathCipher, storj.EncNullBase64URL)
 	}
+}
+
+func TestStoreClone(t *testing.T) {
+	defaultKey := testrand.Key()
+	pathKey := testrand.Key()
+
+	store := NewStore()
+	store.SetDefaultKey(&defaultKey)
+	store.SetDefaultPathCipher(storj.EncAESGCM)
+	err := store.Add("bucket1", paths.NewUnencrypted("path1"), paths.NewEncrypted("encPath1"), pathKey)
+	require.NoError(t, err)
+
+	clone := store.Clone()
+	assert.NotSame(t, store, clone)
+	assert.Equal(t, store, clone)
+
+	assert.Equal(t, store.defaultPathCipher, clone.defaultPathCipher)
+	assert.Equal(t, store.EncryptionBypass, clone.EncryptionBypass)
+
+	assert.NotSame(t, store.defaultKey, clone.defaultKey)
+	assert.Equal(t, *store.defaultKey, *clone.defaultKey)
+
+	assert.NotSame(t, store.roots, clone.roots)
+	assert.Equal(t, store.roots, clone.roots)
+
+	assert.NotSame(t, store.roots["bucket1"], clone.roots["bucket1"])
+	assert.Equal(t, store.roots["bucket1"], clone.roots["bucket1"])
+
+	assert.NotSame(t, store.roots["bucket1"].enc, clone.roots["bucket1"].enc)
+	assert.Equal(t, store.roots["bucket1"].enc, clone.roots["bucket1"].enc)
+
+	assert.NotSame(t, store.roots["bucket1"].encMap, clone.roots["bucket1"].encMap)
+	assert.Equal(t, store.roots["bucket1"].encMap, clone.roots["bucket1"].encMap)
+
+	assert.NotSame(t, store.roots["bucket1"].unenc, clone.roots["bucket1"].unenc)
+	assert.Equal(t, store.roots["bucket1"].unenc, clone.roots["bucket1"].unenc)
+
+	assert.NotSame(t, store.roots["bucket1"].unencMap, clone.roots["bucket1"].unencMap)
+	assert.Equal(t, store.roots["bucket1"].unencMap, clone.roots["bucket1"].unencMap)
+
+	assert.NotSame(t, store.roots["bucket1"].unenc["path1"].base, clone.roots["bucket1"].unenc["path1"].base)
+	assert.Equal(t, store.roots["bucket1"].unenc["path1"].base, clone.roots["bucket1"].unenc["path1"].base)
+
+	assert.NotSame(t, store.roots["bucket1"].enc["encPath1"].base, clone.roots["bucket1"].enc["encPath1"].base)
+	assert.Equal(t, store.roots["bucket1"].enc["encPath1"].base, clone.roots["bucket1"].enc["encPath1"].base)
 }
