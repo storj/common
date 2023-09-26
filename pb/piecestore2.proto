@@ -99,6 +99,7 @@ message PieceDownloadResponse {
     Chunk chunk = 1;
     orders.PieceHash hash = 2;
     orders.OrderLimit limit = 3;
+    bool restored_from_trash = 4;
 }
 
 message PieceDeleteRequest {

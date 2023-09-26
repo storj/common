@@ -6646,6 +6646,11 @@
                 "id": 3,
                 "name": "limit",
                 "type": "orders.OrderLimit"
+              },
+              {
+                "id": 4,
+                "name": "restored_from_trash",
+                "type": "bool"
               }
             ],
             "messages": [

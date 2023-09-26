@@ -2,8 +2,8 @@
 // source: encryption_access.proto
 //
 // versions:
-//     protoc-gen-pico: (devel)
-//     protoc:          v3.20.0
+//     protoc-gen-pico: v0.0.1
+//     protoc:          v4.23.4
 
 package pb
 
