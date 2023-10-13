@@ -1886,15 +1886,29 @@
               },
               {
                 "name": "COMMITTING",
-                "integer": 2
+                "integer": 2,
+                "options": [
+                  {
+                    "name": "deprecated",
+                    "value": "true"
+                  }
+                ]
               },
               {
-                "name": "COMMITTED",
+                "name": "COMMITTED_UNVERSIONED",
                 "integer": 3
               },
               {
-                "name": "DELETING",
+                "name": "COMMITTED_VERSIONED",
                 "integer": 4
+              },
+              {
+                "name": "DELETE_MARKER_VERSIONED",
+                "integer": 5
+              },
+              {
+                "name": "DELETE_MARKER_UNVERSIONED",
+                "integer": 6
               }
             ]
           }

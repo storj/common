@@ -197,9 +197,11 @@ message Object {
     enum Status {
         INVALID    = 0;
         UPLOADING  = 1;
-        COMMITTING = 2;
-        COMMITTED  = 3;
-        DELETING   = 4;
+        COMMITTING = 2 [deprecated = true];
+        COMMITTED_UNVERSIONED     = 3;
+        COMMITTED_VERSIONED       = 4;
+        DELETE_MARKER_VERSIONED   = 5;
+        DELETE_MARKER_UNVERSIONED = 6;
     }
 
     bytes  bucket         = 1;
