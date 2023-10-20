@@ -4947,26 +4947,24 @@
                 "name": "INVALID"
               },
               {
-                "name": "SATELLITE",
-                "integer": 1
-              },
-              {
                 "name": "STORAGE",
                 "integer": 2
-              },
+              }
+            ],
+            "reserved_ids": [
+              1,
+              3,
+              4
+            ],
+            "reserved_names": [
+              "SATELLITE",
+              "UPLINK",
+              "BOOTSTRAP"
+            ],
+            "options": [
               {
-                "name": "UPLINK",
-                "integer": 3
-              },
-              {
-                "name": "BOOTSTRAP",
-                "integer": 4,
-                "options": [
-                  {
-                    "name": "deprecated",
-                    "value": "true"
-                  }
-                ]
+                "name": "deprecated",
+                "value": "true"
               }
             ]
           },

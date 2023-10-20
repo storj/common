@@ -22,11 +22,12 @@ message Node {
 
 // NodeType is an enum of possible node types.
 enum NodeType {
+    option deprecated = true;
     INVALID = 0;
-    SATELLITE = 1;
     STORAGE = 2;
-    UPLINK = 3;
-    BOOTSTRAP = 4 [deprecated=true];
+
+    reserved 1, 3, 4;
+    reserved "SATELLITE", "UPLINK", "BOOTSTRAP";
 }
 
 // NodeAddress contains the information needed to communicate with a node on
