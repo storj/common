@@ -1909,6 +1909,10 @@
               {
                 "name": "DELETE_MARKER_UNVERSIONED",
                 "integer": 6
+              },
+              {
+                "name": "PREFIX",
+                "integer": 7
               }
             ]
           }

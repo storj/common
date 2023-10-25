@@ -202,6 +202,7 @@ message Object {
         COMMITTED_VERSIONED       = 4;
         DELETE_MARKER_VERSIONED   = 5;
         DELETE_MARKER_UNVERSIONED = 6;
+        PREFIX = 7;
     }
 
     bytes  bucket         = 1;
