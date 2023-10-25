@@ -2578,7 +2578,14 @@
             ]
           },
           {
-            "name": "CommitObjectResponse"
+            "name": "CommitObjectResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "object",
+                "type": "Object"
+              }
+            ]
           },
           {
             "name": "ListPendingObjectStreamsRequest",

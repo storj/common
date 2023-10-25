@@ -280,6 +280,7 @@ message CommitObjectRequest {
 }
 
 message CommitObjectResponse {
+    Object object = 1;
 }
 
 message ListPendingObjectStreamsRequest {
