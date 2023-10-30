@@ -8,6 +8,7 @@ import (
 	"crypto/cipher"
 
 	"storj.io/common/storj"
+	"storj.io/common/sync2/race2"
 )
 
 type aesgcmEncrypter struct {
@@ -32,6 +33,9 @@ type aesgcmEncrypter struct {
 // When in doubt, generate a new key from crypto/rand and a startingNonce
 // from crypto/rand as often as possible.
 func NewAESGCMEncrypter(key *storj.Key, startingNonce *AESGCMNonce, encryptedBlockSize int) (Transformer, error) {
+	race2.ReadSlice(key[:])
+	race2.ReadSlice(startingNonce[:])
+
 	block, err := aes.NewCipher(key[:])
 	if err != nil {
 		return nil, Error.Wrap(err)
@@ -69,6 +73,9 @@ func calcGCMNonce(startingNonce *AESGCMNonce, blockNum int64) (rv [12]byte, err 
 }
 
 func (s *aesgcmEncrypter) Transform(out, in []byte, blockNum int64) ([]byte, error) {
+	race2.ReadSlice(in)
+	race2.WriteSlice(out)
+
 	nonce, err := calcGCMNonce(s.startingNonce, blockNum)
 	if err != nil {
 		return nil, err
@@ -90,6 +97,9 @@ type aesgcmDecrypter struct {
 // through with key. See the comments for NewAESGCMEncrypter about
 // startingNonce.
 func NewAESGCMDecrypter(key *storj.Key, startingNonce *AESGCMNonce, encryptedBlockSize int) (Transformer, error) {
+	race2.ReadSlice(key[:])
+	race2.ReadSlice(startingNonce[:])
+
 	block, err := aes.NewCipher(key[:])
 	if err != nil {
 		return nil, Error.Wrap(err)
@@ -118,6 +128,9 @@ func (s *aesgcmDecrypter) OutBlockSize() int {
 }
 
 func (s *aesgcmDecrypter) Transform(out, in []byte, blockNum int64) ([]byte, error) {
+	race2.ReadSlice(in)
+	race2.WriteSlice(out)
+
 	nonce, err := calcGCMNonce(s.startingNonce, blockNum)
 	if err != nil {
 		return nil, err
@@ -132,6 +145,10 @@ func (s *aesgcmDecrypter) Transform(out, in []byte, blockNum int64) ([]byte, err
 
 // EncryptAESGCM encrypts byte data with a key and nonce. It returns the cipher data.
 func EncryptAESGCM(data []byte, key *storj.Key, nonce *AESGCMNonce) (cipherData []byte, err error) {
+	race2.ReadSlice(data)
+	race2.ReadSlice(key[:])
+	race2.ReadSlice(nonce[:])
+
 	block, err := aes.NewCipher(key[:])
 	if err != nil {
 		return []byte{}, Error.Wrap(err)
@@ -149,6 +166,11 @@ func DecryptAESGCM(cipherData []byte, key *storj.Key, nonce *AESGCMNonce) (data 
 	if len(cipherData) == 0 {
 		return []byte{}, Error.New("empty cipher data")
 	}
+
+	race2.ReadSlice(cipherData)
+	race2.ReadSlice(key[:])
+	race2.ReadSlice(nonce[:])
+
 	block, err := aes.NewCipher(key[:])
 	if err != nil {
 		return []byte{}, Error.Wrap(err)

@@ -7,6 +7,7 @@ import (
 	"golang.org/x/crypto/nacl/secretbox"
 
 	"storj.io/common/storj"
+	"storj.io/common/sync2/race2"
 )
 
 type secretboxEncrypter struct {
@@ -32,6 +33,7 @@ func NewSecretboxEncrypter(key *storj.Key, startingNonce *storj.Nonce, encrypted
 	if encryptedBlockSize <= secretbox.Overhead {
 		return nil, ErrInvalidConfig.New("encrypted block size %d too small", encryptedBlockSize)
 	}
+
 	return &secretboxEncrypter{
 		blockSize:     encryptedBlockSize - secretbox.Overhead,
 		key:           key,
@@ -57,10 +59,16 @@ func calcNonce(startingNonce *storj.Nonce, blockNum int64) (rv *storj.Nonce, err
 }
 
 func (s *secretboxEncrypter) Transform(out, in []byte, blockNum int64) ([]byte, error) {
+	race2.ReadSlice(s.startingNonce[:])
+	race2.ReadSlice(s.key[:])
+	race2.ReadSlice(in)
+	race2.WriteSlice(out)
+
 	nonce, err := calcNonce(s.startingNonce, blockNum)
 	if err != nil {
 		return nil, err
 	}
+
 	return secretbox.Seal(out, in, nonce.Raw(), s.key.Raw()), nil
 }
 
@@ -93,10 +101,16 @@ func (s *secretboxDecrypter) OutBlockSize() int {
 }
 
 func (s *secretboxDecrypter) Transform(out, in []byte, blockNum int64) ([]byte, error) {
+	race2.ReadSlice(s.startingNonce[:])
+	race2.ReadSlice(s.key[:])
+	race2.ReadSlice(in)
+	race2.WriteSlice(out)
+
 	nonce, err := calcNonce(s.startingNonce, blockNum)
 	if err != nil {
 		return nil, err
 	}
+
 	rv, success := secretbox.Open(out, in, nonce.Raw(), s.key.Raw())
 	if !success {
 		return nil, ErrDecryptFailed.New("")
@@ -106,11 +120,19 @@ func (s *secretboxDecrypter) Transform(out, in []byte, blockNum int64) ([]byte, 
 
 // EncryptSecretBox encrypts byte data with a key and nonce. The cipher data is returned.
 func EncryptSecretBox(data []byte, key *storj.Key, nonce *storj.Nonce) (cipherData []byte, err error) {
+	race2.ReadSlice(nonce[:])
+	race2.ReadSlice(key[:])
+	race2.ReadSlice(data)
+
 	return secretbox.Seal(nil, data, nonce.Raw(), key.Raw()), nil
 }
 
 // DecryptSecretBox decrypts byte data with a key and nonce. The plain data is returned.
 func DecryptSecretBox(cipherData []byte, key *storj.Key, nonce *storj.Nonce) (data []byte, err error) {
+	race2.ReadSlice(nonce[:])
+	race2.ReadSlice(key[:])
+	race2.ReadSlice(cipherData)
+
 	data, success := secretbox.Open(nil, cipherData, nonce.Raw(), key.Raw())
 	if !success {
 		return nil, ErrDecryptFailed.New("")

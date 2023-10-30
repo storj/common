@@ -5,6 +5,8 @@ package hmacsha512
 
 import (
 	"encoding/binary"
+
+	"storj.io/common/sync2/race2"
 )
 
 const chunk = 128
@@ -53,6 +55,7 @@ func (d *digest) Write(p []byte) {
 	}
 	if len(p) >= chunk {
 		n := len(p) &^ (chunk - 1)
+		race2.ReadSlice(p[:n])
 		block(d, p[:n])
 		p = p[n:]
 	}

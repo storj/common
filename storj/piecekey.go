@@ -8,6 +8,8 @@ import (
 
 	"github.com/zeebo/errs"
 	"golang.org/x/crypto/ed25519"
+
+	"storj.io/common/sync2/race2"
 )
 
 // ErrPieceKey is used when something goes wrong with a piece key.
@@ -52,6 +54,8 @@ func PiecePrivateKeyFromBytes(data []byte) (PiecePrivateKey, error) {
 
 // Sign signs the message with privateKey and returns a signature.
 func (key PiecePrivateKey) Sign(data []byte) ([]byte, error) {
+	race2.ReadSlice(data)
+
 	if len(key.priv) != ed25519.PrivateKeySize {
 		return nil, ErrPieceKey.New("invalid private key length %v", len(key.priv))
 	}
@@ -60,9 +64,13 @@ func (key PiecePrivateKey) Sign(data []byte) ([]byte, error) {
 
 // Verify reports whether signature is a valid signature of message by publicKey.
 func (key PiecePublicKey) Verify(data, signature []byte) error {
+	race2.ReadSlice(data)
+	race2.ReadSlice(signature)
+
 	if len(key.pub) != ed25519.PublicKeySize {
 		return ErrPieceKey.New("invalid public key length %v", len(key.pub))
 	}
+
 	if !ed25519.Verify(key.pub, data, signature) {
 		return ErrPieceKey.New("invalid signature")
 	}

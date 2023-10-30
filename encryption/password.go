@@ -12,6 +12,7 @@ import (
 
 	"storj.io/common/memory"
 	"storj.io/common/storj"
+	"storj.io/common/sync2/race2"
 )
 
 func sha256hmac(key, data []byte) ([]byte, error) {
@@ -25,6 +26,9 @@ func sha256hmac(key, data []byte) ([]byte, error) {
 // DeriveRootKey derives a root key for some path using the salt for the bucket and
 // a password from the user. See the password key derivation design doc.
 func DeriveRootKey(password, salt []byte, path storj.Path, argon2Threads uint8) (*storj.Key, error) {
+	race2.ReadSlice(password)
+	race2.ReadSlice(salt)
+
 	mixedSalt, err := sha256hmac(password, salt)
 	if err != nil {
 		return nil, err

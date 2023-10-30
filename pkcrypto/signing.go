@@ -14,6 +14,8 @@ import (
 	"crypto/x509"
 	"math/big"
 	"reflect"
+
+	"storj.io/common/sync2/race2"
 )
 
 const (
@@ -74,6 +76,9 @@ func VerifySignatureWithoutHashing(pubKey crypto.PublicKey, digest, signature []
 }
 
 func verifyECDSASignatureWithoutHashing(pubKey *ecdsa.PublicKey, digest, signatureBytes []byte) error {
+	race2.ReadSlice(digest)
+	race2.ReadSlice(signatureBytes)
+
 	r, s, err := unmarshalECDSASignature(signatureBytes)
 	if err != nil {
 		return ErrVerifySignature.New("unable to unmarshal ecdsa signature: %v", err)
@@ -85,6 +90,9 @@ func verifyECDSASignatureWithoutHashing(pubKey *ecdsa.PublicKey, digest, signatu
 }
 
 func verifyRSASignatureWithoutHashing(pubKey *rsa.PublicKey, digest, signatureBytes []byte) error {
+	race2.ReadSlice(digest)
+	race2.ReadSlice(signatureBytes)
+
 	err := rsa.VerifyPSS(pubKey, pssParams.Hash, digest, signatureBytes, &pssParams)
 	if err != nil {
 		return ErrVerifySignature.New("signature is not valid")
@@ -119,6 +127,8 @@ func SignWithoutHashing(privKey crypto.PrivateKey, digest []byte) ([]byte, error
 
 // SignHMACSHA256 signs the given data with HMAC-SHA256 using privKey as the secret.
 func SignHMACSHA256(privKey crypto.PrivateKey, data []byte) ([]byte, error) {
+	race2.ReadSlice(data)
+
 	var secret []byte
 	switch key := privKey.(type) {
 	case *ecdsa.PrivateKey:
@@ -153,6 +163,8 @@ func VerifyHMACSHA256(privKey crypto.PrivateKey, data, signature []byte) error {
 }
 
 func signECDSAWithoutHashing(privKey *ecdsa.PrivateKey, digest []byte) ([]byte, error) {
+	race2.ReadSlice(digest)
+
 	r, s, err := ecdsa.Sign(rand.Reader, privKey, digest)
 	if err != nil {
 		return nil, ErrSign.Wrap(err)
@@ -161,6 +173,8 @@ func signECDSAWithoutHashing(privKey *ecdsa.PrivateKey, digest []byte) ([]byte, 
 }
 
 func signRSAWithoutHashing(privKey *rsa.PrivateKey, digest []byte) ([]byte, error) {
+	race2.ReadSlice(digest)
+
 	return privKey.Sign(rand.Reader, digest, &pssParams)
 }
 
