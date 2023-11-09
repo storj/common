@@ -27,6 +27,8 @@ service Metainfo {
     rpc CreateBucket(CreateBucketRequest) returns (CreateBucketResponse);
     rpc GetBucket(GetBucketRequest) returns (GetBucketResponse);
     rpc GetBucketLocation(GetBucketLocationRequest) returns (GetBucketLocationResponse);
+    rpc GetBucketVersioning(GetBucketVersioningRequest) returns (GetBucketVersioningResponse);
+    rpc SetBucketVersioning(SetBucketVersioningRequest) returns (SetBucketVersioningResponse);
     rpc DeleteBucket(DeleteBucketRequest) returns (DeleteBucketResponse);
     rpc ListBuckets(ListBucketsRequest) returns (ListBucketsResponse);
 
@@ -125,6 +127,29 @@ message GetBucketLocationRequest {
 
 message GetBucketLocationResponse {
     bytes location = 1;
+}
+
+message GetBucketVersioningRequest {
+    RequestHeader header = 15;
+
+    bytes name = 1;
+}
+
+message GetBucketVersioningResponse {
+    int32 versioning = 1;
+}
+
+message SetBucketVersioningRequest {
+    RequestHeader header = 15;
+
+    bytes name = 1;
+    // versioning determines what to set the bucket versioning to be.
+    // true = enable versioning.
+    // false = suspend versioning.
+    bool versioning = 2;
+}
+
+message SetBucketVersioningResponse {
 }
 
 message DeleteBucketRequest {
@@ -728,6 +753,8 @@ message BatchRequestItem {
         CreateBucketRequest             bucket_create = 1;
         GetBucketRequest                bucket_get = 2;
         GetBucketLocationRequest        bucket_get_location = 30;
+        GetBucketVersioningRequest      bucket_get_versioning = 31;
+        SetBucketVersioningRequest      bucket_set_versioning = 32;
         DeleteBucketRequest             bucket_delete = 3;
         ListBucketsRequest              bucket_list = 4;
 
@@ -771,6 +798,8 @@ message BatchResponseItem {
         CreateBucketResponse             bucket_create = 1;
         GetBucketResponse                bucket_get = 2;
         GetBucketLocationResponse        bucket_get_location = 30;
+        GetBucketVersioningResponse      bucket_get_versioning = 31;
+        SetBucketVersioningResponse      bucket_set_versioning = 32;
         DeleteBucketResponse             bucket_delete = 3;
         ListBucketsResponse              bucket_list = 4;
 

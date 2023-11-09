@@ -2114,6 +2114,54 @@
             ]
           },
           {
+            "name": "GetBucketVersioningRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "name",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "GetBucketVersioningResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "versioning",
+                "type": "int32"
+              }
+            ]
+          },
+          {
+            "name": "SetBucketVersioningRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "name",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "versioning",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "name": "SetBucketVersioningResponse"
+          },
+          {
             "name": "DeleteBucketRequest",
             "fields": [
               {
@@ -4116,6 +4164,16 @@
                 "type": "GetBucketLocationRequest"
               },
               {
+                "id": 31,
+                "name": "bucket_get_versioning",
+                "type": "GetBucketVersioningRequest"
+              },
+              {
+                "id": 32,
+                "name": "bucket_set_versioning",
+                "type": "SetBucketVersioningRequest"
+              },
+              {
                 "id": 3,
                 "name": "bucket_delete",
                 "type": "DeleteBucketRequest"
@@ -4270,6 +4328,16 @@
                 "id": 30,
                 "name": "bucket_get_location",
                 "type": "GetBucketLocationResponse"
+              },
+              {
+                "id": 31,
+                "name": "bucket_get_versioning",
+                "type": "GetBucketVersioningResponse"
+              },
+              {
+                "id": 32,
+                "name": "bucket_set_versioning",
+                "type": "SetBucketVersioningResponse"
               },
               {
                 "id": 3,
@@ -4772,6 +4840,16 @@
                 "name": "GetBucketLocation",
                 "in_type": "GetBucketLocationRequest",
                 "out_type": "GetBucketLocationResponse"
+              },
+              {
+                "name": "GetBucketVersioning",
+                "in_type": "GetBucketVersioningRequest",
+                "out_type": "GetBucketVersioningResponse"
+              },
+              {
+                "name": "SetBucketVersioning",
+                "in_type": "SetBucketVersioningRequest",
+                "out_type": "SetBucketVersioningResponse"
               },
               {
                 "name": "DeleteBucket",
