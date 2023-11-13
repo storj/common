@@ -71,6 +71,11 @@ func (t *timedConn) Write(p []byte) (int, error) {
 	return n, err
 }
 
+// NetConn returns the underlying conn, like *tls.Conn does.
+func (t *timedConn) NetConn() net.Conn {
+	return t.Conn
+}
+
 //
 // tls conn wrapper
 //
@@ -85,3 +90,8 @@ type tlsConnWrapper struct {
 
 // Close closes the underlying connection.
 func (t *tlsConnWrapper) Close() error { return t.underlying.Close() }
+
+// NetConn returns the underlying conn, like *tls.Conn does.
+func (t *tlsConnWrapper) NetConn() net.Conn {
+	return t.underlying
+}

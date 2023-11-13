@@ -75,6 +75,10 @@ func (emptyConn) Unblocked() <-chan struct{} {
 	return x
 }
 
+func (emptyConn) Transport() drpc.Transport {
+	return nil
+}
+
 func (emptyConn) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in, out drpc.Message) error {
 	return nil
 }

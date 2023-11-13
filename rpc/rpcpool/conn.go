@@ -17,6 +17,7 @@ import (
 type RawConn interface {
 	drpc.Conn
 	Unblocked() <-chan struct{}
+	Transport() drpc.Transport
 }
 
 // Conn is the type for connections returned from the pool.
@@ -121,7 +122,9 @@ func (c *poolConn) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in
 	}
 	c.stateMu.Unlock()
 
-	return pv.conn.Invoke(ctx, rpc, enc, in, out)
+	return stackAnnotate(pv.conn.Transport(), func() error {
+		return pv.conn.Invoke(ctx, rpc, enc, in, out)
+	})
 }
 
 // NewStream acquires a connection from the pool, dialing if necessary, and issues the NewStream on

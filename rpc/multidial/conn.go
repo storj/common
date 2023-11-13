@@ -119,5 +119,11 @@ func (c *conn) SetWriteDeadline(t time.Time) error {
 		return conn.SetWriteDeadline(t)
 	}
 	return setup.SetWriteDeadline(t)
+}
 
+func (c *conn) NetConn() net.Conn {
+	c.mtx.Lock()
+	conn := c.conn
+	c.mtx.Unlock()
+	return conn
 }

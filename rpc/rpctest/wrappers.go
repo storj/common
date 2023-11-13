@@ -42,6 +42,11 @@ func (l *MessageInterceptor) Unblocked() <-chan struct{} {
 	return l.delegate.Unblocked()
 }
 
+// Transport returns the underlying Transport.
+func (l *MessageInterceptor) Transport() drpc.Transport {
+	return l.delegate.Transport()
+}
+
 // Invoke the underlying connection but call the RequestHook/ResponseHook before and after.
 // When the Invoker is set it will be invoked instead of the original connection.
 func (l *MessageInterceptor) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in, out drpc.Message) error {

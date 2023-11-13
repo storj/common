@@ -34,3 +34,8 @@ func (c *closeTrackingConn) finalize() {
 	mon.Event("connection_leaked")
 	_ = c.Conn.Close()
 }
+
+// NetConn returns the underlying conn, like *tls.Conn does.
+func (c *closeTrackingConn) NetConn() net.Conn {
+	return c.Conn
+}

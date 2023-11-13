@@ -55,6 +55,11 @@ func (s *StubConnection) Unblocked() <-chan struct{} {
 	return x
 }
 
+// Transport returns a nil transport.
+func (s *StubConnection) Transport() drpc.Transport {
+	return nil
+}
+
 // Invoke the underlying connection but call the RequestHook/ResponseHook before and after.
 // When the Invoker is set it will be invoked instead of the original connection.
 func (s *StubConnection) Invoke(ctx context.Context, rpc string, enc drpc.Encoding, in, out drpc.Message) error {
