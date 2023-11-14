@@ -31,12 +31,18 @@ var monSignOrderLimitTask = mon.Task()
 // Signer is a satellite.
 func SignOrderLimit(ctx context.Context, satellite Signer, unsigned *pb.OrderLimit) (_ *pb.OrderLimit, err error) {
 	defer monSignOrderLimitTask(&ctx)(&err)
+
+	signed := *unsigned
+	if areSignaturesDisabled(ctx) {
+		signed.SatelliteSignature = disabledSignature
+		return &signed, nil
+	}
+
 	bytes, err := EncodeOrderLimit(ctx, unsigned)
 	if err != nil {
 		return nil, Error.Wrap(err)
 	}
 
-	signed := *unsigned
 	signed.SatelliteSignature, err = satellite.HashAndSign(ctx, bytes)
 	if err != nil {
 		return nil, Error.Wrap(err)
@@ -53,12 +59,17 @@ func SignUplinkOrder(ctx context.Context, privateKey storj.PiecePrivateKey, unsi
 	ctx = tracing.WithoutDistributedTracing(ctx)
 	defer monSignUplinkOrderTask(&ctx)(&err)
 
+	signed := *unsigned
+	if areSignaturesDisabled(ctx) {
+		signed.UplinkSignature = disabledSignature
+		return &signed, nil
+	}
+
 	bytes, err := EncodeOrder(ctx, unsigned)
 	if err != nil {
 		return nil, Error.Wrap(err)
 	}
 
-	signed := *unsigned
 	signed.UplinkSignature, err = privateKey.Sign(bytes)
 	if err != nil {
 		return nil, Error.Wrap(err)
@@ -70,12 +81,18 @@ func SignUplinkOrder(ctx context.Context, privateKey storj.PiecePrivateKey, unsi
 // Signer is either uplink or storage node.
 func SignPieceHash(ctx context.Context, signer Signer, unsigned *pb.PieceHash) (_ *pb.PieceHash, err error) {
 	defer mon.Task()(&ctx)(&err)
+
+	signed := *unsigned
+	if areSignaturesDisabled(ctx) {
+		signed.Signature = disabledSignature
+		return &signed, nil
+	}
+
 	bytes, err := EncodePieceHash(ctx, unsigned)
 	if err != nil {
 		return nil, Error.Wrap(err)
 	}
 
-	signed := *unsigned
 	signed.Signature, err = signer.HashAndSign(ctx, bytes)
 	if err != nil {
 		return nil, Error.Wrap(err)
@@ -88,12 +105,18 @@ func SignPieceHash(ctx context.Context, signer Signer, unsigned *pb.PieceHash) (
 // Signer is either uplink or storage node.
 func SignUplinkPieceHash(ctx context.Context, privateKey storj.PiecePrivateKey, unsigned *pb.PieceHash) (_ *pb.PieceHash, err error) {
 	defer mon.Task()(&ctx)(&err)
+
+	signed := *unsigned
+	if areSignaturesDisabled(ctx) {
+		signed.Signature = disabledSignature
+		return &signed, nil
+	}
+
 	bytes, err := EncodePieceHash(ctx, unsigned)
 	if err != nil {
 		return nil, Error.Wrap(err)
 	}
 
-	signed := *unsigned
 	signed.Signature, err = privateKey.Sign(bytes)
 	if err != nil {
 		return nil, Error.Wrap(err)
@@ -105,12 +128,18 @@ func SignUplinkPieceHash(ctx context.Context, privateKey storj.PiecePrivateKey, 
 // Signer is a satellite.
 func SignExitCompleted(ctx context.Context, signer Signer, unsigned *pb.ExitCompleted) (_ *pb.ExitCompleted, err error) {
 	defer mon.Task()(&ctx)(&err)
+
+	signed := *unsigned
+	if areSignaturesDisabled(ctx) {
+		signed.ExitCompleteSignature = disabledSignature
+		return &signed, nil
+	}
+
 	bytes, err := EncodeExitCompleted(ctx, unsigned)
 	if err != nil {
 		return nil, Error.Wrap(err)
 	}
 
-	signed := *unsigned
 	signed.ExitCompleteSignature, err = signer.HashAndSign(ctx, bytes)
 	if err != nil {
 		return nil, Error.Wrap(err)
@@ -123,12 +152,18 @@ func SignExitCompleted(ctx context.Context, signer Signer, unsigned *pb.ExitComp
 // Signer is a satellite.
 func SignExitFailed(ctx context.Context, signer Signer, unsigned *pb.ExitFailed) (_ *pb.ExitFailed, err error) {
 	defer mon.Task()(&ctx)(&err)
+
+	signed := *unsigned
+	if areSignaturesDisabled(ctx) {
+		signed.ExitFailureSignature = disabledSignature
+		return &signed, nil
+	}
+
 	bytes, err := EncodeExitFailed(ctx, unsigned)
 	if err != nil {
 		return nil, Error.Wrap(err)
 	}
 
-	signed := *unsigned
 	signed.ExitFailureSignature, err = signer.HashAndSign(ctx, bytes)
 	if err != nil {
 		return nil, Error.Wrap(err)

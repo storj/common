@@ -21,6 +21,61 @@ type Signee interface {
 
 // VerifyOrderLimitSignature verifies that the signature inside order limit is valid and  belongs to the satellite.
 func VerifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb.OrderLimit) (err error) {
+	if areSignaturesDisabled(ctx) {
+		return nil
+	}
+	return verifyOrderLimitSignature(ctx, satellite, signed)
+}
+
+// VerifyOrderSignature verifies that the signature inside order is valid and belongs to the uplink.
+func VerifyOrderSignature(ctx context.Context, uplink Signee, signed *pb.Order) (err error) {
+	if areSignaturesDisabled(ctx) {
+		return nil
+	}
+	return verifyOrderSignature(ctx, uplink, signed)
+}
+
+// VerifyUplinkOrderSignature verifies that the signature inside order is valid and belongs to the uplink.
+func VerifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.Order) (err error) {
+	if areSignaturesDisabled(ctx) {
+		return nil
+	}
+	return verifyUplinkOrderSignature(ctx, publicKey, signed)
+}
+
+// VerifyPieceHashSignature verifies that the signature inside piece hash is valid and belongs to the signer, which is either uplink or storage node.
+func VerifyPieceHashSignature(ctx context.Context, signee Signee, signed *pb.PieceHash) (err error) {
+	if areSignaturesDisabled(ctx) {
+		return nil
+	}
+	return verifyPieceHashSignature(ctx, signee, signed)
+}
+
+// VerifyUplinkPieceHashSignature verifies that the signature inside piece hash is valid and belongs to the signer, which is either uplink or storage node.
+func VerifyUplinkPieceHashSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.PieceHash) (err error) {
+	if areSignaturesDisabled(ctx) {
+		return nil
+	}
+	return verifyUplinkPieceHashSignature(ctx, publicKey, signed)
+}
+
+// VerifyExitCompleted verifies that the signature inside ExitCompleted belongs to the satellite.
+func VerifyExitCompleted(ctx context.Context, satellite Signee, signed *pb.ExitCompleted) (err error) {
+	if areSignaturesDisabled(ctx) {
+		return nil
+	}
+	return verifyExitCompleted(ctx, satellite, signed)
+}
+
+// VerifyExitFailed verifies that the signature inside ExitFailed belongs to the satellite.
+func VerifyExitFailed(ctx context.Context, satellite Signee, signed *pb.ExitFailed) (err error) {
+	if areSignaturesDisabled(ctx) {
+		return nil
+	}
+	return verifyExitFailed(ctx, satellite, signed)
+}
+
+func verifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb.OrderLimit) (err error) {
 	ctx = tracing.WithoutDistributedTracing(ctx)
 	defer verifyOrderLimitSignatureMon(&ctx)(&err)
 
@@ -32,8 +87,7 @@ func VerifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb
 	return satellite.HashAndVerifySignature(ctx, bytes, signed.SatelliteSignature)
 }
 
-// VerifyOrderSignature verifies that the signature inside order is valid and belongs to the uplink.
-func VerifyOrderSignature(ctx context.Context, uplink Signee, signed *pb.Order) (err error) {
+func verifyOrderSignature(ctx context.Context, uplink Signee, signed *pb.Order) (err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	if len(signed.XXX_unrecognized) > 0 {
@@ -48,8 +102,7 @@ func VerifyOrderSignature(ctx context.Context, uplink Signee, signed *pb.Order) 
 	return uplink.HashAndVerifySignature(ctx, bytes, signed.UplinkSignature)
 }
 
-// VerifyUplinkOrderSignature verifies that the signature inside order is valid and belongs to the uplink.
-func VerifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.Order) (err error) {
+func verifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.Order) (err error) {
 	ctx = tracing.WithoutDistributedTracing(ctx)
 	defer mon.Task()(&ctx)(&err)
 
@@ -65,8 +118,7 @@ func VerifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublic
 	return Error.Wrap(publicKey.Verify(bytes, signed.UplinkSignature))
 }
 
-// VerifyPieceHashSignature verifies that the signature inside piece hash is valid and belongs to the signer, which is either uplink or storage node.
-func VerifyPieceHashSignature(ctx context.Context, signee Signee, signed *pb.PieceHash) (err error) {
+func verifyPieceHashSignature(ctx context.Context, signee Signee, signed *pb.PieceHash) (err error) {
 	ctx = tracing.WithoutDistributedTracing(ctx)
 	defer mon.Task()(&ctx)(&err)
 
@@ -82,8 +134,7 @@ func VerifyPieceHashSignature(ctx context.Context, signee Signee, signed *pb.Pie
 	return signee.HashAndVerifySignature(ctx, bytes, signed.Signature)
 }
 
-// VerifyUplinkPieceHashSignature verifies that the signature inside piece hash is valid and belongs to the signer, which is either uplink or storage node.
-func VerifyUplinkPieceHashSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.PieceHash) (err error) {
+func verifyUplinkPieceHashSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.PieceHash) (err error) {
 	ctx = tracing.WithoutDistributedTracing(ctx)
 	defer mon.Task()(&ctx)(&err)
 
@@ -99,8 +150,7 @@ func VerifyUplinkPieceHashSignature(ctx context.Context, publicKey storj.PiecePu
 	return Error.Wrap(publicKey.Verify(bytes, signed.Signature))
 }
 
-// VerifyExitCompleted verifies that the signature inside ExitCompleted belongs to the satellite.
-func VerifyExitCompleted(ctx context.Context, satellite Signee, signed *pb.ExitCompleted) (err error) {
+func verifyExitCompleted(ctx context.Context, satellite Signee, signed *pb.ExitCompleted) (err error) {
 	defer mon.Task()(&ctx)(&err)
 	bytes, err := EncodeExitCompleted(ctx, signed)
 	if err != nil {
@@ -110,8 +160,7 @@ func VerifyExitCompleted(ctx context.Context, satellite Signee, signed *pb.ExitC
 	return Error.Wrap(satellite.HashAndVerifySignature(ctx, bytes, signed.ExitCompleteSignature))
 }
 
-// VerifyExitFailed verifies that the signature inside ExitFailed belongs to the satellite.
-func VerifyExitFailed(ctx context.Context, satellite Signee, signed *pb.ExitFailed) (err error) {
+func verifyExitFailed(ctx context.Context, satellite Signee, signed *pb.ExitFailed) (err error) {
 	defer mon.Task()(&ctx)(&err)
 	bytes, err := EncodeExitFailed(ctx, signed)
 	if err != nil {
