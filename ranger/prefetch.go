@@ -10,7 +10,8 @@ import (
 
 // ConcatOpts specifies a couple of concatenation options.
 type ConcatOpts struct {
-	// Prefetch, when true, will support prefetching the next range.
+	// Prefetch, when true, will support prefetching the next range. Prefetching
+	// won't be very useful without a non-zero PrefetchWhenBytesRemaining value.
 	Prefetch bool
 
 	// ForceReads only matters if Prefetch is true. If true, not only will the
@@ -18,21 +19,13 @@ type ConcatOpts struct {
 	ForceReads bool
 
 	// PrefetchWhenBytesRemaining specifies how many bytes should be remaining
-	// at most before prefetching the next bit. Prefetch must be true. Zero or
-	// negative values mean to use the default value.
+	// at most before prefetching the next bit. Prefetch must be true.
 	PrefetchWhenBytesRemaining int64
-}
-
-func (opts *ConcatOpts) init() {
-	if opts.PrefetchWhenBytesRemaining <= 0 {
-		opts.PrefetchWhenBytesRemaining = 4 * 1024 * 1024
-	}
 }
 
 // ConcatWithOpts concatenates Rangers with support for prefetching the next
 // range if specified.
 func ConcatWithOpts(opts ConcatOpts, r ...Ranger) Ranger {
-	opts.init()
 	if opts.Prefetch {
 		return Concat(r...)
 	}
