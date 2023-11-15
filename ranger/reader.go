@@ -74,7 +74,7 @@ func concat2(r1, r2 Ranger) Ranger {
 	return &concatReader{r1: r1, r2: r2}
 }
 
-// Concat concatenates Rangers.
+// Concat concatenates Rangers without prefetching.
 func Concat(r ...Ranger) Ranger {
 	switch len(r) {
 	case 0:

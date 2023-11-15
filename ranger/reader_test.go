@@ -58,42 +58,54 @@ func TestByteRanger(t *testing.T) {
 }
 
 func TestConcatReader(t *testing.T) {
-	for _, example := range []struct {
-		data                 []string
-		size, offset, length int64
-		substr               string
-	}{
-		{[]string{}, 0, 0, 0, ""},
-		{[]string{""}, 0, 0, 0, ""},
-		{[]string{"abcdefghijkl"}, 12, 1, 4, "bcde"},
-		{[]string{"abcdef", "ghijkl"}, 12, 1, 4, "bcde"},
-		{[]string{"abcdef", "ghijkl"}, 12, 1, 5, "bcdef"},
-		{[]string{"abcdef", "ghijkl"}, 12, 1, 6, "bcdefg"},
-		{[]string{"abcdef", "ghijkl"}, 12, 5, 4, "fghi"},
-		{[]string{"abcdef", "ghijkl"}, 12, 6, 4, "ghij"},
-		{[]string{"abcdef", "ghijkl"}, 12, 7, 4, "hijk"},
-		{[]string{"abcdef", "ghijkl"}, 12, 7, 5, "hijkl"},
-		{[]string{"abcdef", "ghijkl", "mnopqr"}, 18, 7, 7, "hijklmn"},
-		{[]string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"}, 12, 7, 3, "hij"},
+	for _, opts := range []ConcatOpts{
+		{Prefetch: false},
+		{Prefetch: true, ForceReads: false, PrefetchWhenBytesRemaining: 0},
+		{Prefetch: true, ForceReads: false, PrefetchWhenBytesRemaining: 1},
+		{Prefetch: true, ForceReads: false, PrefetchWhenBytesRemaining: 4},
+		{Prefetch: true, ForceReads: false, PrefetchWhenBytesRemaining: 4 * 1024 * 1024},
+		{Prefetch: true, ForceReads: true, PrefetchWhenBytesRemaining: 0},
+		{Prefetch: true, ForceReads: true, PrefetchWhenBytesRemaining: 1},
+		{Prefetch: true, ForceReads: true, PrefetchWhenBytesRemaining: 4},
+		{Prefetch: true, ForceReads: true, PrefetchWhenBytesRemaining: 4 * 1024 * 1024},
 	} {
-		var readers []Ranger
-		for _, data := range example.data {
-			readers = append(readers, ByteRanger([]byte(data)))
-		}
-		rr := Concat(readers...)
-		if rr.Size() != example.size {
-			t.Fatalf("invalid size: %v != %v", rr.Size(), example.size)
-		}
-		r, err := rr.Range(context.Background(), example.offset, example.length)
-		if err != nil {
-			t.Fatalf("unexpected err: %v", err)
-		}
-		data, err := io.ReadAll(r)
-		if err != nil {
-			t.Fatalf("unexpected err: %v", err)
-		}
-		if !bytes.Equal(data, []byte(example.substr)) {
-			t.Fatalf("invalid subrange: %#v != %#v", string(data), example.substr)
+		for _, example := range []struct {
+			data                 []string
+			size, offset, length int64
+			substr               string
+		}{
+			{[]string{}, 0, 0, 0, ""},
+			{[]string{""}, 0, 0, 0, ""},
+			{[]string{"abcdefghijkl"}, 12, 1, 4, "bcde"},
+			{[]string{"abcdef", "ghijkl"}, 12, 1, 4, "bcde"},
+			{[]string{"abcdef", "ghijkl"}, 12, 1, 5, "bcdef"},
+			{[]string{"abcdef", "ghijkl"}, 12, 1, 6, "bcdefg"},
+			{[]string{"abcdef", "ghijkl"}, 12, 5, 4, "fghi"},
+			{[]string{"abcdef", "ghijkl"}, 12, 6, 4, "ghij"},
+			{[]string{"abcdef", "ghijkl"}, 12, 7, 4, "hijk"},
+			{[]string{"abcdef", "ghijkl"}, 12, 7, 5, "hijkl"},
+			{[]string{"abcdef", "ghijkl", "mnopqr"}, 18, 7, 7, "hijklmn"},
+			{[]string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"}, 12, 7, 3, "hij"},
+		} {
+			var readers []Ranger
+			for _, data := range example.data {
+				readers = append(readers, ByteRanger([]byte(data)))
+			}
+			rr := ConcatWithOpts(opts, readers...)
+			if rr.Size() != example.size {
+				t.Fatalf("invalid size: %v != %v", rr.Size(), example.size)
+			}
+			r, err := rr.Range(context.Background(), example.offset, example.length)
+			if err != nil {
+				t.Fatalf("unexpected err: %v", err)
+			}
+			data, err := io.ReadAll(r)
+			if err != nil {
+				t.Fatalf("unexpected err: %v", err)
+			}
+			if !bytes.Equal(data, []byte(example.substr)) {
+				t.Fatalf("invalid subrange: %#v != %#v", string(data), example.substr)
+			}
 		}
 	}
 }
