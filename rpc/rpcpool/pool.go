@@ -27,6 +27,10 @@ type Options struct {
 	// kept idle. If zero, connections do not expire.
 	IdleExpiration time.Duration
 
+	// MaxLifetime defines a maximum time period to reuse connection.
+	// After this, it will be closed, even if it's actively used.
+	MaxLifetime time.Duration
+
 	// Name is used to differentiate pools in monkit stat.
 	Name string
 }
@@ -50,6 +54,9 @@ func New(opts Options) *Pool {
 				return pv.(*poolValue).conn.Close()
 			},
 			Stale: func(pv interface{}) bool {
+				if opts.MaxLifetime != 0 && time.Since(pv.(*poolValue).created) > opts.MaxLifetime {
+					return true
+				}
 				select {
 				case <-pv.(*poolValue).conn.Closed():
 					return true
@@ -87,8 +94,9 @@ type poolKey struct {
 
 // poolValue is the type of values in the cache.
 type poolValue struct {
-	conn  RawConn
-	state *tls.ConnectionState
+	conn    RawConn
+	state   *tls.ConnectionState
+	created time.Time
 }
 
 // Dialer is the type of function to create a new connection.
@@ -136,8 +144,9 @@ func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (pv *poolValue,
 	}
 
 	return &poolValue{
-		conn:  conn,
-		state: state,
+		conn:    conn,
+		state:   state,
+		created: time.Now(),
 	}, nil
 }
 
