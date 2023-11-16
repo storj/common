@@ -8,7 +8,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net"
-	"net/url"
 	"time"
 
 	"github.com/jtolio/noiseconn"
@@ -143,9 +142,7 @@ func (d Dialer) DialNode(ctx context.Context, nodeURL storj.NodeURL, opts DialOp
 
 	// we don't use noise if the kind is already forced, or Quic is requested with rollout
 	if forcedKind == "" && !useQuic && opts.ReplaySafe && nodeURL.NoiseInfo != (storj.NoiseInfo{}) {
-		vals := url.Values{}
-		nodeURL.NoiseInfo.WriteTo(vals)
-		key := fmt.Sprintf("node+noise:%s:%s", nodeURL.ID, vals.Encode())
+		key := fmt.Sprintf("node+noise:%s", nodeURL)
 		return d.dialPool(ctx, key, func(ctx context.Context) (rpcpool.RawConn, *tls.ConnectionState, error) {
 			return d.dialNoiseConn(setCtx(ctx), nodeURL.Address, nodeURL.NoiseInfo)
 		})
