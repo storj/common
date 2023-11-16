@@ -337,12 +337,12 @@ func (d Dialer) dialNoiseConn(ctx context.Context, address string, noiseInfo sto
 
 		noiseCfg, err := noise.GenerateInitiatorConf(pb.NoiseInfoConvert(noiseInfo))
 		if err != nil {
-			return nil, nil, Error.Wrap(err)
+			return nil, nil, Error.Wrap(errs.Combine(err, conn.Close()))
 		}
 
 		nconn, err := noiseconn.NewConn(drpcmigrate.NewHeaderConn(conn, noise.Header), noiseCfg)
 		if err != nil {
-			return nil, nil, Error.Wrap(err)
+			return nil, nil, Error.Wrap(errs.Combine(err, conn.Close()))
 		}
 
 		return drpcconn.NewWithOptions(nconn, d.ConnectionOptions), nil, nil
