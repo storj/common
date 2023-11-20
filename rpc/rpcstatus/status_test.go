@@ -33,6 +33,7 @@ var allCodes = []StatusCode{
 	Unavailable,
 	DataLoss,
 	Unauthenticated,
+	MethodNotAllowed,
 }
 
 func TestStatus(t *testing.T) {

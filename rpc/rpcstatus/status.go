@@ -39,6 +39,7 @@ const (
 	Unavailable        StatusCode = 14
 	DataLoss           StatusCode = 15
 	Unauthenticated    StatusCode = 16
+	MethodNotAllowed   StatusCode = 17
 )
 
 // Code returns the status code associated with the error.

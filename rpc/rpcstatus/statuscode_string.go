@@ -25,11 +25,12 @@ func _() {
 	_ = x[Unavailable-14]
 	_ = x[DataLoss-15]
 	_ = x[Unauthenticated-16]
+	_ = x[MethodNotAllowed-17]
 }
 
-const _StatusCode_name = "UnknownOKCanceledInvalidArgumentDeadlineExceededNotFoundAlreadyExistsPermissionDeniedResourceExhaustedFailedPreconditionAbortedOutOfRangeUnimplementedInternalUnavailableDataLossUnauthenticated"
+const _StatusCode_name = "UnknownOKCanceledInvalidArgumentDeadlineExceededNotFoundAlreadyExistsPermissionDeniedResourceExhaustedFailedPreconditionAbortedOutOfRangeUnimplementedInternalUnavailableDataLossUnauthenticatedMethodNotAllowed"
 
-var _StatusCode_index = [...]uint8{0, 7, 9, 17, 32, 48, 56, 69, 85, 102, 120, 127, 137, 150, 158, 169, 177, 192}
+var _StatusCode_index = [...]uint8{0, 7, 9, 17, 32, 48, 56, 69, 85, 102, 120, 127, 137, 150, 158, 169, 177, 192, 208}
 
 func (i StatusCode) String() string {
 	if i >= StatusCode(len(_StatusCode_index)-1) {
