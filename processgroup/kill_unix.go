@@ -28,7 +28,7 @@ func Kill(cmd *exec.Cmd) {
 	}
 
 	pgid, err := syscall.Getpgid(proc.Pid)
-	if err != nil {
+	if err == nil {
 		_ = syscall.Kill(-pgid, syscall.SIGTERM)
 	}
 
