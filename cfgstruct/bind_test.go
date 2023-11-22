@@ -331,3 +331,20 @@ func TestWrongSyntax(t *testing.T) {
 	})
 	require.Error(t, err)
 }
+
+func TestBindWithPrefix(t *testing.T) {
+	f := pflag.NewFlagSet("test", pflag.PanicOnError)
+
+	var c struct {
+		Flag string
+	}
+	Bind(f, &c, UseTestDefaults(), Prefix("pfx"))
+
+	err := f.Parse([]string{
+		"--pfx.flag=2",
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, c.Flag, string("2"))
+
+}

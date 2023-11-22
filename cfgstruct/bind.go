@@ -46,6 +46,7 @@ type BindOpt struct {
 	isTest  *bool
 	isSetup *bool
 	varfn   func(vars map[string]confVar)
+	prefix  string
 }
 
 // ConfDir sets variables for default options called $CONFDIR.
@@ -124,6 +125,7 @@ func bind(flags FlagSet, config interface{}, opts ...BindOpt) {
 	isTest := false
 	setupCommand := false
 	vars := map[string]confVar{}
+	prefix := ""
 	for _, opt := range opts {
 		if opt.varfn != nil {
 			opt.varfn(vars)
@@ -137,9 +139,12 @@ func bind(flags FlagSet, config interface{}, opts ...BindOpt) {
 		if opt.isSetup != nil {
 			setupCommand = *opt.isSetup
 		}
+		if opt.prefix != "" {
+			prefix = strings.TrimSuffix(opt.prefix, ".") + "."
+		}
 	}
 
-	bindConfig(flags, "", reflect.ValueOf(config).Elem(), vars, setupCommand, false, isDev, isTest)
+	bindConfig(flags, prefix, reflect.ValueOf(config).Elem(), vars, setupCommand, false, isDev, isTest)
 }
 
 func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string]confVar, setupCommand, setupStruct bool, isDev, isTest bool) {
@@ -456,6 +461,13 @@ func DefaultsType() string {
 		return "release"
 	}
 	return "dev"
+}
+
+// Prefix defines the used prefix, where configs are bound to.
+func Prefix(prefix string) BindOpt {
+	return BindOpt{
+		prefix: prefix,
+	}
 }
 
 // DefaultsFlag sets up the defaults=dev/release flag options, which is needed
