@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"storj.io/common/memory"
+	"storj.io/common/storj"
 	"storj.io/common/testrand"
 )
 
@@ -163,4 +165,38 @@ func TestTransformerSize(t *testing.T) {
 			assert.Equal(t, data, data2, errTag)
 		}
 	}
+}
+
+func BenchmarkTransformer(b *testing.B) {
+	forAllCiphers(func(cipher storj.CipherSuite) {
+		for _, dataSize := range []memory.Size{
+			0,
+			1,
+			1 * memory.KiB,
+			32 * memory.KiB,
+			1 * memory.MiB,
+			4 * memory.MiB,
+		} {
+			b.Run(fmt.Sprintf("%v/%v", cipher, dataSize), func(b *testing.B) {
+				b.SetBytes(dataSize.Int64())
+
+				parameters := storj.EncryptionParameters{CipherSuite: cipher, BlockSize: 1 * memory.KiB.Int32()}
+
+				calculatedSize, err := CalcEncryptedSize(dataSize.Int64(), parameters)
+				require.NoError(b, err)
+
+				for i := 0; i < b.N; i++ {
+					encrypter, err := NewEncrypter(parameters.CipherSuite, new(storj.Key), new(storj.Nonce), int(parameters.BlockSize))
+					require.NoError(b, err)
+
+					randReader := io.NopCloser(io.LimitReader(testrand.Reader(), dataSize.Int64()))
+					reader := TransformReader(PadReader(randReader, encrypter.InBlockSize()), encrypter, 0)
+
+					cipherData, err := io.ReadAll(reader)
+					assert.NoError(b, err)
+					assert.EqualValues(b, calculatedSize, len(cipherData))
+				}
+			})
+		}
+	})
 }

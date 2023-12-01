@@ -5,6 +5,7 @@ package storj
 
 import (
 	"database/sql/driver"
+	"strconv"
 
 	"github.com/zeebo/errs"
 )
@@ -48,6 +49,24 @@ const (
 	// binary path data (URL-safe).
 	EncNullBase64URL
 )
+
+// String representation of the cipher suite.
+func (suite CipherSuite) String() string {
+	switch suite {
+	case EncUnspecified:
+		return "unspecified"
+	case EncNull:
+		return "null"
+	case EncAESGCM:
+		return "AES128-GCM"
+	case EncSecretBox:
+		return "SecretBox"
+	case EncNullBase64URL:
+		return "null-Base64URL"
+	default:
+		return "CipherSuite(" + strconv.Itoa(int(suite)) + ")"
+	}
+}
 
 // Constant definitions for key and nonce sizes.
 const (
