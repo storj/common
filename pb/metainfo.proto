@@ -490,6 +490,9 @@ message BeginDeleteObjectRequest {
 message BeginDeleteObjectResponse {
     bytes  stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
     Object object = 2;
+    // indicates if delete marker was created while deleting.
+    bool delete_marker = 3;
+    bytes delete_marker_version = 4;
 }
 
 message FinishDeleteObjectRequest {

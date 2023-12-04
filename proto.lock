@@ -3116,6 +3116,16 @@
                 "id": 2,
                 "name": "object",
                 "type": "Object"
+              },
+              {
+                "id": 3,
+                "name": "delete_marker",
+                "type": "bool"
+              },
+              {
+                "id": 4,
+                "name": "delete_marker_version",
+                "type": "bytes"
               }
             ]
           },
