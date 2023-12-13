@@ -16,9 +16,9 @@ require (
 	github.com/zeebo/admission/v3 v3.0.3
 	github.com/zeebo/blake3 v0.2.3
 	github.com/zeebo/errs v1.3.0
-	golang.org/x/crypto v0.12.0
-	golang.org/x/sync v0.3.0
-	golang.org/x/sys v0.11.0
+	golang.org/x/crypto v0.16.0
+	golang.org/x/sync v0.5.0
+	golang.org/x/sys v0.15.0
 	storj.io/drpc v0.0.33
 	storj.io/picobuf v0.0.2-0.20230906122608-c4ba17033c6c
 )
