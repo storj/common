@@ -10,7 +10,6 @@ require (
 	github.com/jtolds/tracetagger/v2 v2.0.0-rc5
 	github.com/jtolio/crawlspace v0.0.0-20231116162947-3ec5cc6b36c5
 	github.com/jtolio/crawlspace/tools v0.0.0-20231115161146-57d90b78ce62
-	github.com/jtolio/eventkit v0.0.0-20221004135224-074cf276595b
 	github.com/mattn/go-sqlite3 v1.14.12
 	github.com/spacemonkeygo/monkit/v3 v3.0.20-0.20230227152157-d00b379de191
 	github.com/spf13/cast v1.3.1
@@ -22,10 +21,11 @@ require (
 	github.com/zeebo/errs v1.3.0
 	github.com/zeebo/structs v1.0.3-0.20230601144555-f2db46069602
 	go.uber.org/zap v1.14.1
-	golang.org/x/sync v0.3.0
+	golang.org/x/sync v0.4.0
 	gopkg.in/yaml.v2 v2.4.0
 	storj.io/common v0.0.0-20230822112919-e5441f1061f5
 	storj.io/drpc v0.0.33
+	storj.io/eventkit v0.0.0-20231215144225-968576eb7548
 	storj.io/monkit-jaeger v0.0.0-20230707083646-f15e6e8b7e8c
 )
 
@@ -84,4 +84,5 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.51.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	storj.io/picobuf v0.0.1 // indirect
 )

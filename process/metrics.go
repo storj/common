@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jtolio/eventkit"
 	monkit "github.com/spacemonkeygo/monkit/v3"
 	"github.com/spacemonkeygo/monkit/v3/environment"
 	"github.com/zeebo/admission/v3/admproto"
@@ -20,6 +19,7 @@ import (
 
 	"storj.io/common/identity"
 	"storj.io/common/telemetry"
+	"storj.io/eventkit"
 	"storj.io/private/cfgstruct"
 	"storj.io/private/debug"
 	"storj.io/private/version"
