@@ -6,7 +6,7 @@ package dbutil
 import (
 	"github.com/zeebo/errs"
 
-	"storj.io/private/tagsql"
+	"storj.io/common/tagsql"
 )
 
 // TempDatabase is a database (or something that works like an isolated database,

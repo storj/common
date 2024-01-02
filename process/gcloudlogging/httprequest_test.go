@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"storj.io/private/process/gcloudlogging"
+	"storj.io/common/process/gcloudlogging"
 )
 
 func TestHTTPRequestEncoding(t *testing.T) {

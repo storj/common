@@ -12,7 +12,7 @@ import (
 
 	"storj.io/common/context2"
 	"storj.io/common/leak"
-	"storj.io/private/traces"
+	"storj.io/common/traces"
 )
 
 var (

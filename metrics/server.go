@@ -18,7 +18,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
-	"storj.io/private/debug"
+	"storj.io/common/debug"
 )
 
 func init() {

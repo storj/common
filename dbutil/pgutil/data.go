@@ -7,7 +7,7 @@ import (
 	"context"
 	"strconv"
 
-	"storj.io/private/dbutil/dbschema"
+	"storj.io/common/dbutil/dbschema"
 )
 
 // QueryData loads all data from tables.

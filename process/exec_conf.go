@@ -27,8 +27,8 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
-	"storj.io/private/cfgstruct"
-	"storj.io/private/version"
+	"storj.io/common/cfgstruct"
+	"storj.io/common/version"
 )
 
 // DefaultCfgFilename is the default filename used for storing a configuration.

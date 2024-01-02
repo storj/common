@@ -10,7 +10,7 @@ import (
 	"github.com/zeebo/errs"
 
 	"storj.io/common/leak"
-	"storj.io/private/traces"
+	"storj.io/common/traces"
 )
 
 // Stmt is an interface for *sql.Stmt.

@@ -26,8 +26,8 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"storj.io/drpc/drpcmigrate"
-	"storj.io/private/traces"
-	"storj.io/private/version"
+	"storj.io/common/traces"
+	"storj.io/common/version"
 )
 
 func init() {

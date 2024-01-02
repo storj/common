@@ -15,7 +15,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"storj.io/common/fpath"
-	"storj.io/private/cfgstruct"
+	"storj.io/common/cfgstruct"
 )
 
 // SaveConfigOption is a function that updates the options for SaveConfig.

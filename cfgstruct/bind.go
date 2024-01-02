@@ -16,7 +16,7 @@ import (
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 
-	"storj.io/private/version"
+	"storj.io/common/version"
 )
 
 const (

@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"storj.io/common/testcontext"
-	"storj.io/private/dbutil/dbschema"
-	"storj.io/private/dbutil/sqliteutil"
-	"storj.io/private/tagsql"
+	"storj.io/common/dbutil/dbschema"
+	"storj.io/common/dbutil/sqliteutil"
+	"storj.io/common/tagsql"
 )
 
 func TestQuery(t *testing.T) {

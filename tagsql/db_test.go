@@ -11,10 +11,10 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"storj.io/common/testcontext"
-	"storj.io/private/dbutil/cockroachutil"
-	"storj.io/private/dbutil/pgtest"
-	"storj.io/private/dbutil/pgutil"
-	"storj.io/private/tagsql"
+	"storj.io/common/dbutil/cockroachutil"
+	"storj.io/common/dbutil/pgtest"
+	"storj.io/common/dbutil/pgutil"
+	"storj.io/common/tagsql"
 )
 
 func run(t *testing.T, fn func(*testcontext.Context, *testing.T, tagsql.DB, tagsql.ContextSupport)) {

@@ -14,7 +14,7 @@ import (
 
 	"storj.io/common/storj"
 	"storj.io/common/testrand"
-	"storj.io/private/version"
+	"storj.io/common/version"
 )
 
 func TestInfo_IsZero(t *testing.T) {

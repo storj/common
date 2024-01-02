@@ -17,9 +17,9 @@ import (
 	"github.com/zeebo/errs"
 
 	"storj.io/common/context2"
-	"storj.io/private/dbutil"
-	"storj.io/private/dbutil/pgutil"
-	"storj.io/private/tagsql"
+	"storj.io/common/dbutil"
+	"storj.io/common/dbutil/pgutil"
+	"storj.io/common/tagsql"
 )
 
 var mon = monkit.Package()
@@ -33,7 +33,7 @@ func CreateRandomTestingSchemaName(n int) string {
 
 // OpenUnique opens a temporary unique CockroachDB database that will be cleaned up when closed.
 // It is expected that this should normally be used by way of
-// "storj.io/private/dbutil/tempdb".OpenUnique() instead of calling it directly.
+// "storj.io/common/dbutil/tempdb".OpenUnique() instead of calling it directly.
 func OpenUnique(ctx context.Context, connStr string, schemaPrefix string) (db *dbutil.TempDatabase, err error) {
 	if !strings.HasPrefix(connStr, "cockroach://") {
 		return nil, errs.New("expected a cockroachDB URI, but got %q", connStr)

@@ -11,7 +11,7 @@ import (
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/errs"
 
-	"storj.io/private/tagsql"
+	"storj.io/common/tagsql"
 )
 
 var mon = monkit.Package()
