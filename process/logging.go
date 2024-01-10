@@ -35,6 +35,7 @@ var (
 	logStack    = flag.Bool("log.stack", isDev(), "if true, log stack traces")
 	logEncoding = flag.String("log.encoding", "", "configures log encoding. can either be 'console', 'json', 'pretty', or 'gcloudlogging'.")
 	logOutput   = flag.String("log.output", "stderr", "can be stdout, stderr, or a filename")
+	customLevel = flag.String("log.custom-level", "", "custom level overrides for specific loggers in the format NAME1=ERROR,NAME2=WARN,... Only level increment is supported, and only for selected loggers!")
 
 	defaultLogEncoding = map[string]string{
 		"uplink": "pretty",
@@ -134,6 +135,29 @@ func NewLoggerWithOutputPathsAndAtomicLevel(processName string, outputPaths ...s
 	}.Build()
 
 	return logger, &atomicLevel, err
+}
+
+// NamedLog creates a child logger with a name and configured customization.
+func NamedLog(base *zap.Logger, name string) *zap.Logger {
+	child := base.Named(name)
+	for _, customization := range strings.Split(*customLevel, ",") {
+		parts := strings.SplitN(customization, "=", 2)
+		if len(parts) != 2 {
+			child.Warn("Invalid log level override. Use name=LEVEL format.", zap.String("level", parts[1]))
+			continue
+		}
+		if parts[0] == name {
+			var level zapcore.Level
+			err := level.UnmarshalText([]byte(parts[1]))
+			if err != nil {
+				child.Warn("Invalid log level override", zap.String("level", parts[1]))
+			} else {
+				child = child.WithOptions(zap.IncreaseLevel(level))
+			}
+			break
+		}
+	}
+	return child
 }
 
 type prettyEncoder struct {
