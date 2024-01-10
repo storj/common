@@ -884,6 +884,7 @@ message BeginCopyObjectRequest {
 
     bytes bucket = 1;
     bytes encrypted_object_key = 2;
+    bytes object_version = 5;
 
     bytes new_bucket = 3;
     bytes new_encrypted_object_key = 4;
@@ -911,6 +912,8 @@ message FinishCopyObjectRequest {
     // Newly encrypted data of the copy destination
     bytes new_bucket = 2;
     bytes new_encrypted_object_key = 3;
+    bytes new_object_version = 9;
+
     // if false, keep existing metadata by ignoring 'new_encrypted_metadata'
     bool override_metadata = 8;
     bytes new_encrypted_metadata = 7;

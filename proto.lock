@@ -4648,6 +4648,11 @@
                 "type": "bytes"
               },
               {
+                "id": 5,
+                "name": "object_version",
+                "type": "bytes"
+              },
+              {
                 "id": 3,
                 "name": "new_bucket",
                 "type": "bytes"
@@ -4741,6 +4746,11 @@
               {
                 "id": 3,
                 "name": "new_encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 9,
+                "name": "new_object_version",
                 "type": "bytes"
               },
               {
