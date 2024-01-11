@@ -7,6 +7,7 @@ package bloomfilter
 import (
 	"encoding/binary"
 	"math"
+	"math/bits"
 	"math/rand"
 
 	"github.com/bmkessler/fastdiv"
@@ -157,6 +158,15 @@ func NewFromBytes(data []byte) (*Filter, error) {
 	filter.tableSize = fastdiv.NewUint64(uint64(len(filter.table)))
 
 	return filter, nil
+}
+
+// FillRate calculates the proportion of bits filled in.
+func (filter *Filter) FillRate() float64 {
+	filled := uint64(0)
+	for _, b := range filter.table {
+		filled += uint64(bits.OnesCount8(b))
+	}
+	return float64(filled) / float64(uint64(len(filter.table))*8)
 }
 
 // Bytes encodes the filter into a sequence of bytes that can be transferred on network.

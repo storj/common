@@ -217,3 +217,24 @@ func summarize(expected float64, values []float64) (r stats) {
 
 	return r
 }
+
+func TestFillRate(t *testing.T) {
+	const half = 0b_00001111
+	const quarter = 0b_00000011
+
+	tests := []struct {
+		data   []byte
+		expect float64
+	}{
+		{[]byte{1, 0x00, 0x04, 0x00, 0x00, 0x00}, 0},
+		{[]byte{1, 0x00, 0x04, 0xFF, 0xFF, 0xFF}, 1},
+		{[]byte{1, 0x00, 0x04, half, half, half}, 0.5},
+		{[]byte{1, 0x00, 0x04, quarter, quarter, quarter}, 0.25},
+	}
+
+	for _, test := range tests {
+		filter, err := bloomfilter.NewFromBytes(test.data)
+		require.NoError(t, err)
+		require.InDelta(t, test.expect, filter.FillRate(), 0.001)
+	}
+}
