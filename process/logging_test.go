@@ -39,4 +39,9 @@ func TestNamed(t *testing.T) {
 	NamedLog(logger, "log1").Warn("ahoj")
 	require.True(t, strings.Contains(out.String(), "ahoj"))
 	out.Reset()
+
+	customLevel = ptr("")
+	NamedLog(logger, "log1").Warn("ahoj")
+	require.False(t, strings.Contains(out.String(), "Invalid"))
+	out.Reset()
 }

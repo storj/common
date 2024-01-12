@@ -141,9 +141,13 @@ func NewLoggerWithOutputPathsAndAtomicLevel(processName string, outputPaths ...s
 func NamedLog(base *zap.Logger, name string) *zap.Logger {
 	child := base.Named(name)
 	for _, customization := range strings.Split(*customLevel, ",") {
+		customization = strings.TrimSpace(customization)
+		if len(customization) == 0 {
+			continue
+		}
 		parts := strings.SplitN(customization, "=", 2)
 		if len(parts) != 2 {
-			child.Warn("Invalid log level override. Use name=LEVEL format.", zap.String("level", parts[1]))
+			child.Warn("Invalid log level override. Use name=LEVEL format.")
 			continue
 		}
 		if parts[0] == name {
