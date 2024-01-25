@@ -20,6 +20,12 @@ pipeline {
 
                 sh 'mkdir -p .build'
                 sh 'cp go.mod .build/go.mod.orig'
+
+                sh 'service postgresql start'
+
+                dir(".build") {
+                    sh 'cockroach start-single-node --insecure --store=type=mem,size=2GiB --listen-addr=localhost:26256 --http-addr=localhost:8086 --cache 512MiB --max-sql-memory 512MiB --background'
+                }
             }
         }
 
@@ -48,10 +54,14 @@ pipeline {
 
                 stage('Tests') {
                     environment {
+                        STORJ_TEST_POSTGRES = 'postgres://postgres@localhost/teststorj?sslmode=disable'
+                        STORJ_TEST_COCKROACH = 'cockroach://root@localhost:26256/testcockroach?sslmode=disable'
                         COVERFLAGS = "${ env.BRANCH_NAME != 'main' ? '' : '-coverprofile=.build/coverprofile -coverpkg=./...'}"
                     }
                     steps {
                         sh 'use-ports -from 1024 -to 10000 &'
+                        sh 'cockroach sql --insecure --host=localhost:26256 -e \'create database testcockroach;\''
+                        sh 'psql -U postgres -c \'create database teststorj;\''
                         sh 'go test -parallel 4 -p 6 -vet=off $COVERFLAGS -timeout 20m -json -race ./... 2>&1 | tee .build/tests.json | xunit -out .build/tests.xml'
                         sh 'check-clean-directory'
                     }
@@ -76,7 +86,7 @@ pipeline {
 
                 stage('Go Compatibility') {
                     steps {
-                        sh 'check-cross-compile -compiler "go,go.min" storj.io/common/...'
+                        sh './scripts/check-cross-compile.sh'
                     }
                 }
             }
