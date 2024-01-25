@@ -12,8 +12,8 @@ import (
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 
-	"storj.io/private/cfgstruct"
-	"storj.io/private/debug"
+	"storj.io/common/cfgstruct"
+	"storj.io/common/debug"
 )
 
 var debugConfig struct {

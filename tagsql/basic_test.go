@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"storj.io/common/testcontext"
-	"storj.io/private/tagsql"
+	"storj.io/common/tagsql"
 )
 
 func TestDetect(t *testing.T) {

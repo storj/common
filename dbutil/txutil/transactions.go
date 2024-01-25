@@ -13,8 +13,8 @@ import (
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/zeebo/errs"
 
-	"storj.io/private/dbutil/pgutil/pgerrcode"
-	"storj.io/private/tagsql"
+	"storj.io/common/dbutil/pgutil/pgerrcode"
+	"storj.io/common/tagsql"
 )
 
 var mon = monkit.Package()

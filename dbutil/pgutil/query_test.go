@@ -11,11 +11,11 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"storj.io/common/testcontext"
-	"storj.io/private/dbutil"
-	"storj.io/private/dbutil/dbschema"
-	"storj.io/private/dbutil/pgtest"
-	"storj.io/private/dbutil/pgutil"
-	"storj.io/private/dbutil/tempdb"
+	"storj.io/common/dbutil"
+	"storj.io/common/dbutil/dbschema"
+	"storj.io/common/dbutil/pgtest"
+	"storj.io/common/dbutil/pgutil"
+	"storj.io/common/dbutil/tempdb"
 )
 
 func TestQuery(t *testing.T) {

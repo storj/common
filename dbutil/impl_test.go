@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"storj.io/private/dbutil"
+	"storj.io/common/dbutil"
 )
 
 func TestAsOfSystemTime(t *testing.T) {

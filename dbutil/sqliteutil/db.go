@@ -10,8 +10,8 @@ import (
 	sqlite3 "github.com/mattn/go-sqlite3"
 	"github.com/zeebo/errs"
 
-	"storj.io/private/dbutil/dbschema"
-	"storj.io/private/tagsql"
+	"storj.io/common/dbutil/dbschema"
+	"storj.io/common/tagsql"
 )
 
 // LoadSchemaFromSQL inserts script into connstr and loads schema.

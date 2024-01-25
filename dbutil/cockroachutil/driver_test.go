@@ -11,8 +11,8 @@ import (
 	"github.com/zeebo/errs"
 
 	"storj.io/common/testcontext"
-	"storj.io/private/dbutil/pgtest"
-	"storj.io/private/tagsql"
+	"storj.io/common/dbutil/pgtest"
+	"storj.io/common/tagsql"
 )
 
 func TestLibPqCompatibility(t *testing.T) {

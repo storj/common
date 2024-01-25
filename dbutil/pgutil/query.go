@@ -13,7 +13,7 @@ import (
 	"github.com/jackc/pgtype"
 	"github.com/zeebo/errs"
 
-	"storj.io/private/dbutil/dbschema"
+	"storj.io/common/dbutil/dbschema"
 )
 
 // QuerySchema loads the schema from postgres database.

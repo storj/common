@@ -16,7 +16,7 @@ import (
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/zeebo/errs"
 
-	"storj.io/private/dbutil/pgutil/pgerrcode"
+	"storj.io/common/dbutil/pgutil/pgerrcode"
 )
 
 // Driver is the type for the "cockroach" sql/database driver. It uses
