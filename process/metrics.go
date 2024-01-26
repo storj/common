@@ -17,12 +17,12 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
-	"storj.io/common/identity"
-	"storj.io/common/telemetry"
-	"storj.io/eventkit"
 	"storj.io/common/cfgstruct"
 	"storj.io/common/debug"
+	"storj.io/common/identity"
+	"storj.io/common/telemetry"
 	"storj.io/common/version"
+	"storj.io/eventkit"
 )
 
 var (

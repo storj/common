@@ -9,12 +9,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"storj.io/common/storj"
-	"storj.io/common/testcontext"
 	"storj.io/common/dbutil"
 	"storj.io/common/dbutil/pgtest"
 	"storj.io/common/dbutil/pgutil"
 	"storj.io/common/dbutil/tempdb"
+	"storj.io/common/storj"
+	"storj.io/common/testcontext"
 )
 
 var anArrayOfStrings = []string{

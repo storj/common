@@ -16,11 +16,11 @@ import (
 	"github.com/zeebo/errs"
 	"go.uber.org/zap"
 
-	"storj.io/common/testcontext"
 	"storj.io/common/dbutil/pgtest"
 	"storj.io/common/dbutil/tempdb"
 	"storj.io/common/migrate"
 	"storj.io/common/tagsql"
+	"storj.io/common/testcontext"
 )
 
 func TestBasicMigrationSqliteNoRebind(t *testing.T) {

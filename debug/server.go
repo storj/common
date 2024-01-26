@@ -25,9 +25,9 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
-	"storj.io/drpc/drpcmigrate"
 	"storj.io/common/traces"
 	"storj.io/common/version"
+	"storj.io/drpc/drpcmigrate"
 )
 
 func init() {

@@ -10,10 +10,10 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/require"
 
-	"storj.io/common/testcontext"
 	"storj.io/common/dbutil/pgtest"
 	"storj.io/common/dbutil/pgxutil"
 	"storj.io/common/dbutil/tempdb"
+	"storj.io/common/testcontext"
 )
 
 func TestConn(t *testing.T) {

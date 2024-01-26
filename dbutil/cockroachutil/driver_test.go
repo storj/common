@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/zeebo/errs"
 
-	"storj.io/common/testcontext"
 	"storj.io/common/dbutil/pgtest"
 	"storj.io/common/tagsql"
+	"storj.io/common/testcontext"
 )
 
 func TestLibPqCompatibility(t *testing.T) {

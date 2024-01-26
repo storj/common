@@ -25,7 +25,7 @@ func TestMetricsServer(t *testing.T) {
 
 	registry := monkit.NewRegistry()
 	config := Config{
-		Address:  ":1234",
+		Address:  ":0",
 		TLSKey:   "testdata/server.key",
 		TLSCert:  "testdata/server.crt",
 		ClientCA: "testdata/ca-client.crt",

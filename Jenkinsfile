@@ -44,7 +44,7 @@ pipeline {
                         sh 'check-monkit ./...'
                         sh './scripts/check-dependencies.sh'
                         sh 'staticcheck ./...'
-                        sh 'GOOS=linux GOARCH=arm staticcheck ./...'
+                        sh './scripts/arm-staticcheck.sh'
                         sh 'golangci-lint --config /go/ci/.golangci.yml -j=2 run'
                         sh 'check-mod-tidy -mod .build/go.mod.orig'
                         sh 'go-licenses check ./...'
@@ -62,13 +62,13 @@ pipeline {
                         sh 'use-ports -from 1024 -to 10000 &'
                         sh 'cockroach sql --insecure --host=localhost:26256 -e \'create database testcockroach;\''
                         sh 'psql -U postgres -c \'create database teststorj;\''
-                        sh 'go test -parallel 4 -p 6 -vet=off $COVERFLAGS -timeout 20m -json -race ./... 2>&1 | tee .build/tests.json | xunit -out .build/tests.xml'
+                        sh 'go test -parallel 4 -p 6 -vet=off $COVERFLAGS -timeout 20m -json -race ./... | tee .build/tests.json | xunit -out .build/tests.xml'
                         sh 'check-clean-directory'
                     }
 
                     post {
                         always {
-                            sh script: 'cat .build/tests.json | tparse -all -top -slow 100', returnStatus: true
+                            sh script: 'cat .build/tests.json | tparse -all -slow 100', returnStatus: true
                             archiveArtifacts artifacts: '.build/tests.json'
                             junit '.build/tests.xml'
 

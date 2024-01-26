@@ -10,11 +10,11 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/require"
 
-	"storj.io/common/testcontext"
 	"storj.io/common/dbutil/cockroachutil"
 	"storj.io/common/dbutil/pgtest"
 	"storj.io/common/dbutil/pgutil"
 	"storj.io/common/tagsql"
+	"storj.io/common/testcontext"
 )
 
 func run(t *testing.T, fn func(*testcontext.Context, *testing.T, tagsql.DB, tagsql.ContextSupport)) {

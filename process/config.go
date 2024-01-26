@@ -14,8 +14,8 @@ import (
 	"github.com/zeebo/errs"
 	yaml "gopkg.in/yaml.v2"
 
-	"storj.io/common/fpath"
 	"storj.io/common/cfgstruct"
+	"storj.io/common/fpath"
 )
 
 // SaveConfigOption is a function that updates the options for SaveConfig.
