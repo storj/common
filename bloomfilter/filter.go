@@ -36,17 +36,23 @@ type Filter struct {
 	hashCount byte
 	table     []byte
 
-	tableSize fastdiv.Uint64
+	offset      byte
+	rangeOffset byte
+	tableSize   fastdiv.Uint64
 }
 
 // NewExplicit returns a new filter with the explicit seed and parameters.
 func NewExplicit(seed, hashCount byte, sizeInBytes int) *Filter {
+	offset, rangeOffset := initialConditions(seed)
+
 	return &Filter{
 		seed:      seed,
 		hashCount: hashCount,
 		table:     make([]byte, sizeInBytes),
 
-		tableSize: fastdiv.NewUint64(uint64(sizeInBytes)),
+		offset:      offset,
+		rangeOffset: rangeOffset,
+		tableSize:   fastdiv.NewUint64(uint64(sizeInBytes)),
 	}
 }
 
@@ -82,14 +88,38 @@ func (filter *Filter) Add(pieceID storj.PieceID) {
 	copy(id[:], pieceID[:])
 	copy(id[len(pieceID):], pieceID[:])
 
-	offset, rangeOffset := initialConditions(filter.seed)
-	for k := byte(0); k < filter.hashCount; k++ {
+	offset, rangeOffset := filter.offset, filter.rangeOffset
+	for h := int(filter.hashCount); h > 0; h-- {
 		hash, bit := binary.LittleEndian.Uint64(id[offset:offset+8]), id[offset+8]
-		offset = (offset + rangeOffset) % len(storj.PieceID{})
-
 		bucket := filter.tableSize.Mod(hash)
 		filter.table[bucket] |= 1 << (bit % 8)
+		offset = (offset + rangeOffset) % byte(len(storj.PieceID{}))
 	}
+}
+
+// Contains return true if pieceID may be in the set.
+func (filter *Filter) Contains(pieceID storj.PieceID) bool {
+	var id [len(pieceID) * 2]byte
+	copy(id[:], pieceID[:])
+	copy(id[len(pieceID):], pieceID[:])
+
+	offset, rangeOffset := filter.offset, filter.rangeOffset
+	for k := byte(0); k < filter.hashCount; k++ {
+		hash, bit := binary.LittleEndian.Uint64(id[offset:offset+8]), id[offset+8]
+		bucket := filter.tableSize.Mod(hash)
+		if filter.table[bucket]&(1<<(bit%8)) == 0 {
+			return false
+		}
+		offset = (offset + rangeOffset) % byte(len(storj.PieceID{}))
+	}
+
+	return true
+}
+
+func initialConditions(seed byte) (initialOffset, rangeOffset byte) {
+	initialOffset = seed % 32
+	rangeOffset = rangeOffsets[int(seed/32)%len(rangeOffsets)]
+	return initialOffset, rangeOffset
 }
 
 // AddFilter adds the given filter into the receiver. The filters
@@ -107,32 +137,6 @@ func (filter *Filter) AddFilter(operand *Filter) error {
 		filter.table[i] |= operand.table[i]
 	}
 	return nil
-}
-
-// Contains return true if pieceID may be in the set.
-func (filter *Filter) Contains(pieceID storj.PieceID) bool {
-	var id [len(pieceID) * 2]byte
-	copy(id[:], pieceID[:])
-	copy(id[len(pieceID):], pieceID[:])
-
-	offset, rangeOffset := initialConditions(filter.seed)
-	for k := byte(0); k < filter.hashCount; k++ {
-		hash, bit := binary.LittleEndian.Uint64(id[offset:offset+8]), id[offset+8]
-		offset = (offset + rangeOffset) % len(storj.PieceID{})
-
-		bucket := filter.tableSize.Mod(hash)
-		if filter.table[bucket]&(1<<(bit%8)) == 0 {
-			return false
-		}
-	}
-
-	return true
-}
-
-func initialConditions(seed byte) (initialOffset, rangeOffset int) {
-	initialOffset = int(seed % 32)
-	rangeOffset = int(rangeOffsets[int(seed/32)%len(rangeOffsets)])
-	return initialOffset, rangeOffset
 }
 
 // NewFromBytes decodes the filter from a sequence of bytes.
@@ -155,6 +159,7 @@ func NewFromBytes(data []byte) (*Filter, error) {
 		return nil, errs.New("invalid hash count %d", filter.hashCount)
 	}
 
+	filter.offset, filter.rangeOffset = initialConditions(filter.seed)
 	filter.tableSize = fastdiv.NewUint64(uint64(len(filter.table)))
 
 	return filter, nil
