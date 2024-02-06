@@ -19,6 +19,10 @@ service Piecestore {
     // DeletePieces deletes a set of pieces on satellite request
     rpc DeletePieces(DeletePiecesRequest) returns (DeletePiecesResponse);
     rpc Retain(RetainRequest) returns (RetainResponse);
+
+    // RetainBig is the same as the Retain, but can receive multiple messages with different part of the bloom filter.
+    // last message should contain hash.
+    rpc RetainBig(stream RetainRequest) returns (RetainResponse);
     rpc RestoreTrash(RestoreTrashRequest) returns (RestoreTrashResponse) {}
     // Exists checks if requested pieces exists on storage node. Will check only
     // pieces which belongs to the satellite that call this method.
@@ -117,9 +121,14 @@ message DeletePiecesResponse {
     int64 unhandled_count = 1;
 }
 
+
+// RetainRequest contains bloom filter. It's either sent together (time + filter) or in multiple chunks, where
+// first message contains time + first part of the filter, and the last part contains the hash (to double check if all pieces are arrived).
 message RetainRequest {
     google.protobuf.Timestamp creation_date = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     bytes filter = 2;
+    orders.PieceHashAlgorithm hash_algorithm = 3;
+    bytes hash = 4;
 }
 
 message RetainResponse {

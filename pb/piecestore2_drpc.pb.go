@@ -47,6 +47,7 @@ type DRPCPiecestoreClient interface {
 	Delete(ctx context.Context, in *PieceDeleteRequest) (*PieceDeleteResponse, error)
 	DeletePieces(ctx context.Context, in *DeletePiecesRequest) (*DeletePiecesResponse, error)
 	Retain(ctx context.Context, in *RetainRequest) (*RetainResponse, error)
+	RetainBig(ctx context.Context) (DRPCPiecestore_RetainBigClient, error)
 	RestoreTrash(ctx context.Context, in *RestoreTrashRequest) (*RestoreTrashResponse, error)
 	Exists(ctx context.Context, in *ExistsRequest) (*ExistsResponse, error)
 }
@@ -172,6 +173,51 @@ func (c *drpcPiecestoreClient) Retain(ctx context.Context, in *RetainRequest) (*
 	return out, nil
 }
 
+func (c *drpcPiecestoreClient) RetainBig(ctx context.Context) (DRPCPiecestore_RetainBigClient, error) {
+	stream, err := c.cc.NewStream(ctx, "/piecestore.Piecestore/RetainBig", drpcEncoding_File_piecestore2_proto{})
+	if err != nil {
+		return nil, err
+	}
+	x := &drpcPiecestore_RetainBigClient{stream}
+	return x, nil
+}
+
+type DRPCPiecestore_RetainBigClient interface {
+	drpc.Stream
+	Send(*RetainRequest) error
+	CloseAndRecv() (*RetainResponse, error)
+}
+
+type drpcPiecestore_RetainBigClient struct {
+	drpc.Stream
+}
+
+func (x *drpcPiecestore_RetainBigClient) GetStream() drpc.Stream {
+	return x.Stream
+}
+
+func (x *drpcPiecestore_RetainBigClient) Send(m *RetainRequest) error {
+	return x.MsgSend(m, drpcEncoding_File_piecestore2_proto{})
+}
+
+func (x *drpcPiecestore_RetainBigClient) CloseAndRecv() (*RetainResponse, error) {
+	if err := x.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(RetainResponse)
+	if err := x.MsgRecv(m, drpcEncoding_File_piecestore2_proto{}); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (x *drpcPiecestore_RetainBigClient) CloseAndRecvMsg(m *RetainResponse) error {
+	if err := x.CloseSend(); err != nil {
+		return err
+	}
+	return x.MsgRecv(m, drpcEncoding_File_piecestore2_proto{})
+}
+
 func (c *drpcPiecestoreClient) RestoreTrash(ctx context.Context, in *RestoreTrashRequest) (*RestoreTrashResponse, error) {
 	out := new(RestoreTrashResponse)
 	err := c.cc.Invoke(ctx, "/piecestore.Piecestore/RestoreTrash", drpcEncoding_File_piecestore2_proto{}, in, out)
@@ -196,6 +242,7 @@ type DRPCPiecestoreServer interface {
 	Delete(context.Context, *PieceDeleteRequest) (*PieceDeleteResponse, error)
 	DeletePieces(context.Context, *DeletePiecesRequest) (*DeletePiecesResponse, error)
 	Retain(context.Context, *RetainRequest) (*RetainResponse, error)
+	RetainBig(DRPCPiecestore_RetainBigStream) error
 	RestoreTrash(context.Context, *RestoreTrashRequest) (*RestoreTrashResponse, error)
 	Exists(context.Context, *ExistsRequest) (*ExistsResponse, error)
 }
@@ -222,6 +269,10 @@ func (s *DRPCPiecestoreUnimplementedServer) Retain(context.Context, *RetainReque
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
+func (s *DRPCPiecestoreUnimplementedServer) RetainBig(DRPCPiecestore_RetainBigStream) error {
+	return drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
 func (s *DRPCPiecestoreUnimplementedServer) RestoreTrash(context.Context, *RestoreTrashRequest) (*RestoreTrashResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
@@ -232,7 +283,7 @@ func (s *DRPCPiecestoreUnimplementedServer) Exists(context.Context, *ExistsReque
 
 type DRPCPiecestoreDescription struct{}
 
-func (DRPCPiecestoreDescription) NumMethods() int { return 7 }
+func (DRPCPiecestoreDescription) NumMethods() int { return 8 }
 
 func (DRPCPiecestoreDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -280,6 +331,14 @@ func (DRPCPiecestoreDescription) Method(n int) (string, drpc.Encoding, drpc.Rece
 					)
 			}, DRPCPiecestoreServer.Retain, true
 	case 5:
+		return "/piecestore.Piecestore/RetainBig", drpcEncoding_File_piecestore2_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return nil, srv.(DRPCPiecestoreServer).
+					RetainBig(
+						&drpcPiecestore_RetainBigStream{in1.(drpc.Stream)},
+					)
+			}, DRPCPiecestoreServer.RetainBig, true
+	case 6:
 		return "/piecestore.Piecestore/RestoreTrash", drpcEncoding_File_piecestore2_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCPiecestoreServer).
@@ -288,7 +347,7 @@ func (DRPCPiecestoreDescription) Method(n int) (string, drpc.Encoding, drpc.Rece
 						in1.(*RestoreTrashRequest),
 					)
 			}, DRPCPiecestoreServer.RestoreTrash, true
-	case 6:
+	case 7:
 		return "/piecestore.Piecestore/Exists", drpcEncoding_File_piecestore2_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCPiecestoreServer).
@@ -407,6 +466,35 @@ func (x *drpcPiecestore_RetainStream) SendAndClose(m *RetainResponse) error {
 		return err
 	}
 	return x.CloseSend()
+}
+
+type DRPCPiecestore_RetainBigStream interface {
+	drpc.Stream
+	SendAndClose(*RetainResponse) error
+	Recv() (*RetainRequest, error)
+}
+
+type drpcPiecestore_RetainBigStream struct {
+	drpc.Stream
+}
+
+func (x *drpcPiecestore_RetainBigStream) SendAndClose(m *RetainResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_piecestore2_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+func (x *drpcPiecestore_RetainBigStream) Recv() (*RetainRequest, error) {
+	m := new(RetainRequest)
+	if err := x.MsgRecv(m, drpcEncoding_File_piecestore2_proto{}); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (x *drpcPiecestore_RetainBigStream) RecvMsg(m *RetainRequest) error {
+	return x.MsgRecv(m, drpcEncoding_File_piecestore2_proto{})
 }
 
 type DRPCPiecestore_RestoreTrashStream interface {

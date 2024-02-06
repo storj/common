@@ -6848,6 +6848,16 @@
                 "id": 2,
                 "name": "filter",
                 "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "hash_algorithm",
+                "type": "orders.PieceHashAlgorithm"
+              },
+              {
+                "id": 4,
+                "name": "hash",
+                "type": "bytes"
               }
             ]
           },
@@ -6981,6 +6991,12 @@
                 "name": "Retain",
                 "in_type": "RetainRequest",
                 "out_type": "RetainResponse"
+              },
+              {
+                "name": "RetainBig",
+                "in_type": "RetainRequest",
+                "out_type": "RetainResponse",
+                "in_streamed": true
               },
               {
                 "name": "RestoreTrash",
