@@ -41,6 +41,7 @@ const DefaultCockroach = "cockroach://root@localhost:26257/master?sslmode=disabl
 // Database defines a postgres compatible database.
 type Database struct {
 	Name string
+	Flag *string
 	// Pick picks a connection string for the database and skips when it's missing.
 	Pick func(t TB) string
 }
@@ -53,8 +54,8 @@ type TB interface {
 // Databases returns list of postgres compatible databases.
 func Databases() []Database {
 	return []Database{
-		{Name: "Postgres", Pick: PickPostgres},
-		{Name: "Cockroach", Pick: PickCockroach},
+		{Name: "Postgres", Flag: postgres, Pick: PickPostgres},
+		{Name: "Cockroach", Flag: cockroach, Pick: PickCockroach},
 	}
 }
 
@@ -62,11 +63,11 @@ func Databases() []Database {
 func Run(t *testing.T, test func(ctx *testcontext.Context, t *testing.T, connstr string)) {
 	for _, db := range Databases() {
 		db := db
-		connstr := db.Pick(t)
-		if strings.EqualFold(connstr, "omit") {
+		if strings.EqualFold(*db.Flag, "omit") {
 			continue
 		}
 		t.Run(db.Name, func(t *testing.T) {
+			connstr := db.Pick(t)
 			t.Parallel()
 
 			ctx := testcontext.New(t)
