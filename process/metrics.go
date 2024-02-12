@@ -30,6 +30,7 @@ var (
 	metricCollector = flag.String("metrics.addr", flagDefault("", "collectora.storj.io:9000"), "address(es) to send telemetry to (comma-separated)")
 
 	metricEventCollector = flag.String("metrics.event-addr", flagDefault("", "eventkitd.datasci.storj.io:9002"), "address(es) to send telemetry to (comma-separated)")
+	metricEventQueue     = flag.Int("metrics.event-queue", 10000, "size of the internal eventkit queue for UDP sending")
 
 	metricApp            = flag.String("metrics.app", filepath.Base(os.Args[0]), "application name for telemetry identification. Ignored for certain applications.")
 	metricAppSuffix      = flag.String("metrics.app-suffix", flagDefault("-dev", "-release"), "application suffix. Ignored for certain applications.")
@@ -128,6 +129,7 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 				instanceID,
 				address,
 			)
+			c.QueueDepth = *metricEventQueue
 			eventRegistry.AddDestination(c)
 			go c.Run(ctx)
 		}
