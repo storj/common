@@ -4,39 +4,11 @@
 package version
 
 import (
-	"runtime/debug"
-
-	"github.com/zeebo/errs"
+	"storj.io/common/version/buildinfo"
 )
 
-// Error is common error for version package.
-var Error = errs.Class("version")
-
 // FromBuild returns version string for a module.
-//
-// This does not work inside tests.
+// Deprecated: use buildinfo package, which doesn't have any 3rd party dependencies.
 func FromBuild(modname string) (string, error) {
-	info, ok := debug.ReadBuildInfo()
-	if !ok {
-		return "", Error.New("unable to read build info")
-	}
-
-	findmodule := func(modname string) *debug.Module {
-		if info.Main.Path == modname {
-			return &info.Main
-		}
-		for _, mod := range info.Deps {
-			if mod.Path == modname {
-				return mod
-			}
-		}
-		return nil
-	}
-
-	mod := findmodule(modname)
-	if mod == nil {
-		return "", Error.New("unable to find module %q", modname)
-	}
-
-	return mod.Version, nil
+	return buildinfo.FromBuild(modname)
 }

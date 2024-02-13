@@ -6,12 +6,11 @@ package main
 import (
 	"fmt"
 	"os"
-
-	"storj.io/common/version"
+	"storj.io/common/version/buildinfo"
 )
 
 func main() {
-	versionstr, err := version.FromBuild("storj.io/common")
+	versionstr, err := buildinfo.FromBuild("storj.io/common")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
