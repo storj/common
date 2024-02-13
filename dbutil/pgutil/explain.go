@@ -9,12 +9,12 @@ import (
 	"encoding/hex"
 	"fmt"
 	"regexp"
-	"slices"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/zeebo/errs"
+	"golang.org/x/exp/slices"
 
 	"storj.io/common/tagsql"
 )

@@ -49,6 +49,7 @@ pipeline {
                         sh 'check-mod-tidy -mod .build/go.mod.orig'
                         sh 'go-licenses check ./...'
                         sh 'check-downgrades'
+                        sh 'go.min vet ./...'
                     }
                 }
 
