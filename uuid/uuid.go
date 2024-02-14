@@ -73,13 +73,39 @@ func FromBytes(bytes []byte) (UUID, error) {
 	return uuid, nil
 }
 
-// FromString parses "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" string form.
+// FromString parses "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" and "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" string.
 //
 // FromString allows for any version or variant of an UUID.
 func FromString(s string) (UUID, error) {
+	switch len(s) {
+	case 32:
+		return fromStringWithoutDashes(s)
+	case 36:
+		return fromStringWithDashes(s)
+	}
+
+	return UUID{}, Error.New("invalid string length %d expected 32 or 36 depending if it's formatted with dashes", len(s))
+}
+
+func fromStringWithoutDashes(s string) (UUID, error) {
+	var uuid UUID
+	if len(s) != 32 {
+		return uuid, Error.New("invalid string length %d expected 32", len(s))
+	}
+
+	var err error
+	_, err = hex.Decode(uuid[:], []byte(s))
+	if err != nil {
+		return uuid, Error.New("invalid string")
+	}
+
+	return uuid, nil
+}
+
+func fromStringWithDashes(s string) (UUID, error) {
 	var uuid UUID
 	if len(s) != 36 {
-		return uuid, Error.New("invalid string length %d expected %d", len(s), 36)
+		return uuid, Error.New("invalid string length %d expected", len(s))
 	}
 	if s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' {
 		return uuid, Error.New("invalid string")
@@ -178,9 +204,10 @@ func (uuid UUID) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON unmarshals UUID from `"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"`.
 func (uuid *UUID) UnmarshalJSON(b []byte) error {
-	if len(b) != 36+2 {
-		return Error.New("bytes have wrong length %d expected %d", len(b), 36+2)
+	if l := len(b); l != 32+2 && l != 36+2 {
+		return Error.New("bytes have wrong length %d expected %d or %d", len(b), 32+2, 36+2)
 	}
+
 	if b[0] != '"' && b[len(b)-1] != '"' {
 		return Error.New("expected quotes around string")
 	}
