@@ -36,8 +36,8 @@ require (
 	golang.org/x/sys v0.15.0
 	gopkg.in/yaml.v2 v2.4.0
 	storj.io/drpc v0.0.33
-	storj.io/eventkit v0.0.0-20240124163201-beae173bc798
-	storj.io/monkit-jaeger v0.0.0-20230707083646-f15e6e8b7e8c
+	storj.io/eventkit v0.0.0-20240222101345-204fc04c7675
+	storj.io/monkit-jaeger v0.0.0-20240221095020-52b0792fa6cd
 	storj.io/picobuf v0.0.3
 )
 
@@ -45,7 +45,7 @@ require (
 	cloud.google.com/go v0.110.10 // indirect
 	cloud.google.com/go/compute v1.23.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
-	github.com/apache/thrift v0.12.0 // indirect
+	github.com/apache/thrift v0.16.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
