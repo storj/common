@@ -8,6 +8,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -23,13 +24,14 @@ import (
 	"storj.io/common/telemetry"
 	"storj.io/common/version"
 	"storj.io/eventkit"
+	"storj.io/eventkit/eventkitd-bigquery/bigquery"
 )
 
 var (
 	metricInterval  = flag.Duration("metrics.interval", telemetry.DefaultInterval, "how frequently to send up telemetry. Ignored for certain applications.")
 	metricCollector = flag.String("metrics.addr", flagDefault("", "collectora.storj.io:9000"), "address(es) to send telemetry to (comma-separated)")
 
-	metricEventCollector = flag.String("metrics.event-addr", flagDefault("", "eventkitd.datasci.storj.io:9002"), "address(es) to send telemetry to (comma-separated)")
+	metricEventCollector = flag.String("metrics.event-addr", flagDefault("", "eventkitd.datasci.storj.io:9002"), "address(es) to send telemetry to (comma-separated IP/port or complex BQ definition, like bigquery:app=...,project=...,dataset=...)")
 	metricEventQueue     = flag.Int("metrics.event-queue", 10000, "size of the internal eventkit queue for UDP sending")
 
 	metricApp            = flag.String("metrics.app", filepath.Base(os.Args[0]), "application name for telemetry identification. Ignored for certain applications.")
@@ -120,18 +122,31 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	if *metricEventCollector != "" {
 		eventRegistry := eventkit.DefaultRegistry
 
-		for _, address := range strings.Split(*metricEventCollector, ",") {
-			c := eventkit.NewUDPClient(
-				appName,
-				flagDefault(
-					version.Build.Timestamp.Format(time.RFC3339),
-					version.Build.Version.String()),
-				instanceID,
-				address,
-			)
-			c.QueueDepth = *metricEventQueue
+		_, port, _ := strings.Cut(*metricCollector, ":")
+		matched, _ := regexp.MatchString("[0-9]+", port)
+
+		if !matched {
+			c, err := bigquery.CreateDestination(ctx, *metricEventCollector)
+			if err != nil {
+				log.Error("Eventkit BQ destination couldn't be initialized", zap.Error(err))
+			}
 			eventRegistry.AddDestination(c)
 			go c.Run(ctx)
+		} else {
+			// the last element (after :) is a port --> legacy config
+			for _, address := range strings.Split(*metricEventCollector, ",") {
+				c := eventkit.NewUDPClient(
+					appName,
+					flagDefault(
+						version.Build.Timestamp.Format(time.RFC3339),
+						version.Build.Version.String()),
+					instanceID,
+					address,
+				)
+				c.QueueDepth = *metricEventQueue
+				eventRegistry.AddDestination(c)
+				go c.Run(ctx)
+			}
 		}
 
 		log.Info("Event collection enabled", zap.String("instance ID", instanceID))
