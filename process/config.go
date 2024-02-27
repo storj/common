@@ -85,7 +85,7 @@ func SaveConfig(cmd *cobra.Command, outfile string, opts ...SaveConfigOption) er
 		set     bool
 	}
 	flat := make(map[string]configValue)
-	flatKeys := make([]string, 0)
+	var flatKeys []string
 
 	// N.B. we have to pre-declare the function so that it can make recursive calls.
 	var filterAndFlatten func(string, map[string]interface{})

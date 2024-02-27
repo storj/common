@@ -105,9 +105,6 @@ func discoverTable(ctx context.Context, db dbschema.Queryer, schema *dbschema.Sc
 		}
 		table.AddColumn(column)
 		if pk > 0 {
-			if table.PrimaryKey == nil {
-				table.PrimaryKey = make([]string, 0)
-			}
 			table.PrimaryKey = append(table.PrimaryKey, name)
 		}
 	}

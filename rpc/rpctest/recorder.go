@@ -20,16 +20,14 @@ type CallRecorder struct {
 
 // NewCallRecorder returns with a properly initialized RPCounter.
 func NewCallRecorder() CallRecorder {
-	return CallRecorder{
-		calls: make([]string, 0),
-	}
+	return CallRecorder{}
 }
 
 // Reset deletes all the existing counters and set everything to 0.
 func (r *CallRecorder) Reset() {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.calls = make([]string, 0)
+	r.calls = r.calls[:0]
 }
 
 // CountOf returns the number of calls to one specific rpc method.

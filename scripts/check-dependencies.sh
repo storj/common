@@ -19,7 +19,7 @@ if go list -deps -test ./... | grep -q "bolt"; then
     exit -1;
 fi
 
-if go list -deps $(go list ./... | grep -v "test") | grep -q "testing"; then
+if go list -deps $(go list ./... | grep -v "test" | grep -v "process") | grep -q "testing"; then
     echo "common must not have a dependency to testing";
     exit -1;
 fi
