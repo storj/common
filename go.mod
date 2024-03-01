@@ -36,8 +36,8 @@ require (
 	golang.org/x/sys v0.15.0
 	gopkg.in/yaml.v2 v2.4.0
 	storj.io/drpc v0.0.33
-	storj.io/eventkit v0.0.0-20240222101345-204fc04c7675
-	storj.io/eventkit/eventkitd-bigquery v0.0.0-20240222101345-204fc04c7675
+	storj.io/eventkit v0.0.0-20240301135257-a152f19a255b
+	storj.io/eventkit/eventkitd-bigquery v0.0.0-20240301135257-a152f19a255b
 	storj.io/monkit-jaeger v0.0.0-20240221095020-52b0792fa6cd
 	storj.io/picobuf v0.0.3
 )
@@ -117,5 +117,5 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	storj.io/eventkit/eventkitd v0.0.0-20231215142613-2613093e7b0a // indirect
+	storj.io/eventkit/eventkitd v0.0.0-20240222102130-43b472f3f489 // indirect
 )
