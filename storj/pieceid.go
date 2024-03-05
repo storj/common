@@ -6,6 +6,7 @@ package storj
 import (
 	"crypto/rand"
 	"database/sql/driver"
+	"encoding/binary"
 
 	"github.com/zeebo/errs"
 )
@@ -49,8 +50,11 @@ func PieceIDFromBytes(b []byte) (PieceID, error) {
 }
 
 // IsZero returns whether piece ID is unassigned.
-func (id PieceID) IsZero() bool {
-	return id == PieceID{}
+func (id *PieceID) IsZero() bool {
+	return binary.LittleEndian.Uint64(id[0:8])|
+		binary.LittleEndian.Uint64(id[8:16])|
+		binary.LittleEndian.Uint64(id[16:24])|
+		binary.LittleEndian.Uint64(id[24:32]) == 0
 }
 
 // String representation of the piece ID.

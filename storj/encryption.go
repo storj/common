@@ -5,6 +5,7 @@ package storj
 
 import (
 	"database/sql/driver"
+	"encoding/binary"
 	"strconv"
 
 	"github.com/zeebo/errs"
@@ -125,8 +126,10 @@ func NonceFromBytes(b []byte) (Nonce, error) {
 }
 
 // IsZero returns whether nonce is unassigned.
-func (nonce Nonce) IsZero() bool {
-	return nonce == Nonce{}
+func (nonce *Nonce) IsZero() bool {
+	return binary.LittleEndian.Uint64(nonce[0:8])|
+		binary.LittleEndian.Uint64(nonce[8:16])|
+		binary.LittleEndian.Uint64(nonce[16:24]) == 0
 }
 
 // String representation of the nonce.

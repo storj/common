@@ -325,3 +325,24 @@ func BenchmarkNodeID_Compare(b *testing.B) {
 		runtime.KeepAlive(total)
 	})
 }
+
+func BenchmarkNodeID_IsZero(b *testing.B) {
+	zero := storj.NodeID{}
+	nonzero := storj.NodeID{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+
+	b.Run("Zero", func(b *testing.B) {
+		var total bool
+		for k := 0; k < b.N; k++ {
+			total = zero.IsZero() || total
+		}
+		runtime.KeepAlive(total)
+	})
+
+	b.Run("NonZero", func(b *testing.B) {
+		var total bool
+		for k := 0; k < b.N; k++ {
+			total = nonzero.IsZero() || total
+		}
+		runtime.KeepAlive(total)
+	})
+}

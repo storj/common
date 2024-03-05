@@ -102,8 +102,11 @@ func (id NodeID) String() string {
 }
 
 // IsZero returns whether NodeID is unassigned.
-func (id NodeID) IsZero() bool {
-	return id == NodeID{}
+func (id *NodeID) IsZero() bool {
+	return binary.LittleEndian.Uint64(id[0:8])|
+		binary.LittleEndian.Uint64(id[8:16])|
+		binary.LittleEndian.Uint64(id[16:24])|
+		binary.LittleEndian.Uint64(id[24:32]) == 0
 }
 
 // Bytes returns raw bytes of the id.
