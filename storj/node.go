@@ -103,6 +103,7 @@ func (id NodeID) String() string {
 
 // IsZero returns whether NodeID is unassigned.
 func (id *NodeID) IsZero() bool {
+	// Using `id == NodeID{}` is significantly slower due to more complex generated code.
 	return binary.LittleEndian.Uint64(id[0:8])|
 		binary.LittleEndian.Uint64(id[8:16])|
 		binary.LittleEndian.Uint64(id[16:24])|

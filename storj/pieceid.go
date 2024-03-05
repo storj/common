@@ -51,6 +51,7 @@ func PieceIDFromBytes(b []byte) (PieceID, error) {
 
 // IsZero returns whether piece ID is unassigned.
 func (id *PieceID) IsZero() bool {
+	// Using `id == PieceID{}` is significantly slower due to more complex generated code.
 	return binary.LittleEndian.Uint64(id[0:8])|
 		binary.LittleEndian.Uint64(id[8:16])|
 		binary.LittleEndian.Uint64(id[16:24])|
