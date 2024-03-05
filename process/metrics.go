@@ -31,7 +31,7 @@ var (
 	metricInterval  = flag.Duration("metrics.interval", telemetry.DefaultInterval, "how frequently to send up telemetry. Ignored for certain applications.")
 	metricCollector = flag.String("metrics.addr", flagDefault("", "collectora.storj.io:9000"), "address(es) to send telemetry to (comma-separated)")
 
-	metricEventCollector = flag.String("metrics.event-addr", flagDefault("", "eventkitd.datasci.storj.io:9002"), "address(es) to send telemetry to (comma-separated IP/port or complex BQ definition, like bigquery:app=...,project=...,dataset=...)")
+	metricEventCollector = flag.String("metrics.event-addr", flagDefault("", "eventkitd.datasci.storj.io:9002"), "address(es) to send telemetry to (comma-separated IP:port or complex BQ definition, like bigquery:app=...,project=...,dataset=...)")
 	metricEventQueue     = flag.Int("metrics.event-queue", 10000, "size of the internal eventkit queue for UDP sending")
 
 	metricApp            = flag.String("metrics.app", filepath.Base(os.Args[0]), "application name for telemetry identification. Ignored for certain applications.")
