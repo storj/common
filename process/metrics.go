@@ -8,7 +8,6 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -24,14 +23,13 @@ import (
 	"storj.io/common/telemetry"
 	"storj.io/common/version"
 	"storj.io/eventkit"
-	"storj.io/eventkit/eventkitd-bigquery/bigquery"
 )
 
 var (
 	metricInterval  = flag.Duration("metrics.interval", telemetry.DefaultInterval, "how frequently to send up telemetry. Ignored for certain applications.")
 	metricCollector = flag.String("metrics.addr", flagDefault("", "collectora.storj.io:9000"), "address(es) to send telemetry to (comma-separated)")
 
-	metricEventCollector = flag.String("metrics.event-addr", flagDefault("", "eventkitd.datasci.storj.io:9002"), "address(es) to send telemetry to (comma-separated IP:port or complex BQ definition, like bigquery:app=...,project=...,dataset=...)")
+	metricEventCollector = flag.String("metrics.event-addr", flagDefault("", "eventkitd.datasci.storj.io:9002"), "address(es) to send telemetry to (comma-separated IP:port or complex BQ definition, like bigquery:app=...,project=...,dataset=..., depends on the config/usage)")
 	metricEventQueue     = flag.Int("metrics.event-queue", 10000, "size of the internal eventkit queue for UDP sending")
 
 	metricApp            = flag.String("metrics.app", filepath.Base(os.Args[0]), "application name for telemetry identification. Ignored for certain applications.")
@@ -73,9 +71,13 @@ func calcMetricInterval() time.Duration {
 	return telemetry.DefaultInterval
 }
 
+// InitEventkitDestination should initialize a destination for publishing eventkit events.
+// context will be cancelled to stop internal goroutines.
+type InitEventkitDestination func(ctx context.Context, log *zap.Logger, destConfig string, eventRegistry *eventkit.Registry, appName string, instanceID string)
+
 // InitMetrics initializes telemetry reporting. Makes a telemetry.Client and calls
 // its Run() method in a goroutine.
-func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string) (err error) {
+func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string, dest InitEventkitDestination) (err error) {
 	if r == nil {
 		r = monkit.Default
 	}
@@ -122,38 +124,30 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	if *metricEventCollector != "" {
 		eventRegistry := eventkit.DefaultRegistry
 
-		_, port, _ := strings.Cut(*metricCollector, ":")
-		matched, _ := regexp.MatchString("[0-9]+", port)
-
-		if !matched {
-			c, err := bigquery.CreateDestination(ctx, *metricEventCollector)
-			if err != nil {
-				log.Error("Eventkit BQ destination couldn't be initialized", zap.Error(err))
-			}
-			eventRegistry.AddDestination(c)
-			go c.Run(ctx)
-		} else {
-			// the last element (after :) is a port --> legacy config
-			for _, address := range strings.Split(*metricEventCollector, ",") {
-				c := eventkit.NewUDPClient(
-					appName,
-					flagDefault(
-						version.Build.Timestamp.Format(time.RFC3339),
-						version.Build.Version.String()),
-					instanceID,
-					address,
-				)
-				c.QueueDepth = *metricEventQueue
-				eventRegistry.AddDestination(c)
-				go c.Run(ctx)
-			}
-		}
+		dest(ctx, log, *metricEventCollector, eventkit.DefaultRegistry, appName, instanceID)
 
 		log.Info("Event collection enabled", zap.String("instance ID", instanceID))
 		eventRegistry.Scope("init").Event("init")
 	}
 
 	return nil
+}
+
+// UDPDestination initializes UDP evenkit destination.
+func UDPDestination(ctx context.Context, log *zap.Logger, destConfig string, eventRegistry *eventkit.Registry, appName string, instanceID string) {
+	for _, address := range strings.Split(destConfig, ",") {
+		c := eventkit.NewUDPClient(
+			appName,
+			flagDefault(
+				version.Build.Timestamp.Format(time.RFC3339),
+				version.Build.Version.String()),
+			instanceID,
+			address,
+		)
+		c.QueueDepth = *metricEventQueue
+		eventRegistry.AddDestination(c)
+		go c.Run(ctx)
+	}
 }
 
 // InitMetricsWithCertPath initializes telemetry reporting, using the node ID
@@ -167,11 +161,11 @@ func InitMetricsWithCertPath(ctx context.Context, log *zap.Logger, r *monkit.Reg
 	} else {
 		metricsID = nodeID.String()
 	}
-	return InitMetrics(ctx, log, r, metricsID)
+	return InitMetrics(ctx, log, r, metricsID, UDPDestination)
 }
 
-// InitMetricsWithHostname initializes telemetry reporting, using the hostname as the telemetry instance ID.
-func InitMetricsWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Registry) error {
+// MetricsIDFromHostname generates a metrics ID from the hostname (or logs the problem and returns with "" in case of error).
+func MetricsIDFromHostname(log *zap.Logger) string {
 	var metricsID string
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -180,7 +174,12 @@ func InitMetricsWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Reg
 	} else {
 		metricsID = strings.ReplaceAll(hostname, ".", "_")
 	}
-	return InitMetrics(ctx, log, r, metricsID)
+	return metricsID
+}
+
+// InitMetricsWithHostname initializes telemetry reporting, using the hostname as the telemetry instance ID.
+func InitMetricsWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Registry) error {
+	return InitMetrics(ctx, log, r, MetricsIDFromHostname(log), UDPDestination)
 }
 
 // Report triggers each telemetry client to send data to its collection endpoint.
