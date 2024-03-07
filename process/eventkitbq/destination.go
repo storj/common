@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 
 	"storj.io/eventkit"
-	"storj.io/eventkit/eventkitd-bigquery/bigquery"
+	"storj.io/eventkit/bigquery"
 )
 
 // BQDestination initializes the BQ destination.
