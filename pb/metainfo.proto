@@ -56,6 +56,7 @@ service Metainfo {
     rpc DeletePart(DeletePartRequest) returns (DeletePartResponse);
 
     rpc Batch(BatchRequest) returns (BatchResponse);
+    rpc CompressedBatch(CompressedBatchRequest) returns (CompressedBatchResponse);
 
     rpc ProjectInfo(ProjectInfoRequest) returns (ProjectInfoResponse);
     rpc RevokeAPIKey(RevokeAPIKeyRequest) returns (RevokeAPIKeyResponse);
@@ -741,6 +742,17 @@ message DeletePartRequest {
 message DeletePartResponse {
 }
 
+message CompressedBatchRequest {
+    enum CompressionType {
+        NONE = 0;
+        ZSTD = 1;
+    }
+    repeated CompressionType supported = 1;
+
+    CompressionType selected = 2;
+    bytes data = 3; // BatchRequest
+}
+
 message BatchRequest {
     RequestHeader header = 15; // the only header that matters in a batch.
 
@@ -787,6 +799,11 @@ message BatchRequestItem {
 
         RevokeAPIKeyRequest revoke_api_key = 19;
     }
+}
+
+message CompressedBatchResponse {
+    CompressedBatchRequest.CompressionType selected = 2;
+    bytes data = 3; // BatchResponse
 }
 
 message BatchResponse {

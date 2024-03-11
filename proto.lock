@@ -1915,6 +1915,18 @@
                 "integer": 7
               }
             ]
+          },
+          {
+            "name": "CompressedBatchRequest.CompressionType",
+            "enum_fields": [
+              {
+                "name": "NONE"
+              },
+              {
+                "name": "ZSTD",
+                "integer": 1
+              }
+            ]
           }
         ],
         "messages": [
@@ -4130,6 +4142,27 @@
             "name": "DeletePartResponse"
           },
           {
+            "name": "CompressedBatchRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "supported",
+                "type": "CompressionType",
+                "is_repeated": true
+              },
+              {
+                "id": 2,
+                "name": "selected",
+                "type": "CompressionType"
+              },
+              {
+                "id": 3,
+                "name": "data",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
             "name": "BatchRequest",
             "fields": [
               {
@@ -4297,6 +4330,21 @@
                 "id": 19,
                 "name": "revoke_api_key",
                 "type": "RevokeAPIKeyRequest"
+              }
+            ]
+          },
+          {
+            "name": "CompressedBatchResponse",
+            "fields": [
+              {
+                "id": 2,
+                "name": "selected",
+                "type": "CompressedBatchRequest.CompressionType"
+              },
+              {
+                "id": 3,
+                "name": "data",
+                "type": "bytes"
               }
             ]
           },
@@ -4970,6 +5018,11 @@
                 "name": "Batch",
                 "in_type": "BatchRequest",
                 "out_type": "BatchResponse"
+              },
+              {
+                "name": "CompressedBatch",
+                "in_type": "CompressedBatchRequest",
+                "out_type": "CompressedBatchResponse"
               },
               {
                 "name": "ProjectInfo",

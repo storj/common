@@ -3,7 +3,7 @@
 //
 // versions:
 //     protoc-gen-pico: v0.0.1
-//     protoc:          v4.23.4
+//     protoc:          v4.24.4
 
 package pb
 

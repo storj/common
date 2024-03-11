@@ -69,6 +69,7 @@ type DRPCMetainfoClient interface {
 	DownloadSegment(ctx context.Context, in *DownloadSegmentRequest) (*DownloadSegmentResponse, error)
 	DeletePart(ctx context.Context, in *DeletePartRequest) (*DeletePartResponse, error)
 	Batch(ctx context.Context, in *BatchRequest) (*BatchResponse, error)
+	CompressedBatch(ctx context.Context, in *CompressedBatchRequest) (*CompressedBatchResponse, error)
 	ProjectInfo(ctx context.Context, in *ProjectInfoRequest) (*ProjectInfoResponse, error)
 	RevokeAPIKey(ctx context.Context, in *RevokeAPIKeyRequest) (*RevokeAPIKeyResponse, error)
 	BeginMoveObject(ctx context.Context, in *BeginMoveObjectRequest) (*BeginMoveObjectResponse, error)
@@ -330,6 +331,15 @@ func (c *drpcMetainfoClient) Batch(ctx context.Context, in *BatchRequest) (*Batc
 	return out, nil
 }
 
+func (c *drpcMetainfoClient) CompressedBatch(ctx context.Context, in *CompressedBatchRequest) (*CompressedBatchResponse, error) {
+	out := new(CompressedBatchResponse)
+	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/CompressedBatch", drpcEncoding_File_metainfo_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *drpcMetainfoClient) ProjectInfo(ctx context.Context, in *ProjectInfoRequest) (*ProjectInfoResponse, error) {
 	out := new(ProjectInfoResponse)
 	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/ProjectInfo", drpcEncoding_File_metainfo_proto{}, in, out)
@@ -412,6 +422,7 @@ type DRPCMetainfoServer interface {
 	DownloadSegment(context.Context, *DownloadSegmentRequest) (*DownloadSegmentResponse, error)
 	DeletePart(context.Context, *DeletePartRequest) (*DeletePartResponse, error)
 	Batch(context.Context, *BatchRequest) (*BatchResponse, error)
+	CompressedBatch(context.Context, *CompressedBatchRequest) (*CompressedBatchResponse, error)
 	ProjectInfo(context.Context, *ProjectInfoRequest) (*ProjectInfoResponse, error)
 	RevokeAPIKey(context.Context, *RevokeAPIKeyRequest) (*RevokeAPIKeyResponse, error)
 	BeginMoveObject(context.Context, *BeginMoveObjectRequest) (*BeginMoveObjectResponse, error)
@@ -530,6 +541,10 @@ func (s *DRPCMetainfoUnimplementedServer) Batch(context.Context, *BatchRequest) 
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
+func (s *DRPCMetainfoUnimplementedServer) CompressedBatch(context.Context, *CompressedBatchRequest) (*CompressedBatchResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
 func (s *DRPCMetainfoUnimplementedServer) ProjectInfo(context.Context, *ProjectInfoRequest) (*ProjectInfoResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
@@ -556,7 +571,7 @@ func (s *DRPCMetainfoUnimplementedServer) FinishCopyObject(context.Context, *Fin
 
 type DRPCMetainfoDescription struct{}
 
-func (DRPCMetainfoDescription) NumMethods() int { return 33 }
+func (DRPCMetainfoDescription) NumMethods() int { return 34 }
 
 func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -804,6 +819,15 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 					)
 			}, DRPCMetainfoServer.Batch, true
 	case 27:
+		return "/metainfo.Metainfo/CompressedBatch", drpcEncoding_File_metainfo_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCMetainfoServer).
+					CompressedBatch(
+						ctx,
+						in1.(*CompressedBatchRequest),
+					)
+			}, DRPCMetainfoServer.CompressedBatch, true
+	case 28:
 		return "/metainfo.Metainfo/ProjectInfo", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -812,7 +836,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*ProjectInfoRequest),
 					)
 			}, DRPCMetainfoServer.ProjectInfo, true
-	case 28:
+	case 29:
 		return "/metainfo.Metainfo/RevokeAPIKey", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -821,7 +845,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*RevokeAPIKeyRequest),
 					)
 			}, DRPCMetainfoServer.RevokeAPIKey, true
-	case 29:
+	case 30:
 		return "/metainfo.Metainfo/BeginMoveObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -830,7 +854,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BeginMoveObjectRequest),
 					)
 			}, DRPCMetainfoServer.BeginMoveObject, true
-	case 30:
+	case 31:
 		return "/metainfo.Metainfo/FinishMoveObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -839,7 +863,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*FinishMoveObjectRequest),
 					)
 			}, DRPCMetainfoServer.FinishMoveObject, true
-	case 31:
+	case 32:
 		return "/metainfo.Metainfo/BeginCopyObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -848,7 +872,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BeginCopyObjectRequest),
 					)
 			}, DRPCMetainfoServer.BeginCopyObject, true
-	case 32:
+	case 33:
 		return "/metainfo.Metainfo/FinishCopyObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -1292,6 +1316,22 @@ type drpcMetainfo_BatchStream struct {
 }
 
 func (x *drpcMetainfo_BatchStream) SendAndClose(m *BatchResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCMetainfo_CompressedBatchStream interface {
+	drpc.Stream
+	SendAndClose(*CompressedBatchResponse) error
+}
+
+type drpcMetainfo_CompressedBatchStream struct {
+	drpc.Stream
+}
+
+func (x *drpcMetainfo_CompressedBatchStream) SendAndClose(m *CompressedBatchResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
 		return err
 	}
