@@ -41,6 +41,7 @@ func TestRestrict(t *testing.T) {
 		AllowUpload:   true,
 		AllowList:     true,
 		AllowDelete:   true,
+		AllowLock:     true,
 	}
 
 	action1 := macaroon.Action{
@@ -65,8 +66,8 @@ func TestRestrict(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check that all actions are allowed and the encAccess has only the default key
-	assert.NoError(t, restricted.APIKey.Check(ctx, secret, action1, nil))
-	assert.NoError(t, restricted.APIKey.Check(ctx, secret, action2, nil))
+	assert.NoError(t, restricted.APIKey.Check(ctx, secret, macaroon.APIKeyVersionLatest, action1, nil))
+	assert.NoError(t, restricted.APIKey.Check(ctx, secret, macaroon.APIKeyVersionLatest, action2, nil))
 	assert.Equal(t, &defaultKey, restricted.EncAccess.Store.GetDefaultKey())
 
 	_, _, base := restricted.EncAccess.Store.LookupEncrypted("bucket", paths.NewEncrypted("prefix1/path1"))
@@ -85,8 +86,8 @@ func TestRestrict(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check that only the actions under this prefix are allowed
-	assert.NoError(t, restricted.APIKey.Check(ctx, secret, action1, nil))
-	assert.Error(t, restricted.APIKey.Check(ctx, secret, action2, nil))
+	assert.NoError(t, restricted.APIKey.Check(ctx, secret, macaroon.APIKeyVersionLatest, action1, nil))
+	assert.Error(t, restricted.APIKey.Check(ctx, secret, macaroon.APIKeyVersionLatest, action2, nil))
 
 	// Check that encAccess has a derived key for the allowed prefix instead of the default key
 	_, _, base = restricted.EncAccess.Store.LookupEncrypted("bucket", paths.NewEncrypted("prefix1/path1"))
@@ -105,8 +106,8 @@ func TestRestrict(t *testing.T) {
 	// Check that the access still allows only actions under the allowed prefix
 	restricted, err = restricted.Restrict(permission)
 	require.NoError(t, err)
-	assert.NoError(t, restricted.APIKey.Check(ctx, secret, action1, nil))
-	assert.Error(t, restricted.APIKey.Check(ctx, secret, action2, nil))
+	assert.NoError(t, restricted.APIKey.Check(ctx, secret, macaroon.APIKeyVersionLatest, action1, nil))
+	assert.Error(t, restricted.APIKey.Check(ctx, secret, macaroon.APIKeyVersionLatest, action2, nil))
 
 	// Check that encAccess has not changed too
 	_, _, base = restricted.EncAccess.Store.LookupEncrypted("bucket", paths.NewEncrypted("prefix1/path1"))

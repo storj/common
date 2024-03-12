@@ -58,11 +58,16 @@ func TestSerializeParseRestrictAndCheck(t *testing.T) {
 		EncryptedPath: []byte("another-test-path"),
 	}
 
-	require.NoError(t, key.Check(ctx, secret, action1, nil))
-	require.NoError(t, key.Check(ctx, secret, action2, nil))
-	require.NoError(t, parsedKey.Check(ctx, secret, action1, nil))
-	err = parsedKey.Check(ctx, secret, action2, nil)
+	require.NoError(t, key.Check(ctx, secret, APIKeyVersionLatest, action1, nil))
+	require.NoError(t, key.Check(ctx, secret, APIKeyVersionLatest, action2, nil))
+	require.NoError(t, parsedKey.Check(ctx, secret, APIKeyVersionLatest, action1, nil))
+	err = parsedKey.Check(ctx, secret, APIKeyVersionLatest, action2, nil)
 	require.True(t, ErrUnauthorized.Has(err), err)
+
+	action1.Op = ActionLock
+	require.NoError(t, key.Check(ctx, secret, APIKeyVersionObjectLock, action1, nil))
+	err = key.Check(ctx, secret, APIKeyVersionMin, action1, nil)
+	require.True(t, ErrUnauthorized.Has(err))
 }
 
 func TestRevocation(t *testing.T) {
@@ -80,19 +85,19 @@ func TestRevocation(t *testing.T) {
 	}
 
 	// Nil revoker should not revoke anything
-	require.NoError(t, key.Check(ctx, secret, action, nil))
+	require.NoError(t, key.Check(ctx, secret, APIKeyVersionLatest, action, nil))
 
 	// No error returned when nothing is revoked
 	nothingRevoked := testRevoker{}
-	require.NoError(t, key.Check(ctx, secret, action, nothingRevoked))
+	require.NoError(t, key.Check(ctx, secret, APIKeyVersionLatest, action, nothingRevoked))
 
 	// Check that revoked results in a ErrRevoked error
 	revoked := testRevoker{revoked: true}
-	require.True(t, ErrRevoked.Has(key.Check(ctx, secret, action, revoked)))
+	require.True(t, ErrRevoked.Has(key.Check(ctx, secret, APIKeyVersionLatest, action, revoked)))
 
 	// Check that an error while checking revocations results in an ErrRevoked err
 	revokeErr := testRevoker{revoked: false, err: errs.New("some revoke err")}
-	require.True(t, ErrRevoked.Has(key.Check(ctx, secret, action, revokeErr)))
+	require.True(t, ErrRevoked.Has(key.Check(ctx, secret, APIKeyVersionLatest, action, revokeErr)))
 }
 
 func TestExpiration(t *testing.T) {
@@ -139,7 +144,7 @@ func TestExpiration(t *testing.T) {
 		{notBeforeMinuteFromNow, twoMinutesFromNow, nil},
 		{notAfterMinuteAgo, twoMinutesFromNow, &ErrUnauthorized},
 	} {
-		err := test.keyToTest.Check(ctx, secret, Action{
+		err := test.keyToTest.Check(ctx, secret, APIKeyVersionLatest, Action{
 			Op:   ActionRead,
 			Time: test.timestampToTest,
 		}, nil)
@@ -320,7 +325,7 @@ func BenchmarkAPIKey_Check(b *testing.B) {
 
 	revoker := &testRevoker{}
 	for i := 0; i < b.N; i++ {
-		err := key3.Check(ctx, secret, Action{Bucket: []byte("test1"), Op: ActionRead, Time: now}, revoker)
+		err := key3.Check(ctx, secret, APIKeyVersionLatest, Action{Bucket: []byte("test1"), Op: ActionRead, Time: now}, revoker)
 		if err != nil {
 			b.Fatal(err)
 		}

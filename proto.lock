@@ -28,6 +28,11 @@
                 "type": "bool"
               },
               {
+                "id": 5,
+                "name": "disallow_locks",
+                "type": "bool"
+              },
+              {
                 "id": 10,
                 "name": "allowed_paths",
                 "type": "Path",

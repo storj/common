@@ -41,6 +41,10 @@ type Permission struct {
 	// either AllowDownload or AllowList is granted too, no object metadata and
 	// no error info will be returned for deleted objects.
 	AllowDelete bool
+	// AllowLock gives permission for retention periods and legal holds to be
+	// placed on and retrieved from objects. It also gives permission for
+	// Object Lock configurations to be placed on and retrieved from buckets.
+	AllowLock bool
 	// NotBefore restricts when the resulting access grant is valid for.
 	// If set, the resulting access grant will not work if the Satellite
 	// believes the time is before NotBefore.
@@ -93,6 +97,7 @@ func (access *Access) Restrict(permission Permission, prefixes ...SharePrefix) (
 		DisallowWrites:  !permission.AllowUpload,
 		DisallowLists:   !permission.AllowList,
 		DisallowDeletes: !permission.AllowDelete,
+		DisallowLocks:   !permission.AllowLock,
 		NotBefore:       notBefore,
 		NotAfter:        notAfter,
 		MaxObjectTtl:    permission.MaxObjectTTL,

@@ -53,6 +53,25 @@ const (
 	ActionDelete ActionType = 4
 	// ActionProjectInfo requests project-level information.
 	ActionProjectInfo ActionType = 5
+	// ActionLock specifies an action related to Object Lock.
+	ActionLock ActionType = 6
+)
+
+// APIKeyVersion specifies the version of an API key.
+type APIKeyVersion uint
+
+const (
+	// APIKeyVersionMin is the minimum API key version.
+	// It is for API keys that only support read, write, list, delete,
+	// and project info retrieval actions.
+	APIKeyVersionMin APIKeyVersion = 0
+
+	// APIKeyVersionObjectLock is the API key version that introduces support
+	// for Object Lock actions.
+	APIKeyVersionObjectLock APIKeyVersion = 1
+
+	// APIKeyVersionLatest is the latest API key version.
+	APIKeyVersionLatest APIKeyVersion = APIKeyVersionObjectLock
 )
 
 // Action specifies the specific operation being performed that the Macaroon will validate.
@@ -117,9 +136,9 @@ func FromParts(head, secret []byte, caveats ...Caveat) (_ *APIKey, err error) {
 }
 
 // Check makes sure that the key authorizes the provided action given the root
-// project secret and any possible revocations, returning an error if the action
-// is not authorized. 'revoked' is a list of revoked heads.
-func (a *APIKey) Check(ctx context.Context, secret []byte, action Action, revoker revoker) (err error) {
+// project secret, the API key's version, and any possible revocations, returning an error
+// if the action is not authorized. 'revoked' is a list of revoked heads.
+func (a *APIKey) Check(ctx context.Context, secret []byte, version APIKeyVersion, action Action, revoker revoker) (err error) {
 	defer mon.Task()(&ctx)(&err)
 
 	ok, tails := a.mac.ValidateAndTails(secret)
@@ -130,6 +149,12 @@ func (a *APIKey) Check(ctx context.Context, secret []byte, action Action, revoke
 	// a timestamp is always required on an action
 	if action.Time.IsZero() {
 		return Error.New("no timestamp provided")
+	}
+
+	if action.Op == ActionLock && version < APIKeyVersionObjectLock {
+		// API keys created before the introduction of the Object Lock permission
+		// should be denied the ability to perform Object Lock actions.
+		return ErrUnauthorized.New("action disallowed")
 	}
 
 	caveats := a.mac.Caveats()
@@ -313,6 +338,10 @@ func (c *Caveat) Allows(action Action) bool {
 		}
 	case ActionProjectInfo:
 		// allow
+	case ActionLock:
+		if c.DisallowLocks {
+			return false
+		}
 	default:
 		return false
 	}

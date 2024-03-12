@@ -16,6 +16,7 @@ message Caveat {
   bool disallow_writes = 2;
   bool disallow_lists = 3;
   bool disallow_deletes = 4;
+  bool disallow_locks = 5;
 
   // If any entries exist, require all access to happen in at least
   // one of them.

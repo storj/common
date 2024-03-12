@@ -19,6 +19,7 @@ type Caveat struct {
 	DisallowWrites  bool           `json:"disallow_writes,omitempty"`
 	DisallowLists   bool           `json:"disallow_lists,omitempty"`
 	DisallowDeletes bool           `json:"disallow_deletes,omitempty"`
+	DisallowLocks   bool           `json:"disallow_locks,omitempty"`
 	AllowedPaths    []*Caveat_Path `json:"allowed_paths,omitempty"`
 	NotAfter        *time.Time     `json:"not_after,omitempty"`
 	NotBefore       *time.Time     `json:"not_before,omitempty"`
@@ -34,6 +35,7 @@ func (m *Caveat) Encode(c *picobuf.Encoder) bool {
 	c.Bool(2, &m.DisallowWrites)
 	c.Bool(3, &m.DisallowLists)
 	c.Bool(4, &m.DisallowDeletes)
+	c.Bool(5, &m.DisallowLocks)
 	for _, x := range m.AllowedPaths {
 		c.AlwaysMessage(10, x.Encode)
 	}
@@ -52,6 +54,7 @@ func (m *Caveat) Decode(c *picobuf.Decoder) {
 	c.Bool(2, &m.DisallowWrites)
 	c.Bool(3, &m.DisallowLists)
 	c.Bool(4, &m.DisallowDeletes)
+	c.Bool(5, &m.DisallowLocks)
 	c.RepeatedMessage(10, func(c *picobuf.Decoder) {
 		x := new(Caveat_Path)
 		c.Loop(x.Decode)
