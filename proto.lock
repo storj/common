@@ -1922,6 +1922,18 @@
             ]
           },
           {
+            "name": "LockInfo.Mode",
+            "enum_fields": [
+              {
+                "name": "NONE"
+              },
+              {
+                "name": "COMPLIANCE",
+                "integer": 1
+              }
+            ]
+          },
+          {
             "name": "CompressedBatchRequest.CompressionType",
             "enum_fields": [
               {
@@ -2446,6 +2458,11 @@
                 "type": "encryption.EncryptionParameters"
               },
               {
+                "id": 20,
+                "name": "lock_info",
+                "type": "LockInfo"
+              },
+              {
                 "id": 14,
                 "name": "total_size",
                 "type": "int64"
@@ -2464,6 +2481,29 @@
                 "id": 18,
                 "name": "plain_size",
                 "type": "int64"
+              }
+            ],
+            "messages": [
+              {
+                "name": "LockInfo",
+                "fields": [
+                  {
+                    "id": 1,
+                    "name": "retention_mode",
+                    "type": "Mode"
+                  },
+                  {
+                    "id": 2,
+                    "name": "retain_until",
+                    "type": "google.protobuf.Timestamp",
+                    "options": [
+                      {
+                        "name": "(gogoproto.stdtime)",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           },

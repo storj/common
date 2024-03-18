@@ -252,6 +252,17 @@ message Object {
     pointerdb.RedundancyScheme      redundancy_scheme     = 12;
     encryption.EncryptionParameters encryption_parameters = 13;
 
+    message LockInfo {
+        enum Mode {
+            NONE       = 0;
+            COMPLIANCE = 1;
+        }
+        Mode                      retention_mode = 1;
+        google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true];
+    }
+
+    LockInfo lock_info = 20;
+
     // total_size of object.
     int64 total_size  = 14;
     // size of inline part of object.
