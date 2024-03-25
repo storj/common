@@ -73,3 +73,11 @@ func TestWithTimeout_Fail(t *testing.T) {
 	require.Equal(t, workResult, 1)
 	require.Equal(t, timeoutResult, 1)
 }
+
+func BenchmarkWithTimeout(b *testing.B) {
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		sync2.WithTimeout(time.Second, func() {}, func() {})
+	}
+}
