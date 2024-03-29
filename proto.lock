@@ -1880,6 +1880,18 @@
             ]
           },
           {
+            "name": "RetentionMode",
+            "enum_fields": [
+              {
+                "name": "NONE"
+              },
+              {
+                "name": "COMPLIANCE",
+                "integer": 1
+              }
+            ]
+          },
+          {
             "name": "Object.Status",
             "enum_fields": [
               {
@@ -1918,18 +1930,6 @@
               {
                 "name": "PREFIX",
                 "integer": 7
-              }
-            ]
-          },
-          {
-            "name": "LockInfo.Mode",
-            "enum_fields": [
-              {
-                "name": "NONE"
-              },
-              {
-                "name": "COMPLIANCE",
-                "integer": 1
               }
             ]
           },
@@ -2330,6 +2330,16 @@
             ]
           },
           {
+            "name": "RetentionModeValue",
+            "fields": [
+              {
+                "id": 1,
+                "name": "value",
+                "type": "RetentionMode"
+              }
+            ]
+          },
+          {
             "name": "Object",
             "fields": [
               {
@@ -2459,8 +2469,19 @@
               },
               {
                 "id": 20,
-                "name": "lock_info",
-                "type": "LockInfo"
+                "name": "retention_mode",
+                "type": "RetentionModeValue"
+              },
+              {
+                "id": 21,
+                "name": "retain_until",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  }
+                ]
               },
               {
                 "id": 14,
@@ -2481,29 +2502,6 @@
                 "id": 18,
                 "name": "plain_size",
                 "type": "int64"
-              }
-            ],
-            "messages": [
-              {
-                "name": "LockInfo",
-                "fields": [
-                  {
-                    "id": 1,
-                    "name": "retention_mode",
-                    "type": "Mode"
-                  },
-                  {
-                    "id": 2,
-                    "name": "retain_until",
-                    "type": "google.protobuf.Timestamp",
-                    "options": [
-                      {
-                        "name": "(gogoproto.stdtime)",
-                        "value": "true"
-                      }
-                    ]
-                  }
-                ]
               }
             ]
           },
@@ -2579,6 +2577,22 @@
                 "id": 11,
                 "name": "encrypted_metadata_encrypted_key",
                 "type": "bytes"
+              },
+              {
+                "id": 20,
+                "name": "retention_mode",
+                "type": "RetentionModeValue"
+              },
+              {
+                "id": 21,
+                "name": "retain_until",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  }
+                ]
               }
             ]
           },
@@ -4754,6 +4768,22 @@
                 "id": 4,
                 "name": "new_encrypted_object_key",
                 "type": "bytes"
+              },
+              {
+                "id": 20,
+                "name": "retention_mode",
+                "type": "RetentionModeValue"
+              },
+              {
+                "id": 21,
+                "name": "retain_until",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  }
+                ]
               }
             ]
           },

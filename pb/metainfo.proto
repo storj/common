@@ -219,6 +219,15 @@ message ProjectInfoResponse {
 // Object
 //---------------------------
 
+enum RetentionMode {
+    NONE       = 0;
+    COMPLIANCE = 1;
+}
+
+message RetentionModeValue {
+    RetentionMode value = 1;
+}
+
 message Object {
     enum Status {
         INVALID    = 0;
@@ -252,16 +261,9 @@ message Object {
     pointerdb.RedundancyScheme      redundancy_scheme     = 12;
     encryption.EncryptionParameters encryption_parameters = 13;
 
-    message LockInfo {
-        enum Mode {
-            NONE       = 0;
-            COMPLIANCE = 1;
-        }
-        Mode                      retention_mode = 1;
-        google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true];
-    }
-
-    LockInfo lock_info = 20;
+    // Object Lock messages are omitted in responses to requests lacking the permission to retrieve them.
+    RetentionModeValue        retention_mode = 20;
+    google.protobuf.Timestamp retain_until   = 21 [(gogoproto.stdtime) = true];
 
     // total_size of object.
     int64 total_size  = 14;
@@ -288,6 +290,9 @@ message BeginObjectRequest {
     bytes encrypted_metadata_nonce = 9 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes encrypted_metadata = 10;
     bytes encrypted_metadata_encrypted_key = 11;
+
+    RetentionModeValue        retention_mode = 20;
+    google.protobuf.Timestamp retain_until   = 21 [(gogoproto.stdtime) = true];
 }
 
 message BeginObjectResponse {
@@ -906,7 +911,6 @@ message FinishMoveObjectRequest {
 message FinishMoveObjectResponse { }
 
 // Server side copy.
-// Has the same fields as move.
 message BeginCopyObjectRequest {
     RequestHeader header = 15;
 
@@ -916,6 +920,9 @@ message BeginCopyObjectRequest {
 
     bytes new_bucket = 3;
     bytes new_encrypted_object_key = 4;
+
+    RetentionModeValue        retention_mode = 20;
+    google.protobuf.Timestamp retain_until   = 21 [(gogoproto.stdtime) = true];
 }
 
 // The satellite returns metadata of the source object,
