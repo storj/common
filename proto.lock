@@ -2079,6 +2079,11 @@
                 "id": 6,
                 "name": "partner_id",
                 "type": "bytes"
+              },
+              {
+                "id": 7,
+                "name": "object_lock_enabled",
+                "type": "bool"
               }
             ]
           },

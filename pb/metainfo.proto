@@ -105,6 +105,7 @@ message CreateBucketRequest {
     pointerdb.RedundancyScheme      default_redundancy_scheme = 4;
     encryption.EncryptionParameters default_encryption_parameters = 5;
     bytes                           partner_id = 6;
+    bool                            object_lock_enabled = 7;
 }
 
 message CreateBucketResponse {
