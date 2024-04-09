@@ -29,6 +29,7 @@ service Metainfo {
     rpc GetBucketLocation(GetBucketLocationRequest) returns (GetBucketLocationResponse);
     rpc GetBucketVersioning(GetBucketVersioningRequest) returns (GetBucketVersioningResponse);
     rpc SetBucketVersioning(SetBucketVersioningRequest) returns (SetBucketVersioningResponse);
+    rpc GetBucketObjectLockConfiguration(GetBucketObjectLockConfigurationRequest) returns (GetBucketObjectLockConfigurationResponse);
     rpc DeleteBucket(DeleteBucketRequest) returns (DeleteBucketResponse);
     rpc ListBuckets(ListBucketsRequest) returns (ListBucketsResponse);
 
@@ -151,6 +152,20 @@ message SetBucketVersioningRequest {
 }
 
 message SetBucketVersioningResponse {
+}
+
+message GetBucketObjectLockConfigurationRequest {
+    RequestHeader header = 15;
+
+    bytes name = 1;
+}
+
+message ObjectLockConfiguration {
+    bool enabled = 1;
+}
+
+message GetBucketObjectLockConfigurationResponse {
+    ObjectLockConfiguration configuration = 1;
 }
 
 message DeleteBucketRequest {
@@ -778,13 +793,14 @@ message BatchRequest {
 
 message BatchRequestItem {
     oneof Request {
-        CreateBucketRequest             bucket_create = 1;
-        GetBucketRequest                bucket_get = 2;
-        GetBucketLocationRequest        bucket_get_location = 30;
-        GetBucketVersioningRequest      bucket_get_versioning = 31;
-        SetBucketVersioningRequest      bucket_set_versioning = 32;
-        DeleteBucketRequest             bucket_delete = 3;
-        ListBucketsRequest              bucket_list = 4;
+        CreateBucketRequest                      bucket_create = 1;
+        GetBucketRequest                         bucket_get = 2;
+        GetBucketLocationRequest                 bucket_get_location = 30;
+        GetBucketVersioningRequest               bucket_get_versioning = 31;
+        SetBucketVersioningRequest               bucket_set_versioning = 32;
+        GetBucketObjectLockConfigurationRequest  bucket_get_object_lock_configuration = 33;
+        DeleteBucketRequest                      bucket_delete = 3;
+        ListBucketsRequest                       bucket_list = 4;
 
         BeginObjectRequest              object_begin = 6;
         CommitObjectRequest             object_commit = 7;
@@ -828,13 +844,14 @@ message BatchResponse {
 
 message BatchResponseItem {
     oneof Response {
-        CreateBucketResponse             bucket_create = 1;
-        GetBucketResponse                bucket_get = 2;
-        GetBucketLocationResponse        bucket_get_location = 30;
-        GetBucketVersioningResponse      bucket_get_versioning = 31;
-        SetBucketVersioningResponse      bucket_set_versioning = 32;
-        DeleteBucketResponse             bucket_delete = 3;
-        ListBucketsResponse              bucket_list = 4;
+        CreateBucketResponse                     bucket_create = 1;
+        GetBucketResponse                        bucket_get = 2;
+        GetBucketLocationResponse                bucket_get_location = 30;
+        GetBucketVersioningResponse              bucket_get_versioning = 31;
+        SetBucketVersioningResponse              bucket_set_versioning = 32;
+        GetBucketObjectLockConfigurationResponse bucket_get_object_lock_configuration = 33;
+        DeleteBucketResponse                     bucket_delete = 3;
+        ListBucketsResponse                      bucket_list = 4;
 
         BeginObjectResponse              object_begin = 6;
         CommitObjectResponse             object_commit = 7;

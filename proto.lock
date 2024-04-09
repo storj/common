@@ -2191,6 +2191,41 @@
             "name": "SetBucketVersioningResponse"
           },
           {
+            "name": "GetBucketObjectLockConfigurationRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "name",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "ObjectLockConfiguration",
+            "fields": [
+              {
+                "id": 1,
+                "name": "enabled",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "name": "GetBucketObjectLockConfigurationResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "configuration",
+                "type": "ObjectLockConfiguration"
+              }
+            ]
+          },
+          {
             "name": "DeleteBucketRequest",
             "fields": [
               {
@@ -4266,6 +4301,11 @@
                 "type": "SetBucketVersioningRequest"
               },
               {
+                "id": 33,
+                "name": "bucket_get_object_lock_configuration",
+                "type": "GetBucketObjectLockConfigurationRequest"
+              },
+              {
                 "id": 3,
                 "name": "bucket_delete",
                 "type": "DeleteBucketRequest"
@@ -4445,6 +4485,11 @@
                 "id": 32,
                 "name": "bucket_set_versioning",
                 "type": "SetBucketVersioningResponse"
+              },
+              {
+                "id": 33,
+                "name": "bucket_get_object_lock_configuration",
+                "type": "GetBucketObjectLockConfigurationResponse"
               },
               {
                 "id": 3,
@@ -4983,6 +5028,11 @@
                 "name": "SetBucketVersioning",
                 "in_type": "SetBucketVersioningRequest",
                 "out_type": "SetBucketVersioningResponse"
+              },
+              {
+                "name": "GetBucketObjectLockConfiguration",
+                "in_type": "GetBucketObjectLockConfigurationRequest",
+                "out_type": "GetBucketObjectLockConfigurationResponse"
               },
               {
                 "name": "DeleteBucket",
