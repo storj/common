@@ -138,10 +138,12 @@ func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (pv *poolValue,
 	}
 
 	mon.Event("connection_dialed", tags...)
+	started := time.Now()
 	conn, state, err := dial(ctx)
 	if err != nil {
 		return nil, err
 	}
+	mon.DurationVal("connection_dial_duration").Observe(time.Since(started))
 
 	return &poolValue{
 		conn:    conn,
