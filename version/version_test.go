@@ -6,6 +6,7 @@ package version_test
 import (
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"math"
 	"testing"
 
@@ -165,8 +166,44 @@ func TestShouldUpdate(t *testing.T) {
 }
 
 func TestPercentageToCursorF(t *testing.T) {
-	res := version.PercentageToCursorF(50)
-	assert.Equal(t, "7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb1e20", hex.EncodeToString(res[:]))
+	type args struct {
+		percentage float64
+		expected   string
+	}
+
+	tests := []args{
+		{
+			percentage: 0,
+			expected:   "0000000000000000000000000000000000000000000000000000000000000000",
+		},
+		{
+			percentage: 6,
+			expected:   "0f5c28f5c28f5c28f5c28f5c28f5c28f5c28f5c28f5c28f5c28f5c28f5c1f960",
+		},
+		{
+			percentage: 12,
+			expected:   "1eb851eb851eb851eb851eb851eb851eb851eb851eb851eb851eb851eb83f2c0",
+		},
+		{
+			percentage: 25,
+			expected:   "3ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd8f10",
+		},
+		{
+			percentage: 50,
+			expected:   "7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb1e20",
+		},
+		{
+			percentage: 100,
+			expected:   "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff63c40",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("cursor-%.0f-percent", tt.percentage), func(t *testing.T) {
+			res := version.PercentageToCursorF(tt.percentage)
+			assert.Equal(t, tt.expected, hex.EncodeToString(res[:]))
+		})
+	}
 }
 
 func TestPercentageToCursorF_Precision(t *testing.T) {
