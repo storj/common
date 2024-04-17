@@ -24,6 +24,8 @@ const (
 	Redis
 	// SQLite3 is a sqlite3 database.
 	SQLite3
+	// Spanner is Google Spanner instance with Google SQL dialect.
+	Spanner
 )
 
 // ImplementationForScheme returns the Implementation that is used for
@@ -40,6 +42,8 @@ func ImplementationForScheme(scheme string) Implementation {
 		return Redis
 	case "sqlite", "sqlite3":
 		return SQLite3
+	case "spanner":
+		return Spanner
 	default:
 		return Unknown
 	}
@@ -64,6 +68,8 @@ func (impl Implementation) String() string {
 		return "redis"
 	case SQLite3:
 		return "sqlite3"
+	case Spanner:
+		return "spanner"
 	default:
 		return "<unknown>"
 	}
