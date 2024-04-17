@@ -44,6 +44,8 @@ service Metainfo {
     rpc ListPendingObjectStreams(ListPendingObjectStreamsRequest) returns (ListPendingObjectStreamsResponse);
     rpc DownloadObject(DownloadObjectRequest) returns (DownloadObjectResponse);
     rpc UpdateObjectMetadata(UpdateObjectMetadataRequest) returns (UpdateObjectMetadataResponse);
+    rpc GetObjectRetention(GetObjectRetentionRequest) returns (GetObjectRetentionResponse);
+    rpc SetObjectRetention(SetObjectRetentionRequest) returns (SetObjectRetentionResponse);
 
     rpc BeginSegment(BeginSegmentRequest) returns (BeginSegmentResponse);
     rpc RetryBeginSegmentPieces(RetryBeginSegmentPiecesRequest) returns (RetryBeginSegmentPiecesResponse);
@@ -568,6 +570,33 @@ message UpdateObjectMetadataRequest {
 message UpdateObjectMetadataResponse {
 }
 
+message SetObjectRetentionRequest {
+    RequestHeader header = 15;
+
+    bytes bucket               = 1;
+    bytes encrypted_object_key = 2;
+    bytes object_version       = 3;
+
+    RetentionModeValue        retention_mode = 4;
+    google.protobuf.Timestamp retain_until   = 5 [(gogoproto.stdtime) = true];
+}
+
+message SetObjectRetentionResponse {
+}
+
+message GetObjectRetentionRequest {
+    RequestHeader header = 15;
+
+    bytes bucket               = 1;
+    bytes encrypted_object_key = 2;
+    bytes object_version       = 3;
+}
+
+message GetObjectRetentionResponse {
+    RetentionMode             retention_mode = 1;
+    google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+}
+
 //
 // Only for satellite use
 //
@@ -817,6 +846,8 @@ message BatchRequestItem {
         FinishMoveObjectRequest         object_finish_move = 27;
         BeginCopyObjectRequest          object_begin_copy = 28;
         FinishCopyObjectRequest         object_finish_copy = 29;
+        GetObjectRetentionRequest       object_get_retention = 34;
+        SetObjectRetentionRequest       object_set_retention = 35;
 
         BeginSegmentRequest      segment_begin = 12;
         CommitSegmentRequest     segment_commit = 13;
@@ -868,6 +899,8 @@ message BatchResponseItem {
         FinishMoveObjectResponse         object_finish_move = 27;
         BeginCopyObjectResponse          object_begin_copy = 28;
         FinishCopyObjectResponse         object_finish_copy = 29;
+        GetObjectRetentionResponse       object_get_retention = 34;
+        SetObjectRetentionResponse       object_set_retention = 35;
 
         BeginSegmentResponse      segment_begin = 12;
         CommitSegmentResponse     segment_commit = 13;

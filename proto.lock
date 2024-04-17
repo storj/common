@@ -3388,6 +3388,100 @@
             "name": "UpdateObjectMetadataResponse"
           },
           {
+            "name": "SetObjectRetentionRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "object_version",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "retention_mode",
+                "type": "RetentionModeValue"
+              },
+              {
+                "id": 5,
+                "name": "retain_until",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "SetObjectRetentionResponse"
+          },
+          {
+            "name": "GetObjectRetentionRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "object_version",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "GetObjectRetentionResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "retention_mode",
+                "type": "RetentionMode"
+              },
+              {
+                "id": 2,
+                "name": "retain_until",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "name": "SatStreamID",
             "fields": [
               {
@@ -4391,6 +4485,16 @@
                 "type": "FinishCopyObjectRequest"
               },
               {
+                "id": 34,
+                "name": "object_get_retention",
+                "type": "GetObjectRetentionRequest"
+              },
+              {
+                "id": 35,
+                "name": "object_set_retention",
+                "type": "SetObjectRetentionRequest"
+              },
+              {
                 "id": 12,
                 "name": "segment_begin",
                 "type": "BeginSegmentRequest"
@@ -4575,6 +4679,16 @@
                 "id": 29,
                 "name": "object_finish_copy",
                 "type": "FinishCopyObjectResponse"
+              },
+              {
+                "id": 34,
+                "name": "object_get_retention",
+                "type": "GetObjectRetentionResponse"
+              },
+              {
+                "id": 35,
+                "name": "object_set_retention",
+                "type": "SetObjectRetentionResponse"
               },
               {
                 "id": 12,
@@ -5098,6 +5212,16 @@
                 "name": "UpdateObjectMetadata",
                 "in_type": "UpdateObjectMetadataRequest",
                 "out_type": "UpdateObjectMetadataResponse"
+              },
+              {
+                "name": "GetObjectRetention",
+                "in_type": "GetObjectRetentionRequest",
+                "out_type": "GetObjectRetentionResponse"
+              },
+              {
+                "name": "SetObjectRetention",
+                "in_type": "SetObjectRetentionRequest",
+                "out_type": "SetObjectRetentionResponse"
               },
               {
                 "name": "BeginSegment",
