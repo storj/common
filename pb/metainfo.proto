@@ -598,7 +598,7 @@ message GetObjectRetentionRequest {
 
 message GetObjectRetentionResponse {
     RetentionMode             retention_mode = 1;
-    google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true];
 }
 
 //
