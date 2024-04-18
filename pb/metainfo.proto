@@ -279,9 +279,13 @@ message Object {
     pointerdb.RedundancyScheme      redundancy_scheme     = 12;
     encryption.EncryptionParameters encryption_parameters = 13;
 
-    // Object Lock messages are omitted in responses to requests lacking the permission to retrieve them.
-    RetentionModeValue        retention_mode = 20;
-    google.protobuf.Timestamp retain_until   = 21 [(gogoproto.stdtime) = true];
+    message Retention {
+        RetentionMode             mode           = 1;
+        google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true];
+    }
+
+    // Retention info is omitted in responses to requests lacking the permission to retrieve it.
+    Retention retention = 20;
 
     // total_size of object.
     int64 total_size  = 14;

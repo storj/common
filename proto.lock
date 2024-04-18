@@ -2509,19 +2509,8 @@
               },
               {
                 "id": 20,
-                "name": "retention_mode",
-                "type": "RetentionModeValue"
-              },
-              {
-                "id": 21,
-                "name": "retain_until",
-                "type": "google.protobuf.Timestamp",
-                "options": [
-                  {
-                    "name": "(gogoproto.stdtime)",
-                    "value": "true"
-                  }
-                ]
+                "name": "retention",
+                "type": "Retention"
               },
               {
                 "id": 14,
@@ -2542,6 +2531,29 @@
                 "id": 18,
                 "name": "plain_size",
                 "type": "int64"
+              }
+            ],
+            "messages": [
+              {
+                "name": "Retention",
+                "fields": [
+                  {
+                    "id": 1,
+                    "name": "mode",
+                    "type": "RetentionMode"
+                  },
+                  {
+                    "id": 2,
+                    "name": "retain_until",
+                    "type": "google.protobuf.Timestamp",
+                    "options": [
+                      {
+                        "name": "(gogoproto.stdtime)",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           },
