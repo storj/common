@@ -130,7 +130,9 @@ func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (pv *poolValue,
 		tags = append(tags, monkit.NewSeriesTag("name", p.name))
 	}
 	if p != nil {
+		cacheStarted := time.Now()
 		pv, ok := p.cache.Take(pk).(*poolValue)
+		mon.DurationVal("attempt_connection_get_from_cache_duration").Observe(time.Since(cacheStarted))
 		if ok {
 			mon.Event("connection_from_cache", tags...)
 			return pv, nil
@@ -138,12 +140,12 @@ func (p *Pool) get(ctx context.Context, pk poolKey, dial Dialer) (pv *poolValue,
 	}
 
 	mon.Event("connection_dialed", tags...)
-	started := time.Now()
+	dialStarted := time.Now()
 	conn, state, err := dial(ctx)
 	if err != nil {
 		return nil, err
 	}
-	mon.DurationVal("connection_dial_duration").Observe(time.Since(started))
+	mon.DurationVal("connection_dial_duration").Observe(time.Since(dialStarted))
 
 	return &poolValue{
 		conn:    conn,
