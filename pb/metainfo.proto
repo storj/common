@@ -237,13 +237,14 @@ message ProjectInfoResponse {
 // Object
 //---------------------------
 
-enum RetentionMode {
-    NONE       = 0;
-    COMPLIANCE = 1;
-}
+message Retention {
+    enum Mode {
+        INVALID = 0;
+        COMPLIANCE = 1;
+    }
 
-message RetentionModeValue {
-    RetentionMode value = 1;
+    Mode                      mode           = 1;
+    google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
 message Object {
@@ -279,12 +280,7 @@ message Object {
     pointerdb.RedundancyScheme      redundancy_scheme     = 12;
     encryption.EncryptionParameters encryption_parameters = 13;
 
-    message Retention {
-        RetentionMode             mode           = 1;
-        google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true];
-    }
-
-    // Retention info is omitted in responses to requests lacking the permission to retrieve it.
+    // This field is omitted if the object has no retention period or the request lacks the permission to read it.
     Retention retention = 20;
 
     // total_size of object.
@@ -313,8 +309,7 @@ message BeginObjectRequest {
     bytes encrypted_metadata = 10;
     bytes encrypted_metadata_encrypted_key = 11;
 
-    RetentionModeValue        retention_mode = 20;
-    google.protobuf.Timestamp retain_until   = 21 [(gogoproto.stdtime) = true];
+    Retention retention = 20;
 }
 
 message BeginObjectResponse {
@@ -581,8 +576,7 @@ message SetObjectRetentionRequest {
     bytes encrypted_object_key = 2;
     bytes object_version       = 3;
 
-    RetentionModeValue        retention_mode = 4;
-    google.protobuf.Timestamp retain_until   = 5 [(gogoproto.stdtime) = true];
+    Retention retention = 4;
 }
 
 message SetObjectRetentionResponse {
@@ -597,8 +591,7 @@ message GetObjectRetentionRequest {
 }
 
 message GetObjectRetentionResponse {
-    RetentionMode             retention_mode = 1;
-    google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true];
+    Retention retention = 1;
 }
 
 //
@@ -976,8 +969,7 @@ message BeginCopyObjectRequest {
     bytes new_bucket = 3;
     bytes new_encrypted_object_key = 4;
 
-    RetentionModeValue        retention_mode = 20;
-    google.protobuf.Timestamp retain_until   = 21 [(gogoproto.stdtime) = true];
+    Retention retention = 6;
 }
 
 // The satellite returns metadata of the source object,
