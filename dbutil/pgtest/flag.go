@@ -32,11 +32,17 @@ var postgres = flag.String("postgres-test-db", getenv("STORJ_TEST_POSTGRES", "ST
 var cockroach = flag.String("cockroach-test-db", getenv("STORJ_TEST_COCKROACH", "STORJ_COCKROACH_TEST"), "CockroachDB test database connection string (semicolon delimited for multiple), \"omit\" is used to omit the tests from output")
 var cockroachAlt = flag.String("cockroach-test-alt-db", getenv("STORJ_TEST_COCKROACH_ALT"), "CockroachDB test database connection alternate string (semicolon delimited for multiple), \"omit\" is used to omit the tests from output")
 
+// spanner is the test database connection string.
+var spanner = flag.String("spanner-test-db", getenv("STORJ_TEST_SPANNER", "STORJ_SPANNER_TEST"), "Spanner test database connection string (semicolon delimited for multiple), \"omit\" (or empty!) is used to omit the tests from output")
+
 // DefaultPostgres is expected to work under the storj-test docker-compose instance.
 const DefaultPostgres = "postgres://storj:storj-pass@test-postgres/teststorj?sslmode=disable"
 
 // DefaultCockroach is expected to work when a local cockroachDB instance is running.
 const DefaultCockroach = "cockroach://root@localhost:26257/master?sslmode=disable"
+
+// DefaultSpanner is expected to work when a local spanner emulator is running.
+const DefaultSpanner = "spanner://projects/storj-test/instances/test-instance/databases/metainfo"
 
 // Database defines a postgres compatible database.
 type Database struct {
@@ -94,6 +100,14 @@ func PickCockroach(t TB) string {
 	return pickNext(*cockroach, &pickCockroach)
 }
 
+// PickSpanner picks one spanner database from flag.
+func PickSpanner(t TB) string {
+	if *spanner == "" || strings.EqualFold(*spanner, "omit") || strings.EqualFold(*spanner, "") {
+		t.Skip("Spanner flag missing, example: -spanner-test-db=" + DefaultSpanner)
+	}
+	return pickNext(*spanner, &pickSpanner)
+}
+
 // PickCockroachAlt picks an alternate cockroach database from flag.
 //
 // This is used for high-load tests to ensure that other tests do not timeout.
@@ -110,6 +124,7 @@ func PickCockroachAlt(t TB) string {
 
 var pickPostgres uint64
 var pickCockroach uint64
+var pickSpanner uint64
 
 func pickNext(dbstr string, counter *uint64) string {
 	values := strings.Split(dbstr, ";")
