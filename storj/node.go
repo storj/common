@@ -6,6 +6,7 @@ package storj
 import (
 	"crypto/x509/pkix"
 	"database/sql/driver"
+	"encoding/base64"
 	"encoding/binary"
 	"math/bits"
 
@@ -269,6 +270,22 @@ func (id *NodeID) Scan(src interface{}) (err error) {
 	n, err := NodeIDFromBytes(b)
 	*id = n
 	return err
+}
+
+// DecodeSpanner implements spanner.Decoder.
+func (id *NodeID) DecodeSpanner(val any) (err error) {
+	if v, ok := val.(string); ok {
+		val, err = base64.StdEncoding.DecodeString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return id.Scan(val)
+}
+
+// EncodeSpanner implements spanner.Encoder.
+func (id NodeID) EncodeSpanner() (any, error) {
+	return id.Value()
 }
 
 // MarshalText serializes a node ID to a base58 string.

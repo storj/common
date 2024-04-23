@@ -5,6 +5,7 @@ package uuid
 
 import (
 	"database/sql/driver"
+	"encoding/base64"
 )
 
 // Value implements sql/driver.Valuer interface.
@@ -32,6 +33,22 @@ func (uuid *UUID) Scan(value interface{}) error {
 	default:
 		return Error.New("unable to scan %T into UUID", value)
 	}
+}
+
+// DecodeSpanner implements spanner.Decoder.
+func (uuid *UUID) DecodeSpanner(val any) (err error) {
+	if v, ok := val.(string); ok {
+		val, err = base64.StdEncoding.DecodeString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return uuid.Scan(val)
+}
+
+// EncodeSpanner implements spanner.Encoder.
+func (uuid UUID) EncodeSpanner() (any, error) {
+	return uuid.Value()
 }
 
 // NullUUID represents a UUID that may be null.

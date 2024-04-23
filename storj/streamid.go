@@ -5,6 +5,7 @@ package storj
 
 import (
 	"database/sql/driver"
+	"encoding/base64"
 
 	"github.com/zeebo/errs"
 )
@@ -94,4 +95,20 @@ func (id *StreamID) Scan(src interface{}) (err error) {
 	n, err := StreamIDFromBytes(b)
 	*id = n
 	return err
+}
+
+// DecodeSpanner implements spanner.Decoder.
+func (id *StreamID) DecodeSpanner(val any) (err error) {
+	if v, ok := val.(string); ok {
+		val, err = base64.StdEncoding.DecodeString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return id.Scan(val)
+}
+
+// EncodeSpanner implements spanner.Encoder.
+func (id StreamID) EncodeSpanner() (any, error) {
+	return id.Value()
 }

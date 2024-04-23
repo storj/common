@@ -6,6 +6,7 @@ package storj
 import (
 	"crypto/rand"
 	"database/sql/driver"
+	"encoding/base64"
 	"encoding/binary"
 
 	"github.com/zeebo/errs"
@@ -121,4 +122,20 @@ func (id *PieceID) Scan(src interface{}) (err error) {
 	n, err := PieceIDFromBytes(b)
 	*id = n
 	return err
+}
+
+// DecodeSpanner implements spanner.Decoder.
+func (id *PieceID) DecodeSpanner(val any) (err error) {
+	if v, ok := val.(string); ok {
+		val, err = base64.StdEncoding.DecodeString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return id.Scan(val)
+}
+
+// EncodeSpanner implements spanner.Encoder.
+func (id PieceID) EncodeSpanner() (any, error) {
+	return id.Value()
 }
