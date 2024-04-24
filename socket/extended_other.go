@@ -2,7 +2,6 @@
 // See LICENSE for copying information.
 
 //go:build !linux && !darwin && !windows
-// +build !linux,!darwin,!windows
 
 package socket
 

@@ -2,7 +2,6 @@
 // See LICENSE for copying information.
 
 //go:build race
-// +build race
 
 package leak
 

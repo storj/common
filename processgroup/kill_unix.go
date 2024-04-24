@@ -2,7 +2,6 @@
 // See LICENSE for copying information
 
 //go:build linux || freebsd
-// +build linux freebsd
 
 package processgroup
 

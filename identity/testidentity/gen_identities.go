@@ -2,7 +2,6 @@
 // See LICENSE for copying information
 
 //go:build ignore
-// +build ignore
 
 // gen_identities generates random identities table for testing
 package main

@@ -2,7 +2,6 @@
 // See LICENSE for copying information.
 
 //go:build go1.20 && !noquic
-// +build go1.20,!noquic
 
 package quic_test
 
