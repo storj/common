@@ -309,7 +309,7 @@ message BeginObjectRequest {
     bytes encrypted_metadata = 10;
     bytes encrypted_metadata_encrypted_key = 11;
 
-    Retention retention = 20;
+    Retention retention = 12;
 }
 
 message BeginObjectResponse {
