@@ -5,6 +5,7 @@ package storj
 
 import (
 	"database/sql/driver"
+	"strconv"
 
 	"github.com/zeebo/errs"
 )
@@ -67,4 +68,25 @@ func (p *PlacementConstraint) Scan(value interface{}) error {
 	}
 	*p = PlacementConstraint(uint16(code.(int64)))
 	return nil
+}
+
+// EncodeSpanner implements spanner.Encoder.
+func (p PlacementConstraint) EncodeSpanner() (any, error) {
+	return p.Value()
+}
+
+// DecodeSpanner implements spanner.Decoder.
+func (p *PlacementConstraint) DecodeSpanner(input any) error {
+	if sVal, ok := input.(string); ok {
+		iVal, err := strconv.ParseInt(sVal, 10, 64)
+		if err != nil {
+			return err
+		}
+		if int64(PlacementConstraint(iVal)) != iVal {
+			return errs.New("value out of bounds for PlacementConstraint: %d", iVal)
+		}
+		*p = PlacementConstraint(iVal)
+		return nil
+	}
+	return errs.New("unable to decode %q to PlacementConstraint", input)
 }
