@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	cloud.google.com/go/profiler v0.4.0
-	github.com/blang/semver v3.5.1+incompatible
+	github.com/blang/semver/v4 v4.0.0
 	github.com/bmkessler/fastdiv v0.0.0-20190227075523-41d5178f2044
 	github.com/calebcase/tmpfile v1.0.3
 	github.com/flynn/noise v1.0.0
