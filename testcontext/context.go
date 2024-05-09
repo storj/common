@@ -66,14 +66,26 @@ type TB interface {
 	Fatal(args ...interface{})
 }
 
+func defaultTimeout() time.Duration {
+	timeout := DefaultTimeout
+	if timeoutEnv := os.Getenv("STORJ_TESTCONTEXT_TIMEOUT"); timeoutEnv != "" {
+		var err error
+		timeout, err = time.ParseDuration(timeoutEnv)
+		if err != nil {
+			panic(fmt.Sprintf("could not parse timeout %q: %v", timeoutEnv, err))
+		}
+	}
+	return timeout
+}
+
 // New creates a new test context with default timeout.
 func New(test TB) *Context {
-	return NewWithContextAndTimeout(context.Background(), test, DefaultTimeout)
+	return NewWithContextAndTimeout(context.Background(), test, defaultTimeout())
 }
 
 // NewWithContext creates a new test context with a parent context.
 func NewWithContext(parentCtx context.Context, test TB) *Context {
-	return NewWithContextAndTimeout(parentCtx, test, DefaultTimeout)
+	return NewWithContextAndTimeout(parentCtx, test, defaultTimeout())
 }
 
 // NewWithTimeout creates a new test context with a given timeout.
