@@ -1,5 +1,5 @@
 // Copyright (C) 2022 Storj Labs, Inc.
-// See LICENSE for copying information.
+// See GO_LICENSE for copying information.
 
 package hmacsha512
 
