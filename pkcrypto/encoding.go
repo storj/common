@@ -6,10 +6,8 @@ package pkcrypto
 import (
 	"crypto"
 	"crypto/x509"
-	"encoding/asn1"
 	"encoding/pem"
 	"io"
-	"math/big"
 
 	"github.com/zeebo/errs"
 )
@@ -206,22 +204,6 @@ func (e *encodedChain) Parse() ([]*x509.Certificate, error) {
 	}
 
 	return chain, nil
-}
-
-type ecdsaSignature struct {
-	R, S *big.Int
-}
-
-func marshalECDSASignature(r, s *big.Int) ([]byte, error) {
-	return asn1.Marshal(ecdsaSignature{R: r, S: s})
-}
-
-func unmarshalECDSASignature(signatureBytes []byte) (r, s *big.Int, err error) {
-	var signature ecdsaSignature
-	if _, err = asn1.Unmarshal(signatureBytes, &signature); err != nil {
-		return nil, nil, err
-	}
-	return signature.R, signature.S, nil
 }
 
 // ecPrivateKeyFromASN1 parses a private key from the special Elliptic Curve

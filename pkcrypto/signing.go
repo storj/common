@@ -79,11 +79,7 @@ func verifyECDSASignatureWithoutHashing(pubKey *ecdsa.PublicKey, digest, signatu
 	race2.ReadSlice(digest)
 	race2.ReadSlice(signatureBytes)
 
-	r, s, err := unmarshalECDSASignature(signatureBytes)
-	if err != nil {
-		return ErrVerifySignature.New("unable to unmarshal ecdsa signature: %v", err)
-	}
-	if !ecdsa.Verify(pubKey, digest, r, s) {
+	if !ecdsa.VerifyASN1(pubKey, digest, signatureBytes) {
 		return ErrVerifySignature.New("signature is not valid")
 	}
 	return nil
@@ -165,11 +161,8 @@ func VerifyHMACSHA256(privKey crypto.PrivateKey, data, signature []byte) error {
 func signECDSAWithoutHashing(privKey *ecdsa.PrivateKey, digest []byte) ([]byte, error) {
 	race2.ReadSlice(digest)
 
-	r, s, err := ecdsa.Sign(rand.Reader, privKey, digest)
-	if err != nil {
-		return nil, ErrSign.Wrap(err)
-	}
-	return marshalECDSASignature(r, s)
+	sig, err := ecdsa.SignASN1(rand.Reader, privKey, digest)
+	return sig, ErrSign.Wrap(err)
 }
 
 func signRSAWithoutHashing(privKey *rsa.PrivateKey, digest []byte) ([]byte, error) {
