@@ -24,7 +24,7 @@ import (
 // printNewSigned, use when you need to generate a valid signature for tests.
 const printNewSigned = false
 
-func TestOrderLimitVerification(t *testing.T) {
+func TestVerifyOrderLimitSignature(t *testing.T) {
 	ctx := testcontext.New(t)
 
 	signer, err := identity.FullIdentityFromPEM(
@@ -146,7 +146,7 @@ func TestOrderLimitJSON(t *testing.T) {
 	}
 }
 
-func TestOrderVerification(t *testing.T) {
+func TestVerifyOrderSignature(t *testing.T) {
 	ctx := testcontext.New(t)
 
 	signer, err := identity.FullIdentityFromPEM(
@@ -189,7 +189,7 @@ func TestOrderVerification(t *testing.T) {
 	}
 }
 
-func TestUplinkOrderVerification(t *testing.T) {
+func TestVerifyUplinkOrderSignature(t *testing.T) {
 	ctx := testcontext.New(t)
 
 	publicKeyBytes, _ := hex.DecodeString("01eaebcb418cd629d4c01f365f33006c9de3ce70cf04da76c39cdc993f48fe53")
@@ -257,7 +257,7 @@ func TestUplinkOrderVerification(t *testing.T) {
 	}
 }
 
-func TestPieceHashVerification(t *testing.T) {
+func TestVerifyUplinkPieceHashSignature(t *testing.T) {
 	ctx := testcontext.New(t)
 
 	publicKeyBytes, _ := hex.DecodeString("01eaebcb418cd629d4c01f365f33006c9de3ce70cf04da76c39cdc993f48fe53")
