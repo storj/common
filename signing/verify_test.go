@@ -17,6 +17,7 @@ import (
 )
 
 func BenchmarkVerifyUplinkOrderSignature(b *testing.B) {
+	b.ReportAllocs()
 	ctx := context.Background()
 
 	publicKeyBytes, _ := hex.DecodeString("01eaebcb418cd629d4c01f365f33006c9de3ce70cf04da76c39cdc993f48fe53")
@@ -43,7 +44,9 @@ func BenchmarkVerifyUplinkOrderSignature(b *testing.B) {
 		require.NoError(b, err)
 	}
 }
+
 func BenchmarkVerifyUplinkPieceHashSignature(b *testing.B) {
+	b.ReportAllocs()
 	ctx := context.Background()
 
 	publicKeyBytes, _ := hex.DecodeString("01eaebcb418cd629d4c01f365f33006c9de3ce70cf04da76c39cdc993f48fe53")
@@ -66,7 +69,9 @@ func BenchmarkVerifyUplinkPieceHashSignature(b *testing.B) {
 		require.NoError(b, err)
 	}
 }
+
 func BenchmarkVerifyOrderLimitSignature(b *testing.B) {
+	b.ReportAllocs()
 	ctx := context.Background()
 
 	signer, err := identity.FullIdentityFromPEM(

@@ -16,9 +16,6 @@ import (
 
 var mon = monkit.Package()
 
-var publicKeyHashAndVerifySignatureMon = mon.Task()
-var privateKeyHashAndVerifySignatureMon = mon.Task()
-
 // PrivateKey implements a signer and signee using a crypto.PrivateKey.
 type PrivateKey struct {
 	Self storj.NodeID
@@ -36,15 +33,21 @@ func SignerFromFullIdentity(identity *identity.FullIdentity) Signer {
 // ID returns node id associated with PrivateKey.
 func (private *PrivateKey) ID() storj.NodeID { return private.Self }
 
+var monPrivateKeyHashAndSign = mon.Task()
+
 // HashAndSign hashes the data and signs with the used key.
 func (private *PrivateKey) HashAndSign(ctx context.Context, data []byte) (_ []byte, err error) {
-	defer mon.Task()(&ctx)(&err)
+	defer monPrivateKeyHashAndSign(&ctx)(&err)
+
 	return pkcrypto.HashAndSign(private.Key, data)
 }
 
+var monPrivateKeyHashAndVerifySignature = mon.Task()
+
 // HashAndVerifySignature hashes the data and verifies that the signature belongs to the PrivateKey.
 func (private *PrivateKey) HashAndVerifySignature(ctx context.Context, data, signature []byte) (err error) {
-	defer privateKeyHashAndVerifySignatureMon(&ctx)(&err)
+	defer monPrivateKeyHashAndVerifySignature(&ctx)(&err)
+
 	pub, err := pkcrypto.PublicKeyFromPrivate(private.Key)
 	if err != nil {
 		return err
@@ -53,15 +56,21 @@ func (private *PrivateKey) HashAndVerifySignature(ctx context.Context, data, sig
 	return pkcrypto.HashAndVerifySignature(pub, data, signature)
 }
 
+var monPrivateKeySignHMACSHA256 = mon.Task()
+
 // SignHMACSHA256 signs the given data with HMAC-SHA256 using the key as the secret.
 func (private *PrivateKey) SignHMACSHA256(ctx context.Context, data []byte) (_ []byte, err error) {
-	defer mon.Task()(&ctx)(&err)
+	defer monPrivateKeySignHMACSHA256(&ctx)(&err)
+
 	return pkcrypto.SignHMACSHA256(private.Key, data)
 }
 
+var monPrivateKeyVerifyHMACSHA256 = mon.Task()
+
 // VerifyHMACSHA256 checks that signature matches the HMAC-SHA256 of data using the key as the secret.
 func (private *PrivateKey) VerifyHMACSHA256(ctx context.Context, data, signature []byte) (err error) {
-	defer mon.Task()(&ctx)(&err)
+	defer monPrivateKeyVerifyHMACSHA256(&ctx)(&err)
+
 	return pkcrypto.VerifyHMACSHA256(private.Key, data, signature)
 }
 
@@ -82,9 +91,11 @@ func SigneeFromPeerIdentity(identity *identity.PeerIdentity) Signee {
 // ID returns node id associated with this PublicKey.
 func (public *PublicKey) ID() storj.NodeID { return public.Self }
 
+var monPublicKeyHashAndVerifySignature = mon.Task()
+
 // HashAndVerifySignature hashes the data and verifies that the signature belongs to the PublicKey.
 func (public *PublicKey) HashAndVerifySignature(ctx context.Context, data, signature []byte) (err error) {
-	defer publicKeyHashAndVerifySignatureMon(&ctx)(&err)
+	defer monPublicKeyHashAndVerifySignature(&ctx)(&err)
 
 	return pkcrypto.HashAndVerifySignature(public.Key, data, signature)
 }

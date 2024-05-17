@@ -11,8 +11,6 @@ import (
 	"storj.io/common/tracing"
 )
 
-var verifyOrderLimitSignatureMon = mon.Task()
-
 // Signee is able to verify that the data signature belongs to the signee.
 type Signee interface {
 	ID() storj.NodeID
@@ -75,9 +73,11 @@ func VerifyExitFailed(ctx context.Context, satellite Signee, signed *pb.ExitFail
 	return verifyExitFailed(ctx, satellite, signed)
 }
 
+var monVerifyOrderLimitSignature = mon.Task()
+
 func verifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb.OrderLimit) (err error) {
 	ctx = tracing.WithoutDistributedTracing(ctx)
-	defer verifyOrderLimitSignatureMon(&ctx)(&err)
+	defer monVerifyOrderLimitSignature(&ctx)(&err)
 
 	bytes, err := EncodeOrderLimit(ctx, signed)
 	if err != nil {
@@ -87,8 +87,10 @@ func verifyOrderLimitSignature(ctx context.Context, satellite Signee, signed *pb
 	return satellite.HashAndVerifySignature(ctx, bytes, signed.SatelliteSignature)
 }
 
+var monVerifyOrderSignature = mon.Task()
+
 func verifyOrderSignature(ctx context.Context, uplink Signee, signed *pb.Order) (err error) {
-	defer mon.Task()(&ctx)(&err)
+	defer monVerifyOrderSignature(&ctx)(&err)
 
 	if len(signed.XXX_unrecognized) > 0 {
 		return Error.New("unrecognized fields are not allowed")
@@ -102,9 +104,11 @@ func verifyOrderSignature(ctx context.Context, uplink Signee, signed *pb.Order) 
 	return uplink.HashAndVerifySignature(ctx, bytes, signed.UplinkSignature)
 }
 
+var monVerifyUplinkOrderSignature = mon.Task()
+
 func verifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.Order) (err error) {
 	ctx = tracing.WithoutDistributedTracing(ctx)
-	defer mon.Task()(&ctx)(&err)
+	defer monVerifyUplinkOrderSignature(&ctx)(&err)
 
 	if len(signed.XXX_unrecognized) > 0 {
 		return Error.New("unrecognized fields are not allowed")
@@ -118,9 +122,11 @@ func verifyUplinkOrderSignature(ctx context.Context, publicKey storj.PiecePublic
 	return Error.Wrap(publicKey.Verify(bytes, signed.UplinkSignature))
 }
 
+var monVerifyPieceHashSignature = mon.Task()
+
 func verifyPieceHashSignature(ctx context.Context, signee Signee, signed *pb.PieceHash) (err error) {
 	ctx = tracing.WithoutDistributedTracing(ctx)
-	defer mon.Task()(&ctx)(&err)
+	defer monVerifyPieceHashSignature(&ctx)(&err)
 
 	if len(signed.XXX_unrecognized) > 0 {
 		return Error.New("unrecognized fields are not allowed")
@@ -134,9 +140,11 @@ func verifyPieceHashSignature(ctx context.Context, signee Signee, signed *pb.Pie
 	return signee.HashAndVerifySignature(ctx, bytes, signed.Signature)
 }
 
+var monVerifyUplinkPieceHashSignature = mon.Task()
+
 func verifyUplinkPieceHashSignature(ctx context.Context, publicKey storj.PiecePublicKey, signed *pb.PieceHash) (err error) {
 	ctx = tracing.WithoutDistributedTracing(ctx)
-	defer mon.Task()(&ctx)(&err)
+	defer monVerifyUplinkPieceHashSignature(&ctx)(&err)
 
 	if len(signed.XXX_unrecognized) > 0 {
 		return Error.New("unrecognized fields are not allowed")
@@ -152,6 +160,7 @@ func verifyUplinkPieceHashSignature(ctx context.Context, publicKey storj.PiecePu
 
 func verifyExitCompleted(ctx context.Context, satellite Signee, signed *pb.ExitCompleted) (err error) {
 	defer mon.Task()(&ctx)(&err)
+
 	bytes, err := EncodeExitCompleted(ctx, signed)
 	if err != nil {
 		return Error.Wrap(err)
@@ -162,6 +171,7 @@ func verifyExitCompleted(ctx context.Context, satellite Signee, signed *pb.ExitC
 
 func verifyExitFailed(ctx context.Context, satellite Signee, signed *pb.ExitFailed) (err error) {
 	defer mon.Task()(&ctx)(&err)
+
 	bytes, err := EncodeExitFailed(ctx, signed)
 	if err != nil {
 		return Error.Wrap(err)
