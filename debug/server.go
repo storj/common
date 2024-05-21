@@ -25,6 +25,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
+	crawlspacereg "storj.io/common/debug/crawlspace"
 	"storj.io/common/traces"
 	"storj.io/common/version"
 	"storj.io/drpc/drpcmigrate"
@@ -167,6 +168,7 @@ func (server *Server) Run(ctx context.Context) error {
 		crawlLis = lmux.Route("crawl")
 		space := crawlspace.New(func(out io.Writer) reflectlang.Environment {
 			env := tools.Env(out)
+			crawlspacereg.Apply(env)
 			env["debugServer"] = reflect.ValueOf(server)
 			return env
 		})
