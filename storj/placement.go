@@ -77,16 +77,26 @@ func (p PlacementConstraint) EncodeSpanner() (any, error) {
 
 // DecodeSpanner implements spanner.Decoder.
 func (p *PlacementConstraint) DecodeSpanner(input any) error {
-	if sVal, ok := input.(string); ok {
-		iVal, err := strconv.ParseInt(sVal, 10, 64)
-		if err != nil {
-			return err
+	var sVal string
+	switch val := input.(type) {
+	case string:
+		sVal = val
+	case *string:
+		if val == nil {
+			*p = DefaultPlacement
+			return nil
 		}
-		if int64(PlacementConstraint(iVal)) != iVal {
-			return errs.New("value out of bounds for PlacementConstraint: %d", iVal)
-		}
-		*p = PlacementConstraint(iVal)
-		return nil
+		sVal = *val
+	default:
+		return errs.New("unable to decode %q to PlacementConstraint", input)
 	}
-	return errs.New("unable to decode %q to PlacementConstraint", input)
+	iVal, err := strconv.ParseInt(sVal, 10, 64)
+	if err != nil {
+		return err
+	}
+	if int64(PlacementConstraint(iVal)) != iVal {
+		return errs.New("value out of bounds for PlacementConstraint: %d", iVal)
+	}
+	*p = PlacementConstraint(iVal)
+	return nil
 }
