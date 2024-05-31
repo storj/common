@@ -5,6 +5,7 @@ package storj
 
 import (
 	"database/sql/driver"
+	"encoding/base64"
 	"encoding/binary"
 	"strconv"
 
@@ -203,6 +204,28 @@ func (nonce *Nonce) Scan(src interface{}) (err error) {
 	return err
 }
 
+// DecodeSpanner decodes a nonce from Spanner storage.
+func (nonce *Nonce) DecodeSpanner(input any) error {
+	if b64Value, ok := input.(string); ok {
+		bytesValue, err := base64.StdEncoding.DecodeString(b64Value)
+		if err != nil {
+			return ErrNonce.Wrap(err)
+		}
+		n, err := NonceFromBytes(bytesValue)
+		if err != nil {
+			return ErrNonce.Wrap(err)
+		}
+		*nonce = n
+		return nil
+	}
+	return ErrNonce.New("unable to decode %T into storj.Nonce", input)
+}
+
+// EncodeSpanner encodes a nonce for storing in Spanner.
+func (nonce Nonce) EncodeSpanner() (any, error) {
+	return nonce.Value()
+}
+
 // EncryptedPrivateKey is a private key that has been encrypted.
 type EncryptedPrivateKey []byte
 
@@ -219,4 +242,20 @@ func (pkey *EncryptedPrivateKey) Scan(src interface{}) (err error) {
 	}
 	*pkey = append([]byte{}, b...)
 	return nil
+}
+
+// DecodeSpanner implements spanner.Decoder.
+func (pkey *EncryptedPrivateKey) DecodeSpanner(val any) (err error) {
+	if v, ok := val.(string); ok {
+		val, err = base64.StdEncoding.DecodeString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return pkey.Scan(val)
+}
+
+// EncodeSpanner implements spanner.Encoder.
+func (pkey EncryptedPrivateKey) EncodeSpanner() (any, error) {
+	return pkey.Value()
 }
