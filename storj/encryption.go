@@ -197,7 +197,7 @@ func (nonce *Nonce) Scan(src interface{}) (err error) {
 
 	b, ok := src.([]byte)
 	if !ok {
-		return ErrNodeID.New("Nonce Scan expects []byte")
+		return ErrNonce.New("Nonce Scan expects []byte")
 	}
 	n, err := NonceFromBytes(b)
 	*nonce = n
@@ -226,6 +226,9 @@ func (nonce Nonce) EncodeSpanner() (any, error) {
 	return nonce.Value()
 }
 
+// ErrEncryptedPrivateKey is used when something goes wrong with an encrypted private key.
+var ErrEncryptedPrivateKey = errs.Class("encryptedprivatekey")
+
 // EncryptedPrivateKey is a private key that has been encrypted.
 type EncryptedPrivateKey []byte
 
@@ -238,7 +241,7 @@ func (pkey EncryptedPrivateKey) Value() (driver.Value, error) {
 func (pkey *EncryptedPrivateKey) Scan(src interface{}) (err error) {
 	b, ok := src.([]byte)
 	if !ok {
-		return ErrNodeID.New("EncryptedPrivateKey Scan expects []byte")
+		return ErrEncryptedPrivateKey.New("EncryptedPrivateKey Scan expects []byte")
 	}
 	*pkey = append([]byte{}, b...)
 	return nil
