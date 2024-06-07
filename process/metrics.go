@@ -20,6 +20,7 @@ import (
 	"storj.io/common/cfgstruct"
 	"storj.io/common/debug"
 	"storj.io/common/identity"
+	"storj.io/common/process/eventkitbq"
 	"storj.io/common/telemetry"
 	"storj.io/common/version"
 	"storj.io/eventkit"
@@ -161,7 +162,7 @@ func InitMetricsWithCertPath(ctx context.Context, log *zap.Logger, r *monkit.Reg
 	} else {
 		metricsID = nodeID.String()
 	}
-	return InitMetrics(ctx, log, r, metricsID, UDPDestination)
+	return InitMetrics(ctx, log, r, metricsID, destination(*metricEventCollector))
 }
 
 // MetricsIDFromHostname generates a metrics ID from the hostname (or logs the problem and returns with "" in case of error).
@@ -179,7 +180,7 @@ func MetricsIDFromHostname(log *zap.Logger) string {
 
 // InitMetricsWithHostname initializes telemetry reporting, using the hostname as the telemetry instance ID.
 func InitMetricsWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Registry) error {
-	return InitMetrics(ctx, log, r, MetricsIDFromHostname(log), UDPDestination)
+	return InitMetrics(ctx, log, r, MetricsIDFromHostname(log), destination(*metricEventCollector))
 }
 
 // Report triggers each telemetry client to send data to its collection endpoint.
@@ -192,4 +193,13 @@ func Report(ctx context.Context) error {
 		})
 	}
 	return group.Wait()
+}
+
+// destination picks an eventkit destination based on the configuration string.
+func destination(config string) InitEventkitDestination {
+	dest := UDPDestination
+	if strings.HasPrefix(config, "bigquery:") {
+		dest = eventkitbq.BQDestination
+	}
+	return dest
 }
