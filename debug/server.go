@@ -17,6 +17,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/felixge/fgprof"
 	"github.com/jtolio/crawlspace"
 	"github.com/jtolio/crawlspace/reflectlang"
 	"github.com/jtolio/crawlspace/tools"
@@ -88,6 +89,7 @@ func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *
 	server.mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
 	server.mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 	server.mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	server.mux.Handle("/debug/fgprof", fgprof.Handler())
 
 	server.mux.HandleFunc("/top", ServeTop)
 

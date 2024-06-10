@@ -7,9 +7,10 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/bmkessler/fastdiv v0.0.0-20190227075523-41d5178f2044
 	github.com/calebcase/tmpfile v1.0.3
+	github.com/felixge/fgprof v0.9.4
 	github.com/flynn/noise v1.0.0
 	github.com/gogo/protobuf v1.3.2
-	github.com/google/pprof v0.0.0-20230602150820-91b7bce49751
+	github.com/google/pprof v0.0.0-20240227163752-401108e1b7e7
 	github.com/jtolds/tracetagger/v2 v2.0.0-rc5
 	github.com/jtolio/crawlspace v0.0.0-20231116162947-3ec5cc6b36c5
 	github.com/jtolio/crawlspace/tools v0.0.0-20231116162947-3ec5cc6b36c5
