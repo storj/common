@@ -277,7 +277,8 @@ message Object {
 
     // fixed_segment_size is 0 for migrated objects.
     int64                           fixed_segment_size    = 11;
-    pointerdb.RedundancyScheme      redundancy_scheme     = 12;
+    reserved 12;
+    reserved "redundancy_scheme";
     encryption.EncryptionParameters encryption_parameters = 13;
 
     // This field is omitted if the object has no retention period or the request lacks the permission to read it.

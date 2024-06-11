@@ -2,13 +2,14 @@
 // source: encryption.proto
 //
 // versions:
-//     protoc-gen-pico: v0.0.1
-//     protoc:          v4.24.4
+//     protoc-gen-pico: v0.0.3
+//     protoc:          v4.25.3
 
 package pb
 
 import (
 	picobuf "storj.io/picobuf"
+	strconv "strconv"
 )
 
 type CipherSuite int32
@@ -19,6 +20,21 @@ const (
 	CipherSuite_ENC_AESGCM      CipherSuite = 2
 	CipherSuite_ENC_SECRETBOX   CipherSuite = 3
 )
+
+func (m CipherSuite) String() string {
+	switch m {
+	case CipherSuite_ENC_UNSPECIFIED:
+		return "ENC_UNSPECIFIED"
+	case CipherSuite_ENC_NULL:
+		return "ENC_NULL"
+	case CipherSuite_ENC_AESGCM:
+		return "ENC_AESGCM"
+	case CipherSuite_ENC_SECRETBOX:
+		return "ENC_SECRETBOX"
+	default:
+		return "CipherSuite(" + strconv.Itoa(int(m)) + ")"
+	}
+}
 
 type EncryptionParameters struct {
 	CipherSuite CipherSuite `json:"cipher_suite,omitempty"`
