@@ -307,5 +307,5 @@ func isdelim(b byte) bool {
 }
 
 func isobstext(b byte) bool {
-	return 0x80 <= b && b <= 0xFF
+	return 0x80 <= b // && b <= 0xFF, (which, is true always for bytes)
 }
