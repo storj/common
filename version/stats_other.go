@@ -5,6 +5,6 @@
 
 package version
 
-func osversion() (major, minor int64, ok bool) {
-	return 0, 0, false
+func osversion() (version int64, ok bool) {
+	return 0, false
 }

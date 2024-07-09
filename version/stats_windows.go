@@ -7,10 +7,14 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-func osversion() (major, minor int64, ok bool) {
+func osversion() (version int64, ok bool) {
 	info := windows.RtlGetVersion()
 	if info == nil {
-		return 0, 0, false
+		return 0, false
 	}
-	return int64(info.MajorVersion), int64(info.MinorVersion), true
+
+	// Current maximum minor version is 3,
+	// so the following computation should be fine.
+
+	return int64(info.MajorVersion)*10 + int64(info.MinorVersion), true
 }
