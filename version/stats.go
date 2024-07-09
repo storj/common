@@ -48,6 +48,10 @@ func (info *Info) Stats(cb func(key monkit.SeriesKey, field string, val float64)
 	cb(key, "minor", float64(info.Version.Minor))
 	cb(key, "patch", float64(info.Version.Patch))
 	cb(key, "os_"+runtime.GOOS, 1)
+	if osmajor, osminor, ok := osversion(); ok {
+		cb(key, "os_"+runtime.GOOS+"_major", float64(osmajor))
+		cb(key, "os_"+runtime.GOOS+"_minor", float64(osminor))
+	}
 	cb(key, "arch_"+runtime.GOARCH, 1)
 }
 
