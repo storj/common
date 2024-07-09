@@ -15,6 +15,7 @@ type streamWrapper struct {
 	ctx context.Context
 }
 
+func (s *streamWrapper) GetStream() drpc.Stream   { return s.Stream }
 func (s *streamWrapper) Context() context.Context { return s.ctx }
 
 // Handler implements drpc handler interface to extract experiment feature flag.
