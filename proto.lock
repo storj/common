@@ -377,6 +377,48 @@
       }
     },
     {
+      "protopath": "pb:/:debug.proto",
+      "def": {
+        "messages": [
+          {
+            "name": "CollectRuntimeTracesRequest"
+          },
+          {
+            "name": "CollectRuntimeTracesResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "data",
+                "type": "bytes"
+              }
+            ]
+          }
+        ],
+        "services": [
+          {
+            "name": "Debug",
+            "rpcs": [
+              {
+                "name": "CollectRuntimeTraces",
+                "in_type": "CollectRuntimeTracesRequest",
+                "out_type": "CollectRuntimeTracesResponse",
+                "out_streamed": true
+              }
+            ]
+          }
+        ],
+        "package": {
+          "name": "debug"
+        },
+        "options": [
+          {
+            "name": "go_package",
+            "value": "storj.io/common/pb"
+          }
+        ]
+      }
+    },
+    {
       "protopath": "pb:/:edgeauth.proto",
       "def": {
         "messages": [
@@ -429,7 +471,7 @@
           }
         ],
         "package": {
-          "name": "contact"
+          "name": "debug"
         },
         "options": [
           {
