@@ -5,6 +5,7 @@ package debug
 
 import (
 	"context"
+	"runtime"
 	"runtime/trace"
 
 	"github.com/zeebo/errs"
@@ -31,6 +32,10 @@ func NewEndpoint(auth func(ctx context.Context) error) *Endpoint {
 func (f *Endpoint) CollectRuntimeTraces(_ *pb.CollectRuntimeTracesRequest, stream pb.DRPCDebug_CollectRuntimeTracesStream) error {
 	if err := f.Auth(stream.Context()); err != nil {
 		return rpcstatus.Wrap(rpcstatus.Unauthenticated, err)
+	}
+
+	if !traceEnabled {
+		return rpcstatus.Wrap(rpcstatus.FailedPrecondition, errs.New("trace is not enabled: %v", runtime.Version()))
 	}
 
 	if err := trace.Start(&streamWriter{stream: stream}); err != nil {
