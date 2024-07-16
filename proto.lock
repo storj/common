@@ -1269,12 +1269,14 @@
               {
                 "id": 1,
                 "name": "succeeded",
-                "type": "TransferSucceeded"
+                "type": "TransferSucceeded",
+                "oneof_parent": "Message"
               },
               {
                 "id": 2,
                 "name": "failed",
-                "type": "TransferFailed"
+                "type": "TransferFailed",
+                "oneof_parent": "Message"
               }
             ]
           },
@@ -1462,27 +1464,32 @@
               {
                 "id": 1,
                 "name": "not_ready",
-                "type": "NotReady"
+                "type": "NotReady",
+                "oneof_parent": "Message"
               },
               {
                 "id": 2,
                 "name": "transfer_piece",
-                "type": "TransferPiece"
+                "type": "TransferPiece",
+                "oneof_parent": "Message"
               },
               {
                 "id": 3,
                 "name": "delete_piece",
-                "type": "DeletePiece"
+                "type": "DeletePiece",
+                "oneof_parent": "Message"
               },
               {
                 "id": 4,
                 "name": "exit_completed",
-                "type": "ExitCompleted"
+                "type": "ExitCompleted",
+                "oneof_parent": "Message"
               },
               {
                 "id": 5,
                 "name": "exit_failed",
-                "type": "ExitFailed"
+                "type": "ExitFailed",
+                "oneof_parent": "Message"
               }
             ]
           }
@@ -2873,17 +2880,20 @@
               {
                 "id": 1,
                 "name": "start_limit",
-                "type": "RangeStartLimit"
+                "type": "RangeStartLimit",
+                "oneof_parent": "Range"
               },
               {
                 "id": 2,
                 "name": "start",
-                "type": "RangeStart"
+                "type": "RangeStart",
+                "oneof_parent": "Range"
               },
               {
                 "id": 3,
                 "name": "suffix",
-                "type": "RangeSuffix"
+                "type": "RangeSuffix",
+                "oneof_parent": "Range"
               }
             ]
           },
@@ -4386,167 +4396,200 @@
               {
                 "id": 1,
                 "name": "bucket_create",
-                "type": "CreateBucketRequest"
+                "type": "CreateBucketRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 2,
                 "name": "bucket_get",
-                "type": "GetBucketRequest"
+                "type": "GetBucketRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 30,
                 "name": "bucket_get_location",
-                "type": "GetBucketLocationRequest"
+                "type": "GetBucketLocationRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 31,
                 "name": "bucket_get_versioning",
-                "type": "GetBucketVersioningRequest"
+                "type": "GetBucketVersioningRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 32,
                 "name": "bucket_set_versioning",
-                "type": "SetBucketVersioningRequest"
+                "type": "SetBucketVersioningRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 33,
                 "name": "bucket_get_object_lock_configuration",
-                "type": "GetBucketObjectLockConfigurationRequest"
+                "type": "GetBucketObjectLockConfigurationRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 3,
                 "name": "bucket_delete",
-                "type": "DeleteBucketRequest"
+                "type": "DeleteBucketRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 4,
                 "name": "bucket_list",
-                "type": "ListBucketsRequest"
+                "type": "ListBucketsRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 6,
                 "name": "object_begin",
-                "type": "BeginObjectRequest"
+                "type": "BeginObjectRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 7,
                 "name": "object_commit",
-                "type": "CommitObjectRequest"
+                "type": "CommitObjectRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 8,
                 "name": "object_get",
-                "type": "GetObjectRequest"
+                "type": "GetObjectRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 9,
                 "name": "object_list",
-                "type": "ListObjectsRequest"
+                "type": "ListObjectsRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 10,
                 "name": "object_begin_delete",
-                "type": "BeginDeleteObjectRequest"
+                "type": "BeginDeleteObjectRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 11,
                 "name": "object_finish_delete",
-                "type": "FinishDeleteObjectRequest"
+                "type": "FinishDeleteObjectRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 20,
                 "name": "object_get_ips",
-                "type": "GetObjectIPsRequest"
+                "type": "GetObjectIPsRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 22,
                 "name": "object_list_pending_streams",
-                "type": "ListPendingObjectStreamsRequest"
+                "type": "ListPendingObjectStreamsRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 23,
                 "name": "object_download",
-                "type": "DownloadObjectRequest"
+                "type": "DownloadObjectRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 24,
                 "name": "object_update_metadata",
-                "type": "UpdateObjectMetadataRequest"
+                "type": "UpdateObjectMetadataRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 26,
                 "name": "object_begin_move",
-                "type": "BeginMoveObjectRequest"
+                "type": "BeginMoveObjectRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 27,
                 "name": "object_finish_move",
-                "type": "FinishMoveObjectRequest"
+                "type": "FinishMoveObjectRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 28,
                 "name": "object_begin_copy",
-                "type": "BeginCopyObjectRequest"
+                "type": "BeginCopyObjectRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 29,
                 "name": "object_finish_copy",
-                "type": "FinishCopyObjectRequest"
+                "type": "FinishCopyObjectRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 34,
                 "name": "object_get_retention",
-                "type": "GetObjectRetentionRequest"
+                "type": "GetObjectRetentionRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 35,
                 "name": "object_set_retention",
-                "type": "SetObjectRetentionRequest"
+                "type": "SetObjectRetentionRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 12,
                 "name": "segment_begin",
-                "type": "BeginSegmentRequest"
+                "type": "BeginSegmentRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 13,
                 "name": "segment_commit",
-                "type": "CommitSegmentRequest"
+                "type": "CommitSegmentRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 14,
                 "name": "segment_make_inline",
-                "type": "MakeInlineSegmentRequest"
+                "type": "MakeInlineSegmentRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 15,
                 "name": "segment_begin_delete",
-                "type": "BeginDeleteSegmentRequest"
+                "type": "BeginDeleteSegmentRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 16,
                 "name": "segment_finish_delete",
-                "type": "FinishDeleteSegmentRequest"
+                "type": "FinishDeleteSegmentRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 17,
                 "name": "segment_list",
-                "type": "ListSegmentsRequest"
+                "type": "ListSegmentsRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 18,
                 "name": "segment_download",
-                "type": "DownloadSegmentRequest"
+                "type": "DownloadSegmentRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 25,
                 "name": "part_delete",
-                "type": "DeletePartRequest"
+                "type": "DeletePartRequest",
+                "oneof_parent": "Request"
               },
               {
                 "id": 19,
                 "name": "revoke_api_key",
-                "type": "RevokeAPIKeyRequest"
+                "type": "RevokeAPIKeyRequest",
+                "oneof_parent": "Request"
               }
             ]
           },
@@ -4582,167 +4625,200 @@
               {
                 "id": 1,
                 "name": "bucket_create",
-                "type": "CreateBucketResponse"
+                "type": "CreateBucketResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 2,
                 "name": "bucket_get",
-                "type": "GetBucketResponse"
+                "type": "GetBucketResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 30,
                 "name": "bucket_get_location",
-                "type": "GetBucketLocationResponse"
+                "type": "GetBucketLocationResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 31,
                 "name": "bucket_get_versioning",
-                "type": "GetBucketVersioningResponse"
+                "type": "GetBucketVersioningResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 32,
                 "name": "bucket_set_versioning",
-                "type": "SetBucketVersioningResponse"
+                "type": "SetBucketVersioningResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 33,
                 "name": "bucket_get_object_lock_configuration",
-                "type": "GetBucketObjectLockConfigurationResponse"
+                "type": "GetBucketObjectLockConfigurationResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 3,
                 "name": "bucket_delete",
-                "type": "DeleteBucketResponse"
+                "type": "DeleteBucketResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 4,
                 "name": "bucket_list",
-                "type": "ListBucketsResponse"
+                "type": "ListBucketsResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 6,
                 "name": "object_begin",
-                "type": "BeginObjectResponse"
+                "type": "BeginObjectResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 7,
                 "name": "object_commit",
-                "type": "CommitObjectResponse"
+                "type": "CommitObjectResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 8,
                 "name": "object_get",
-                "type": "GetObjectResponse"
+                "type": "GetObjectResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 9,
                 "name": "object_list",
-                "type": "ListObjectsResponse"
+                "type": "ListObjectsResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 10,
                 "name": "object_begin_delete",
-                "type": "BeginDeleteObjectResponse"
+                "type": "BeginDeleteObjectResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 11,
                 "name": "object_finish_delete",
-                "type": "FinishDeleteObjectResponse"
+                "type": "FinishDeleteObjectResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 20,
                 "name": "object_get_ips",
-                "type": "GetObjectIPsResponse"
+                "type": "GetObjectIPsResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 22,
                 "name": "object_list_pending_streams",
-                "type": "ListPendingObjectStreamsResponse"
+                "type": "ListPendingObjectStreamsResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 23,
                 "name": "object_download",
-                "type": "DownloadObjectResponse"
+                "type": "DownloadObjectResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 24,
                 "name": "object_update_metadata",
-                "type": "UpdateObjectMetadataResponse"
+                "type": "UpdateObjectMetadataResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 26,
                 "name": "object_begin_move",
-                "type": "BeginMoveObjectResponse"
+                "type": "BeginMoveObjectResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 27,
                 "name": "object_finish_move",
-                "type": "FinishMoveObjectResponse"
+                "type": "FinishMoveObjectResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 28,
                 "name": "object_begin_copy",
-                "type": "BeginCopyObjectResponse"
+                "type": "BeginCopyObjectResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 29,
                 "name": "object_finish_copy",
-                "type": "FinishCopyObjectResponse"
+                "type": "FinishCopyObjectResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 34,
                 "name": "object_get_retention",
-                "type": "GetObjectRetentionResponse"
+                "type": "GetObjectRetentionResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 35,
                 "name": "object_set_retention",
-                "type": "SetObjectRetentionResponse"
+                "type": "SetObjectRetentionResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 12,
                 "name": "segment_begin",
-                "type": "BeginSegmentResponse"
+                "type": "BeginSegmentResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 13,
                 "name": "segment_commit",
-                "type": "CommitSegmentResponse"
+                "type": "CommitSegmentResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 14,
                 "name": "segment_make_inline",
-                "type": "MakeInlineSegmentResponse"
+                "type": "MakeInlineSegmentResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 15,
                 "name": "segment_begin_delete",
-                "type": "BeginDeleteSegmentResponse"
+                "type": "BeginDeleteSegmentResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 16,
                 "name": "segment_finish_delete",
-                "type": "FinishDeleteSegmentResponse"
+                "type": "FinishDeleteSegmentResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 17,
                 "name": "segment_list",
-                "type": "ListSegmentsResponse"
+                "type": "ListSegmentsResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 18,
                 "name": "segment_download",
-                "type": "DownloadSegmentResponse"
+                "type": "DownloadSegmentResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 25,
                 "name": "part_delete",
-                "type": "DeletePartResponse"
+                "type": "DeletePartResponse",
+                "oneof_parent": "Response"
               },
               {
                 "id": 19,
                 "name": "revoke_api_key",
-                "type": "RevokeAPIKeyResponse"
+                "type": "RevokeAPIKeyResponse",
+                "oneof_parent": "Response"
               }
             ]
           },
@@ -5037,6 +5113,11 @@
                 "id": 9,
                 "name": "new_object_version",
                 "type": "bytes"
+              },
+              {
+                "id": 10,
+                "name": "retention",
+                "type": "Retention"
               },
               {
                 "id": 8,

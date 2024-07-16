@@ -983,8 +983,8 @@ message BeginCopyObjectResponse {
     encryption.EncryptionParameters encryption_parameters = 5;
 }
 
-// Uplink uploads the newly encrypted metadata fore the destination object,
-// so that the satellite can finish the copy.
+// Uplink uploads the newly encrypted metadata for the destination
+// object, so that the satellite can finish the copy.
 message FinishCopyObjectRequest {
     RequestHeader header = 15;
 
@@ -995,6 +995,8 @@ message FinishCopyObjectRequest {
     bytes new_bucket = 2;
     bytes new_encrypted_object_key = 3;
     bytes new_object_version = 9;
+
+    Retention retention = 10;
 
     // if false, keep existing metadata by ignoring 'new_encrypted_metadata'
     bool override_metadata = 8;
