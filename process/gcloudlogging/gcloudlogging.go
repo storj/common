@@ -76,6 +76,14 @@ func (enc *encoder) EncodeEntry(ent zapcore.Entry, fields []zapcore.Field) (*buf
 	return enc.Encoder.EncodeEntry(ent, newFields)
 }
 
+// Clone copies the encoder, ensuring that adding fields to the copy doesn't
+// affect the original.
+//
+// This is required to propagate the custom encoder to child loggers.
+func (enc *encoder) Clone() zapcore.Encoder {
+	return &encoder{Encoder: enc.Encoder.Clone()}
+}
+
 // NewEncoder is like zapcore.NewJSONEncoder, but it moves fields and several
 // keys in the log line so that Cloud Logging understands them better.
 func NewEncoder(cfg zapcore.EncoderConfig) zapcore.Encoder {
