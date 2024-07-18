@@ -4979,6 +4979,11 @@
                 "name": "new_segment_keys",
                 "type": "EncryptedKeyAndNonce",
                 "is_repeated": true
+              },
+              {
+                "id": 7,
+                "name": "retention",
+                "type": "Retention"
               }
             ]
           },

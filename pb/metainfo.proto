@@ -954,6 +954,8 @@ message FinishMoveObjectRequest {
     bytes new_encrypted_metadata_key_nonce = 3 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes new_encrypted_metadata_key = 4;
     repeated EncryptedKeyAndNonce new_segment_keys = 5;
+
+    Retention retention = 7;
 }
 
 message FinishMoveObjectResponse { }
