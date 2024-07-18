@@ -5017,11 +5017,6 @@
                 "id": 4,
                 "name": "new_encrypted_object_key",
                 "type": "bytes"
-              },
-              {
-                "id": 6,
-                "name": "retention",
-                "type": "Retention"
               }
             ]
           },

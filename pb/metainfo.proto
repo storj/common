@@ -968,8 +968,6 @@ message BeginCopyObjectRequest {
 
     bytes new_bucket = 3;
     bytes new_encrypted_object_key = 4;
-
-    Retention retention = 6;
 }
 
 // The satellite returns metadata of the source object,
