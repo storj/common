@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/zeebo/errs"
 
 	"storj.io/common/pb"
@@ -28,7 +27,7 @@ var (
 // Sign create a signed tag set from a raw one.
 func Sign(ctx context.Context, tagSet *pb.NodeTagSet, signer signing.Signer) (*pb.SignedNodeTagSet, error) {
 	signed := &pb.SignedNodeTagSet{}
-	raw, err := proto.Marshal(tagSet)
+	raw, err := pb.Marshal(tagSet)
 	if err != nil {
 		return nil, errs.Wrap(err)
 	}
@@ -53,7 +52,7 @@ func Verify(ctx context.Context, tags *pb.SignedNodeTagSet, signee signing.Signe
 		return nil, SignatureErr.Wrap(err)
 	}
 	tagset := &pb.NodeTagSet{}
-	err = proto.Unmarshal(tags.SerializedTag, tagset)
+	err = pb.Unmarshal(tags.SerializedTag, tagset)
 	if err != nil {
 		return nil, SerializationErr.Wrap(err)
 	}
