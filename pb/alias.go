@@ -10,3 +10,6 @@ func Unmarshal(buf []byte, pb proto.Message) error { return proto.Unmarshal(buf,
 
 // Marshal is an alias for proto.Marshal.
 func Marshal(pb proto.Message) ([]byte, error) { return proto.Marshal(pb) }
+
+// Size is an alias for proto.Size.
+func Size(pb proto.Message) int { return proto.Size(pb) }
