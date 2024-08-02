@@ -47,3 +47,34 @@ func TestNullValuer(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, expected, b)
 }
+
+func TestNullUUID_SpannerEncoding(t *testing.T) {
+	t.Run("valid", func(t *testing.T) {
+		original := uuid.NullUUID{
+			UUID:  uuid.UUID{0x6b, 0xa7, 0xb8, 0x10, 0x9d, 0xad, 0x11, 0xd1, 0x80, 0xb4, 0x00, 0xc0, 0x4f, 0xd4, 0x30, 0xc8},
+			Valid: true,
+		}
+
+		encoded, err := original.EncodeSpanner()
+		require.NoError(t, err)
+		var res uuid.NullUUID
+		err = res.DecodeSpanner(encoded)
+		require.NoError(t, err)
+		require.Equal(t, original, res)
+	})
+
+	t.Run("invalid", func(t *testing.T) {
+		original := uuid.NullUUID{
+			UUID:  uuid.UUID{},
+			Valid: false,
+		}
+
+		encoded, err := original.EncodeSpanner()
+		require.NoError(t, err)
+		var res uuid.NullUUID
+		err = res.DecodeSpanner(encoded)
+		require.NoError(t, err)
+		require.Equal(t, original, res)
+	})
+
+}

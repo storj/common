@@ -77,3 +77,19 @@ func (n *NullUUID) Scan(value interface{}) error {
 	n.Valid = true
 	return n.UUID.Scan(value)
 }
+
+// EncodeSpanner implements spanner.Encoder.
+func (n NullUUID) EncodeSpanner() (any, error) {
+	return n.Value()
+}
+
+// DecodeSpanner implements spanner.Decoder.
+func (n *NullUUID) DecodeSpanner(val any) (err error) {
+	if v, ok := val.(string); ok {
+		val, err = base64.StdEncoding.DecodeString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return n.Scan(val)
+}
