@@ -18,6 +18,7 @@ import (
 var (
 	errorClass  = errs.Class("initializing profiler")
 	serviceName = flag.String("debug.profilername", "", "provide the name of the peer to enable continuous cpu/mem profiling for")
+	projectID   = flag.String("debug.profilerproject", "", "provide the google project id for continuous profiling (required only for non-k8s environments")
 )
 
 func init() {
@@ -25,10 +26,14 @@ func init() {
 		name := *serviceName
 		if name != "" {
 			info := version.Build
-			if err := profiler.Start(profiler.Config{
+			config := profiler.Config{
 				Service:        name,
 				ServiceVersion: info.Version.String(),
-			}); err != nil {
+			}
+			if *projectID != "" {
+				config.ProjectID = *projectID
+			}
+			if err := profiler.Start(config); err != nil {
 				return errorClass.Wrap(err)
 			}
 			log.Debug("success debug profiler init")
