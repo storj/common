@@ -74,6 +74,14 @@ func (n *NullUUID) Scan(value interface{}) error {
 		return nil
 	}
 
+	// a NULL BYTES value gets returned from Spanner as an empty []byte
+	if v, ok := value.([]byte); ok {
+		if v == nil {
+			n.UUID, n.Valid = UUID{}, false
+			return nil
+		}
+	}
+
 	n.Valid = true
 	return n.UUID.Scan(value)
 }

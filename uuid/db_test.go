@@ -6,6 +6,7 @@ package uuid_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"storj.io/common/uuid"
@@ -77,4 +78,52 @@ func TestNullUUID_SpannerEncoding(t *testing.T) {
 		require.Equal(t, original, res)
 	})
 
+	t.Run("null bytes decoding", func(t *testing.T) {
+		// a NULL BYTES column is returned as an empty uninitialized byte slice
+		tests := []struct {
+			name    string
+			input   any
+			want    uuid.NullUUID
+			wantErr bool
+		}{
+			{
+				name:  "nil succeeds and is invalid",
+				input: nil,
+				want: uuid.NullUUID{
+					UUID:  uuid.UUID{},
+					Valid: false,
+				},
+				wantErr: false,
+			},
+			{
+				name:  "empty instantiated byte slice fails and errors",
+				input: []byte{},
+				want: uuid.NullUUID{
+					UUID:  uuid.UUID{},
+					Valid: true,
+				},
+				wantErr: true,
+			},
+			{
+				name:  "instantiated byte slice with nil succeeds and errors",
+				input: []byte{},
+				want: uuid.NullUUID{
+					UUID:  uuid.UUID{},
+					Valid: true,
+				},
+				wantErr: true,
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				var n uuid.NullUUID
+				err := n.DecodeSpanner(tt.input)
+				if (err != nil) != tt.wantErr {
+					t.Errorf("DecodeSpanner() error = %v, wantErr %v", err, tt.wantErr)
+				}
+				assert.Equal(t, tt.want, n)
+			})
+		}
+	})
 }
