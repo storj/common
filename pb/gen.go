@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -119,11 +120,28 @@ func main() {
 	}
 }
 
+var rxInit = regexp.MustCompile(`func init\(\) \{[^\}]*\}`)
+var rxDescriptor = regexp.MustCompile(`(?msU)func \(\*?[a-zA-Z_]+\) Descriptor\(\) .*^}`)
+var rxEnumDescriptor = regexp.MustCompile(`(?msU)func \(\*?[a-zA-Z_]+\) EnumDescriptor\(\) .*^}`)
+var rxFileDescriptor = regexp.MustCompile(`(?msU)^var fileDescriptor_.*^}`)
+
+var rxReferenceImportsComment = regexp.MustCompile("(?m)^\\/\\/ Reference imports to suppress .*$")
+var rxReferenceImports = regexp.MustCompile("(?m)^var _ = [a-zA-Z.]+$")
+
 func process(file string) {
 	data, err := os.ReadFile(file)
 	check(err)
 
 	source := string(data)
+
+	source = rxInit.ReplaceAllString(source, "")
+	source = rxDescriptor.ReplaceAllString(source, "")
+	source = rxEnumDescriptor.ReplaceAllString(source, "")
+	source = rxFileDescriptor.ReplaceAllString(source, "")
+
+	// goimports takes care of removing the unnecessary imports
+	source = rxReferenceImportsComment.ReplaceAllString(source, "")
+	source = rxReferenceImports.ReplaceAllString(source, "")
 
 	// When generating code to the same path as proto, it will
 	// end up generating an `import _ "."`, the following replace removes it.
