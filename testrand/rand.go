@@ -5,6 +5,7 @@
 package testrand
 
 import (
+	"encoding/json"
 	"io"
 	"math/rand"
 
@@ -142,6 +143,20 @@ func BucketName() string {
 	return string(b)
 }
 
+// TestMetadata represents randomly generated metadata. Combined with
+// its Metadata constructor and JSON method, it allows for constructions
+// in tests such as `m := testrand.Metadata().JSON()`.
+type TestMetadata map[string]string
+
+// JSON encodes t to a slice of bytes.
+func (t TestMetadata) JSON() []byte {
+	b, err := json.Marshal(t)
+	if err != nil {
+		panic(err)
+	}
+	return b
+}
+
 // Metadata creates random metadata mostly conforming to the restrictions of S3:
 // https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#object-metadata
 //
@@ -149,7 +164,7 @@ func BucketName() string {
 // S3). This is a best effort to cover most cases we believe our design
 // requires and will need to be revisited when a more explicit design spec is
 // created.
-func Metadata() map[string]string {
+func Metadata() TestMetadata {
 	const (
 		// The actual limit is 2KiB, but there are overheads to encoding and encryption.
 		max = 1 * 1024
