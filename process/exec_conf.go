@@ -420,10 +420,10 @@ func cleanup(cmd *cobra.Command, opts *ExecOptions) {
 			switch *logOutput {
 			case "stdout":
 				logger.Debug("Unrecoverable error", zap.Error(err))
-				fmt.Fprintln(os.Stdout, "Error:", err.Error())
+				_, _ = fmt.Fprintln(os.Stdout, "Error:", err.Error())
 			case "stderr":
 				logger.Debug("Unrecoverable error", zap.Error(err))
-				fmt.Fprintln(os.Stderr, "Error:", err.Error())
+				_, _ = fmt.Fprintln(os.Stderr, "Error:", err.Error())
 			default:
 				logger.Fatal("Unrecoverable error", zap.Error(err))
 			}

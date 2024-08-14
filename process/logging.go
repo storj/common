@@ -198,7 +198,7 @@ func sortedKeys(m map[string]interface{}) []string {
 func (p *prettyEncoder) EncodeEntry(entry zapcore.Entry, fields []zapcore.Field) (*buffer.Buffer, error) {
 	b := p.pool.Get()
 
-	fmt.Fprintf(b, "%s\t%s\t%s\n",
+	_, _ = fmt.Fprintf(b, "%s\t%s\t%s\n",
 		entry.Time.Format("15:04:05.000"),
 		levelDecorate(entry.Level, entry.Level.CapitalString()),
 		entry.Message)
@@ -210,7 +210,7 @@ func (p *prettyEncoder) EncodeEntry(entry zapcore.Entry, fields []zapcore.Field)
 			if key == "errorVerbose" && !*logDev {
 				continue
 			}
-			fmt.Fprintf(b, "\t%s: %s\n",
+			_, _ = fmt.Fprintf(b, "\t%s: %s\n",
 				key,
 				strings.ReplaceAll(fmt.Sprint(m.Fields[key]), "\n", "\n\t"))
 		}

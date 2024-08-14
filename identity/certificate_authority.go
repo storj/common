@@ -102,7 +102,7 @@ func NewCA(ctx context.Context, opts NewCAOptions) (_ *FullCertificateAuthority,
 	}
 
 	if opts.Logger != nil {
-		fmt.Fprintf(opts.Logger, "Generating key with a minimum a difficulty of %d...\n", opts.Difficulty)
+		_, _ = fmt.Fprintf(opts.Logger, "Generating key with a minimum a difficulty of %d...\n", opts.Difficulty)
 	}
 
 	version, err := storj.GetIDVersion(opts.VersionNumber)
