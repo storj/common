@@ -473,7 +473,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 	}
 	const b = "bytes="
 	if !strings.HasPrefix(s, b) {
-		return nil, ErrInvalidRange.New(s)
+		return nil, ErrInvalidRange.New("%v", s)
 	}
 
 	var ranges []HTTPRange
@@ -485,7 +485,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 		}
 		i := strings.Index(ra, "-")
 		if i < 0 {
-			return nil, ErrInvalidRange.New(ra)
+			return nil, ErrInvalidRange.New("%v", ra)
 		}
 		start, end := strings.TrimSpace(ra[:i]), strings.TrimSpace(ra[i+1:])
 		var r HTTPRange
@@ -497,7 +497,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 			// RFC 7233 Section 2.1 "Byte-Ranges".
 			i, err := strconv.ParseInt(end, 10, 64)
 			if err != nil {
-				return nil, ErrInvalidRange.New(ra)
+				return nil, ErrInvalidRange.New("%v", ra)
 			}
 			if i > size {
 				i = size
@@ -507,7 +507,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 		} else {
 			i, err := strconv.ParseInt(start, 10, 64)
 			if err != nil || i < 0 {
-				return nil, ErrInvalidRange.New(ra)
+				return nil, ErrInvalidRange.New("%v", ra)
 			}
 			if i >= size {
 				// If the range begins after the size of the content,
@@ -522,7 +522,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 			} else {
 				i, err := strconv.ParseInt(end, 10, 64)
 				if err != nil || r.Start > i {
-					return nil, ErrInvalidRange.New(ra)
+					return nil, ErrInvalidRange.New("%v", ra)
 				}
 				if i >= size {
 					i = size - 1
