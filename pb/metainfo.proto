@@ -241,6 +241,8 @@ message Retention {
     enum Mode {
         INVALID = 0;
         COMPLIANCE = 1;
+        GOVERNANCE = 3;
+        LEGAL_HOLD = 4;
     }
 
     Mode                      mode           = 1;

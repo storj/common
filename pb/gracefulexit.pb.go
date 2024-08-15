@@ -238,6 +238,7 @@ func (m *TransferFailed) GetError() TransferFailed_Error {
 
 type StorageNodeMessage struct {
 	// Types that are valid to be assigned to Message:
+	//
 	//	*StorageNodeMessage_Succeeded
 	//	*StorageNodeMessage_Failed
 	Message              isStorageNodeMessage_Message `protobuf_oneof:"Message"`
@@ -517,6 +518,7 @@ func (m *ExitFailed) GetFailed() time.Time {
 
 type SatelliteMessage struct {
 	// Types that are valid to be assigned to Message:
+	//
 	//	*SatelliteMessage_NotReady
 	//	*SatelliteMessage_TransferPiece
 	//	*SatelliteMessage_DeletePiece

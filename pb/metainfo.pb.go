@@ -46,16 +46,22 @@ type Retention_Mode int32
 const (
 	Retention_INVALID    Retention_Mode = 0
 	Retention_COMPLIANCE Retention_Mode = 1
+	Retention_GOVERNANCE Retention_Mode = 3
+	Retention_LEGAL_HOLD Retention_Mode = 4
 )
 
 var Retention_Mode_name = map[int32]string{
 	0: "INVALID",
 	1: "COMPLIANCE",
+	3: "GOVERNANCE",
+	4: "LEGAL_HOLD",
 }
 
 var Retention_Mode_value = map[string]int32{
 	"INVALID":    0,
 	"COMPLIANCE": 1,
+	"GOVERNANCE": 3,
+	"LEGAL_HOLD": 4,
 }
 
 func (x Retention_Mode) String() string {
@@ -1988,6 +1994,7 @@ func (m *DownloadObjectRequest) GetDesiredNodes() int32 {
 
 type Range struct {
 	// Types that are valid to be assigned to Range:
+	//
 	//	*Range_StartLimit
 	//	*Range_Start
 	//	*Range_Suffix
@@ -3325,7 +3332,6 @@ func (m *GetObjectRetentionResponse) GetRetention() *Retention {
 	return nil
 }
 
-//
 // Only for satellite use
 //
 // TODO this needs to be removed BUT unfortunately libuplink is using it and
@@ -4691,6 +4697,7 @@ func (m *BatchRequest) GetRequests() []*BatchRequestItem {
 
 type BatchRequestItem struct {
 	// Types that are valid to be assigned to Request:
+	//
 	//	*BatchRequestItem_BucketCreate
 	//	*BatchRequestItem_BucketGet
 	//	*BatchRequestItem_BucketGetLocation
@@ -5249,6 +5256,7 @@ func (m *BatchResponse) GetResponses() []*BatchResponseItem {
 
 type BatchResponseItem struct {
 	// Types that are valid to be assigned to Response:
+	//
 	//	*BatchResponseItem_BucketCreate
 	//	*BatchResponseItem_BucketGet
 	//	*BatchResponseItem_BucketGetLocation

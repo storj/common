@@ -1937,6 +1937,14 @@
               {
                 "name": "COMPLIANCE",
                 "integer": 1
+              },
+              {
+                "name": "GOVERNANCE",
+                "integer": 3
+              },
+              {
+                "name": "LEGAL_HOLD",
+                "integer": 4
               }
             ]
           },
