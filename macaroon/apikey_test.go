@@ -64,10 +64,18 @@ func TestSerializeParseRestrictAndCheck(t *testing.T) {
 	err = parsedKey.Check(ctx, secret, APIKeyVersionLatest, action2, nil)
 	require.True(t, ErrUnauthorized.Has(err), err)
 
-	action1.Op = ActionLock
-	require.NoError(t, key.Check(ctx, secret, APIKeyVersionObjectLock, action1, nil))
-	err = key.Check(ctx, secret, APIKeyVersionMin, action1, nil)
-	require.True(t, ErrUnauthorized.Has(err))
+	for _, actionType := range []ActionType{
+		ActionPutObjectRetention,
+		ActionGetObjectRetention,
+		ActionPutObjectLegalHold,
+		ActionGetObjectLegalHold,
+		ActionBypassGovernanceRetention,
+	} {
+		action1.Op = actionType
+		require.NoError(t, key.Check(ctx, secret, APIKeyVersionObjectLock, action1, nil))
+		err = key.Check(ctx, secret, APIKeyVersionMin, action1, nil)
+		require.True(t, ErrUnauthorized.Has(err))
+	}
 }
 
 func TestRevocation(t *testing.T) {

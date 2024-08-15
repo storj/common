@@ -16,7 +16,11 @@ message Caveat {
   bool disallow_writes = 2;
   bool disallow_lists = 3;
   bool disallow_deletes = 4;
-  bool disallow_locks = 5;
+  bool disallow_put_retention = 5;
+  bool disallow_get_retention = 6;
+  bool disallow_put_legal_hold = 7;
+  bool disallow_get_legal_hold = 8;
+  bool disallow_bypass_governance_retention = 9;
 
   // If any entries exist, require all access to happen in at least
   // one of them.

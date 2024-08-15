@@ -29,7 +29,27 @@
               },
               {
                 "id": 5,
-                "name": "disallow_locks",
+                "name": "disallow_put_retention",
+                "type": "bool"
+              },
+              {
+                "id": 6,
+                "name": "disallow_get_retention",
+                "type": "bool"
+              },
+              {
+                "id": 7,
+                "name": "disallow_put_legal_hold",
+                "type": "bool"
+              },
+              {
+                "id": 8,
+                "name": "disallow_get_legal_hold",
+                "type": "bool"
+              },
+              {
+                "id": 9,
+                "name": "disallow_bypass_governance_retention",
                 "type": "bool"
               },
               {

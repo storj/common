@@ -53,8 +53,21 @@ const (
 	ActionDelete ActionType = 4
 	// ActionProjectInfo requests project-level information.
 	ActionProjectInfo ActionType = 5
-	// ActionLock specifies an action related to Object Lock.
-	ActionLock ActionType = 6
+	// ActionPutObjectRetention specifies an action related to updating
+	// Object Retention configuration.
+	ActionPutObjectRetention ActionType = 6
+	// ActionGetObjectRetention specifies an action related to retrieving
+	// Object Retention configuration.
+	ActionGetObjectRetention ActionType = 7
+	// ActionPutObjectLegalHold specifies an action related to updating
+	// Object Legal Hold configuration.
+	ActionPutObjectLegalHold ActionType = 8
+	// ActionGetObjectLegalHold specifies an action related to updating
+	// Object Legal Hold configuration.
+	ActionGetObjectLegalHold ActionType = 9
+	// ActionBypassGovernanceRetention specifies an action related to bypassing
+	// Object Governance Retention.
+	ActionBypassGovernanceRetention ActionType = 10
 )
 
 // APIKeyVersion specifies the version of an API key.
@@ -151,10 +164,17 @@ func (a *APIKey) Check(ctx context.Context, secret []byte, version APIKeyVersion
 		return Error.New("no timestamp provided")
 	}
 
-	if action.Op == ActionLock && version < APIKeyVersionObjectLock {
-		// API keys created before the introduction of the Object Lock permission
-		// should be denied the ability to perform Object Lock actions.
-		return ErrUnauthorized.New("action disallowed")
+	if version < APIKeyVersionObjectLock {
+		// API keys created before the introduction of granular Object Lock permissions
+		// should be denied the ability to perform granular Object Lock actions.
+		switch action.Op {
+		case ActionPutObjectRetention,
+			ActionGetObjectRetention,
+			ActionPutObjectLegalHold,
+			ActionGetObjectLegalHold,
+			ActionBypassGovernanceRetention:
+			return ErrUnauthorized.New("action disallowed")
+		}
 	}
 
 	caveats := a.mac.Caveats()
@@ -338,8 +358,26 @@ func (c *Caveat) Allows(action Action) bool {
 		}
 	case ActionProjectInfo:
 		// allow
-	case ActionLock:
-		if c.DisallowLocks {
+	case ActionPutObjectRetention:
+		if c.DisallowPutRetention {
+			return false
+		}
+	case ActionGetObjectRetention:
+		if c.DisallowPutRetention {
+			if c.DisallowGetRetention {
+				return false
+			}
+		}
+	case ActionPutObjectLegalHold:
+		if c.DisallowPutLegalHold {
+			return false
+		}
+	case ActionGetObjectLegalHold:
+		if c.DisallowGetLegalHold {
+			return false
+		}
+	case ActionBypassGovernanceRetention:
+		if c.DisallowBypassGovernanceRetention {
 			return false
 		}
 	default:

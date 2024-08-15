@@ -41,10 +41,21 @@ type Permission struct {
 	// either AllowDownload or AllowList is granted too, no object metadata and
 	// no error info will be returned for deleted objects.
 	AllowDelete bool
-	// AllowLock gives permission for retention periods and legal holds to be
-	// placed on and retrieved from objects. It also gives permission for
-	// Object Lock configurations to be placed on and retrieved from buckets.
-	AllowLock bool
+	// AllowPutObjectRetention gives permission for retention periods to be
+	// placed on and retrieved from objects.
+	AllowPutObjectRetention bool
+	// AllowGetObjectRetention gives permission for retention periods to be
+	// retrieved from objects.
+	AllowGetObjectRetention bool
+	// AllowPutObjectLegalHold gives permission for legal hold status to be
+	// placed on objects.
+	AllowPutObjectLegalHold bool
+	// AllowGetObjectLegalHold gives permission for legal hold status to be
+	// retrieved from objects.
+	AllowGetObjectLegalHold bool
+	// AllowBypassGovernanceRetention gives permission for governance retention
+	// to be bypassed on objects.
+	AllowBypassGovernanceRetention bool
 	// NotBefore restricts when the resulting access grant is valid for.
 	// If set, the resulting access grant will not work if the Satellite
 	// believes the time is before NotBefore.
@@ -93,14 +104,18 @@ func (access *Access) Restrict(permission Permission, prefixes ...SharePrefix) (
 	}
 
 	caveat := macaroon.WithNonce(macaroon.Caveat{
-		DisallowReads:   !permission.AllowDownload,
-		DisallowWrites:  !permission.AllowUpload,
-		DisallowLists:   !permission.AllowList,
-		DisallowDeletes: !permission.AllowDelete,
-		DisallowLocks:   !permission.AllowLock,
-		NotBefore:       notBefore,
-		NotAfter:        notAfter,
-		MaxObjectTtl:    permission.MaxObjectTTL,
+		DisallowReads:                     !permission.AllowDownload,
+		DisallowWrites:                    !permission.AllowUpload,
+		DisallowLists:                     !permission.AllowList,
+		DisallowDeletes:                   !permission.AllowDelete,
+		DisallowPutRetention:              !permission.AllowPutObjectRetention,
+		DisallowGetRetention:              !permission.AllowGetObjectRetention,
+		DisallowPutLegalHold:              !permission.AllowPutObjectLegalHold,
+		DisallowGetLegalHold:              !permission.AllowGetObjectLegalHold,
+		DisallowBypassGovernanceRetention: !permission.AllowBypassGovernanceRetention,
+		NotBefore:                         notBefore,
+		NotAfter:                          notAfter,
+		MaxObjectTtl:                      permission.MaxObjectTTL,
 	})
 
 	for _, prefix := range prefixes {

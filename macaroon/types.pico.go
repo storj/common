@@ -15,16 +15,20 @@ import (
 )
 
 type Caveat struct {
-	DisallowReads   bool           `json:"disallow_reads,omitempty"`
-	DisallowWrites  bool           `json:"disallow_writes,omitempty"`
-	DisallowLists   bool           `json:"disallow_lists,omitempty"`
-	DisallowDeletes bool           `json:"disallow_deletes,omitempty"`
-	DisallowLocks   bool           `json:"disallow_locks,omitempty"`
-	AllowedPaths    []*Caveat_Path `json:"allowed_paths,omitempty"`
-	NotAfter        *time.Time     `json:"not_after,omitempty"`
-	NotBefore       *time.Time     `json:"not_before,omitempty"`
-	MaxObjectTtl    *time.Duration `json:"max_object_ttl,omitempty"`
-	Nonce           []byte         `json:"nonce,omitempty"`
+	DisallowReads                     bool           `json:"disallow_reads,omitempty"`
+	DisallowWrites                    bool           `json:"disallow_writes,omitempty"`
+	DisallowLists                     bool           `json:"disallow_lists,omitempty"`
+	DisallowDeletes                   bool           `json:"disallow_deletes,omitempty"`
+	DisallowPutRetention              bool           `json:"disallow_put_retention,omitempty"`
+	DisallowGetRetention              bool           `json:"disallow_get_retention,omitempty"`
+	DisallowPutLegalHold              bool           `json:"disallow_put_legal_hold,omitempty"`
+	DisallowGetLegalHold              bool           `json:"disallow_get_legal_hold,omitempty"`
+	DisallowBypassGovernanceRetention bool           `json:"disallow_bypass_governance_retention,omitempty"`
+	AllowedPaths                      []*Caveat_Path `json:"allowed_paths,omitempty"`
+	NotAfter                          *time.Time     `json:"not_after,omitempty"`
+	NotBefore                         *time.Time     `json:"not_before,omitempty"`
+	MaxObjectTtl                      *time.Duration `json:"max_object_ttl,omitempty"`
+	Nonce                             []byte         `json:"nonce,omitempty"`
 }
 
 func (m *Caveat) Encode(c *picobuf.Encoder) bool {
@@ -35,7 +39,11 @@ func (m *Caveat) Encode(c *picobuf.Encoder) bool {
 	c.Bool(2, &m.DisallowWrites)
 	c.Bool(3, &m.DisallowLists)
 	c.Bool(4, &m.DisallowDeletes)
-	c.Bool(5, &m.DisallowLocks)
+	c.Bool(5, &m.DisallowPutRetention)
+	c.Bool(6, &m.DisallowGetRetention)
+	c.Bool(7, &m.DisallowPutLegalHold)
+	c.Bool(8, &m.DisallowGetLegalHold)
+	c.Bool(9, &m.DisallowBypassGovernanceRetention)
 	for _, x := range m.AllowedPaths {
 		c.AlwaysMessage(10, x.Encode)
 	}
@@ -54,7 +62,11 @@ func (m *Caveat) Decode(c *picobuf.Decoder) {
 	c.Bool(2, &m.DisallowWrites)
 	c.Bool(3, &m.DisallowLists)
 	c.Bool(4, &m.DisallowDeletes)
-	c.Bool(5, &m.DisallowLocks)
+	c.Bool(5, &m.DisallowPutRetention)
+	c.Bool(6, &m.DisallowGetRetention)
+	c.Bool(7, &m.DisallowPutLegalHold)
+	c.Bool(8, &m.DisallowGetLegalHold)
+	c.Bool(9, &m.DisallowBypassGovernanceRetention)
 	c.RepeatedMessage(10, func(c *picobuf.Decoder) {
 		x := new(Caveat_Path)
 		c.Loop(x.Decode)

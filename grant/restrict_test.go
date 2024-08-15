@@ -37,11 +37,15 @@ func TestRestrict(t *testing.T) {
 	}
 
 	fullPermission := Permission{
-		AllowDownload: true,
-		AllowUpload:   true,
-		AllowList:     true,
-		AllowDelete:   true,
-		AllowLock:     true,
+		AllowDownload:                  true,
+		AllowUpload:                    true,
+		AllowList:                      true,
+		AllowDelete:                    true,
+		AllowPutObjectRetention:        true,
+		AllowGetObjectRetention:        true,
+		AllowPutObjectLegalHold:        true,
+		AllowGetObjectLegalHold:        true,
+		AllowBypassGovernanceRetention: true,
 	}
 
 	action1 := macaroon.Action{
