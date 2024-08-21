@@ -1,6 +1,5 @@
 // Copyright (C) 2021 Storj Labs, Inc.
 // See LICENSE for copying information
-//
 
 package location
 
@@ -166,7 +165,6 @@ const (
 	Namibia                                = CountryCode(339)
 	Nauru                                  = CountryCode(356)
 	Nepal                                  = CountryCode(354)
-	Netherlands                            = CountryCode(350)
 	NetherlandsAntilles                    = CountryCode(14)
 	NewCaledonia                           = CountryCode(341)
 	NewZealand                             = CountryCode(364)
@@ -236,6 +234,7 @@ const (
 	Tajikistan                             = CountryCode(504)
 	Tanzania                               = CountryCode(520)
 	Thailand                               = CountryCode(502)
+	TheNetherlands                         = CountryCode(350)
 	TimorLeste                             = CountryCode(506)
 	Togo                                   = CountryCode(501)
 	Tokelau                                = CountryCode(505)
@@ -421,7 +420,6 @@ var CountryISOCode = [...]string{
 	Namibia:                                "NA",
 	Nauru:                                  "NR",
 	Nepal:                                  "NP",
-	Netherlands:                            "NL",
 	NetherlandsAntilles:                    "AN",
 	NewCaledonia:                           "NC",
 	NewZealand:                             "NZ",
@@ -491,6 +489,7 @@ var CountryISOCode = [...]string{
 	Tajikistan:                             "TJ",
 	Tanzania:                               "TZ",
 	Thailand:                               "TH",
+	TheNetherlands:                         "NL",
 	TimorLeste:                             "TL",
 	Togo:                                   "TG",
 	Tokelau:                                "TK",

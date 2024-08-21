@@ -20,35 +20,8 @@ import (
 	"storj.io/common/storj/location"
 )
 
-func main() {
-	ctx := context.Background()
-
-	var buf bytes.Buffer
-	if err := run(ctx, &buf); err != nil {
-		log.Fatalf("%+v", err)
-	}
-
-	formatted, err := format.Source(buf.Bytes())
-	if err != nil {
-		log.Fatalf("%+v", err)
-	}
-
-	if err := os.WriteFile("country.go", formatted, 0644); err != nil {
-		log.Fatalf("%+v", err)
-	}
-}
-
-func run(ctx context.Context, out *bytes.Buffer) error {
-	p := func(s string) {
-		_, _ = out.WriteString(s)
-	}
-	pf := func(format string, args ...any) {
-		_, _ = fmt.Fprintf(out, format, args...)
-	}
-
-	p(`// Copyright (C) 2021 Storj Labs, Inc.
+const header = `// Copyright (C) 2021 Storj Labs, Inc.
 // See LICENSE for copying information
-//
 
 package location
 
@@ -56,19 +29,102 @@ package location
 // original source: https://download.geonames.org/export/dump/countryInfo.txt
 // license of the datasource: Creative Commons Attribution 4.0 License,
 // https://creativecommons.org/licenses/by/4.0/
+`
 
-// country codes to two letter upper case ISO country code as uint16.
-const (
-`)
+func main() {
+	ctx := context.Background()
 
 	countryCodes, err := fetchCountryCodes(ctx)
 	if err != nil {
-		return errs.Wrap(err)
+		panic(err)
 	}
 
 	sort.Slice(countryCodes, func(i, k int) bool {
 		return countryCodes[i].Country < countryCodes[k].Country
 	})
+
+	{
+		var buf bytes.Buffer
+
+		if err := generateCountries(countryCodes, &buf); err != nil {
+			log.Fatalf("%+v", err)
+		}
+
+		formatted, err := format.Source(buf.Bytes())
+		if err != nil {
+			log.Fatalf("%+v", err)
+		}
+
+		if err := os.WriteFile("country.go", formatted, 0644); err != nil {
+			log.Fatalf("%+v", err)
+		}
+	}
+	{
+		var buf bytes.Buffer
+
+		if err := generateContinents(countryCodes, &buf); err != nil {
+			log.Fatalf("%+v", err)
+		}
+
+		formatted, err := format.Source(buf.Bytes())
+		if err != nil {
+			log.Fatalf("%+v", err)
+		}
+
+		if err := os.WriteFile("continent.go", formatted, 0644); err != nil {
+			log.Fatalf("%+v", err)
+		}
+	}
+
+}
+
+func generateContinents(countryCodes []CountryCode, out *bytes.Buffer) error {
+	p := func(s string) {
+		_, _ = out.WriteString(s)
+	}
+	pf := func(format string, args ...any) {
+		_, _ = fmt.Fprintf(out, format, args...)
+	}
+
+	p(header)
+
+	continents := map[string][]CountryCode{}
+	for _, countryCode := range countryCodes {
+		continents[countryCode.Continent] = append(continents[countryCode.Continent], countryCode)
+	}
+
+	for continent, countries := range continents {
+		pf("\nvar Continent%s = [...]CountryCode{\n", continent)
+		for _, country := range countries {
+			pf("\t%s, //%s\n", country.SanitizedName(), country.ISO)
+		}
+		p("}\n")
+	}
+	p("\n")
+	p("var Continents = map[string][]CountryCode{\n")
+	for continent := range continents {
+		pf("\t\"%s\": %s[:],\n", continent, "Continent"+continent)
+
+	}
+	p("}\n")
+	return nil
+}
+
+func generateCountries(countryCodes []CountryCode, out *bytes.Buffer) error {
+	p := func(s string) {
+		_, _ = out.WriteString(s)
+	}
+	pf := func(format string, args ...any) {
+		_, _ = fmt.Fprintf(out, format, args...)
+	}
+
+	p(header)
+	p(`
+
+// country codes to two letter upper case ISO country code as uint16.
+const (
+`)
+
 	withNone := append([]CountryCode{{ISO: "", Country: "None"}}, countryCodes...)
 
 	for _, countryCode := range withNone {
@@ -96,8 +152,9 @@ const (
 }
 
 type CountryCode struct {
-	ISO     string
-	Country string
+	ISO       string
+	Country   string
+	Continent string
 }
 
 func (cc CountryCode) SanitizedName() string {
@@ -132,8 +189,9 @@ func fetchCountryCodes(ctx context.Context) ([]CountryCode, error) {
 		}
 
 		codes = append(codes, CountryCode{
-			ISO:     fields[0],
-			Country: fields[4],
+			ISO:       fields[0],
+			Country:   fields[4],
+			Continent: fields[8],
 		})
 	}
 
