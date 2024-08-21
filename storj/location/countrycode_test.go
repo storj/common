@@ -41,7 +41,7 @@ var sink string
 var countriesForTesting = []CountryCode{
 	Austria, Belgium, Bulgaria, Croatia, Cyprus, Czechia, Denmark, Estonia,
 	Finland, France, Germany, Greece, Hungary, Ireland, Italy, Lithuania,
-	Latvia, Luxembourg, Malta, Netherlands, Poland, Portugal, Romania, Slovenia,
+	Latvia, Luxembourg, Malta, TheNetherlands, Poland, Portugal, Romania, Slovenia,
 	Slovakia, Spain, Sweden,
 }
 

@@ -24,7 +24,7 @@ var EuCountries = NewSet(
 	Latvia,
 	Luxembourg,
 	Malta,
-	Netherlands,
+	TheNetherlands,
 	Poland,
 	Portugal,
 	Romania,

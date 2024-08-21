@@ -13,12 +13,12 @@ func TestSet(t *testing.T) {
 	var set Set
 	set.Include(Belgium)
 	set.Include(Hungary)
-	set.Include(Netherlands)
+	set.Include(TheNetherlands)
 	set.Include(ToCountryCode("ZZ"))
 
 	require.True(t, set.Contains(Belgium))
 	require.True(t, set.Contains(Hungary))
-	require.True(t, set.Contains(Netherlands))
+	require.True(t, set.Contains(TheNetherlands))
 	require.True(t, set.Contains(ToCountryCode("ZZ")))
 
 	require.False(t, set.Contains(Estonia))
