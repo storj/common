@@ -19,6 +19,7 @@ type Caveat struct {
 	DisallowWrites                    bool           `json:"disallow_writes,omitempty"`
 	DisallowLists                     bool           `json:"disallow_lists,omitempty"`
 	DisallowDeletes                   bool           `json:"disallow_deletes,omitempty"`
+	DisallowLocks                     bool           `json:"disallow_locks,omitempty"`
 	DisallowPutRetention              bool           `json:"disallow_put_retention,omitempty"`
 	DisallowGetRetention              bool           `json:"disallow_get_retention,omitempty"`
 	DisallowPutLegalHold              bool           `json:"disallow_put_legal_hold,omitempty"`
@@ -39,14 +40,15 @@ func (m *Caveat) Encode(c *picobuf.Encoder) bool {
 	c.Bool(2, &m.DisallowWrites)
 	c.Bool(3, &m.DisallowLists)
 	c.Bool(4, &m.DisallowDeletes)
-	c.Bool(5, &m.DisallowPutRetention)
-	c.Bool(6, &m.DisallowGetRetention)
-	c.Bool(7, &m.DisallowPutLegalHold)
-	c.Bool(8, &m.DisallowGetLegalHold)
-	c.Bool(9, &m.DisallowBypassGovernanceRetention)
+	c.Bool(5, &m.DisallowLocks)
+	c.Bool(6, &m.DisallowPutRetention)
+	c.Bool(7, &m.DisallowGetRetention)
+	c.Bool(8, &m.DisallowPutLegalHold)
+	c.Bool(9, &m.DisallowGetLegalHold)
 	for _, x := range m.AllowedPaths {
 		c.AlwaysMessage(10, x.Encode)
 	}
+	c.Bool(11, &m.DisallowBypassGovernanceRetention)
 	(*picoconv.Timestamp)(m.NotAfter).PicoEncode(c, 20)
 	(*picoconv.Timestamp)(m.NotBefore).PicoEncode(c, 21)
 	(*picoconv.Duration)(m.MaxObjectTtl).PicoEncode(c, 22)
@@ -62,16 +64,17 @@ func (m *Caveat) Decode(c *picobuf.Decoder) {
 	c.Bool(2, &m.DisallowWrites)
 	c.Bool(3, &m.DisallowLists)
 	c.Bool(4, &m.DisallowDeletes)
-	c.Bool(5, &m.DisallowPutRetention)
-	c.Bool(6, &m.DisallowGetRetention)
-	c.Bool(7, &m.DisallowPutLegalHold)
-	c.Bool(8, &m.DisallowGetLegalHold)
-	c.Bool(9, &m.DisallowBypassGovernanceRetention)
+	c.Bool(5, &m.DisallowLocks)
+	c.Bool(6, &m.DisallowPutRetention)
+	c.Bool(7, &m.DisallowGetRetention)
+	c.Bool(8, &m.DisallowPutLegalHold)
+	c.Bool(9, &m.DisallowGetLegalHold)
 	c.RepeatedMessage(10, func(c *picobuf.Decoder) {
 		x := new(Caveat_Path)
 		c.Loop(x.Decode)
 		m.AllowedPaths = append(m.AllowedPaths, x)
 	})
+	c.Bool(11, &m.DisallowBypassGovernanceRetention)
 	if c.PendingField() == 20 {
 		if m.NotAfter == nil {
 			m.NotAfter = new(time.Time)

@@ -53,21 +53,30 @@ const (
 	ActionDelete ActionType = 4
 	// ActionProjectInfo requests project-level information.
 	ActionProjectInfo ActionType = 5
+	// ActionLock represents the following actions:
+	//
+	//   - Placement or retrieval of retention periods for an object
+	//   - Placement or retrieval of Object Lock configurations for a bucket
+	//
+	// Deprecated: ActionLock exists for historical compatibility
+	// and should not be used. Prefer using the granular Object Lock actions
+	// ActionPutObjectRetention and ActionGetObjectRetention.
+	ActionLock ActionType = 6
 	// ActionPutObjectRetention specifies an action related to updating
 	// Object Retention configuration.
-	ActionPutObjectRetention ActionType = 6
+	ActionPutObjectRetention ActionType = 7
 	// ActionGetObjectRetention specifies an action related to retrieving
 	// Object Retention configuration.
-	ActionGetObjectRetention ActionType = 7
+	ActionGetObjectRetention ActionType = 8
 	// ActionPutObjectLegalHold specifies an action related to updating
 	// Object Legal Hold configuration.
-	ActionPutObjectLegalHold ActionType = 8
+	ActionPutObjectLegalHold ActionType = 9
 	// ActionGetObjectLegalHold specifies an action related to updating
 	// Object Legal Hold configuration.
-	ActionGetObjectLegalHold ActionType = 9
+	ActionGetObjectLegalHold ActionType = 10
 	// ActionBypassGovernanceRetention specifies an action related to bypassing
 	// Object Governance Retention.
-	ActionBypassGovernanceRetention ActionType = 10
+	ActionBypassGovernanceRetention ActionType = 11
 )
 
 // APIKeyVersion specifies the version of an API key.
@@ -172,7 +181,8 @@ func (a *APIKey) Check(ctx context.Context, secret []byte, version APIKeyVersion
 			ActionGetObjectRetention,
 			ActionPutObjectLegalHold,
 			ActionGetObjectLegalHold,
-			ActionBypassGovernanceRetention:
+			ActionBypassGovernanceRetention,
+			ActionLock:
 			return ErrUnauthorized.New("action disallowed")
 		}
 	}
@@ -358,6 +368,10 @@ func (c *Caveat) Allows(action Action) bool {
 		}
 	case ActionProjectInfo:
 		// allow
+	case ActionLock:
+		if c.DisallowLocks {
+			return false
+		}
 	case ActionPutObjectRetention:
 		if c.DisallowPutRetention {
 			return false

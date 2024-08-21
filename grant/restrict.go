@@ -41,6 +41,14 @@ type Permission struct {
 	// either AllowDownload or AllowList is granted too, no object metadata and
 	// no error info will be returned for deleted objects.
 	AllowDelete bool
+	// AllowLock gives permission for retention periods to be placed on and
+	// retrieved from objects. It also gives permission for Object Lock
+	// configurations to be placed on and retrieved from buckets.
+	//
+	// Deprecated: AllowLock exists for historical compatibility
+	// and should not be used. Prefer using the granular Object Lock
+	// permissions AllowPutObjectRetention and AllowGetObjectRetention.
+	AllowLock bool
 	// AllowPutObjectRetention gives permission for retention periods to be
 	// placed on and retrieved from objects.
 	AllowPutObjectRetention bool

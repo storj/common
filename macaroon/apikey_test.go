@@ -70,6 +70,7 @@ func TestSerializeParseRestrictAndCheck(t *testing.T) {
 		ActionPutObjectLegalHold,
 		ActionGetObjectLegalHold,
 		ActionBypassGovernanceRetention,
+		ActionLock,
 	} {
 		action1.Op = actionType
 		require.NoError(t, key.Check(ctx, secret, APIKeyVersionObjectLock, action1, nil))
