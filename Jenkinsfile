@@ -17,6 +17,7 @@ pipeline {
         stage('Build') {
             steps {
                 checkout scm
+                sh 'git restore-mtime'
 
                 sh 'mkdir -p .build'
                 sh 'cp go.mod .build/go.mod.orig'
