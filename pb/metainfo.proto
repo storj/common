@@ -524,6 +524,7 @@ message BeginDeleteObjectRequest {
     bytes object_version = 6;
     int32 status = 4;
     bytes stream_id = 5 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = true];
+    bool bypass_governance_retention = 7;
 }
 
 message BeginDeleteObjectResponse {
@@ -582,6 +583,7 @@ message SetObjectRetentionRequest {
     bytes object_version       = 3;
 
     Retention retention = 4;
+    bool bypass_governance_retention = 5;
 }
 
 message SetObjectRetentionResponse {

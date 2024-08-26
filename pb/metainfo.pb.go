@@ -2726,16 +2726,17 @@ func (m *ObjectListItemIncludes) GetExcludeSystemMetadata() bool {
 }
 
 type BeginDeleteObjectRequest struct {
-	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
-	Bucket               []byte         `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
-	EncryptedObjectKey   []byte         `protobuf:"bytes,2,opt,name=encrypted_object_key,json=encryptedObjectKey,proto3" json:"encrypted_object_key,omitempty"`
-	Version              int32          `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
-	ObjectVersion        []byte         `protobuf:"bytes,6,opt,name=object_version,json=objectVersion,proto3" json:"object_version,omitempty"`
-	Status               int32          `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
-	StreamId             *StreamID      `protobuf:"bytes,5,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
+	Header                    *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Bucket                    []byte         `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	EncryptedObjectKey        []byte         `protobuf:"bytes,2,opt,name=encrypted_object_key,json=encryptedObjectKey,proto3" json:"encrypted_object_key,omitempty"`
+	Version                   int32          `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
+	ObjectVersion             []byte         `protobuf:"bytes,6,opt,name=object_version,json=objectVersion,proto3" json:"object_version,omitempty"`
+	Status                    int32          `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
+	StreamId                  *StreamID      `protobuf:"bytes,5,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id,omitempty"`
+	BypassGovernanceRetention bool           `protobuf:"varint,7,opt,name=bypass_governance_retention,json=bypassGovernanceRetention,proto3" json:"bypass_governance_retention,omitempty"`
+	XXX_NoUnkeyedLiteral      struct{}       `json:"-"`
+	XXX_unrecognized          []byte         `json:"-"`
+	XXX_sizecache             int32          `json:"-"`
 }
 
 func (m *BeginDeleteObjectRequest) Reset()         { *m = BeginDeleteObjectRequest{} }
@@ -2800,6 +2801,13 @@ func (m *BeginDeleteObjectRequest) GetStatus() int32 {
 		return m.Status
 	}
 	return 0
+}
+
+func (m *BeginDeleteObjectRequest) GetBypassGovernanceRetention() bool {
+	if m != nil {
+		return m.BypassGovernanceRetention
+	}
+	return false
 }
 
 type BeginDeleteObjectResponse struct {
@@ -3147,14 +3155,15 @@ func (m *UpdateObjectMetadataResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_UpdateObjectMetadataResponse proto.InternalMessageInfo
 
 type SetObjectRetentionRequest struct {
-	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
-	Bucket               []byte         `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
-	EncryptedObjectKey   []byte         `protobuf:"bytes,2,opt,name=encrypted_object_key,json=encryptedObjectKey,proto3" json:"encrypted_object_key,omitempty"`
-	ObjectVersion        []byte         `protobuf:"bytes,3,opt,name=object_version,json=objectVersion,proto3" json:"object_version,omitempty"`
-	Retention            *Retention     `protobuf:"bytes,4,opt,name=retention,proto3" json:"retention,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
+	Header                    *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Bucket                    []byte         `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	EncryptedObjectKey        []byte         `protobuf:"bytes,2,opt,name=encrypted_object_key,json=encryptedObjectKey,proto3" json:"encrypted_object_key,omitempty"`
+	ObjectVersion             []byte         `protobuf:"bytes,3,opt,name=object_version,json=objectVersion,proto3" json:"object_version,omitempty"`
+	Retention                 *Retention     `protobuf:"bytes,4,opt,name=retention,proto3" json:"retention,omitempty"`
+	BypassGovernanceRetention bool           `protobuf:"varint,5,opt,name=bypass_governance_retention,json=bypassGovernanceRetention,proto3" json:"bypass_governance_retention,omitempty"`
+	XXX_NoUnkeyedLiteral      struct{}       `json:"-"`
+	XXX_unrecognized          []byte         `json:"-"`
+	XXX_sizecache             int32          `json:"-"`
 }
 
 func (m *SetObjectRetentionRequest) Reset()         { *m = SetObjectRetentionRequest{} }
@@ -3212,6 +3221,13 @@ func (m *SetObjectRetentionRequest) GetRetention() *Retention {
 		return m.Retention
 	}
 	return nil
+}
+
+func (m *SetObjectRetentionRequest) GetBypassGovernanceRetention() bool {
+	if m != nil {
+		return m.BypassGovernanceRetention
+	}
+	return false
 }
 
 type SetObjectRetentionResponse struct {

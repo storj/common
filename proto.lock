@@ -3281,6 +3281,11 @@
                     "value": "true"
                   }
                 ]
+              },
+              {
+                "id": 7,
+                "name": "bypass_governance_retention",
+                "type": "bool"
               }
             ]
           },
@@ -3493,6 +3498,11 @@
                 "id": 4,
                 "name": "retention",
                 "type": "Retention"
+              },
+              {
+                "id": 5,
+                "name": "bypass_governance_retention",
+                "type": "bool"
               }
             ]
           },
