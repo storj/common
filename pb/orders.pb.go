@@ -61,16 +61,19 @@ type PieceHashAlgorithm int32
 const (
 	PieceHashAlgorithm_SHA256 PieceHashAlgorithm = 0
 	PieceHashAlgorithm_BLAKE3 PieceHashAlgorithm = 1
+	PieceHashAlgorithm_XXH    PieceHashAlgorithm = 2
 )
 
 var PieceHashAlgorithm_name = map[int32]string{
 	0: "SHA256",
 	1: "BLAKE3",
+	2: "XXH",
 }
 
 var PieceHashAlgorithm_value = map[string]int32{
 	"SHA256": 0,
 	"BLAKE3": 1,
+	"XXH":    2,
 }
 
 func (x PieceHashAlgorithm) String() string {
@@ -593,11 +596,10 @@ func (m *PieceHashSigning) GetHashAlgorithm() PieceHashAlgorithm {
 }
 
 // Expected order of messages from storagenode:
-//
-//	go repeated
-//	   SettlementRequest -> (async)
-//	go repeated
-//	   <- SettlementResponse
+//   go repeated
+//      SettlementRequest -> (async)
+//   go repeated
+//      <- SettlementResponse
 type SettlementRequest struct {
 	Limit                *OrderLimit `protobuf:"bytes,1,opt,name=limit,proto3" json:"limit,omitempty"`
 	Order                *Order      `protobuf:"bytes,2,opt,name=order,proto3" json:"order,omitempty"`

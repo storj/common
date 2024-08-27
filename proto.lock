@@ -648,32 +648,27 @@
               {
                 "id": 62001,
                 "name": "goproto_enum_prefix",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 62021,
                 "name": "goproto_enum_stringer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 62022,
                 "name": "enum_stringer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 62023,
                 "name": "enum_customname",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 62024,
                 "name": "enumdecl",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               }
             ]
           },
@@ -683,8 +678,7 @@
               {
                 "id": 66001,
                 "name": "enumvalue_customname",
-                "type": "string",
-                "optional": true
+                "type": "string"
               }
             ]
           },
@@ -694,194 +688,162 @@
               {
                 "id": 63001,
                 "name": "goproto_getters_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63002,
                 "name": "goproto_enum_prefix_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63003,
                 "name": "goproto_stringer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63004,
                 "name": "verbose_equal_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63005,
                 "name": "face_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63006,
                 "name": "gostring_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63007,
                 "name": "populate_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63008,
                 "name": "stringer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63009,
                 "name": "onlyone_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63013,
                 "name": "equal_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63014,
                 "name": "description_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63015,
                 "name": "testgen_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63016,
                 "name": "benchgen_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63017,
                 "name": "marshaler_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63018,
                 "name": "unmarshaler_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63019,
                 "name": "stable_marshaler_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63020,
                 "name": "sizer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63021,
                 "name": "goproto_enum_stringer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63022,
                 "name": "enum_stringer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63023,
                 "name": "unsafe_marshaler_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63024,
                 "name": "unsafe_unmarshaler_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63025,
                 "name": "goproto_extensions_map_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63026,
                 "name": "goproto_unrecognized_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63027,
                 "name": "gogoproto_import",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63028,
                 "name": "protosizer_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63029,
                 "name": "compare_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63030,
                 "name": "typedecl_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63031,
                 "name": "enumdecl_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63032,
                 "name": "goproto_registration",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63033,
                 "name": "messagename_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63034,
                 "name": "goproto_sizecache_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 63035,
                 "name": "goproto_unkeyed_all",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               }
             ]
           },
@@ -891,152 +853,127 @@
               {
                 "id": 64001,
                 "name": "goproto_getters",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64003,
                 "name": "goproto_stringer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64004,
                 "name": "verbose_equal",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64005,
                 "name": "face",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64006,
                 "name": "gostring",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64007,
                 "name": "populate",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 67008,
                 "name": "stringer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64009,
                 "name": "onlyone",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64013,
                 "name": "equal",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64014,
                 "name": "description",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64015,
                 "name": "testgen",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64016,
                 "name": "benchgen",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64017,
                 "name": "marshaler",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64018,
                 "name": "unmarshaler",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64019,
                 "name": "stable_marshaler",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64020,
                 "name": "sizer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64023,
                 "name": "unsafe_marshaler",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64024,
                 "name": "unsafe_unmarshaler",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64025,
                 "name": "goproto_extensions_map",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64026,
                 "name": "goproto_unrecognized",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64028,
                 "name": "protosizer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64030,
                 "name": "typedecl",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64033,
                 "name": "messagename",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64034,
                 "name": "goproto_sizecache",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 64035,
                 "name": "goproto_unkeyed",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               }
             ]
           },
@@ -1046,80 +983,67 @@
               {
                 "id": 65001,
                 "name": "nullable",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 65002,
                 "name": "embed",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 65003,
                 "name": "customtype",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65004,
                 "name": "customname",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65005,
                 "name": "jsontag",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65006,
                 "name": "moretags",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65007,
                 "name": "casttype",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65008,
                 "name": "castkey",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65009,
                 "name": "castvalue",
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               {
                 "id": 65010,
                 "name": "stdtime",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 65011,
                 "name": "stdduration",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 65012,
                 "name": "wktpointer",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               },
               {
                 "id": 65013,
                 "name": "compare",
-                "type": "bool",
-                "optional": true
+                "type": "bool"
               }
             ]
           }
@@ -1289,14 +1213,12 @@
               {
                 "id": 1,
                 "name": "succeeded",
-                "type": "TransferSucceeded",
-                "oneof_parent": "Message"
+                "type": "TransferSucceeded"
               },
               {
                 "id": 2,
                 "name": "failed",
-                "type": "TransferFailed",
-                "oneof_parent": "Message"
+                "type": "TransferFailed"
               }
             ]
           },
@@ -1484,32 +1406,27 @@
               {
                 "id": 1,
                 "name": "not_ready",
-                "type": "NotReady",
-                "oneof_parent": "Message"
+                "type": "NotReady"
               },
               {
                 "id": 2,
                 "name": "transfer_piece",
-                "type": "TransferPiece",
-                "oneof_parent": "Message"
+                "type": "TransferPiece"
               },
               {
                 "id": 3,
                 "name": "delete_piece",
-                "type": "DeletePiece",
-                "oneof_parent": "Message"
+                "type": "DeletePiece"
               },
               {
                 "id": 4,
                 "name": "exit_completed",
-                "type": "ExitCompleted",
-                "oneof_parent": "Message"
+                "type": "ExitCompleted"
               },
               {
                 "id": 5,
                 "name": "exit_failed",
-                "type": "ExitFailed",
-                "oneof_parent": "Message"
+                "type": "ExitFailed"
               }
             ]
           }
@@ -2908,20 +2825,17 @@
               {
                 "id": 1,
                 "name": "start_limit",
-                "type": "RangeStartLimit",
-                "oneof_parent": "Range"
+                "type": "RangeStartLimit"
               },
               {
                 "id": 2,
                 "name": "start",
-                "type": "RangeStart",
-                "oneof_parent": "Range"
+                "type": "RangeStart"
               },
               {
                 "id": 3,
                 "name": "suffix",
-                "type": "RangeSuffix",
-                "oneof_parent": "Range"
+                "type": "RangeSuffix"
               }
             ]
           },
@@ -4424,200 +4338,167 @@
               {
                 "id": 1,
                 "name": "bucket_create",
-                "type": "CreateBucketRequest",
-                "oneof_parent": "Request"
+                "type": "CreateBucketRequest"
               },
               {
                 "id": 2,
                 "name": "bucket_get",
-                "type": "GetBucketRequest",
-                "oneof_parent": "Request"
+                "type": "GetBucketRequest"
               },
               {
                 "id": 30,
                 "name": "bucket_get_location",
-                "type": "GetBucketLocationRequest",
-                "oneof_parent": "Request"
+                "type": "GetBucketLocationRequest"
               },
               {
                 "id": 31,
                 "name": "bucket_get_versioning",
-                "type": "GetBucketVersioningRequest",
-                "oneof_parent": "Request"
+                "type": "GetBucketVersioningRequest"
               },
               {
                 "id": 32,
                 "name": "bucket_set_versioning",
-                "type": "SetBucketVersioningRequest",
-                "oneof_parent": "Request"
+                "type": "SetBucketVersioningRequest"
               },
               {
                 "id": 33,
                 "name": "bucket_get_object_lock_configuration",
-                "type": "GetBucketObjectLockConfigurationRequest",
-                "oneof_parent": "Request"
+                "type": "GetBucketObjectLockConfigurationRequest"
               },
               {
                 "id": 3,
                 "name": "bucket_delete",
-                "type": "DeleteBucketRequest",
-                "oneof_parent": "Request"
+                "type": "DeleteBucketRequest"
               },
               {
                 "id": 4,
                 "name": "bucket_list",
-                "type": "ListBucketsRequest",
-                "oneof_parent": "Request"
+                "type": "ListBucketsRequest"
               },
               {
                 "id": 6,
                 "name": "object_begin",
-                "type": "BeginObjectRequest",
-                "oneof_parent": "Request"
+                "type": "BeginObjectRequest"
               },
               {
                 "id": 7,
                 "name": "object_commit",
-                "type": "CommitObjectRequest",
-                "oneof_parent": "Request"
+                "type": "CommitObjectRequest"
               },
               {
                 "id": 8,
                 "name": "object_get",
-                "type": "GetObjectRequest",
-                "oneof_parent": "Request"
+                "type": "GetObjectRequest"
               },
               {
                 "id": 9,
                 "name": "object_list",
-                "type": "ListObjectsRequest",
-                "oneof_parent": "Request"
+                "type": "ListObjectsRequest"
               },
               {
                 "id": 10,
                 "name": "object_begin_delete",
-                "type": "BeginDeleteObjectRequest",
-                "oneof_parent": "Request"
+                "type": "BeginDeleteObjectRequest"
               },
               {
                 "id": 11,
                 "name": "object_finish_delete",
-                "type": "FinishDeleteObjectRequest",
-                "oneof_parent": "Request"
+                "type": "FinishDeleteObjectRequest"
               },
               {
                 "id": 20,
                 "name": "object_get_ips",
-                "type": "GetObjectIPsRequest",
-                "oneof_parent": "Request"
+                "type": "GetObjectIPsRequest"
               },
               {
                 "id": 22,
                 "name": "object_list_pending_streams",
-                "type": "ListPendingObjectStreamsRequest",
-                "oneof_parent": "Request"
+                "type": "ListPendingObjectStreamsRequest"
               },
               {
                 "id": 23,
                 "name": "object_download",
-                "type": "DownloadObjectRequest",
-                "oneof_parent": "Request"
+                "type": "DownloadObjectRequest"
               },
               {
                 "id": 24,
                 "name": "object_update_metadata",
-                "type": "UpdateObjectMetadataRequest",
-                "oneof_parent": "Request"
+                "type": "UpdateObjectMetadataRequest"
               },
               {
                 "id": 26,
                 "name": "object_begin_move",
-                "type": "BeginMoveObjectRequest",
-                "oneof_parent": "Request"
+                "type": "BeginMoveObjectRequest"
               },
               {
                 "id": 27,
                 "name": "object_finish_move",
-                "type": "FinishMoveObjectRequest",
-                "oneof_parent": "Request"
+                "type": "FinishMoveObjectRequest"
               },
               {
                 "id": 28,
                 "name": "object_begin_copy",
-                "type": "BeginCopyObjectRequest",
-                "oneof_parent": "Request"
+                "type": "BeginCopyObjectRequest"
               },
               {
                 "id": 29,
                 "name": "object_finish_copy",
-                "type": "FinishCopyObjectRequest",
-                "oneof_parent": "Request"
+                "type": "FinishCopyObjectRequest"
               },
               {
                 "id": 34,
                 "name": "object_get_retention",
-                "type": "GetObjectRetentionRequest",
-                "oneof_parent": "Request"
+                "type": "GetObjectRetentionRequest"
               },
               {
                 "id": 35,
                 "name": "object_set_retention",
-                "type": "SetObjectRetentionRequest",
-                "oneof_parent": "Request"
+                "type": "SetObjectRetentionRequest"
               },
               {
                 "id": 12,
                 "name": "segment_begin",
-                "type": "BeginSegmentRequest",
-                "oneof_parent": "Request"
+                "type": "BeginSegmentRequest"
               },
               {
                 "id": 13,
                 "name": "segment_commit",
-                "type": "CommitSegmentRequest",
-                "oneof_parent": "Request"
+                "type": "CommitSegmentRequest"
               },
               {
                 "id": 14,
                 "name": "segment_make_inline",
-                "type": "MakeInlineSegmentRequest",
-                "oneof_parent": "Request"
+                "type": "MakeInlineSegmentRequest"
               },
               {
                 "id": 15,
                 "name": "segment_begin_delete",
-                "type": "BeginDeleteSegmentRequest",
-                "oneof_parent": "Request"
+                "type": "BeginDeleteSegmentRequest"
               },
               {
                 "id": 16,
                 "name": "segment_finish_delete",
-                "type": "FinishDeleteSegmentRequest",
-                "oneof_parent": "Request"
+                "type": "FinishDeleteSegmentRequest"
               },
               {
                 "id": 17,
                 "name": "segment_list",
-                "type": "ListSegmentsRequest",
-                "oneof_parent": "Request"
+                "type": "ListSegmentsRequest"
               },
               {
                 "id": 18,
                 "name": "segment_download",
-                "type": "DownloadSegmentRequest",
-                "oneof_parent": "Request"
+                "type": "DownloadSegmentRequest"
               },
               {
                 "id": 25,
                 "name": "part_delete",
-                "type": "DeletePartRequest",
-                "oneof_parent": "Request"
+                "type": "DeletePartRequest"
               },
               {
                 "id": 19,
                 "name": "revoke_api_key",
-                "type": "RevokeAPIKeyRequest",
-                "oneof_parent": "Request"
+                "type": "RevokeAPIKeyRequest"
               }
             ]
           },
@@ -4653,200 +4534,167 @@
               {
                 "id": 1,
                 "name": "bucket_create",
-                "type": "CreateBucketResponse",
-                "oneof_parent": "Response"
+                "type": "CreateBucketResponse"
               },
               {
                 "id": 2,
                 "name": "bucket_get",
-                "type": "GetBucketResponse",
-                "oneof_parent": "Response"
+                "type": "GetBucketResponse"
               },
               {
                 "id": 30,
                 "name": "bucket_get_location",
-                "type": "GetBucketLocationResponse",
-                "oneof_parent": "Response"
+                "type": "GetBucketLocationResponse"
               },
               {
                 "id": 31,
                 "name": "bucket_get_versioning",
-                "type": "GetBucketVersioningResponse",
-                "oneof_parent": "Response"
+                "type": "GetBucketVersioningResponse"
               },
               {
                 "id": 32,
                 "name": "bucket_set_versioning",
-                "type": "SetBucketVersioningResponse",
-                "oneof_parent": "Response"
+                "type": "SetBucketVersioningResponse"
               },
               {
                 "id": 33,
                 "name": "bucket_get_object_lock_configuration",
-                "type": "GetBucketObjectLockConfigurationResponse",
-                "oneof_parent": "Response"
+                "type": "GetBucketObjectLockConfigurationResponse"
               },
               {
                 "id": 3,
                 "name": "bucket_delete",
-                "type": "DeleteBucketResponse",
-                "oneof_parent": "Response"
+                "type": "DeleteBucketResponse"
               },
               {
                 "id": 4,
                 "name": "bucket_list",
-                "type": "ListBucketsResponse",
-                "oneof_parent": "Response"
+                "type": "ListBucketsResponse"
               },
               {
                 "id": 6,
                 "name": "object_begin",
-                "type": "BeginObjectResponse",
-                "oneof_parent": "Response"
+                "type": "BeginObjectResponse"
               },
               {
                 "id": 7,
                 "name": "object_commit",
-                "type": "CommitObjectResponse",
-                "oneof_parent": "Response"
+                "type": "CommitObjectResponse"
               },
               {
                 "id": 8,
                 "name": "object_get",
-                "type": "GetObjectResponse",
-                "oneof_parent": "Response"
+                "type": "GetObjectResponse"
               },
               {
                 "id": 9,
                 "name": "object_list",
-                "type": "ListObjectsResponse",
-                "oneof_parent": "Response"
+                "type": "ListObjectsResponse"
               },
               {
                 "id": 10,
                 "name": "object_begin_delete",
-                "type": "BeginDeleteObjectResponse",
-                "oneof_parent": "Response"
+                "type": "BeginDeleteObjectResponse"
               },
               {
                 "id": 11,
                 "name": "object_finish_delete",
-                "type": "FinishDeleteObjectResponse",
-                "oneof_parent": "Response"
+                "type": "FinishDeleteObjectResponse"
               },
               {
                 "id": 20,
                 "name": "object_get_ips",
-                "type": "GetObjectIPsResponse",
-                "oneof_parent": "Response"
+                "type": "GetObjectIPsResponse"
               },
               {
                 "id": 22,
                 "name": "object_list_pending_streams",
-                "type": "ListPendingObjectStreamsResponse",
-                "oneof_parent": "Response"
+                "type": "ListPendingObjectStreamsResponse"
               },
               {
                 "id": 23,
                 "name": "object_download",
-                "type": "DownloadObjectResponse",
-                "oneof_parent": "Response"
+                "type": "DownloadObjectResponse"
               },
               {
                 "id": 24,
                 "name": "object_update_metadata",
-                "type": "UpdateObjectMetadataResponse",
-                "oneof_parent": "Response"
+                "type": "UpdateObjectMetadataResponse"
               },
               {
                 "id": 26,
                 "name": "object_begin_move",
-                "type": "BeginMoveObjectResponse",
-                "oneof_parent": "Response"
+                "type": "BeginMoveObjectResponse"
               },
               {
                 "id": 27,
                 "name": "object_finish_move",
-                "type": "FinishMoveObjectResponse",
-                "oneof_parent": "Response"
+                "type": "FinishMoveObjectResponse"
               },
               {
                 "id": 28,
                 "name": "object_begin_copy",
-                "type": "BeginCopyObjectResponse",
-                "oneof_parent": "Response"
+                "type": "BeginCopyObjectResponse"
               },
               {
                 "id": 29,
                 "name": "object_finish_copy",
-                "type": "FinishCopyObjectResponse",
-                "oneof_parent": "Response"
+                "type": "FinishCopyObjectResponse"
               },
               {
                 "id": 34,
                 "name": "object_get_retention",
-                "type": "GetObjectRetentionResponse",
-                "oneof_parent": "Response"
+                "type": "GetObjectRetentionResponse"
               },
               {
                 "id": 35,
                 "name": "object_set_retention",
-                "type": "SetObjectRetentionResponse",
-                "oneof_parent": "Response"
+                "type": "SetObjectRetentionResponse"
               },
               {
                 "id": 12,
                 "name": "segment_begin",
-                "type": "BeginSegmentResponse",
-                "oneof_parent": "Response"
+                "type": "BeginSegmentResponse"
               },
               {
                 "id": 13,
                 "name": "segment_commit",
-                "type": "CommitSegmentResponse",
-                "oneof_parent": "Response"
+                "type": "CommitSegmentResponse"
               },
               {
                 "id": 14,
                 "name": "segment_make_inline",
-                "type": "MakeInlineSegmentResponse",
-                "oneof_parent": "Response"
+                "type": "MakeInlineSegmentResponse"
               },
               {
                 "id": 15,
                 "name": "segment_begin_delete",
-                "type": "BeginDeleteSegmentResponse",
-                "oneof_parent": "Response"
+                "type": "BeginDeleteSegmentResponse"
               },
               {
                 "id": 16,
                 "name": "segment_finish_delete",
-                "type": "FinishDeleteSegmentResponse",
-                "oneof_parent": "Response"
+                "type": "FinishDeleteSegmentResponse"
               },
               {
                 "id": 17,
                 "name": "segment_list",
-                "type": "ListSegmentsResponse",
-                "oneof_parent": "Response"
+                "type": "ListSegmentsResponse"
               },
               {
                 "id": 18,
                 "name": "segment_download",
-                "type": "DownloadSegmentResponse",
-                "oneof_parent": "Response"
+                "type": "DownloadSegmentResponse"
               },
               {
                 "id": 25,
                 "name": "part_delete",
-                "type": "DeletePartResponse",
-                "oneof_parent": "Response"
+                "type": "DeletePartResponse"
               },
               {
                 "id": 19,
                 "name": "revoke_api_key",
-                "type": "RevokeAPIKeyResponse",
-                "oneof_parent": "Response"
+                "type": "RevokeAPIKeyResponse"
               }
             ]
           },
@@ -5473,12 +5321,6 @@
               "SATELLITE",
               "UPLINK",
               "BOOTSTRAP"
-            ],
-            "options": [
-              {
-                "name": "deprecated",
-                "value": "true"
-              }
             ]
           },
           {
@@ -6391,6 +6233,10 @@
               {
                 "name": "BLAKE3",
                 "integer": 1
+              },
+              {
+                "name": "XXH",
+                "integer": 2
               }
             ]
           },

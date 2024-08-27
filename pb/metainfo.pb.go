@@ -1994,7 +1994,6 @@ func (m *DownloadObjectRequest) GetDesiredNodes() int32 {
 
 type Range struct {
 	// Types that are valid to be assigned to Range:
-	//
 	//	*Range_StartLimit
 	//	*Range_Start
 	//	*Range_Suffix
@@ -3332,6 +3331,7 @@ func (m *GetObjectRetentionResponse) GetRetention() *Retention {
 	return nil
 }
 
+//
 // Only for satellite use
 //
 // TODO this needs to be removed BUT unfortunately libuplink is using it and
@@ -4697,7 +4697,6 @@ func (m *BatchRequest) GetRequests() []*BatchRequestItem {
 
 type BatchRequestItem struct {
 	// Types that are valid to be assigned to Request:
-	//
 	//	*BatchRequestItem_BucketCreate
 	//	*BatchRequestItem_BucketGet
 	//	*BatchRequestItem_BucketGetLocation
@@ -5256,7 +5255,6 @@ func (m *BatchResponse) GetResponses() []*BatchResponseItem {
 
 type BatchResponseItem struct {
 	// Types that are valid to be assigned to Response:
-	//
 	//	*BatchResponseItem_BucketCreate
 	//	*BatchResponseItem_BucketGet
 	//	*BatchResponseItem_BucketGetLocation

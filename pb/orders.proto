@@ -26,6 +26,7 @@ enum PieceAction {
 enum PieceHashAlgorithm {
     SHA256 = 0;
     BLAKE3 = 1;
+    XXH = 2;
 }
 
 // OrderLimit is provided by satellite to execute specific action on storage node within some limits.
