@@ -3338,6 +3338,198 @@ func (m *GetObjectRetentionResponse) GetRetention() *Retention {
 	return nil
 }
 
+type SetObjectLegalHoldRequest struct {
+	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Bucket               []byte         `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	EncryptedObjectKey   []byte         `protobuf:"bytes,2,opt,name=encrypted_object_key,json=encryptedObjectKey,proto3" json:"encrypted_object_key,omitempty"`
+	ObjectVersion        []byte         `protobuf:"bytes,3,opt,name=object_version,json=objectVersion,proto3" json:"object_version,omitempty"`
+	Enabled              bool           `protobuf:"varint,4,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *SetObjectLegalHoldRequest) Reset()         { *m = SetObjectLegalHoldRequest{} }
+func (m *SetObjectLegalHoldRequest) String() string { return proto.CompactTextString(m) }
+func (*SetObjectLegalHoldRequest) ProtoMessage()    {}
+
+func (m *SetObjectLegalHoldRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetObjectLegalHoldRequest.Unmarshal(m, b)
+}
+func (m *SetObjectLegalHoldRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetObjectLegalHoldRequest.Marshal(b, m, deterministic)
+}
+func (m *SetObjectLegalHoldRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetObjectLegalHoldRequest.Merge(m, src)
+}
+func (m *SetObjectLegalHoldRequest) XXX_Size() int {
+	return xxx_messageInfo_SetObjectLegalHoldRequest.Size(m)
+}
+func (m *SetObjectLegalHoldRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetObjectLegalHoldRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetObjectLegalHoldRequest proto.InternalMessageInfo
+
+func (m *SetObjectLegalHoldRequest) GetHeader() *RequestHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
+func (m *SetObjectLegalHoldRequest) GetBucket() []byte {
+	if m != nil {
+		return m.Bucket
+	}
+	return nil
+}
+
+func (m *SetObjectLegalHoldRequest) GetEncryptedObjectKey() []byte {
+	if m != nil {
+		return m.EncryptedObjectKey
+	}
+	return nil
+}
+
+func (m *SetObjectLegalHoldRequest) GetObjectVersion() []byte {
+	if m != nil {
+		return m.ObjectVersion
+	}
+	return nil
+}
+
+func (m *SetObjectLegalHoldRequest) GetEnabled() bool {
+	if m != nil {
+		return m.Enabled
+	}
+	return false
+}
+
+type SetObjectLegalHoldResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SetObjectLegalHoldResponse) Reset()         { *m = SetObjectLegalHoldResponse{} }
+func (m *SetObjectLegalHoldResponse) String() string { return proto.CompactTextString(m) }
+func (*SetObjectLegalHoldResponse) ProtoMessage()    {}
+
+func (m *SetObjectLegalHoldResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetObjectLegalHoldResponse.Unmarshal(m, b)
+}
+func (m *SetObjectLegalHoldResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetObjectLegalHoldResponse.Marshal(b, m, deterministic)
+}
+func (m *SetObjectLegalHoldResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetObjectLegalHoldResponse.Merge(m, src)
+}
+func (m *SetObjectLegalHoldResponse) XXX_Size() int {
+	return xxx_messageInfo_SetObjectLegalHoldResponse.Size(m)
+}
+func (m *SetObjectLegalHoldResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetObjectLegalHoldResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetObjectLegalHoldResponse proto.InternalMessageInfo
+
+type GetObjectLegalHoldRequest struct {
+	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Bucket               []byte         `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	EncryptedObjectKey   []byte         `protobuf:"bytes,2,opt,name=encrypted_object_key,json=encryptedObjectKey,proto3" json:"encrypted_object_key,omitempty"`
+	ObjectVersion        []byte         `protobuf:"bytes,3,opt,name=object_version,json=objectVersion,proto3" json:"object_version,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *GetObjectLegalHoldRequest) Reset()         { *m = GetObjectLegalHoldRequest{} }
+func (m *GetObjectLegalHoldRequest) String() string { return proto.CompactTextString(m) }
+func (*GetObjectLegalHoldRequest) ProtoMessage()    {}
+
+func (m *GetObjectLegalHoldRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetObjectLegalHoldRequest.Unmarshal(m, b)
+}
+func (m *GetObjectLegalHoldRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetObjectLegalHoldRequest.Marshal(b, m, deterministic)
+}
+func (m *GetObjectLegalHoldRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetObjectLegalHoldRequest.Merge(m, src)
+}
+func (m *GetObjectLegalHoldRequest) XXX_Size() int {
+	return xxx_messageInfo_GetObjectLegalHoldRequest.Size(m)
+}
+func (m *GetObjectLegalHoldRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetObjectLegalHoldRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetObjectLegalHoldRequest proto.InternalMessageInfo
+
+func (m *GetObjectLegalHoldRequest) GetHeader() *RequestHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
+func (m *GetObjectLegalHoldRequest) GetBucket() []byte {
+	if m != nil {
+		return m.Bucket
+	}
+	return nil
+}
+
+func (m *GetObjectLegalHoldRequest) GetEncryptedObjectKey() []byte {
+	if m != nil {
+		return m.EncryptedObjectKey
+	}
+	return nil
+}
+
+func (m *GetObjectLegalHoldRequest) GetObjectVersion() []byte {
+	if m != nil {
+		return m.ObjectVersion
+	}
+	return nil
+}
+
+type GetObjectLegalHoldResponse struct {
+	Enabled              bool     `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetObjectLegalHoldResponse) Reset()         { *m = GetObjectLegalHoldResponse{} }
+func (m *GetObjectLegalHoldResponse) String() string { return proto.CompactTextString(m) }
+func (*GetObjectLegalHoldResponse) ProtoMessage()    {}
+
+func (m *GetObjectLegalHoldResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetObjectLegalHoldResponse.Unmarshal(m, b)
+}
+func (m *GetObjectLegalHoldResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetObjectLegalHoldResponse.Marshal(b, m, deterministic)
+}
+func (m *GetObjectLegalHoldResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetObjectLegalHoldResponse.Merge(m, src)
+}
+func (m *GetObjectLegalHoldResponse) XXX_Size() int {
+	return xxx_messageInfo_GetObjectLegalHoldResponse.Size(m)
+}
+func (m *GetObjectLegalHoldResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetObjectLegalHoldResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetObjectLegalHoldResponse proto.InternalMessageInfo
+
+func (m *GetObjectLegalHoldResponse) GetEnabled() bool {
+	if m != nil {
+		return m.Enabled
+	}
+	return false
+}
+
 // Only for satellite use
 //
 // TODO this needs to be removed BUT unfortunately libuplink is using it and
@@ -4728,6 +4920,8 @@ type BatchRequestItem struct {
 	//	*BatchRequestItem_ObjectFinishCopy
 	//	*BatchRequestItem_ObjectGetRetention
 	//	*BatchRequestItem_ObjectSetRetention
+	//	*BatchRequestItem_ObjectGetLegalHold
+	//	*BatchRequestItem_ObjectSetLegalHold
 	//	*BatchRequestItem_SegmentBegin
 	//	*BatchRequestItem_SegmentCommit
 	//	*BatchRequestItem_SegmentMakeInline
@@ -4841,6 +5035,12 @@ type BatchRequestItem_ObjectGetRetention struct {
 type BatchRequestItem_ObjectSetRetention struct {
 	ObjectSetRetention *SetObjectRetentionRequest `protobuf:"bytes,35,opt,name=object_set_retention,json=objectSetRetention,proto3,oneof" json:"object_set_retention,omitempty"`
 }
+type BatchRequestItem_ObjectGetLegalHold struct {
+	ObjectGetLegalHold *GetObjectLegalHoldRequest `protobuf:"bytes,36,opt,name=object_get_legal_hold,json=objectGetLegalHold,proto3,oneof" json:"object_get_legal_hold,omitempty"`
+}
+type BatchRequestItem_ObjectSetLegalHold struct {
+	ObjectSetLegalHold *SetObjectLegalHoldRequest `protobuf:"bytes,37,opt,name=object_set_legal_hold,json=objectSetLegalHold,proto3,oneof" json:"object_set_legal_hold,omitempty"`
+}
 type BatchRequestItem_SegmentBegin struct {
 	SegmentBegin *BeginSegmentRequest `protobuf:"bytes,12,opt,name=segment_begin,json=segmentBegin,proto3,oneof" json:"segment_begin,omitempty"`
 }
@@ -4893,6 +5093,8 @@ func (*BatchRequestItem_ObjectBeginCopy) isBatchRequestItem_Request()           
 func (*BatchRequestItem_ObjectFinishCopy) isBatchRequestItem_Request()                 {}
 func (*BatchRequestItem_ObjectGetRetention) isBatchRequestItem_Request()               {}
 func (*BatchRequestItem_ObjectSetRetention) isBatchRequestItem_Request()               {}
+func (*BatchRequestItem_ObjectGetLegalHold) isBatchRequestItem_Request()               {}
+func (*BatchRequestItem_ObjectSetLegalHold) isBatchRequestItem_Request()               {}
 func (*BatchRequestItem_SegmentBegin) isBatchRequestItem_Request()                     {}
 func (*BatchRequestItem_SegmentCommit) isBatchRequestItem_Request()                    {}
 func (*BatchRequestItem_SegmentMakeInline) isBatchRequestItem_Request()                {}
@@ -5078,6 +5280,20 @@ func (m *BatchRequestItem) GetObjectSetRetention() *SetObjectRetentionRequest {
 	return nil
 }
 
+func (m *BatchRequestItem) GetObjectGetLegalHold() *GetObjectLegalHoldRequest {
+	if x, ok := m.GetRequest().(*BatchRequestItem_ObjectGetLegalHold); ok {
+		return x.ObjectGetLegalHold
+	}
+	return nil
+}
+
+func (m *BatchRequestItem) GetObjectSetLegalHold() *SetObjectLegalHoldRequest {
+	if x, ok := m.GetRequest().(*BatchRequestItem_ObjectSetLegalHold); ok {
+		return x.ObjectSetLegalHold
+	}
+	return nil
+}
+
 func (m *BatchRequestItem) GetSegmentBegin() *BeginSegmentRequest {
 	if x, ok := m.GetRequest().(*BatchRequestItem_SegmentBegin); ok {
 		return x.SegmentBegin
@@ -5168,6 +5384,8 @@ func (*BatchRequestItem) XXX_OneofWrappers() []interface{} {
 		(*BatchRequestItem_ObjectFinishCopy)(nil),
 		(*BatchRequestItem_ObjectGetRetention)(nil),
 		(*BatchRequestItem_ObjectSetRetention)(nil),
+		(*BatchRequestItem_ObjectGetLegalHold)(nil),
+		(*BatchRequestItem_ObjectSetLegalHold)(nil),
 		(*BatchRequestItem_SegmentBegin)(nil),
 		(*BatchRequestItem_SegmentCommit)(nil),
 		(*BatchRequestItem_SegmentMakeInline)(nil),
@@ -5287,6 +5505,8 @@ type BatchResponseItem struct {
 	//	*BatchResponseItem_ObjectFinishCopy
 	//	*BatchResponseItem_ObjectGetRetention
 	//	*BatchResponseItem_ObjectSetRetention
+	//	*BatchResponseItem_ObjectGetLegalHold
+	//	*BatchResponseItem_ObjectSetLegalHold
 	//	*BatchResponseItem_SegmentBegin
 	//	*BatchResponseItem_SegmentCommit
 	//	*BatchResponseItem_SegmentMakeInline
@@ -5400,6 +5620,12 @@ type BatchResponseItem_ObjectGetRetention struct {
 type BatchResponseItem_ObjectSetRetention struct {
 	ObjectSetRetention *SetObjectRetentionResponse `protobuf:"bytes,35,opt,name=object_set_retention,json=objectSetRetention,proto3,oneof" json:"object_set_retention,omitempty"`
 }
+type BatchResponseItem_ObjectGetLegalHold struct {
+	ObjectGetLegalHold *GetObjectLegalHoldResponse `protobuf:"bytes,36,opt,name=object_get_legal_hold,json=objectGetLegalHold,proto3,oneof" json:"object_get_legal_hold,omitempty"`
+}
+type BatchResponseItem_ObjectSetLegalHold struct {
+	ObjectSetLegalHold *SetObjectLegalHoldResponse `protobuf:"bytes,37,opt,name=object_set_legal_hold,json=objectSetLegalHold,proto3,oneof" json:"object_set_legal_hold,omitempty"`
+}
 type BatchResponseItem_SegmentBegin struct {
 	SegmentBegin *BeginSegmentResponse `protobuf:"bytes,12,opt,name=segment_begin,json=segmentBegin,proto3,oneof" json:"segment_begin,omitempty"`
 }
@@ -5452,6 +5678,8 @@ func (*BatchResponseItem_ObjectBeginCopy) isBatchResponseItem_Response()        
 func (*BatchResponseItem_ObjectFinishCopy) isBatchResponseItem_Response()                 {}
 func (*BatchResponseItem_ObjectGetRetention) isBatchResponseItem_Response()               {}
 func (*BatchResponseItem_ObjectSetRetention) isBatchResponseItem_Response()               {}
+func (*BatchResponseItem_ObjectGetLegalHold) isBatchResponseItem_Response()               {}
+func (*BatchResponseItem_ObjectSetLegalHold) isBatchResponseItem_Response()               {}
 func (*BatchResponseItem_SegmentBegin) isBatchResponseItem_Response()                     {}
 func (*BatchResponseItem_SegmentCommit) isBatchResponseItem_Response()                    {}
 func (*BatchResponseItem_SegmentMakeInline) isBatchResponseItem_Response()                {}
@@ -5637,6 +5865,20 @@ func (m *BatchResponseItem) GetObjectSetRetention() *SetObjectRetentionResponse 
 	return nil
 }
 
+func (m *BatchResponseItem) GetObjectGetLegalHold() *GetObjectLegalHoldResponse {
+	if x, ok := m.GetResponse().(*BatchResponseItem_ObjectGetLegalHold); ok {
+		return x.ObjectGetLegalHold
+	}
+	return nil
+}
+
+func (m *BatchResponseItem) GetObjectSetLegalHold() *SetObjectLegalHoldResponse {
+	if x, ok := m.GetResponse().(*BatchResponseItem_ObjectSetLegalHold); ok {
+		return x.ObjectSetLegalHold
+	}
+	return nil
+}
+
 func (m *BatchResponseItem) GetSegmentBegin() *BeginSegmentResponse {
 	if x, ok := m.GetResponse().(*BatchResponseItem_SegmentBegin); ok {
 		return x.SegmentBegin
@@ -5727,6 +5969,8 @@ func (*BatchResponseItem) XXX_OneofWrappers() []interface{} {
 		(*BatchResponseItem_ObjectFinishCopy)(nil),
 		(*BatchResponseItem_ObjectGetRetention)(nil),
 		(*BatchResponseItem_ObjectSetRetention)(nil),
+		(*BatchResponseItem_ObjectGetLegalHold)(nil),
+		(*BatchResponseItem_ObjectSetLegalHold)(nil),
 		(*BatchResponseItem_SegmentBegin)(nil),
 		(*BatchResponseItem_SegmentCommit)(nil),
 		(*BatchResponseItem_SegmentMakeInline)(nil),

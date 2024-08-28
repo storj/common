@@ -62,6 +62,8 @@ type DRPCMetainfoClient interface {
 	UpdateObjectMetadata(ctx context.Context, in *UpdateObjectMetadataRequest) (*UpdateObjectMetadataResponse, error)
 	GetObjectRetention(ctx context.Context, in *GetObjectRetentionRequest) (*GetObjectRetentionResponse, error)
 	SetObjectRetention(ctx context.Context, in *SetObjectRetentionRequest) (*SetObjectRetentionResponse, error)
+	GetObjectLegalHold(ctx context.Context, in *GetObjectLegalHoldRequest) (*GetObjectLegalHoldResponse, error)
+	SetObjectLegalHold(ctx context.Context, in *SetObjectLegalHoldRequest) (*SetObjectLegalHoldResponse, error)
 	BeginSegment(ctx context.Context, in *BeginSegmentRequest) (*BeginSegmentResponse, error)
 	RetryBeginSegmentPieces(ctx context.Context, in *RetryBeginSegmentPiecesRequest) (*RetryBeginSegmentPiecesResponse, error)
 	CommitSegment(ctx context.Context, in *CommitSegmentRequest) (*CommitSegmentResponse, error)
@@ -271,6 +273,24 @@ func (c *drpcMetainfoClient) SetObjectRetention(ctx context.Context, in *SetObje
 	return out, nil
 }
 
+func (c *drpcMetainfoClient) GetObjectLegalHold(ctx context.Context, in *GetObjectLegalHoldRequest) (*GetObjectLegalHoldResponse, error) {
+	out := new(GetObjectLegalHoldResponse)
+	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/GetObjectLegalHold", drpcEncoding_File_metainfo_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *drpcMetainfoClient) SetObjectLegalHold(ctx context.Context, in *SetObjectLegalHoldRequest) (*SetObjectLegalHoldResponse, error) {
+	out := new(SetObjectLegalHoldResponse)
+	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/SetObjectLegalHold", drpcEncoding_File_metainfo_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *drpcMetainfoClient) BeginSegment(ctx context.Context, in *BeginSegmentRequest) (*BeginSegmentResponse, error) {
 	out := new(BeginSegmentResponse)
 	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/BeginSegment", drpcEncoding_File_metainfo_proto{}, in, out)
@@ -445,6 +465,8 @@ type DRPCMetainfoServer interface {
 	UpdateObjectMetadata(context.Context, *UpdateObjectMetadataRequest) (*UpdateObjectMetadataResponse, error)
 	GetObjectRetention(context.Context, *GetObjectRetentionRequest) (*GetObjectRetentionResponse, error)
 	SetObjectRetention(context.Context, *SetObjectRetentionRequest) (*SetObjectRetentionResponse, error)
+	GetObjectLegalHold(context.Context, *GetObjectLegalHoldRequest) (*GetObjectLegalHoldResponse, error)
+	SetObjectLegalHold(context.Context, *SetObjectLegalHoldRequest) (*SetObjectLegalHoldResponse, error)
 	BeginSegment(context.Context, *BeginSegmentRequest) (*BeginSegmentResponse, error)
 	RetryBeginSegmentPieces(context.Context, *RetryBeginSegmentPiecesRequest) (*RetryBeginSegmentPiecesResponse, error)
 	CommitSegment(context.Context, *CommitSegmentRequest) (*CommitSegmentResponse, error)
@@ -546,6 +568,14 @@ func (s *DRPCMetainfoUnimplementedServer) SetObjectRetention(context.Context, *S
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
+func (s *DRPCMetainfoUnimplementedServer) GetObjectLegalHold(context.Context, *GetObjectLegalHoldRequest) (*GetObjectLegalHoldResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
+func (s *DRPCMetainfoUnimplementedServer) SetObjectLegalHold(context.Context, *SetObjectLegalHoldRequest) (*SetObjectLegalHoldResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
 func (s *DRPCMetainfoUnimplementedServer) BeginSegment(context.Context, *BeginSegmentRequest) (*BeginSegmentResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
@@ -616,7 +646,7 @@ func (s *DRPCMetainfoUnimplementedServer) FinishCopyObject(context.Context, *Fin
 
 type DRPCMetainfoDescription struct{}
 
-func (DRPCMetainfoDescription) NumMethods() int { return 37 }
+func (DRPCMetainfoDescription) NumMethods() int { return 39 }
 
 func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -801,6 +831,24 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 					)
 			}, DRPCMetainfoServer.SetObjectRetention, true
 	case 20:
+		return "/metainfo.Metainfo/GetObjectLegalHold", drpcEncoding_File_metainfo_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCMetainfoServer).
+					GetObjectLegalHold(
+						ctx,
+						in1.(*GetObjectLegalHoldRequest),
+					)
+			}, DRPCMetainfoServer.GetObjectLegalHold, true
+	case 21:
+		return "/metainfo.Metainfo/SetObjectLegalHold", drpcEncoding_File_metainfo_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCMetainfoServer).
+					SetObjectLegalHold(
+						ctx,
+						in1.(*SetObjectLegalHoldRequest),
+					)
+			}, DRPCMetainfoServer.SetObjectLegalHold, true
+	case 22:
 		return "/metainfo.Metainfo/BeginSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -809,7 +857,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BeginSegmentRequest),
 					)
 			}, DRPCMetainfoServer.BeginSegment, true
-	case 21:
+	case 23:
 		return "/metainfo.Metainfo/RetryBeginSegmentPieces", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -818,7 +866,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*RetryBeginSegmentPiecesRequest),
 					)
 			}, DRPCMetainfoServer.RetryBeginSegmentPieces, true
-	case 22:
+	case 24:
 		return "/metainfo.Metainfo/CommitSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -827,7 +875,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*CommitSegmentRequest),
 					)
 			}, DRPCMetainfoServer.CommitSegment, true
-	case 23:
+	case 25:
 		return "/metainfo.Metainfo/MakeInlineSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -836,7 +884,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*MakeInlineSegmentRequest),
 					)
 			}, DRPCMetainfoServer.MakeInlineSegment, true
-	case 24:
+	case 26:
 		return "/metainfo.Metainfo/BeginDeleteSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -845,7 +893,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BeginDeleteSegmentRequest),
 					)
 			}, DRPCMetainfoServer.BeginDeleteSegment, true
-	case 25:
+	case 27:
 		return "/metainfo.Metainfo/FinishDeleteSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -854,7 +902,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*FinishDeleteSegmentRequest),
 					)
 			}, DRPCMetainfoServer.FinishDeleteSegment, true
-	case 26:
+	case 28:
 		return "/metainfo.Metainfo/ListSegments", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -863,7 +911,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*ListSegmentsRequest),
 					)
 			}, DRPCMetainfoServer.ListSegments, true
-	case 27:
+	case 29:
 		return "/metainfo.Metainfo/DownloadSegment", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -872,7 +920,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*DownloadSegmentRequest),
 					)
 			}, DRPCMetainfoServer.DownloadSegment, true
-	case 28:
+	case 30:
 		return "/metainfo.Metainfo/DeletePart", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -881,7 +929,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*DeletePartRequest),
 					)
 			}, DRPCMetainfoServer.DeletePart, true
-	case 29:
+	case 31:
 		return "/metainfo.Metainfo/Batch", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -890,7 +938,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BatchRequest),
 					)
 			}, DRPCMetainfoServer.Batch, true
-	case 30:
+	case 32:
 		return "/metainfo.Metainfo/CompressedBatch", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -899,7 +947,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*CompressedBatchRequest),
 					)
 			}, DRPCMetainfoServer.CompressedBatch, true
-	case 31:
+	case 33:
 		return "/metainfo.Metainfo/ProjectInfo", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -908,7 +956,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*ProjectInfoRequest),
 					)
 			}, DRPCMetainfoServer.ProjectInfo, true
-	case 32:
+	case 34:
 		return "/metainfo.Metainfo/RevokeAPIKey", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -917,7 +965,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*RevokeAPIKeyRequest),
 					)
 			}, DRPCMetainfoServer.RevokeAPIKey, true
-	case 33:
+	case 35:
 		return "/metainfo.Metainfo/BeginMoveObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -926,7 +974,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BeginMoveObjectRequest),
 					)
 			}, DRPCMetainfoServer.BeginMoveObject, true
-	case 34:
+	case 36:
 		return "/metainfo.Metainfo/FinishMoveObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -935,7 +983,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*FinishMoveObjectRequest),
 					)
 			}, DRPCMetainfoServer.FinishMoveObject, true
-	case 35:
+	case 37:
 		return "/metainfo.Metainfo/BeginCopyObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -944,7 +992,7 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 						in1.(*BeginCopyObjectRequest),
 					)
 			}, DRPCMetainfoServer.BeginCopyObject, true
-	case 36:
+	case 38:
 		return "/metainfo.Metainfo/FinishCopyObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
@@ -1276,6 +1324,38 @@ type drpcMetainfo_SetObjectRetentionStream struct {
 }
 
 func (x *drpcMetainfo_SetObjectRetentionStream) SendAndClose(m *SetObjectRetentionResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCMetainfo_GetObjectLegalHoldStream interface {
+	drpc.Stream
+	SendAndClose(*GetObjectLegalHoldResponse) error
+}
+
+type drpcMetainfo_GetObjectLegalHoldStream struct {
+	drpc.Stream
+}
+
+func (x *drpcMetainfo_GetObjectLegalHoldStream) SendAndClose(m *GetObjectLegalHoldResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCMetainfo_SetObjectLegalHoldStream interface {
+	drpc.Stream
+	SendAndClose(*SetObjectLegalHoldResponse) error
+}
+
+type drpcMetainfo_SetObjectLegalHoldStream struct {
+	drpc.Stream
+}
+
+func (x *drpcMetainfo_SetObjectLegalHoldStream) SendAndClose(m *SetObjectLegalHoldResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
 		return err
 	}

@@ -3535,6 +3535,74 @@
             ]
           },
           {
+            "name": "SetObjectLegalHoldRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "object_version",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "enabled",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "name": "SetObjectLegalHoldResponse"
+          },
+          {
+            "name": "GetObjectLegalHoldRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "object_version",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "GetObjectLegalHoldResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "enabled",
+                "type": "bool"
+              }
+            ]
+          },
+          {
             "name": "SatStreamID",
             "fields": [
               {
@@ -4572,6 +4640,18 @@
                 "oneof_parent": "Request"
               },
               {
+                "id": 36,
+                "name": "object_get_legal_hold",
+                "type": "GetObjectLegalHoldRequest",
+                "oneof_parent": "Request"
+              },
+              {
+                "id": 37,
+                "name": "object_set_legal_hold",
+                "type": "SetObjectLegalHoldRequest",
+                "oneof_parent": "Request"
+              },
+              {
                 "id": 12,
                 "name": "segment_begin",
                 "type": "BeginSegmentRequest",
@@ -4798,6 +4878,18 @@
                 "id": 35,
                 "name": "object_set_retention",
                 "type": "SetObjectRetentionResponse",
+                "oneof_parent": "Response"
+              },
+              {
+                "id": 36,
+                "name": "object_get_legal_hold",
+                "type": "GetObjectLegalHoldResponse",
+                "oneof_parent": "Response"
+              },
+              {
+                "id": 37,
+                "name": "object_set_legal_hold",
+                "type": "SetObjectLegalHoldResponse",
                 "oneof_parent": "Response"
               },
               {
@@ -5335,6 +5427,16 @@
                 "name": "SetObjectRetention",
                 "in_type": "SetObjectRetentionRequest",
                 "out_type": "SetObjectRetentionResponse"
+              },
+              {
+                "name": "GetObjectLegalHold",
+                "in_type": "GetObjectLegalHoldRequest",
+                "out_type": "GetObjectLegalHoldResponse"
+              },
+              {
+                "name": "SetObjectLegalHold",
+                "in_type": "SetObjectLegalHoldRequest",
+                "out_type": "SetObjectLegalHoldResponse"
               },
               {
                 "name": "BeginSegment",

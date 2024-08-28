@@ -46,6 +46,8 @@ service Metainfo {
     rpc UpdateObjectMetadata(UpdateObjectMetadataRequest) returns (UpdateObjectMetadataResponse);
     rpc GetObjectRetention(GetObjectRetentionRequest) returns (GetObjectRetentionResponse);
     rpc SetObjectRetention(SetObjectRetentionRequest) returns (SetObjectRetentionResponse);
+    rpc GetObjectLegalHold(GetObjectLegalHoldRequest) returns (GetObjectLegalHoldResponse);
+    rpc SetObjectLegalHold(SetObjectLegalHoldRequest) returns (SetObjectLegalHoldResponse);
 
     rpc BeginSegment(BeginSegmentRequest) returns (BeginSegmentResponse);
     rpc RetryBeginSegmentPieces(RetryBeginSegmentPiecesRequest) returns (RetryBeginSegmentPiecesResponse);
@@ -597,6 +599,31 @@ message GetObjectRetentionResponse {
     Retention retention = 1;
 }
 
+message SetObjectLegalHoldRequest {
+    RequestHeader header = 15;
+
+    bytes bucket               = 1;
+    bytes encrypted_object_key = 2;
+    bytes object_version       = 3;
+
+    bool enabled = 4;
+}
+
+message SetObjectLegalHoldResponse {
+}
+
+message GetObjectLegalHoldRequest {
+    RequestHeader header = 15;
+
+    bytes bucket               = 1;
+    bytes encrypted_object_key = 2;
+    bytes object_version       = 3;
+}
+
+message GetObjectLegalHoldResponse {
+    bool enabled = 1;
+}
+
 //
 // Only for satellite use
 //
@@ -848,6 +875,8 @@ message BatchRequestItem {
         FinishCopyObjectRequest         object_finish_copy = 29;
         GetObjectRetentionRequest       object_get_retention = 34;
         SetObjectRetentionRequest       object_set_retention = 35;
+        GetObjectLegalHoldRequest       object_get_legal_hold = 36;
+        SetObjectLegalHoldRequest       object_set_legal_hold = 37;
 
         BeginSegmentRequest      segment_begin = 12;
         CommitSegmentRequest     segment_commit = 13;
@@ -901,6 +930,8 @@ message BatchResponseItem {
         FinishCopyObjectResponse         object_finish_copy = 29;
         GetObjectRetentionResponse       object_get_retention = 34;
         SetObjectRetentionResponse       object_set_retention = 35;
+        GetObjectLegalHoldResponse       object_get_legal_hold = 36;
+        SetObjectLegalHoldResponse       object_set_legal_hold = 37;
 
         BeginSegmentResponse      segment_begin = 12;
         CommitSegmentResponse     segment_commit = 13;
