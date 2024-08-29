@@ -116,6 +116,7 @@ func (access *Access) Restrict(permission Permission, prefixes ...SharePrefix) (
 		DisallowWrites:                    !permission.AllowUpload,
 		DisallowLists:                     !permission.AllowList,
 		DisallowDeletes:                   !permission.AllowDelete,
+		DisallowLocks:                     !permission.AllowLock,
 		DisallowPutRetention:              !permission.AllowPutObjectRetention,
 		DisallowGetRetention:              !permission.AllowGetObjectRetention,
 		DisallowPutLegalHold:              !permission.AllowPutObjectLegalHold,
