@@ -46,22 +46,19 @@ type Retention_Mode int32
 const (
 	Retention_INVALID    Retention_Mode = 0
 	Retention_COMPLIANCE Retention_Mode = 1
-	Retention_GOVERNANCE Retention_Mode = 3
-	Retention_LEGAL_HOLD Retention_Mode = 4
+	Retention_GOVERNANCE Retention_Mode = 2
 )
 
 var Retention_Mode_name = map[int32]string{
 	0: "INVALID",
 	1: "COMPLIANCE",
-	3: "GOVERNANCE",
-	4: "LEGAL_HOLD",
+	2: "GOVERNANCE",
 }
 
 var Retention_Mode_value = map[string]int32{
 	"INVALID":    0,
 	"COMPLIANCE": 1,
-	"GOVERNANCE": 3,
-	"LEGAL_HOLD": 4,
+	"GOVERNANCE": 2,
 }
 
 func (x Retention_Mode) String() string {
@@ -1344,8 +1341,10 @@ type Object struct {
 	FixedSegmentSize     int64                 `protobuf:"varint,11,opt,name=fixed_segment_size,json=fixedSegmentSize,proto3" json:"fixed_segment_size,omitempty"`
 	RedundancyScheme     *RedundancyScheme     `protobuf:"bytes,12,opt,name=redundancy_scheme,json=redundancyScheme,proto3" json:"redundancy_scheme,omitempty"`
 	EncryptionParameters *EncryptionParameters `protobuf:"bytes,13,opt,name=encryption_parameters,json=encryptionParameters,proto3" json:"encryption_parameters,omitempty"`
-	// This field is omitted if the object has no retention period or the request lacks the permission to read it.
+	// retention is omitted if the object has no retention period or the request lacks the permission to read it.
 	Retention *Retention `protobuf:"bytes,20,opt,name=retention,proto3" json:"retention,omitempty"`
+	// legal_hold is omitted if the object has no legal hold or the request lacks the permission to read it.
+	LegalHold bool `protobuf:"varint,21,opt,name=legal_hold,json=legalHold,proto3" json:"legal_hold,omitempty"`
 	// total_size of object.
 	TotalSize int64 `protobuf:"varint,14,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 	// size of inline part of object.
@@ -1477,6 +1476,13 @@ func (m *Object) GetRetention() *Retention {
 		return m.Retention
 	}
 	return nil
+}
+
+func (m *Object) GetLegalHold() bool {
+	if m != nil {
+		return m.LegalHold
+	}
+	return false
 }
 
 func (m *Object) GetTotalSize() int64 {

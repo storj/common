@@ -1965,11 +1965,7 @@
               },
               {
                 "name": "GOVERNANCE",
-                "integer": 3
-              },
-              {
-                "name": "LEGAL_HOLD",
-                "integer": 4
+                "integer": 2
               }
             ]
           },
@@ -2608,6 +2604,11 @@
                 "id": 20,
                 "name": "retention",
                 "type": "Retention"
+              },
+              {
+                "id": 21,
+                "name": "legal_hold",
+                "type": "bool"
               },
               {
                 "id": 14,
