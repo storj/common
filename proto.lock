@@ -5256,6 +5256,11 @@
                 "type": "Retention"
               },
               {
+                "id": 11,
+                "name": "legal_hold",
+                "type": "bool"
+              },
+              {
                 "id": 8,
                 "name": "override_metadata",
                 "type": "bool"

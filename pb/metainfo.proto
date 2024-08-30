@@ -1033,6 +1033,7 @@ message FinishCopyObjectRequest {
     bytes new_object_version = 9;
 
     Retention retention = 10;
+    bool legal_hold = 11;
 
     // if false, keep existing metadata by ignoring 'new_encrypted_metadata'
     bool override_metadata = 8;

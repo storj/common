@@ -6445,6 +6445,7 @@ type FinishCopyObjectRequest struct {
 	NewEncryptedObjectKey []byte     `protobuf:"bytes,3,opt,name=new_encrypted_object_key,json=newEncryptedObjectKey,proto3" json:"new_encrypted_object_key,omitempty"`
 	NewObjectVersion      []byte     `protobuf:"bytes,9,opt,name=new_object_version,json=newObjectVersion,proto3" json:"new_object_version,omitempty"`
 	Retention             *Retention `protobuf:"bytes,10,opt,name=retention,proto3" json:"retention,omitempty"`
+	LegalHold             bool       `protobuf:"varint,11,opt,name=legal_hold,json=legalHold,proto3" json:"legal_hold,omitempty"`
 	// if false, keep existing metadata by ignoring 'new_encrypted_metadata'
 	OverrideMetadata             bool                    `protobuf:"varint,8,opt,name=override_metadata,json=overrideMetadata,proto3" json:"override_metadata,omitempty"`
 	NewEncryptedMetadata         []byte                  `protobuf:"bytes,7,opt,name=new_encrypted_metadata,json=newEncryptedMetadata,proto3" json:"new_encrypted_metadata,omitempty"`
@@ -6511,6 +6512,13 @@ func (m *FinishCopyObjectRequest) GetRetention() *Retention {
 		return m.Retention
 	}
 	return nil
+}
+
+func (m *FinishCopyObjectRequest) GetLegalHold() bool {
+	if m != nil {
+		return m.LegalHold
+	}
+	return false
 }
 
 func (m *FinishCopyObjectRequest) GetOverrideMetadata() bool {
