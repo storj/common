@@ -6204,6 +6204,7 @@ type FinishMoveObjectRequest struct {
 	NewEncryptedMetadataKey      []byte                  `protobuf:"bytes,4,opt,name=new_encrypted_metadata_key,json=newEncryptedMetadataKey,proto3" json:"new_encrypted_metadata_key,omitempty"`
 	NewSegmentKeys               []*EncryptedKeyAndNonce `protobuf:"bytes,5,rep,name=new_segment_keys,json=newSegmentKeys,proto3" json:"new_segment_keys,omitempty"`
 	Retention                    *Retention              `protobuf:"bytes,7,opt,name=retention,proto3" json:"retention,omitempty"`
+	LegalHold                    bool                    `protobuf:"varint,8,opt,name=legal_hold,json=legalHold,proto3" json:"legal_hold,omitempty"`
 	XXX_NoUnkeyedLiteral         struct{}                `json:"-"`
 	XXX_unrecognized             []byte                  `json:"-"`
 	XXX_sizecache                int32                   `json:"-"`
@@ -6271,6 +6272,13 @@ func (m *FinishMoveObjectRequest) GetRetention() *Retention {
 		return m.Retention
 	}
 	return nil
+}
+
+func (m *FinishMoveObjectRequest) GetLegalHold() bool {
+	if m != nil {
+		return m.LegalHold
+	}
+	return false
 }
 
 type FinishMoveObjectResponse struct {

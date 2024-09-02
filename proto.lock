@@ -5120,6 +5120,11 @@
                 "id": 7,
                 "name": "retention",
                 "type": "Retention"
+              },
+              {
+                "id": 8,
+                "name": "legal_hold",
+                "type": "bool"
               }
             ]
           },

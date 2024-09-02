@@ -992,6 +992,7 @@ message FinishMoveObjectRequest {
     repeated EncryptedKeyAndNonce new_segment_keys = 5;
 
     Retention retention = 7;
+    bool legal_hold = 8;
 }
 
 message FinishMoveObjectResponse { }
