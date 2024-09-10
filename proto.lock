@@ -2709,6 +2709,11 @@
                 "id": 12,
                 "name": "retention",
                 "type": "Retention"
+              },
+              {
+                "id": 13,
+                "name": "legal_hold",
+                "type": "bool"
               }
             ]
           },

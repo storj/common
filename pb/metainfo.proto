@@ -315,6 +315,7 @@ message BeginObjectRequest {
     bytes encrypted_metadata_encrypted_key = 11;
 
     Retention retention = 12;
+    bool legal_hold = 13;
 }
 
 message BeginObjectResponse {

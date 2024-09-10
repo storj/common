@@ -1525,6 +1525,7 @@ type BeginObjectRequest struct {
 	EncryptedMetadata             []byte                `protobuf:"bytes,10,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
 	EncryptedMetadataEncryptedKey []byte                `protobuf:"bytes,11,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
 	Retention                     *Retention            `protobuf:"bytes,12,opt,name=retention,proto3" json:"retention,omitempty"`
+	LegalHold                     bool                  `protobuf:"varint,13,opt,name=legal_hold,json=legalHold,proto3" json:"legal_hold,omitempty"`
 	XXX_NoUnkeyedLiteral          struct{}              `json:"-"`
 	XXX_unrecognized              []byte                `json:"-"`
 	XXX_sizecache                 int32                 `json:"-"`
@@ -1620,6 +1621,13 @@ func (m *BeginObjectRequest) GetRetention() *Retention {
 		return m.Retention
 	}
 	return nil
+}
+
+func (m *BeginObjectRequest) GetLegalHold() bool {
+	if m != nil {
+		return m.LegalHold
+	}
+	return false
 }
 
 type BeginObjectResponse struct {
