@@ -41,11 +41,11 @@ const (
 	Unauthenticated    StatusCode = 16
 	MethodNotAllowed   StatusCode = 17
 
-	ObjectLockDisabled        StatusCode = 10000
-	VersioningRequiredForLock StatusCode = 10001
-	ProjectLockDisabled       StatusCode = 10002
-	BucketLockDisabled        StatusCode = 10003
-	ObjectNoRetention         StatusCode = 10004
+	ObjectLockEndpointsDisabled                   StatusCode = 10000
+	ObjectLockDisabledForProject                  StatusCode = 10001
+	ObjectLockInvalidBucketState                  StatusCode = 10002
+	ObjectLockBucketRetentionConfigurationMissing StatusCode = 10003
+	ObjectLockObjectRetentionConfigurationMissing StatusCode = 10004
 )
 
 // Code returns the status code associated with the error.

@@ -26,21 +26,21 @@ func _() {
 	_ = x[DataLoss-15]
 	_ = x[Unauthenticated-16]
 	_ = x[MethodNotAllowed-17]
-	_ = x[ObjectLockDisabled-10000]
-	_ = x[VersioningRequiredForLock-10001]
-	_ = x[ProjectLockDisabled-10002]
-	_ = x[BucketLockDisabled-10003]
-	_ = x[ObjectNoRetention-10004]
+	_ = x[ObjectLockEndpointsDisabled-10000]
+	_ = x[ObjectLockDisabledForProject-10001]
+	_ = x[ObjectLockInvalidBucketState-10002]
+	_ = x[ObjectLockBucketRetentionConfigurationMissing-10003]
+	_ = x[ObjectLockObjectRetentionConfigurationMissing-10004]
 }
 
 const (
 	_StatusCode_name_0 = "UnknownOKCanceledInvalidArgumentDeadlineExceededNotFoundAlreadyExistsPermissionDeniedResourceExhaustedFailedPreconditionAbortedOutOfRangeUnimplementedInternalUnavailableDataLossUnauthenticatedMethodNotAllowed"
-	_StatusCode_name_1 = "ObjectLockDisabledVersioningRequiredForLockProjectLockDisabledBucketLockDisabledObjectNoRetention"
+	_StatusCode_name_1 = "ObjectLockEndpointsDisabledObjectLockDisabledForProjectObjectLockInvalidBucketStateObjectLockBucketRetentionConfigurationMissingObjectLockObjectRetentionConfigurationMissing"
 )
 
 var (
 	_StatusCode_index_0 = [...]uint8{0, 7, 9, 17, 32, 48, 56, 69, 85, 102, 120, 127, 137, 150, 158, 169, 177, 192, 208}
-	_StatusCode_index_1 = [...]uint8{0, 18, 43, 62, 80, 97}
+	_StatusCode_index_1 = [...]uint8{0, 27, 55, 83, 128, 173}
 )
 
 func (i StatusCode) String() string {
