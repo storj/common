@@ -46,6 +46,8 @@ const (
 	ObjectLockInvalidBucketState                  StatusCode = 10002
 	ObjectLockBucketRetentionConfigurationMissing StatusCode = 10003
 	ObjectLockObjectRetentionConfigurationMissing StatusCode = 10004
+	ObjectLockObjectProtected                     StatusCode = 10005
+	ObjectLockInvalidObjectState                  StatusCode = 10006
 )
 
 // Code returns the status code associated with the error.
