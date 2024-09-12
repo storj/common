@@ -2608,7 +2608,7 @@
               {
                 "id": 21,
                 "name": "legal_hold",
-                "type": "bool"
+                "type": "google.protobuf.BoolValue"
               },
               {
                 "id": 14,
@@ -5560,6 +5560,9 @@
           },
           {
             "path": "google/protobuf/timestamp.proto"
+          },
+          {
+            "path": "google/protobuf/wrappers.proto"
           },
           {
             "path": "node.proto"

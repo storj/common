@@ -9,6 +9,7 @@ package metainfo;
 import "encryption.proto";
 import "gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 import "node.proto";
 import "pointerdb.proto";
 import "orders.proto";
@@ -284,9 +285,9 @@ message Object {
     encryption.EncryptionParameters encryption_parameters = 13;
 
     // retention is omitted if the object has no retention period or the request lacks the permission to read it.
-    Retention retention = 20;
-    // legal_hold is omitted if the object has no legal hold or the request lacks the permission to read it.
-    bool legal_hold = 21;
+    Retention                 retention  = 20;
+    // legal_hold is omitted if the request lacks the permission to read the object's legal hold status.
+    google.protobuf.BoolValue legal_hold = 21;
 
     // total_size of object.
     int64 total_size  = 14;
