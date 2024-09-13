@@ -7,7 +7,7 @@ import (
 	time "time"
 
 	proto "github.com/gogo/protobuf/proto"
-	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	types "github.com/gogo/protobuf/types"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -1345,7 +1345,7 @@ type Object struct {
 	// retention is omitted if the object has no retention period or the request lacks the permission to read it.
 	Retention *Retention `protobuf:"bytes,20,opt,name=retention,proto3" json:"retention,omitempty"`
 	// legal_hold is omitted if the request lacks the permission to read the object's legal hold status.
-	LegalHold *wrapperspb.BoolValue `protobuf:"bytes,21,opt,name=legal_hold,json=legalHold,proto3" json:"legal_hold,omitempty"`
+	LegalHold *types.BoolValue `protobuf:"bytes,21,opt,name=legal_hold,json=legalHold,proto3" json:"legal_hold,omitempty"`
 	// total_size of object.
 	TotalSize int64 `protobuf:"varint,14,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 	// size of inline part of object.
@@ -1479,7 +1479,7 @@ func (m *Object) GetRetention() *Retention {
 	return nil
 }
 
-func (m *Object) GetLegalHold() *wrapperspb.BoolValue {
+func (m *Object) GetLegalHold() *types.BoolValue {
 	if m != nil {
 		return m.LegalHold
 	}

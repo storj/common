@@ -63,7 +63,8 @@ func main() {
 
 		protofiles = ignore(protofiles)
 
-		overrideImports := ",Mgoogle/protobuf/timestamp.proto=storj.io/common/pb"
+		overrideImports := ",Mgoogle/protobuf/timestamp.proto=storj.io/common/pb" +
+			",Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types"
 		args := []string{
 			"--lint_out=.",
 			"--gogo_out=paths=source_relative" + overrideImports + ":.",
