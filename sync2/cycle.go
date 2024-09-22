@@ -89,6 +89,9 @@ func (cycle *Cycle) Run(ctx context.Context, fn func(ctx context.Context) error)
 	cycle.initialize()
 	defer close(cycle.stopped)
 
+	if cycle.interval == 0 {
+		return nil
+	}
 	currentInterval := cycle.interval
 	cycle.ticker = time.NewTicker(currentInterval)
 	defer cycle.ticker.Stop()
