@@ -61,13 +61,26 @@ type Server struct {
 	PrometheusEndpoint *PrometheusEndpoint
 }
 
+// Extension is a custom endpoint, added to the debug endpoint.
+type Extension interface {
+
+	// Description is a display name for the UI.
+	Description() string
+
+	// Path is the unique HTTP path fragment.
+	Path() string
+
+	// Handler is the HTTP handler for the path.
+	Handler(http.ResponseWriter, *http.Request)
+}
+
 // NewServer returns a new debug.Server.
-func NewServer(log *zap.Logger, listener net.Listener, registry *monkit.Registry, config Config) *Server {
-	return NewServerWithAtomicLevel(log, listener, registry, config, nil)
+func NewServer(log *zap.Logger, listener net.Listener, registry *monkit.Registry, config Config, extensions ...Extension) *Server {
+	return NewServerWithAtomicLevel(log, listener, registry, config, nil, extensions...)
 }
 
 // NewServerWithAtomicLevel returns a new debug.Server with logging endpoint enabled.
-func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *monkit.Registry, config Config, atomicLevel *zap.AtomicLevel) *Server {
+func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *monkit.Registry, config Config, atomicLevel *zap.AtomicLevel, extensions ...Extension) *Server {
 	server := &Server{
 		log:                log,
 		listener:           listener,
@@ -107,7 +120,10 @@ func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *
 	if atomicLevel != nil {
 		server.mux.HandleFunc("/logging", atomicLevel.ServeHTTP)
 	}
-	server.mux.HandleFunc("/", indexPage(config.Control, atomicLevel != nil))
+	for _, ext := range extensions {
+		server.mux.HandleFunc(ext.Path(), ext.Handler)
+	}
+	server.mux.HandleFunc("/", indexPage(config.Control, atomicLevel != nil, extensions))
 
 	return server
 }
@@ -116,7 +132,7 @@ func htmlLink(link string) string {
 	return fmt.Sprintf("<a href=\"%s\">%s</a>", link, link)
 }
 
-func indexPage(writeControl, writeLogging bool) func(w http.ResponseWriter, r *http.Request) {
+func indexPage(writeControl, writeLogging bool, extensions []Extension) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		line := func(args ...string) {
 			_, _ = w.Write([]byte(strings.Join(args, "") + "\n"))
@@ -147,6 +163,10 @@ func indexPage(writeControl, writeLogging bool) func(w http.ResponseWriter, r *h
 		if writeLogging {
 			line("<dt>", htmlLink("/logging"), "</dt>")
 			line("<dd>JSON endpoint can report or change the current logging level (https://pkg.go.dev/go.uber.org/zap#AtomicLevel.ServeHTTP)</dd>")
+		}
+		for _, ext := range extensions {
+			line("<dt>", htmlLink(ext.Path()), "</dt>")
+			line("<dd>" + ext.Description() + "</dd>")
 		}
 		line("</dl>")
 	}
