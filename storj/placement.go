@@ -47,8 +47,11 @@ const (
 )
 
 // Value implements the driver.Valuer interface.
-func (p PlacementConstraint) Value() (driver.Value, error) {
-	return int64(p), nil
+func (p *PlacementConstraint) Value() (driver.Value, error) {
+	if p == nil {
+		return nil, nil
+	}
+	return int64(*p), nil
 }
 
 // Scan implements the sql.Scanner interface.
