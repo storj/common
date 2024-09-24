@@ -15,6 +15,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"storj.io/common/sync2"
+	"storj.io/common/testcontext"
 )
 
 func TestCycle_Basic(t *testing.T) {
@@ -134,20 +135,31 @@ func TestCycle_StopCancelled(t *testing.T) {
 	require.True(t, errors.Is(err, context.Canceled))
 }
 
-func TestCycle_Run_NoInterval(t *testing.T) {
+func TestCycle_Disable(t *testing.T) {
 	t.Parallel()
 
-	cycle := &sync2.Cycle{}
+	cycle := sync2.NewCycle(-1)
+	cycle.ChangeInterval(-1)
 	require.Panics(t,
 		func() {
-			err := cycle.Run(context.Background(), func(_ context.Context) error {
-				return nil
-			})
-
-			require.NoError(t, err)
+			cycle.ChangeInterval(5 * time.Minute)
 		},
-		"Run without setting an interval should panic",
+		"changing interval of a disabled cycle should panic",
 	)
+
+	executed := false
+	cycle = sync2.NewCycle(-1)
+	err := cycle.Run(testcontext.New(t), func(ctx context.Context) error {
+		executed = true
+		return nil
+	})
+	require.NoError(t, err)
+	require.False(t, executed)
+
+	// no op for disabled cycle
+	cycle.Pause()
+	cycle.Trigger()
+	cycle.Restart()
 }
 
 func TestCycle_Stop_NotStarted(t *testing.T) {

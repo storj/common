@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	monkit "github.com/spacemonkeygo/monkit/v3"
+	"github.com/spacemonkeygo/monkit/v3"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -89,6 +89,9 @@ func (cycle *Cycle) Run(ctx context.Context, fn func(ctx context.Context) error)
 	cycle.initialize()
 	defer close(cycle.stopped)
 
+	if cycle.Disabled() {
+		return nil
+	}
 	currentInterval := cycle.interval
 	cycle.ticker = time.NewTicker(currentInterval)
 	defer cycle.ticker.Stop()
@@ -199,29 +202,55 @@ func (cycle *Cycle) Stop() {
 }
 
 // ChangeInterval allows to change the ticker interval after it has started.
+// interval=-1 (disabled loop) is not allowed to be changed (it will panic).
 func (cycle *Cycle) ChangeInterval(interval time.Duration) {
+	if cycle.Disabled() {
+		if interval != -1 {
+			panic("Change interval on a disabled cycle is not supported")
+		}
+		return
+	}
+	if interval == -1 {
+		panic("Cannot disable an already initialized cycle.")
+	}
 	cycle.sendControl(cycleChangeInterval{interval})
 }
 
 // Pause pauses the cycle.
 func (cycle *Cycle) Pause() {
+	if cycle.Disabled() {
+		return
+	}
 	cycle.sendControl(cyclePause{})
 }
 
 // Restart restarts the ticker from 0.
 func (cycle *Cycle) Restart() {
+	if cycle.Disabled() {
+		return
+	}
 	cycle.sendControl(cycleContinue{})
 }
 
-// Trigger ensures that the loop is done at least once.
+// Trigger ensures that the loop is done at least once. Note that it will not run if
+// the cycle is disabled.
+// TODO: Trigger should probably run the cycle even if the cycle interval is disabled.
 // If it's currently running it waits for the previous to complete and then runs.
 func (cycle *Cycle) Trigger() {
+	if cycle.Disabled() {
+		return
+	}
 	cycle.sendControl(cycleTrigger{})
 }
 
 // TriggerWait ensures that the loop is done at least once and waits for completion.
+// Note that it will not run if the cycle is disabled.
+// TODO: Trigger should probably run the cycle even if the cycle interval is disabled.
 // If it's currently running it waits for the previous to complete and then runs.
 func (cycle *Cycle) TriggerWait() {
+	if cycle.Disabled() {
+		return
+	}
 	done := make(chan struct{})
 
 	cycle.sendControl(cycleTrigger{done})
@@ -229,6 +258,11 @@ func (cycle *Cycle) TriggerWait() {
 	case <-done:
 	case <-cycle.stopped:
 	}
+}
+
+// Disabled means the cycle is not intended to run (interval is -1).
+func (cycle *Cycle) Disabled() bool {
+	return cycle.interval == -1
 }
 
 type cycleManualTriggerTag struct{}
