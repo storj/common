@@ -9,6 +9,7 @@ require (
 	github.com/calebcase/tmpfile v1.0.3
 	github.com/flynn/noise v1.0.0
 	github.com/gogo/protobuf v1.3.2
+	github.com/google/gopacket v1.1.19
 	github.com/google/pprof v0.0.0-20230602150820-91b7bce49751
 	github.com/jtolds/tracetagger/v2 v2.0.0-rc5
 	github.com/jtolio/crawlspace v0.0.0-20231116162947-3ec5cc6b36c5

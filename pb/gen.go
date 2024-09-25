@@ -122,12 +122,12 @@ func main() {
 }
 
 var rxInit = regexp.MustCompile(`func init\(\) \{[^\}]*\}`)
-var rxDescriptor = regexp.MustCompile(`(?msU)func \(\*?[a-zA-Z_]+\) Descriptor\(\) .*^}`)
-var rxEnumDescriptor = regexp.MustCompile(`(?msU)func \(\*?[a-zA-Z_]+\) EnumDescriptor\(\) .*^}`)
+var rxDescriptor = regexp.MustCompile(`(?msU)func \(\*?[a-zA-Z_0-9]+\) Descriptor\(\) .*^}`)
+var rxEnumDescriptor = regexp.MustCompile(`(?msU)func \(\*?[a-zA-Z_0-9]+\) EnumDescriptor\(\) .*^}`)
 var rxFileDescriptor = regexp.MustCompile(`(?msU)^var fileDescriptor_.*^}`)
 
-var rxReferenceImportsComment = regexp.MustCompile("(?m)^\\/\\/ Reference imports to suppress .*$")
-var rxReferenceImports = regexp.MustCompile("(?m)^var _ = [a-zA-Z.]+$")
+var rxReferenceImportsComment = regexp.MustCompile(`(?m)^\/\/ Reference imports to suppress .*$`)
+var rxReferenceImports = regexp.MustCompile("(?m)^var _ = [a-zA-Z.0-9]+$")
 
 func process(file string) {
 	data, err := os.ReadFile(file)
@@ -146,7 +146,7 @@ func process(file string) {
 
 	// When generating code to the same path as proto, it will
 	// end up generating an `import _ "."`, the following replace removes it.
-	source = strings.Replace(source, `_ "."`, "", -1)
+	source = strings.ReplaceAll(source, `_ "."`, "")
 
 	err = os.WriteFile(file, []byte(source), 0644)
 	check(err)

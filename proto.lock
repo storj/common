@@ -416,7 +416,14 @@
       "def": {
         "messages": [
           {
-            "name": "CollectRuntimeTracesRequest"
+            "name": "CollectRuntimeTracesRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "done",
+                "type": "bool"
+              }
+            ]
           },
           {
             "name": "CollectRuntimeTracesResponse",
@@ -437,6 +444,13 @@
                 "name": "CollectRuntimeTraces",
                 "in_type": "CollectRuntimeTracesRequest",
                 "out_type": "CollectRuntimeTracesResponse",
+                "out_streamed": true
+              },
+              {
+                "name": "CollectRuntimeTraces2",
+                "in_type": "CollectRuntimeTracesRequest",
+                "out_type": "CollectRuntimeTracesResponse",
+                "in_streamed": true,
                 "out_streamed": true
               }
             ]

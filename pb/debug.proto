@@ -8,9 +8,11 @@ package debug;
 
 service Debug {
     rpc CollectRuntimeTraces(CollectRuntimeTracesRequest) returns (stream CollectRuntimeTracesResponse);
+    rpc CollectRuntimeTraces2(stream CollectRuntimeTracesRequest) returns (stream CollectRuntimeTracesResponse);
 }
 
 message CollectRuntimeTracesRequest {
+    bool done = 1;
 }
 
 message CollectRuntimeTracesResponse {

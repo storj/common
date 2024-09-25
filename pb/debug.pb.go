@@ -14,6 +14,7 @@ import (
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type CollectRuntimeTracesRequest struct {
+	Done                 bool     `protobuf:"varint,1,opt,name=done,proto3" json:"done,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -40,6 +41,13 @@ func (m *CollectRuntimeTracesRequest) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_CollectRuntimeTracesRequest proto.InternalMessageInfo
+
+func (m *CollectRuntimeTracesRequest) GetDone() bool {
+	if m != nil {
+		return m.Done
+	}
+	return false
+}
 
 type CollectRuntimeTracesResponse struct {
 	Data                 []byte   `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`

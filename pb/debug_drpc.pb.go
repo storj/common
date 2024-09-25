@@ -43,6 +43,7 @@ type DRPCDebugClient interface {
 	DRPCConn() drpc.Conn
 
 	CollectRuntimeTraces(ctx context.Context, in *CollectRuntimeTracesRequest) (DRPCDebug_CollectRuntimeTracesClient, error)
+	CollectRuntimeTraces2(ctx context.Context) (DRPCDebug_CollectRuntimeTraces2Client, error)
 }
 
 type drpcDebugClient struct {
@@ -95,8 +96,48 @@ func (x *drpcDebug_CollectRuntimeTracesClient) RecvMsg(m *CollectRuntimeTracesRe
 	return x.MsgRecv(m, drpcEncoding_File_debug_proto{})
 }
 
+func (c *drpcDebugClient) CollectRuntimeTraces2(ctx context.Context) (DRPCDebug_CollectRuntimeTraces2Client, error) {
+	stream, err := c.cc.NewStream(ctx, "/debug.Debug/CollectRuntimeTraces2", drpcEncoding_File_debug_proto{})
+	if err != nil {
+		return nil, err
+	}
+	x := &drpcDebug_CollectRuntimeTraces2Client{stream}
+	return x, nil
+}
+
+type DRPCDebug_CollectRuntimeTraces2Client interface {
+	drpc.Stream
+	Send(*CollectRuntimeTracesRequest) error
+	Recv() (*CollectRuntimeTracesResponse, error)
+}
+
+type drpcDebug_CollectRuntimeTraces2Client struct {
+	drpc.Stream
+}
+
+func (x *drpcDebug_CollectRuntimeTraces2Client) GetStream() drpc.Stream {
+	return x.Stream
+}
+
+func (x *drpcDebug_CollectRuntimeTraces2Client) Send(m *CollectRuntimeTracesRequest) error {
+	return x.MsgSend(m, drpcEncoding_File_debug_proto{})
+}
+
+func (x *drpcDebug_CollectRuntimeTraces2Client) Recv() (*CollectRuntimeTracesResponse, error) {
+	m := new(CollectRuntimeTracesResponse)
+	if err := x.MsgRecv(m, drpcEncoding_File_debug_proto{}); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (x *drpcDebug_CollectRuntimeTraces2Client) RecvMsg(m *CollectRuntimeTracesResponse) error {
+	return x.MsgRecv(m, drpcEncoding_File_debug_proto{})
+}
+
 type DRPCDebugServer interface {
 	CollectRuntimeTraces(*CollectRuntimeTracesRequest, DRPCDebug_CollectRuntimeTracesStream) error
+	CollectRuntimeTraces2(DRPCDebug_CollectRuntimeTraces2Stream) error
 }
 
 type DRPCDebugUnimplementedServer struct{}
@@ -105,9 +146,13 @@ func (s *DRPCDebugUnimplementedServer) CollectRuntimeTraces(*CollectRuntimeTrace
 	return drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
+func (s *DRPCDebugUnimplementedServer) CollectRuntimeTraces2(DRPCDebug_CollectRuntimeTraces2Stream) error {
+	return drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
 type DRPCDebugDescription struct{}
 
-func (DRPCDebugDescription) NumMethods() int { return 1 }
+func (DRPCDebugDescription) NumMethods() int { return 2 }
 
 func (DRPCDebugDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -120,6 +165,14 @@ func (DRPCDebugDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver,
 						&drpcDebug_CollectRuntimeTracesStream{in2.(drpc.Stream)},
 					)
 			}, DRPCDebugServer.CollectRuntimeTraces, true
+	case 1:
+		return "/debug.Debug/CollectRuntimeTraces2", drpcEncoding_File_debug_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return nil, srv.(DRPCDebugServer).
+					CollectRuntimeTraces2(
+						&drpcDebug_CollectRuntimeTraces2Stream{in1.(drpc.Stream)},
+					)
+			}, DRPCDebugServer.CollectRuntimeTraces2, true
 	default:
 		return "", nil, nil, nil, false
 	}
@@ -140,4 +193,30 @@ type drpcDebug_CollectRuntimeTracesStream struct {
 
 func (x *drpcDebug_CollectRuntimeTracesStream) Send(m *CollectRuntimeTracesResponse) error {
 	return x.MsgSend(m, drpcEncoding_File_debug_proto{})
+}
+
+type DRPCDebug_CollectRuntimeTraces2Stream interface {
+	drpc.Stream
+	Send(*CollectRuntimeTracesResponse) error
+	Recv() (*CollectRuntimeTracesRequest, error)
+}
+
+type drpcDebug_CollectRuntimeTraces2Stream struct {
+	drpc.Stream
+}
+
+func (x *drpcDebug_CollectRuntimeTraces2Stream) Send(m *CollectRuntimeTracesResponse) error {
+	return x.MsgSend(m, drpcEncoding_File_debug_proto{})
+}
+
+func (x *drpcDebug_CollectRuntimeTraces2Stream) Recv() (*CollectRuntimeTracesRequest, error) {
+	m := new(CollectRuntimeTracesRequest)
+	if err := x.MsgRecv(m, drpcEncoding_File_debug_proto{}); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (x *drpcDebug_CollectRuntimeTraces2Stream) RecvMsg(m *CollectRuntimeTracesRequest) error {
+	return x.MsgRecv(m, drpcEncoding_File_debug_proto{})
 }
