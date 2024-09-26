@@ -31,6 +31,7 @@ service Metainfo {
     rpc GetBucketVersioning(GetBucketVersioningRequest) returns (GetBucketVersioningResponse);
     rpc SetBucketVersioning(SetBucketVersioningRequest) returns (SetBucketVersioningResponse);
     rpc GetBucketObjectLockConfiguration(GetBucketObjectLockConfigurationRequest) returns (GetBucketObjectLockConfigurationResponse);
+    rpc SetBucketObjectLockConfiguration(SetBucketObjectLockConfigurationRequest) returns (SetBucketObjectLockConfigurationResponse);
     rpc DeleteBucket(DeleteBucketRequest) returns (DeleteBucketResponse);
     rpc ListBuckets(ListBucketsRequest) returns (ListBucketsResponse);
 
@@ -160,14 +161,33 @@ message SetBucketVersioningRequest {
 message SetBucketVersioningResponse {
 }
 
-message GetBucketObjectLockConfigurationRequest {
-    RequestHeader header = 15;
+message DefaultRetention {
+    Retention.Mode mode = 1;
 
-    bytes name = 1;
+    int32 days = 2;
+    int32 years = 3;
 }
 
 message ObjectLockConfiguration {
     bool enabled = 1;
+
+    DefaultRetention default_retention = 2;
+}
+
+message SetBucketObjectLockConfigurationRequest {
+    RequestHeader header = 15;
+
+    bytes name = 1;
+    ObjectLockConfiguration configuration = 2;
+}
+
+message SetBucketObjectLockConfigurationResponse {
+}
+
+message GetBucketObjectLockConfigurationRequest {
+    RequestHeader header = 15;
+
+    bytes name = 1;
 }
 
 message GetBucketObjectLockConfigurationResponse {
@@ -860,6 +880,7 @@ message BatchRequestItem {
         GetBucketVersioningRequest               bucket_get_versioning = 31;
         SetBucketVersioningRequest               bucket_set_versioning = 32;
         GetBucketObjectLockConfigurationRequest  bucket_get_object_lock_configuration = 33;
+        SetBucketObjectLockConfigurationRequest  bucket_set_object_lock_configuration = 38;
         DeleteBucketRequest                      bucket_delete = 3;
         ListBucketsRequest                       bucket_list = 4;
 
@@ -915,6 +936,7 @@ message BatchResponseItem {
         GetBucketVersioningResponse              bucket_get_versioning = 31;
         SetBucketVersioningResponse              bucket_set_versioning = 32;
         GetBucketObjectLockConfigurationResponse bucket_get_object_lock_configuration = 33;
+        SetBucketObjectLockConfigurationResponse bucket_set_object_lock_configuration = 38;
         DeleteBucketResponse                     bucket_delete = 3;
         ListBucketsResponse                      bucket_list = 4;
 

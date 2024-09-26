@@ -2274,6 +2274,64 @@
             "name": "SetBucketVersioningResponse"
           },
           {
+            "name": "DefaultRetention",
+            "fields": [
+              {
+                "id": 1,
+                "name": "mode",
+                "type": "Retention.Mode"
+              },
+              {
+                "id": 2,
+                "name": "days",
+                "type": "int32"
+              },
+              {
+                "id": 3,
+                "name": "years",
+                "type": "int32"
+              }
+            ]
+          },
+          {
+            "name": "ObjectLockConfiguration",
+            "fields": [
+              {
+                "id": 1,
+                "name": "enabled",
+                "type": "bool"
+              },
+              {
+                "id": 2,
+                "name": "default_retention",
+                "type": "DefaultRetention"
+              }
+            ]
+          },
+          {
+            "name": "SetBucketObjectLockConfigurationRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "name",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "configuration",
+                "type": "ObjectLockConfiguration"
+              }
+            ]
+          },
+          {
+            "name": "SetBucketObjectLockConfigurationResponse"
+          },
+          {
             "name": "GetBucketObjectLockConfigurationRequest",
             "fields": [
               {
@@ -2285,16 +2343,6 @@
                 "id": 1,
                 "name": "name",
                 "type": "bytes"
-              }
-            ]
-          },
-          {
-            "name": "ObjectLockConfiguration",
-            "fields": [
-              {
-                "id": 1,
-                "name": "enabled",
-                "type": "bool"
               }
             ]
           },
@@ -4547,6 +4595,12 @@
                 "oneof_parent": "Request"
               },
               {
+                "id": 38,
+                "name": "bucket_set_object_lock_configuration",
+                "type": "SetBucketObjectLockConfigurationRequest",
+                "oneof_parent": "Request"
+              },
+              {
                 "id": 3,
                 "name": "bucket_delete",
                 "type": "DeleteBucketRequest",
@@ -4785,6 +4839,12 @@
                 "id": 33,
                 "name": "bucket_get_object_lock_configuration",
                 "type": "GetBucketObjectLockConfigurationResponse",
+                "oneof_parent": "Response"
+              },
+              {
+                "id": 38,
+                "name": "bucket_set_object_lock_configuration",
+                "type": "SetBucketObjectLockConfigurationResponse",
                 "oneof_parent": "Response"
               },
               {
@@ -5382,6 +5442,11 @@
                 "name": "GetBucketObjectLockConfiguration",
                 "in_type": "GetBucketObjectLockConfigurationRequest",
                 "out_type": "GetBucketObjectLockConfigurationResponse"
+              },
+              {
+                "name": "SetBucketObjectLockConfiguration",
+                "in_type": "SetBucketObjectLockConfigurationRequest",
+                "out_type": "SetBucketObjectLockConfigurationResponse"
               },
               {
                 "name": "DeleteBucket",

@@ -757,6 +757,186 @@ func (m *SetBucketVersioningResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_SetBucketVersioningResponse proto.InternalMessageInfo
 
+type DefaultRetention struct {
+	Mode                 Retention_Mode `protobuf:"varint,1,opt,name=mode,proto3,enum=metainfo.Retention_Mode" json:"mode,omitempty"`
+	Days                 int32          `protobuf:"varint,2,opt,name=days,proto3" json:"days,omitempty"`
+	Years                int32          `protobuf:"varint,3,opt,name=years,proto3" json:"years,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *DefaultRetention) Reset()         { *m = DefaultRetention{} }
+func (m *DefaultRetention) String() string { return proto.CompactTextString(m) }
+func (*DefaultRetention) ProtoMessage()    {}
+
+func (m *DefaultRetention) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DefaultRetention.Unmarshal(m, b)
+}
+func (m *DefaultRetention) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DefaultRetention.Marshal(b, m, deterministic)
+}
+func (m *DefaultRetention) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DefaultRetention.Merge(m, src)
+}
+func (m *DefaultRetention) XXX_Size() int {
+	return xxx_messageInfo_DefaultRetention.Size(m)
+}
+func (m *DefaultRetention) XXX_DiscardUnknown() {
+	xxx_messageInfo_DefaultRetention.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DefaultRetention proto.InternalMessageInfo
+
+func (m *DefaultRetention) GetMode() Retention_Mode {
+	if m != nil {
+		return m.Mode
+	}
+	return Retention_INVALID
+}
+
+func (m *DefaultRetention) GetDays() int32 {
+	if m != nil {
+		return m.Days
+	}
+	return 0
+}
+
+func (m *DefaultRetention) GetYears() int32 {
+	if m != nil {
+		return m.Years
+	}
+	return 0
+}
+
+type ObjectLockConfiguration struct {
+	Enabled              bool              `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	DefaultRetention     *DefaultRetention `protobuf:"bytes,2,opt,name=default_retention,json=defaultRetention,proto3" json:"default_retention,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
+}
+
+func (m *ObjectLockConfiguration) Reset()         { *m = ObjectLockConfiguration{} }
+func (m *ObjectLockConfiguration) String() string { return proto.CompactTextString(m) }
+func (*ObjectLockConfiguration) ProtoMessage()    {}
+
+func (m *ObjectLockConfiguration) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ObjectLockConfiguration.Unmarshal(m, b)
+}
+func (m *ObjectLockConfiguration) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ObjectLockConfiguration.Marshal(b, m, deterministic)
+}
+func (m *ObjectLockConfiguration) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ObjectLockConfiguration.Merge(m, src)
+}
+func (m *ObjectLockConfiguration) XXX_Size() int {
+	return xxx_messageInfo_ObjectLockConfiguration.Size(m)
+}
+func (m *ObjectLockConfiguration) XXX_DiscardUnknown() {
+	xxx_messageInfo_ObjectLockConfiguration.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ObjectLockConfiguration proto.InternalMessageInfo
+
+func (m *ObjectLockConfiguration) GetEnabled() bool {
+	if m != nil {
+		return m.Enabled
+	}
+	return false
+}
+
+func (m *ObjectLockConfiguration) GetDefaultRetention() *DefaultRetention {
+	if m != nil {
+		return m.DefaultRetention
+	}
+	return nil
+}
+
+type SetBucketObjectLockConfigurationRequest struct {
+	Header               *RequestHeader           `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Name                 []byte                   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Configuration        *ObjectLockConfiguration `protobuf:"bytes,2,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                 `json:"-"`
+	XXX_unrecognized     []byte                   `json:"-"`
+	XXX_sizecache        int32                    `json:"-"`
+}
+
+func (m *SetBucketObjectLockConfigurationRequest) Reset() {
+	*m = SetBucketObjectLockConfigurationRequest{}
+}
+func (m *SetBucketObjectLockConfigurationRequest) String() string { return proto.CompactTextString(m) }
+func (*SetBucketObjectLockConfigurationRequest) ProtoMessage()    {}
+
+func (m *SetBucketObjectLockConfigurationRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetBucketObjectLockConfigurationRequest.Unmarshal(m, b)
+}
+func (m *SetBucketObjectLockConfigurationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetBucketObjectLockConfigurationRequest.Marshal(b, m, deterministic)
+}
+func (m *SetBucketObjectLockConfigurationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetBucketObjectLockConfigurationRequest.Merge(m, src)
+}
+func (m *SetBucketObjectLockConfigurationRequest) XXX_Size() int {
+	return xxx_messageInfo_SetBucketObjectLockConfigurationRequest.Size(m)
+}
+func (m *SetBucketObjectLockConfigurationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetBucketObjectLockConfigurationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetBucketObjectLockConfigurationRequest proto.InternalMessageInfo
+
+func (m *SetBucketObjectLockConfigurationRequest) GetHeader() *RequestHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
+func (m *SetBucketObjectLockConfigurationRequest) GetName() []byte {
+	if m != nil {
+		return m.Name
+	}
+	return nil
+}
+
+func (m *SetBucketObjectLockConfigurationRequest) GetConfiguration() *ObjectLockConfiguration {
+	if m != nil {
+		return m.Configuration
+	}
+	return nil
+}
+
+type SetBucketObjectLockConfigurationResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SetBucketObjectLockConfigurationResponse) Reset() {
+	*m = SetBucketObjectLockConfigurationResponse{}
+}
+func (m *SetBucketObjectLockConfigurationResponse) String() string { return proto.CompactTextString(m) }
+func (*SetBucketObjectLockConfigurationResponse) ProtoMessage()    {}
+
+func (m *SetBucketObjectLockConfigurationResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetBucketObjectLockConfigurationResponse.Unmarshal(m, b)
+}
+func (m *SetBucketObjectLockConfigurationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetBucketObjectLockConfigurationResponse.Marshal(b, m, deterministic)
+}
+func (m *SetBucketObjectLockConfigurationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetBucketObjectLockConfigurationResponse.Merge(m, src)
+}
+func (m *SetBucketObjectLockConfigurationResponse) XXX_Size() int {
+	return xxx_messageInfo_SetBucketObjectLockConfigurationResponse.Size(m)
+}
+func (m *SetBucketObjectLockConfigurationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetBucketObjectLockConfigurationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetBucketObjectLockConfigurationResponse proto.InternalMessageInfo
+
 type GetBucketObjectLockConfigurationRequest struct {
 	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
 	Name                 []byte         `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -801,42 +981,6 @@ func (m *GetBucketObjectLockConfigurationRequest) GetName() []byte {
 		return m.Name
 	}
 	return nil
-}
-
-type ObjectLockConfiguration struct {
-	Enabled              bool     `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ObjectLockConfiguration) Reset()         { *m = ObjectLockConfiguration{} }
-func (m *ObjectLockConfiguration) String() string { return proto.CompactTextString(m) }
-func (*ObjectLockConfiguration) ProtoMessage()    {}
-
-func (m *ObjectLockConfiguration) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ObjectLockConfiguration.Unmarshal(m, b)
-}
-func (m *ObjectLockConfiguration) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ObjectLockConfiguration.Marshal(b, m, deterministic)
-}
-func (m *ObjectLockConfiguration) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ObjectLockConfiguration.Merge(m, src)
-}
-func (m *ObjectLockConfiguration) XXX_Size() int {
-	return xxx_messageInfo_ObjectLockConfiguration.Size(m)
-}
-func (m *ObjectLockConfiguration) XXX_DiscardUnknown() {
-	xxx_messageInfo_ObjectLockConfiguration.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ObjectLockConfiguration proto.InternalMessageInfo
-
-func (m *ObjectLockConfiguration) GetEnabled() bool {
-	if m != nil {
-		return m.Enabled
-	}
-	return false
 }
 
 type GetBucketObjectLockConfigurationResponse struct {
@@ -4927,6 +5071,7 @@ type BatchRequestItem struct {
 	//	*BatchRequestItem_BucketGetVersioning
 	//	*BatchRequestItem_BucketSetVersioning
 	//	*BatchRequestItem_BucketGetObjectLockConfiguration
+	//	*BatchRequestItem_BucketSetObjectLockConfiguration
 	//	*BatchRequestItem_BucketDelete
 	//	*BatchRequestItem_BucketList
 	//	*BatchRequestItem_ObjectBegin
@@ -5005,6 +5150,9 @@ type BatchRequestItem_BucketSetVersioning struct {
 }
 type BatchRequestItem_BucketGetObjectLockConfiguration struct {
 	BucketGetObjectLockConfiguration *GetBucketObjectLockConfigurationRequest `protobuf:"bytes,33,opt,name=bucket_get_object_lock_configuration,json=bucketGetObjectLockConfiguration,proto3,oneof" json:"bucket_get_object_lock_configuration,omitempty"`
+}
+type BatchRequestItem_BucketSetObjectLockConfiguration struct {
+	BucketSetObjectLockConfiguration *SetBucketObjectLockConfigurationRequest `protobuf:"bytes,38,opt,name=bucket_set_object_lock_configuration,json=bucketSetObjectLockConfiguration,proto3,oneof" json:"bucket_set_object_lock_configuration,omitempty"`
 }
 type BatchRequestItem_BucketDelete struct {
 	BucketDelete *DeleteBucketRequest `protobuf:"bytes,3,opt,name=bucket_delete,json=bucketDelete,proto3,oneof" json:"bucket_delete,omitempty"`
@@ -5100,6 +5248,7 @@ func (*BatchRequestItem_BucketGetLocation) isBatchRequestItem_Request()         
 func (*BatchRequestItem_BucketGetVersioning) isBatchRequestItem_Request()              {}
 func (*BatchRequestItem_BucketSetVersioning) isBatchRequestItem_Request()              {}
 func (*BatchRequestItem_BucketGetObjectLockConfiguration) isBatchRequestItem_Request() {}
+func (*BatchRequestItem_BucketSetObjectLockConfiguration) isBatchRequestItem_Request() {}
 func (*BatchRequestItem_BucketDelete) isBatchRequestItem_Request()                     {}
 func (*BatchRequestItem_BucketList) isBatchRequestItem_Request()                       {}
 func (*BatchRequestItem_ObjectBegin) isBatchRequestItem_Request()                      {}
@@ -5175,6 +5324,13 @@ func (m *BatchRequestItem) GetBucketSetVersioning() *SetBucketVersioningRequest 
 func (m *BatchRequestItem) GetBucketGetObjectLockConfiguration() *GetBucketObjectLockConfigurationRequest {
 	if x, ok := m.GetRequest().(*BatchRequestItem_BucketGetObjectLockConfiguration); ok {
 		return x.BucketGetObjectLockConfiguration
+	}
+	return nil
+}
+
+func (m *BatchRequestItem) GetBucketSetObjectLockConfiguration() *SetBucketObjectLockConfigurationRequest {
+	if x, ok := m.GetRequest().(*BatchRequestItem_BucketSetObjectLockConfiguration); ok {
+		return x.BucketSetObjectLockConfiguration
 	}
 	return nil
 }
@@ -5391,6 +5547,7 @@ func (*BatchRequestItem) XXX_OneofWrappers() []interface{} {
 		(*BatchRequestItem_BucketGetVersioning)(nil),
 		(*BatchRequestItem_BucketSetVersioning)(nil),
 		(*BatchRequestItem_BucketGetObjectLockConfiguration)(nil),
+		(*BatchRequestItem_BucketSetObjectLockConfiguration)(nil),
 		(*BatchRequestItem_BucketDelete)(nil),
 		(*BatchRequestItem_BucketList)(nil),
 		(*BatchRequestItem_ObjectBegin)(nil),
@@ -5512,6 +5669,7 @@ type BatchResponseItem struct {
 	//	*BatchResponseItem_BucketGetVersioning
 	//	*BatchResponseItem_BucketSetVersioning
 	//	*BatchResponseItem_BucketGetObjectLockConfiguration
+	//	*BatchResponseItem_BucketSetObjectLockConfiguration
 	//	*BatchResponseItem_BucketDelete
 	//	*BatchResponseItem_BucketList
 	//	*BatchResponseItem_ObjectBegin
@@ -5590,6 +5748,9 @@ type BatchResponseItem_BucketSetVersioning struct {
 }
 type BatchResponseItem_BucketGetObjectLockConfiguration struct {
 	BucketGetObjectLockConfiguration *GetBucketObjectLockConfigurationResponse `protobuf:"bytes,33,opt,name=bucket_get_object_lock_configuration,json=bucketGetObjectLockConfiguration,proto3,oneof" json:"bucket_get_object_lock_configuration,omitempty"`
+}
+type BatchResponseItem_BucketSetObjectLockConfiguration struct {
+	BucketSetObjectLockConfiguration *SetBucketObjectLockConfigurationResponse `protobuf:"bytes,38,opt,name=bucket_set_object_lock_configuration,json=bucketSetObjectLockConfiguration,proto3,oneof" json:"bucket_set_object_lock_configuration,omitempty"`
 }
 type BatchResponseItem_BucketDelete struct {
 	BucketDelete *DeleteBucketResponse `protobuf:"bytes,3,opt,name=bucket_delete,json=bucketDelete,proto3,oneof" json:"bucket_delete,omitempty"`
@@ -5685,6 +5846,7 @@ func (*BatchResponseItem_BucketGetLocation) isBatchResponseItem_Response()      
 func (*BatchResponseItem_BucketGetVersioning) isBatchResponseItem_Response()              {}
 func (*BatchResponseItem_BucketSetVersioning) isBatchResponseItem_Response()              {}
 func (*BatchResponseItem_BucketGetObjectLockConfiguration) isBatchResponseItem_Response() {}
+func (*BatchResponseItem_BucketSetObjectLockConfiguration) isBatchResponseItem_Response() {}
 func (*BatchResponseItem_BucketDelete) isBatchResponseItem_Response()                     {}
 func (*BatchResponseItem_BucketList) isBatchResponseItem_Response()                       {}
 func (*BatchResponseItem_ObjectBegin) isBatchResponseItem_Response()                      {}
@@ -5760,6 +5922,13 @@ func (m *BatchResponseItem) GetBucketSetVersioning() *SetBucketVersioningRespons
 func (m *BatchResponseItem) GetBucketGetObjectLockConfiguration() *GetBucketObjectLockConfigurationResponse {
 	if x, ok := m.GetResponse().(*BatchResponseItem_BucketGetObjectLockConfiguration); ok {
 		return x.BucketGetObjectLockConfiguration
+	}
+	return nil
+}
+
+func (m *BatchResponseItem) GetBucketSetObjectLockConfiguration() *SetBucketObjectLockConfigurationResponse {
+	if x, ok := m.GetResponse().(*BatchResponseItem_BucketSetObjectLockConfiguration); ok {
+		return x.BucketSetObjectLockConfiguration
 	}
 	return nil
 }
@@ -5976,6 +6145,7 @@ func (*BatchResponseItem) XXX_OneofWrappers() []interface{} {
 		(*BatchResponseItem_BucketGetVersioning)(nil),
 		(*BatchResponseItem_BucketSetVersioning)(nil),
 		(*BatchResponseItem_BucketGetObjectLockConfiguration)(nil),
+		(*BatchResponseItem_BucketSetObjectLockConfiguration)(nil),
 		(*BatchResponseItem_BucketDelete)(nil),
 		(*BatchResponseItem_BucketList)(nil),
 		(*BatchResponseItem_ObjectBegin)(nil),
