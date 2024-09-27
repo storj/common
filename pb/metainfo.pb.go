@@ -758,12 +758,15 @@ func (m *SetBucketVersioningResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_SetBucketVersioningResponse proto.InternalMessageInfo
 
 type DefaultRetention struct {
-	Mode                 Retention_Mode `protobuf:"varint,1,opt,name=mode,proto3,enum=metainfo.Retention_Mode" json:"mode,omitempty"`
-	Days                 int32          `protobuf:"varint,2,opt,name=days,proto3" json:"days,omitempty"`
-	Years                int32          `protobuf:"varint,3,opt,name=years,proto3" json:"years,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
+	Mode Retention_Mode `protobuf:"varint,1,opt,name=mode,proto3,enum=metainfo.Retention_Mode" json:"mode,omitempty"`
+	// Types that are valid to be assigned to Duration:
+	//
+	//	*DefaultRetention_Days
+	//	*DefaultRetention_Years
+	Duration             isDefaultRetention_Duration `protobuf_oneof:"Duration"`
+	XXX_NoUnkeyedLiteral struct{}                    `json:"-"`
+	XXX_unrecognized     []byte                      `json:"-"`
+	XXX_sizecache        int32                       `json:"-"`
 }
 
 func (m *DefaultRetention) Reset()         { *m = DefaultRetention{} }
@@ -788,6 +791,27 @@ func (m *DefaultRetention) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DefaultRetention proto.InternalMessageInfo
 
+type isDefaultRetention_Duration interface {
+	isDefaultRetention_Duration()
+}
+
+type DefaultRetention_Days struct {
+	Days int32 `protobuf:"varint,2,opt,name=days,proto3,oneof" json:"days,omitempty"`
+}
+type DefaultRetention_Years struct {
+	Years int32 `protobuf:"varint,3,opt,name=years,proto3,oneof" json:"years,omitempty"`
+}
+
+func (*DefaultRetention_Days) isDefaultRetention_Duration()  {}
+func (*DefaultRetention_Years) isDefaultRetention_Duration() {}
+
+func (m *DefaultRetention) GetDuration() isDefaultRetention_Duration {
+	if m != nil {
+		return m.Duration
+	}
+	return nil
+}
+
 func (m *DefaultRetention) GetMode() Retention_Mode {
 	if m != nil {
 		return m.Mode
@@ -796,17 +820,25 @@ func (m *DefaultRetention) GetMode() Retention_Mode {
 }
 
 func (m *DefaultRetention) GetDays() int32 {
-	if m != nil {
-		return m.Days
+	if x, ok := m.GetDuration().(*DefaultRetention_Days); ok {
+		return x.Days
 	}
 	return 0
 }
 
 func (m *DefaultRetention) GetYears() int32 {
-	if m != nil {
-		return m.Years
+	if x, ok := m.GetDuration().(*DefaultRetention_Years); ok {
+		return x.Years
 	}
 	return 0
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*DefaultRetention) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*DefaultRetention_Days)(nil),
+		(*DefaultRetention_Years)(nil),
+	}
 }
 
 type ObjectLockConfiguration struct {

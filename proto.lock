@@ -2284,12 +2284,14 @@
               {
                 "id": 2,
                 "name": "days",
-                "type": "int32"
+                "type": "int32",
+                "oneof_parent": "Duration"
               },
               {
                 "id": 3,
                 "name": "years",
-                "type": "int32"
+                "type": "int32",
+                "oneof_parent": "Duration"
               }
             ]
           },

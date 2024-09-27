@@ -164,8 +164,10 @@ message SetBucketVersioningResponse {
 message DefaultRetention {
     Retention.Mode mode = 1;
 
-    int32 days = 2;
-    int32 years = 3;
+    oneof Duration {
+        int32 days = 2;
+        int32 years = 3;
+    }
 }
 
 message ObjectLockConfiguration {
