@@ -70,6 +70,8 @@ func TestSerializeParseRestrictAndCheck(t *testing.T) {
 		ActionPutObjectLegalHold,
 		ActionGetObjectLegalHold,
 		ActionBypassGovernanceRetention,
+		ActionPutBucketObjectLockConfiguration,
+		ActionGetBucketObjectLockConfiguration,
 		ActionLock,
 	} {
 		action1.Op = actionType

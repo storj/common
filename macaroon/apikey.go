@@ -71,12 +71,18 @@ const (
 	// ActionPutObjectLegalHold specifies an action related to updating
 	// Object Legal Hold configuration.
 	ActionPutObjectLegalHold ActionType = 9
-	// ActionGetObjectLegalHold specifies an action related to updating
+	// ActionGetObjectLegalHold specifies an action related to retrieving
 	// Object Legal Hold configuration.
 	ActionGetObjectLegalHold ActionType = 10
 	// ActionBypassGovernanceRetention specifies an action related to bypassing
 	// Object Governance Retention.
 	ActionBypassGovernanceRetention ActionType = 11
+	// ActionPutBucketObjectLockConfiguration specifies an action related to updating
+	// Bucket Object Lock configuration.
+	ActionPutBucketObjectLockConfiguration ActionType = 12
+	// ActionGetBucketObjectLockConfiguration specifies an action related to retrieving
+	// Bucket Object Lock configuration.
+	ActionGetBucketObjectLockConfiguration ActionType = 13
 )
 
 // APIKeyVersion specifies the version of an API key.
@@ -182,6 +188,8 @@ func (a *APIKey) Check(ctx context.Context, secret []byte, version APIKeyVersion
 			ActionPutObjectLegalHold,
 			ActionGetObjectLegalHold,
 			ActionBypassGovernanceRetention,
+			ActionPutBucketObjectLockConfiguration,
+			ActionGetBucketObjectLockConfiguration,
 			ActionLock:
 			return ErrUnauthorized.New("action disallowed")
 		}
@@ -392,6 +400,14 @@ func (c *Caveat) Allows(action Action) bool {
 		}
 	case ActionBypassGovernanceRetention:
 		if c.DisallowBypassGovernanceRetention {
+			return false
+		}
+	case ActionPutBucketObjectLockConfiguration:
+		if c.DisallowPutBucketObjectLockConfiguration {
+			return false
+		}
+	case ActionGetBucketObjectLockConfiguration:
+		if c.DisallowGetBucketObjectLockConfiguration {
 			return false
 		}
 	default:
