@@ -41,14 +41,18 @@ const (
 	Unauthenticated    StatusCode = 16
 	MethodNotAllowed   StatusCode = 17
 
-	ObjectLockEndpointsDisabled                   StatusCode = 10000
-	ObjectLockDisabledForProject                  StatusCode = 10001
-	ObjectLockInvalidBucketState                  StatusCode = 10002
-	ObjectLockBucketRetentionConfigurationMissing StatusCode = 10003
-	ObjectLockObjectRetentionConfigurationMissing StatusCode = 10004
-	ObjectLockObjectProtected                     StatusCode = 10005
-	ObjectLockInvalidObjectState                  StatusCode = 10006
-	ObjectLockInvalidBucketRetentionConfiguration StatusCode = 10007
+	ObjectLockEndpointsDisabled                      StatusCode = 10000
+	ObjectLockDisabledForProject                     StatusCode = 10001
+	ObjectLockInvalidBucketState                     StatusCode = 10002
+	ObjectLockBucketRetentionConfigurationMissing    StatusCode = 10003
+	ObjectLockObjectRetentionConfigurationMissing    StatusCode = 10004
+	ObjectLockObjectProtected                        StatusCode = 10005
+	ObjectLockInvalidObjectState                     StatusCode = 10006
+	ObjectLockInvalidBucketRetentionConfiguration    StatusCode = 10007
+	ObjectLockUploadWithTTL                          StatusCode = 10008
+	ObjectLockUploadWithTTLAPIKey                    StatusCode = 10009
+	ObjectLockUploadWithTTLAndDefaultRetention       StatusCode = 10010
+	ObjectLockUploadWithTTLAPIKeyAndDefaultRetention StatusCode = 10011
 )
 
 // Code returns the status code associated with the error.
