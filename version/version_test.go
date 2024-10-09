@@ -194,7 +194,7 @@ func TestPercentageToCursorF(t *testing.T) {
 		},
 		{
 			percentage: 100,
-			expected:   "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff63c40",
+			expected:   "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
 		},
 	}
 

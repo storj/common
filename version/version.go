@@ -233,12 +233,23 @@ func (info Info) Log(logger func(msg string, fields ...zap.Field)) {
 
 // PercentageToCursorF calculates the cursor value for the given floating point percentage.
 func PercentageToCursorF(pct float64) RolloutBytes {
+	if pct <= 0 {
+		return RolloutBytes{}
+	}
+
 	// NB: convert the max value to a number, multiply by the percentage, convert back.
 	var maxInt, maskInt big.Int
 	var maxBytes RolloutBytes
 	for i := 0; i < len(maxBytes); i++ {
 		maxBytes[i] = 255
 	}
+
+	if pct >= 100 {
+		// HACKFIX: the code below has floating point precision issues so 100% doesn't
+		// result in 0xFF. The precision is not that important as long as it's continuous.
+		return maxBytes
+	}
+
 	maxInt.SetBytes(maxBytes[:])
 	maskInt.Mul(maskInt.Div(&maxInt, big.NewInt(100*10000)), big.NewInt(int64(pct*10000)))
 	var cursor RolloutBytes
