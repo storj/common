@@ -3170,6 +3170,7 @@ type GetObjectIPsResponse struct {
 	SegmentCount         int64    `protobuf:"varint,2,opt,name=segment_count,json=segmentCount,proto3" json:"segment_count,omitempty"`
 	PieceCount           int64    `protobuf:"varint,3,opt,name=piece_count,json=pieceCount,proto3" json:"piece_count,omitempty"`
 	ReliablePieceCount   int64    `protobuf:"varint,4,opt,name=reliable_piece_count,json=reliablePieceCount,proto3" json:"reliable_piece_count,omitempty"`
+	PlacementConstraint  uint32   `protobuf:"varint,5,opt,name=placement_constraint,json=placementConstraint,proto3" json:"placement_constraint,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -3221,6 +3222,13 @@ func (m *GetObjectIPsResponse) GetPieceCount() int64 {
 func (m *GetObjectIPsResponse) GetReliablePieceCount() int64 {
 	if m != nil {
 		return m.ReliablePieceCount
+	}
+	return 0
+}
+
+func (m *GetObjectIPsResponse) GetPlacementConstraint() uint32 {
+	if m != nil {
+		return m.PlacementConstraint
 	}
 	return 0
 }

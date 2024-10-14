@@ -3474,6 +3474,11 @@
                 "id": 4,
                 "name": "reliable_piece_count",
                 "type": "int64"
+              },
+              {
+                "id": 5,
+                "name": "placement_constraint",
+                "type": "uint32"
               }
             ]
           },
