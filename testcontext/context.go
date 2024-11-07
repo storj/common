@@ -22,7 +22,7 @@ import (
 )
 
 // DefaultTimeout is the default timeout used by new context.
-const DefaultTimeout = 3 * time.Minute
+var DefaultTimeout = 3 * time.Minute
 
 // Context is a context that has utility methods for testing and waiting for asynchronous errors.
 type Context struct {
@@ -66,26 +66,24 @@ type TB interface {
 	Fatal(args ...interface{})
 }
 
-func defaultTimeout() time.Duration {
-	timeout := DefaultTimeout
+func init() {
 	if timeoutEnv := os.Getenv("STORJ_TESTCONTEXT_TIMEOUT"); timeoutEnv != "" {
 		var err error
-		timeout, err = time.ParseDuration(timeoutEnv)
+		DefaultTimeout, err = time.ParseDuration(timeoutEnv)
 		if err != nil {
 			panic(fmt.Sprintf("could not parse timeout %q: %v", timeoutEnv, err))
 		}
 	}
-	return timeout
 }
 
 // New creates a new test context with default timeout.
 func New(test TB) *Context {
-	return NewWithContextAndTimeout(context.Background(), test, defaultTimeout())
+	return NewWithContextAndTimeout(context.Background(), test, DefaultTimeout)
 }
 
 // NewWithContext creates a new test context with a parent context.
 func NewWithContext(parentCtx context.Context, test TB) *Context {
-	return NewWithContextAndTimeout(parentCtx, test, defaultTimeout())
+	return NewWithContextAndTimeout(parentCtx, test, DefaultTimeout)
 }
 
 // NewWithTimeout creates a new test context with a given timeout.
