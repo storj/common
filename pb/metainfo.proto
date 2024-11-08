@@ -112,6 +112,7 @@ message CreateBucketRequest {
     encryption.EncryptionParameters default_encryption_parameters = 5;
     bytes                           partner_id = 6;
     bool                            object_lock_enabled = 7;
+    bytes                           placement = 8;
 }
 
 message CreateBucketResponse {

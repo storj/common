@@ -2186,6 +2186,11 @@
                 "id": 7,
                 "name": "object_lock_enabled",
                 "type": "bool"
+              },
+              {
+                "id": 8,
+                "name": "placement",
+                "type": "bytes"
               }
             ]
           },

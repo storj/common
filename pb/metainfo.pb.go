@@ -315,6 +315,7 @@ type CreateBucketRequest struct {
 	DefaultEncryptionParameters *EncryptionParameters `protobuf:"bytes,5,opt,name=default_encryption_parameters,json=defaultEncryptionParameters,proto3" json:"default_encryption_parameters,omitempty"`
 	PartnerId                   []byte                `protobuf:"bytes,6,opt,name=partner_id,json=partnerId,proto3" json:"partner_id,omitempty"`
 	ObjectLockEnabled           bool                  `protobuf:"varint,7,opt,name=object_lock_enabled,json=objectLockEnabled,proto3" json:"object_lock_enabled,omitempty"`
+	Placement                   []byte                `protobuf:"bytes,8,opt,name=placement,proto3" json:"placement,omitempty"`
 	XXX_NoUnkeyedLiteral        struct{}              `json:"-"`
 	XXX_unrecognized            []byte                `json:"-"`
 	XXX_sizecache               int32                 `json:"-"`
@@ -396,6 +397,13 @@ func (m *CreateBucketRequest) GetObjectLockEnabled() bool {
 		return m.ObjectLockEnabled
 	}
 	return false
+}
+
+func (m *CreateBucketRequest) GetPlacement() []byte {
+	if m != nil {
+		return m.Placement
+	}
+	return nil
 }
 
 type CreateBucketResponse struct {
