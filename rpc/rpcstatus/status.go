@@ -54,7 +54,8 @@ const (
 	ObjectLockUploadWithTTLAndDefaultRetention       StatusCode = 10010
 	ObjectLockUploadWithTTLAPIKeyAndDefaultRetention StatusCode = 10011
 
-	PlacementInvalidValue StatusCode = 10012
+	PlacementInvalidValue      StatusCode = 10012
+	PlacementConflictingValues StatusCode = 10013
 )
 
 // Code returns the status code associated with the error.
