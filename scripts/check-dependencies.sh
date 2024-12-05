@@ -19,7 +19,7 @@ if ! check-dependency -ignore "test;common/process" -check "test" -except "inter
     exit -1;
 fi
 
-if ! check-dependency -ignore "cfgstruct;dbutil;debug;httpranger;metrics;migrate;process;requestid;storj/location/gen;tagsql;test;traces;version" -check "net/http" ./...; then
+if ! check-dependency -ignore "accesslogs;cfgstruct;dbutil;debug;httpranger;metrics;migrate;process;requestid;storj/location/gen;tagsql;test;traces;version" -check "net/http" ./...; then
     echo "net/http is a huge dependency that we don't want to accidentally introduce into uplink";
     exit -1;
 fi
