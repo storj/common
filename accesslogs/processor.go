@@ -8,16 +8,21 @@ package accesslogs
 
 import (
 	"bytes"
+	"context"
 	"encoding/hex"
+	"runtime/pprof"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/spacemonkeygo/monkit/v3"
+	"github.com/zeebo/errs"
 	"go.uber.org/zap"
 
+	"storj.io/common/errs2"
 	"storj.io/common/memory"
+	"storj.io/common/sync2"
 	"storj.io/common/uuid"
 )
 
@@ -28,10 +33,15 @@ const (
 	defaultUploaderRetryLimit = 3
 )
 
-var mon = monkit.Package()
+var (
+	mon              = monkit.Package()
+	timedFlushLabels = pprof.Labels("accesslogs", "timedFlush")
+)
 
 // Key is a key that logs for the specified project ID and bucket can be
-// queued. It's not a key under which packed logs are saved.
+// queued.
+//
+// Logs are stored in the specified bucket under the specified prefix.
 type Key struct {
 	PublicProjectID uuid.UUID
 	Bucket          string
@@ -52,20 +62,34 @@ type Processor struct {
 	log    *zap.Logger
 	upload uploader
 
-	defaultEntryLimit    memory.Size
-	defaultShipmentLimit memory.Size
+	timedFlushes  errs2.Group
+	cancelFlushes sync2.Fence
+
+	defaultEntryLimit       memory.Size
+	defaultShipmentLimit    memory.Size
+	defaultShipmentInterval time.Duration
 
 	globalLimit memory.Size
 
-	parcels    sync.Map
-	globalSize int64
+	// pendingWrites is used to prevent logical races between queuing
+	// new entries and timed flushes. If we don't use it, we risk losing
+	// entries because timed flush dereferences a parcel (to prevent
+	// trash buildup), which could happen during queuing if we didn't
+	// lock. RWMutex is used to deprioritize flushes from new writes.
+	// This locking is global for all keys instead of being per-key like
+	// the parcels map is, but it shouldn't be a big performance hit as
+	// long as locking that happens during the timed flush is brief.
+	pendingWrites sync.RWMutex
+	parcels       sync.Map
+	globalSize    int64
 }
 
 // Options define how Processor should be configured when initialized.
 type Options struct {
-	DefaultEntryLimit    memory.Size `user:"true" help:"log entry size limit" default:"2KiB"`
-	DefaultShipmentLimit memory.Size `user:"true" help:"log file size limit" default:"63MiB"`
-	UploadingOptions     struct {
+	DefaultEntryLimit       memory.Size   `user:"true" help:"log entry size limit" default:"2KiB"`
+	DefaultShipmentLimit    memory.Size   `user:"true" help:"log file size limit" default:"63MiB"`
+	DefaultShipmentInterval time.Duration `user:"true" help:"log file time limit regardless of size (0 means unlimited)" default:"1h"`
+	UploadingOptions        struct {
 		QueueLimit      int           `user:"true" help:"log file upload queue limit" default:"100"`
 		RetryLimit      int           `user:"true" help:"maximum number of retries for log file uploads" default:"3"`
 		ShutdownTimeout time.Duration `user:"true" help:"time limit waiting for queued logs to finish uploading when gateway is shutting down" default:"1m"`
@@ -100,27 +124,33 @@ func NewProcessor(log *zap.Logger, opts Options) *Processor {
 			retryLimit:      opts.UploadingOptions.RetryLimit,
 			shutdownTimeout: opts.UploadingOptions.ShutdownTimeout,
 		}),
-		defaultEntryLimit:    opts.DefaultEntryLimit,
-		defaultShipmentLimit: opts.DefaultShipmentLimit,
-		globalLimit:          opts.DefaultShipmentLimit * 100,
+
+		defaultEntryLimit:       opts.DefaultEntryLimit,
+		defaultShipmentLimit:    opts.DefaultShipmentLimit,
+		defaultShipmentInterval: opts.DefaultShipmentInterval,
+
+		globalLimit: opts.DefaultShipmentLimit * 100,
 	}
 }
 
 // QueueEntry saves another entry under key for packaging and upload.
-// Provided access will be used for upload.
+// store is saved only for the first time the key is seen.
 func (p *Processor) QueueEntry(store Storage, key Key, entry Entry) (err error) {
 	defer mon.Task()(nil)(&err)
 
 	entrySize := entry.Size().Int()
 
 	if g := atomic.LoadInt64(&p.globalSize); g+int64(entrySize) > p.globalLimit.Int64() {
-		// NOTE(artur): we could return an error here, but we would have
-		// to flush immediately afterward.
+		// NOTE(artur): this is a best-effort check; we could return an
+		// error here, but we would have to flush immediately afterward.
 		mon.Event("global_limit_exceeded")
 		p.log.Warn("globalLimit exceeded", zap.Int64("limit", p.globalLimit.Int64()), zap.Int64("size", g))
 	}
 
-	loaded, _ := p.parcels.LoadOrStore(key, &parcel{
+	p.pendingWrites.RLock()
+	defer p.pendingWrites.RUnlock()
+
+	actual, loaded := p.parcels.LoadOrStore(key, &parcel{
 		// TODO(artur): make entryLimit & shipmentLimit configurable via
 		// Entry.
 		entryLimit:    p.defaultEntryLimit.Int(),
@@ -130,7 +160,19 @@ func (p *Processor) QueueEntry(store Storage, key Key, entry Entry) (err error) 
 		prefix:        key.Prefix,
 	})
 
-	parcel := loaded.(*parcel)
+	parcel := actual.(*parcel)
+
+	if !loaded && p.defaultShipmentInterval > 0 {
+		p.timedFlushes.Go(func() error {
+			var flushErr error
+			pprof.Do(context.Background(), timedFlushLabels, func(ctx context.Context) {
+				// TODO(artur): make defaultShipmentInterval
+				// configurable via Entry.
+				flushErr = p.timedFlush(key, p.defaultShipmentInterval)
+			})
+			return flushErr
+		})
+	}
 
 	if entrySize > parcel.entryLimit {
 		return Error.Wrap(ErrTooLarge)
@@ -142,6 +184,39 @@ func (p *Processor) QueueEntry(store Storage, key Key, entry Entry) (err error) 
 	}
 
 	mon.IntVal("globalLimit").Observe(atomic.AddInt64(&p.globalSize, int64(-shipped+entrySize)))
+
+	return nil
+}
+
+func (p *Processor) timedFlush(key Key, interval time.Duration) error {
+	t := time.NewTimer(interval)
+	defer t.Stop()
+
+	select {
+	case <-p.cancelFlushes.Done():
+		return nil
+	case <-t.C:
+		p.pendingWrites.Lock()
+		actual, _ := p.parcels.LoadAndDelete(key)
+		p.pendingWrites.Unlock()
+
+		parcel := actual.(*parcel)
+
+		shipped, err := parcel.flush(p.upload)
+
+		mon.IntVal("globalLimit").Observe(atomic.AddInt64(&p.globalSize, int64(-shipped)))
+		p.log.Debug("timed flush",
+			zap.String("PublicProjectID", key.PublicProjectID.String()),
+			zap.String("Bucket", key.Bucket),
+			zap.String("Prefix", key.Prefix),
+			zap.Int("size", shipped),
+			zap.Error(err),
+		)
+
+		if err != nil {
+			return errs.New("couldn't flush %s/%s/%s: %w", key.PublicProjectID, key.Bucket, key.Prefix, err)
+		}
+	}
 
 	return nil
 }
@@ -162,6 +237,11 @@ func (p *Processor) Run() error {
 func (p *Processor) Close() (err error) {
 	defer mon.Task()(nil)(&err)
 
+	var g errs.Group
+
+	p.cancelFlushes.Release()
+	g.Add(p.timedFlushes.Wait()...)
+
 	p.parcels.Range(func(k, v any) bool {
 		key, parcel := k.(Key), v.(*parcel)
 		if err := parcel.close(p.upload); err != nil {
@@ -171,14 +251,19 @@ func (p *Processor) Close() (err error) {
 				zap.String("Prefix", key.Prefix),
 				zap.Error(err),
 			)
+			g.Add(errs.New("couldn't close %s/%s/%s: %w", key.PublicProjectID, key.Bucket, key.Prefix, err))
 		}
 		return true
 	})
-	return Error.Wrap(p.upload.close())
+
+	g.Add(p.upload.close())
+
+	return Error.Wrap(g.Err())
 }
 
 type parcel struct {
-	entryLimit, shipmentLimit int
+	entryLimit    int
+	shipmentLimit int
 
 	store          Storage
 	bucket, prefix string
@@ -208,11 +293,13 @@ func (p *parcel) add(upload uploader, size int, s string) (shipped int, err erro
 	if err != nil {
 		return 0, err
 	}
-	c := bytes.NewBuffer(nil)
-	if _, err = p.current.WriteTo(c); err != nil {
+	// we use cloneUnsafe here because we already have the lock.
+	c, err := p.cloneUnsafe()
+	if err != nil {
 		return 0, err
 	}
-	if err = upload.queueUpload(p.store, p.bucket, k, c.Bytes()); err != nil {
+	if err = upload.queueUpload(p.store, p.bucket, k, c); err != nil {
+		// FIXME(artur): rewind the buffer if we fail to upload.
 		return 0, err
 	}
 	shipped = currentSize
@@ -222,29 +309,47 @@ func (p *parcel) add(upload uploader, size int, s string) (shipped int, err erro
 	return shipped, nil
 }
 
-func (p *parcel) flush(upload uploader) error {
+// cloneUnsafe creates a thread-unsafe clone of the parcel.
+func (p *parcel) cloneUnsafe() ([]byte, error) {
+	c := bytes.NewBuffer(nil)
+	if _, err := p.current.WriteTo(c); err != nil {
+		return nil, err
+	}
+	return c.Bytes(), nil
+}
+
+// clone creates a thread-safe clone of the parcel.
+func (p *parcel) clone() ([]byte, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	return p.cloneUnsafe()
+}
+
+func (p *parcel) flush(upload uploader) (int, error) {
 	// NOTE(artur): here we need to queue upload without limits because when we
 	// flush before close, we really want to drain all parcels as we won't have
 	// the chance to trigger shipment later on.
 	k, err := randomKey(p.prefix, time.Now())
 	if err != nil {
-		return err
+		return 0, err
 	}
-	c := bytes.NewBuffer(nil)
-	if _, err = p.current.WriteTo(c); err != nil {
-		return err
+	c, err := p.clone()
+	if err != nil {
+		return 0, err
 	}
-	return upload.queueUploadWithoutQueueLimit(p.store, p.bucket, k, c.Bytes())
+	return len(c), upload.queueUploadWithoutQueueLimit(p.store, p.bucket, k, c)
 }
 
 func (p *parcel) close(upload uploader) error {
 	p.mu.Lock()
-	defer p.mu.Unlock()
-
 	if !p.closed {
 		p.closed = true
-		return p.flush(upload)
+		p.mu.Unlock()
+		_, err := p.flush(upload)
+		return err
 	}
+	p.mu.Unlock()
 	return nil
 }
 

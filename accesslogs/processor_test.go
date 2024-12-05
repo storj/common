@@ -5,12 +5,15 @@ package accesslogs
 
 import (
 	"bytes"
+	"context"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest"
 
 	"storj.io/common/memory"
@@ -99,7 +102,7 @@ func TestProcessorWithShipment(t *testing.T) {
 		},
 		{
 			name:              "big shipment limit",
-			shipmentLimit:     64 * memory.MiB,
+			shipmentLimit:     63 * memory.MiB,
 			expectedShipments: 1,
 		},
 	}
@@ -114,7 +117,8 @@ func TestProcessorWithShipment(t *testing.T) {
 
 			s := newInMemoryStorage()
 			p := NewProcessor(log, Options{
-				DefaultShipmentLimit: tc.shipmentLimit,
+				DefaultShipmentLimit:    tc.shipmentLimit,
+				DefaultShipmentInterval: time.Hour,
 			})
 			defer ctx.Check(p.Close)
 
@@ -165,9 +169,103 @@ func TestProcessorWithShipment(t *testing.T) {
 	}
 }
 
-func TestRandomKey(t *testing.T) {
+func TestProcessorWithInterval(t *testing.T) {
 	t.Parallel()
 
+	ctx := testcontext.New(t)
+	defer ctx.Cleanup()
+
+	log := zaptest.NewLogger(t)
+	defer ctx.Check(log.Sync)
+
+	s := &tsInMemoryStorage{}
+	p := NewProcessor(log, Options{
+		DefaultShipmentLimit:    63 * memory.MiB,
+		DefaultShipmentInterval: 100 * time.Millisecond,
+	})
+	defer ctx.Check(p.Close)
+
+	ctx.Go(p.Run)
+
+	uuid1, err := uuid.New()
+	require.NoError(t, err)
+	uuid2, err := uuid.New()
+	require.NoError(t, err)
+	key1 := Key{
+		PublicProjectID: uuid1,
+		Bucket:          "bucket1",
+		Prefix:          "prefix1",
+	}
+	key2 := Key{
+		PublicProjectID: uuid2,
+		Bucket:          "bucket2",
+		Prefix:          "prefix2/",
+	}
+	entry1 := newTestEntry("entry1")
+	entry2 := newTestEntry("entry2")
+
+	for i := 0; i < 10; i++ {
+		require.NoError(t, p.QueueEntry(s, key1, entry1))
+		require.NoError(t, p.QueueEntry(s, key2, entry1))
+		require.NoError(t, p.QueueEntry(s, key1, entry2))
+		require.NoError(t, p.QueueEntry(s, key2, entry2))
+	}
+
+	for done, i := false, 0; !done; time.Sleep(100 * time.Millisecond) {
+		require.NotEqual(t, i, 10, "exceeded 10 iterations")
+		for _, bucket := range []string{key1.Bucket, key2.Bucket} {
+			buf := bytes.NewBuffer(nil)
+
+			if len(s.getBucketContents(bucket)) != 1 {
+				continue
+			}
+
+			for _, v := range s.getBucketContents(bucket) {
+				buf.Write(v)
+			}
+
+			bucketContents := buf.String()
+
+			if strings.Count(bucketContents, "\n") != 20 {
+				continue
+			}
+
+			bucketContents = strings.Replace(bucketContents, entry1.String()+"\n", "", 10)
+			bucketContents = strings.Replace(bucketContents, entry2.String()+"\n", "", 10)
+
+			done = len(bucketContents) == 0
+			i++
+		}
+	}
+}
+
+type tsInMemoryStorage struct {
+	mu sync.Mutex
+	s  *inMemoryStorage
+}
+
+func (s *tsInMemoryStorage) getBucketContents(bucket string) map[string][]byte {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.s == nil {
+		s.s = newInMemoryStorage()
+	}
+
+	return s.s.getBucketContents(bucket)
+}
+
+func (s *tsInMemoryStorage) Put(_ context.Context, bucket, key string, body []byte) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.s == nil {
+		s.s = newInMemoryStorage()
+	}
+	return s.s.Put(context.Background(), bucket, key, body)
+}
+
+func TestRandomKey(t *testing.T) {
 	now := time.Date(2019, time.February, 6, 0, 0, 38, 0, time.UTC)
 	for _, p := range []string{
 		"prefix",
@@ -195,14 +293,22 @@ var exampleAmazonS3ServerAccessLogLine = func() func() string {
 }()
 
 func BenchmarkParallelQueueEntry(b *testing.B) {
+	benchmarkParallelQueueEntry(b, 0)
+}
+
+func BenchmarkParallelQueueEntryWithTimedFlush(b *testing.B) {
+	benchmarkParallelQueueEntry(b, time.Millisecond)
+}
+
+func benchmarkParallelQueueEntry(b *testing.B, interval time.Duration) {
 	ctx := testcontext.New(b)
 	defer ctx.Cleanup()
 
-	log := zaptest.NewLogger(b)
+	log := zap.NewNop()
 	defer ctx.Check(log.Sync)
 
 	s := noopStorage{}
-	p := NewProcessor(log, Options{})
+	p := NewProcessor(log, Options{DefaultShipmentInterval: interval})
 	defer ctx.Check(p.Close)
 
 	ctx.Go(p.Run)
@@ -226,14 +332,22 @@ func BenchmarkParallelQueueEntry(b *testing.B) {
 }
 
 func BenchmarkQueueEntry(b *testing.B) {
+	benchmarkQueueEntry(b, 0)
+}
+
+func BenchmarkQueueEntryWithTimedFlush(b *testing.B) {
+	benchmarkQueueEntry(b, time.Millisecond)
+}
+
+func benchmarkQueueEntry(b *testing.B, interval time.Duration) {
 	ctx := testcontext.New(b)
 	defer ctx.Cleanup()
 
-	log := zaptest.NewLogger(b)
+	log := zap.NewNop()
 	defer ctx.Check(log.Sync)
 
 	s := noopStorage{}
-	p := NewProcessor(log, Options{})
+	p := NewProcessor(log, Options{DefaultShipmentInterval: interval})
 	defer ctx.Check(p.Close)
 
 	ctx.Go(p.Run)
