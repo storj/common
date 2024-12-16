@@ -2765,6 +2765,7 @@ type ObjectListItem struct {
 	Version                       int32         `protobuf:"varint,2,opt,name=version,proto3" json:"version,omitempty"`
 	ObjectVersion                 []byte        `protobuf:"bytes,12,opt,name=object_version,json=objectVersion,proto3" json:"object_version,omitempty"`
 	Status                        Object_Status `protobuf:"varint,3,opt,name=status,proto3,enum=metainfo.Object_Status" json:"status,omitempty"`
+	IsLatest                      bool          `protobuf:"varint,13,opt,name=is_latest,json=isLatest,proto3" json:"is_latest,omitempty"`
 	CreatedAt                     time.Time     `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3,stdtime" json:"created_at"`
 	StatusAt                      time.Time     `protobuf:"bytes,5,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
 	ExpiresAt                     time.Time     `protobuf:"bytes,6,opt,name=expires_at,json=expiresAt,proto3,stdtime" json:"expires_at"`
@@ -2827,6 +2828,13 @@ func (m *ObjectListItem) GetStatus() Object_Status {
 		return m.Status
 	}
 	return Object_INVALID
+}
+
+func (m *ObjectListItem) GetIsLatest() bool {
+	if m != nil {
+		return m.IsLatest
+	}
+	return false
 }
 
 func (m *ObjectListItem) GetCreatedAt() time.Time {

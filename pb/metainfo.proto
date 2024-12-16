@@ -517,6 +517,7 @@ message ObjectListItem {
     int32  version        = 2; // deprecated
     bytes  object_version = 12;
     Object.Status status  = 3;
+    bool   is_latest = 13;
 
     google.protobuf.Timestamp created_at = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     google.protobuf.Timestamp status_at  = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
@@ -529,7 +530,7 @@ message ObjectListItem {
     // plain_size is 0 for migrated objects.
     int64 plain_size = 10;
 
-    bytes  stream_id = 9 [(gogoproto.customtype) = "StreamID"];
+    bytes stream_id = 9 [(gogoproto.customtype) = "StreamID"];
 }
 
 message ObjectListItemIncludes {

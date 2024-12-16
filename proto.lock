@@ -3216,6 +3216,11 @@
                 "type": "Object.Status"
               },
               {
+                "id": 13,
+                "name": "is_latest",
+                "type": "bool"
+              },
+              {
                 "id": 4,
                 "name": "created_at",
                 "type": "google.protobuf.Timestamp",
