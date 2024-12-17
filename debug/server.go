@@ -22,9 +22,11 @@ import (
 	"github.com/jtolio/crawlspace/tools"
 	"github.com/spacemonkeygo/monkit/v3"
 	"github.com/spacemonkeygo/monkit/v3/present"
+	"github.com/zeebo/errs"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 
+	"storj.io/common/context2"
 	crawlspacereg "storj.io/common/debug/crawlspace"
 	"storj.io/common/traces"
 	"storj.io/common/version"
@@ -183,6 +185,12 @@ func (server *Server) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	var group errgroup.Group
 
+	// We need to handle listener in a separate group to avoid "listener closed" errors.
+	muxCtx, muxCancel := context.WithCancel(context2.WithoutCancellation(ctx))
+	defer muxCancel()
+
+	var muxGroup errgroup.Group
+
 	var crawlLis net.Listener
 	if server.config.Crawlspace {
 		crawlLis = lmux.Route("crawl")
@@ -204,8 +212,8 @@ func (server *Server) Run(ctx context.Context) error {
 		<-ctx.Done()
 		return Error.Wrap(server.server.Shutdown(context.Background()))
 	})
-	group.Go(func() error {
-		err := Error.Wrap(lmux.Run(ctx))
+	muxGroup.Go(func() error {
+		err := Error.Wrap(lmux.Run(muxCtx))
 		if crawlLis != nil {
 			_ = crawlLis.Close()
 		}
@@ -222,7 +230,9 @@ func (server *Server) Run(ctx context.Context) error {
 		return Error.Wrap(err)
 	})
 
-	return group.Wait()
+	err := group.Wait()
+	muxCancel()
+	return errs.Combine(err, muxGroup.Wait())
 }
 
 // Close closes server and underlying listener.
