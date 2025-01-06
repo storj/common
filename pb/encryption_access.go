@@ -17,6 +17,7 @@ type encryptionAccessStoreEntryMarshal struct {
 	EncryptedPath        string                `json:"encrypted_path,omitempty"`
 	Key                  string                `json:"key,omitempty"`
 	PathCipher           CipherSuite           `json:"path_cipher,omitempty"`
+	MetadataCipher       CipherSuite           `json:"metadata_cipher,omitempty"`
 	EncryptionParameters *EncryptionParameters `json:"encryption_parameters,omitempty"`
 }
 
@@ -38,6 +39,7 @@ func (se *EncryptionAccess_StoreEntry) MarshalJSON() ([]byte, error) {
 		EncryptedPath:        path,
 		Key:                  base64.URLEncoding.EncodeToString(se.Key),
 		PathCipher:           se.PathCipher,
+		MetadataCipher:       se.MetadataCipher,
 		EncryptionParameters: se.EncryptionParameters,
 	})
 }

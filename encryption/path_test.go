@@ -20,7 +20,7 @@ import (
 
 func newStore(key storj.Key, pathCipher storj.CipherSuite) *Store {
 	store := NewStore()
-	if err := store.AddWithCipher("bucket", paths.Unencrypted{}, paths.Encrypted{}, key, pathCipher); err != nil {
+	if err := store.AddWithCipher("bucket", paths.Unencrypted{}, paths.Encrypted{}, key, pathCipher, storj.EncNull); err != nil {
 		panic(err)
 	}
 	return store
@@ -128,7 +128,7 @@ func TestStoreEncryption_BucketRoot(t *testing.T) {
 			if !assert.NoError(t, err, errTag) {
 				continue
 			}
-			err = bucketStore.AddWithCipher("bucket", paths.Unencrypted{}, paths.Encrypted{}, *bucketKey, cipher)
+			err = bucketStore.AddWithCipher("bucket", paths.Unencrypted{}, paths.Encrypted{}, *bucketKey, cipher, storj.EncNull)
 			if !assert.NoError(t, err, errTag) {
 				continue
 			}
@@ -187,7 +187,7 @@ func TestStoreEncryption_MultipleBases(t *testing.T) {
 					encPrefix, err := EncryptPath("bucket", prefix, cipher, rootStore)
 					require.NoError(t, err)
 
-					err = prefixStore.AddWithCipher("bucket", prefix, encPrefix, *prefixKey, cipher)
+					err = prefixStore.AddWithCipher("bucket", prefix, encPrefix, *prefixKey, cipher, storj.EncNull)
 					require.NoError(t, err)
 
 					path := paths.NewUnencrypted(rawPath)

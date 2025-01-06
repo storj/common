@@ -607,6 +607,11 @@
                 "type": "encryption.CipherSuite"
               },
               {
+                "id": 5,
+                "name": "default_metadata_cipher",
+                "type": "encryption.CipherSuite"
+              },
+              {
                 "id": 4,
                 "name": "default_encryption_parameters",
                 "type": "encryption.EncryptionParameters"
@@ -639,6 +644,11 @@
                   {
                     "id": 5,
                     "name": "path_cipher",
+                    "type": "encryption.CipherSuite"
+                  },
+                  {
+                    "id": 7,
+                    "name": "metadata_cipher",
                     "type": "encryption.CipherSuite"
                   },
                   {
