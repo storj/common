@@ -1522,6 +1522,7 @@ type Object struct {
 	EncryptedMetadataNonce        Nonce         `protobuf:"bytes,9,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
 	EncryptedMetadata             []byte        `protobuf:"bytes,10,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
 	EncryptedMetadataEncryptedKey []byte        `protobuf:"bytes,17,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
+	ClearMetadata                 []byte        `protobuf:"bytes,22,opt,name=clear_metadata,json=clearMetadata,proto3" json:"clear_metadata,omitempty"`
 	// fixed_segment_size is 0 for migrated objects.
 	FixedSegmentSize     int64                 `protobuf:"varint,11,opt,name=fixed_segment_size,json=fixedSegmentSize,proto3" json:"fixed_segment_size,omitempty"`
 	RedundancyScheme     *RedundancyScheme     `protobuf:"bytes,12,opt,name=redundancy_scheme,json=redundancyScheme,proto3" json:"redundancy_scheme,omitempty"`
@@ -1635,6 +1636,13 @@ func (m *Object) GetEncryptedMetadataEncryptedKey() []byte {
 	return nil
 }
 
+func (m *Object) GetClearMetadata() []byte {
+	if m != nil {
+		return m.ClearMetadata
+	}
+	return nil
+}
+
 func (m *Object) GetFixedSegmentSize() int64 {
 	if m != nil {
 		return m.FixedSegmentSize
@@ -1709,6 +1717,7 @@ type BeginObjectRequest struct {
 	EncryptedMetadataNonce        Nonce                 `protobuf:"bytes,9,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
 	EncryptedMetadata             []byte                `protobuf:"bytes,10,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
 	EncryptedMetadataEncryptedKey []byte                `protobuf:"bytes,11,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
+	ClearMetadata                 []byte                `protobuf:"bytes,16,opt,name=clear_metadata,json=clearMetadata,proto3" json:"clear_metadata,omitempty"`
 	Retention                     *Retention            `protobuf:"bytes,12,opt,name=retention,proto3" json:"retention,omitempty"`
 	LegalHold                     bool                  `protobuf:"varint,13,opt,name=legal_hold,json=legalHold,proto3" json:"legal_hold,omitempty"`
 	XXX_NoUnkeyedLiteral          struct{}              `json:"-"`
@@ -1797,6 +1806,13 @@ func (m *BeginObjectRequest) GetEncryptedMetadata() []byte {
 func (m *BeginObjectRequest) GetEncryptedMetadataEncryptedKey() []byte {
 	if m != nil {
 		return m.EncryptedMetadataEncryptedKey
+	}
+	return nil
+}
+
+func (m *BeginObjectRequest) GetClearMetadata() []byte {
+	if m != nil {
+		return m.ClearMetadata
 	}
 	return nil
 }
@@ -1895,6 +1911,7 @@ type CommitObjectRequest struct {
 	EncryptedMetadataNonce        Nonce    `protobuf:"bytes,2,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
 	EncryptedMetadata             []byte   `protobuf:"bytes,3,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
 	EncryptedMetadataEncryptedKey []byte   `protobuf:"bytes,4,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
+	ClearMetadata                 []byte   `protobuf:"bytes,16,opt,name=clear_metadata,json=clearMetadata,proto3" json:"clear_metadata,omitempty"`
 	XXX_NoUnkeyedLiteral          struct{} `json:"-"`
 	XXX_unrecognized              []byte   `json:"-"`
 	XXX_sizecache                 int32    `json:"-"`
@@ -1946,6 +1963,13 @@ func (m *CommitObjectRequest) GetEncryptedMetadata() []byte {
 func (m *CommitObjectRequest) GetEncryptedMetadataEncryptedKey() []byte {
 	if m != nil {
 		return m.EncryptedMetadataEncryptedKey
+	}
+	return nil
+}
+
+func (m *CommitObjectRequest) GetClearMetadata() []byte {
+	if m != nil {
+		return m.ClearMetadata
 	}
 	return nil
 }
@@ -2772,6 +2796,7 @@ type ObjectListItem struct {
 	EncryptedMetadataNonce        Nonce         `protobuf:"bytes,7,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
 	EncryptedMetadataEncryptedKey []byte        `protobuf:"bytes,11,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
 	EncryptedMetadata             []byte        `protobuf:"bytes,8,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
+	ClearMetadata                 []byte        `protobuf:"bytes,14,opt,name=clear_metadata,json=clearMetadata,proto3" json:"clear_metadata,omitempty"`
 	// plain_size is 0 for migrated objects.
 	PlainSize            int64     `protobuf:"varint,10,opt,name=plain_size,json=plainSize,proto3" json:"plain_size,omitempty"`
 	StreamId             *StreamID `protobuf:"bytes,9,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id,omitempty"`
@@ -2868,6 +2893,13 @@ func (m *ObjectListItem) GetEncryptedMetadataEncryptedKey() []byte {
 func (m *ObjectListItem) GetEncryptedMetadata() []byte {
 	if m != nil {
 		return m.EncryptedMetadata
+	}
+	return nil
+}
+
+func (m *ObjectListItem) GetClearMetadata() []byte {
+	if m != nil {
+		return m.ClearMetadata
 	}
 	return nil
 }
@@ -3259,6 +3291,7 @@ type UpdateObjectMetadataRequest struct {
 	EncryptedMetadataNonce        Nonce          `protobuf:"bytes,4,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
 	EncryptedMetadata             []byte         `protobuf:"bytes,5,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
 	EncryptedMetadataEncryptedKey []byte         `protobuf:"bytes,6,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
+	ClearMetadata                 []byte         `protobuf:"bytes,16,opt,name=clear_metadata,json=clearMetadata,proto3" json:"clear_metadata,omitempty"`
 	XXX_NoUnkeyedLiteral          struct{}       `json:"-"`
 	XXX_unrecognized              []byte         `json:"-"`
 	XXX_sizecache                 int32          `json:"-"`
@@ -3331,6 +3364,13 @@ func (m *UpdateObjectMetadataRequest) GetEncryptedMetadata() []byte {
 func (m *UpdateObjectMetadataRequest) GetEncryptedMetadataEncryptedKey() []byte {
 	if m != nil {
 		return m.EncryptedMetadataEncryptedKey
+	}
+	return nil
+}
+
+func (m *UpdateObjectMetadataRequest) GetClearMetadata() []byte {
+	if m != nil {
+		return m.ClearMetadata
 	}
 	return nil
 }
@@ -6694,6 +6734,7 @@ type FinishCopyObjectRequest struct {
 	NewEncryptedMetadata         []byte                  `protobuf:"bytes,7,opt,name=new_encrypted_metadata,json=newEncryptedMetadata,proto3" json:"new_encrypted_metadata,omitempty"`
 	NewEncryptedMetadataKeyNonce Nonce                   `protobuf:"bytes,4,opt,name=new_encrypted_metadata_key_nonce,json=newEncryptedMetadataKeyNonce,proto3,customtype=Nonce" json:"new_encrypted_metadata_key_nonce"`
 	NewEncryptedMetadataKey      []byte                  `protobuf:"bytes,5,opt,name=new_encrypted_metadata_key,json=newEncryptedMetadataKey,proto3" json:"new_encrypted_metadata_key,omitempty"`
+	NewClearMetadata             []byte                  `protobuf:"bytes,16,opt,name=new_clear_metadata,json=newClearMetadata,proto3" json:"new_clear_metadata,omitempty"`
 	NewSegmentKeys               []*EncryptedKeyAndNonce `protobuf:"bytes,6,rep,name=new_segment_keys,json=newSegmentKeys,proto3" json:"new_segment_keys,omitempty"`
 	XXX_NoUnkeyedLiteral         struct{}                `json:"-"`
 	XXX_unrecognized             []byte                  `json:"-"`
@@ -6781,6 +6822,13 @@ func (m *FinishCopyObjectRequest) GetNewEncryptedMetadata() []byte {
 func (m *FinishCopyObjectRequest) GetNewEncryptedMetadataKey() []byte {
 	if m != nil {
 		return m.NewEncryptedMetadataKey
+	}
+	return nil
+}
+
+func (m *FinishCopyObjectRequest) GetNewClearMetadata() []byte {
+	if m != nil {
+		return m.NewClearMetadata
 	}
 	return nil
 }

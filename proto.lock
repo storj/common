@@ -2675,6 +2675,11 @@
                 "type": "bytes"
               },
               {
+                "id": 22,
+                "name": "clear_metadata",
+                "type": "bytes"
+              },
+              {
                 "id": 11,
                 "name": "fixed_segment_size",
                 "type": "int64"
@@ -2795,6 +2800,11 @@
                 "type": "bytes"
               },
               {
+                "id": 16,
+                "name": "clear_metadata",
+                "type": "bytes"
+              },
+              {
                 "id": 12,
                 "name": "retention",
                 "type": "Retention"
@@ -2902,6 +2912,11 @@
               {
                 "id": 4,
                 "name": "encrypted_metadata_encrypted_key",
+                "type": "bytes"
+              },
+              {
+                "id": 16,
+                "name": "clear_metadata",
                 "type": "bytes"
               }
             ]
@@ -3301,6 +3316,11 @@
                 "type": "bytes"
               },
               {
+                "id": 14,
+                "name": "clear_metadata",
+                "type": "bytes"
+              },
+              {
                 "id": 10,
                 "name": "plain_size",
                 "type": "int64"
@@ -3568,6 +3588,11 @@
               {
                 "id": 6,
                 "name": "encrypted_metadata_encrypted_key",
+                "type": "bytes"
+              },
+              {
+                "id": 16,
+                "name": "clear_metadata",
                 "type": "bytes"
               }
             ]
@@ -5409,6 +5434,11 @@
               {
                 "id": 5,
                 "name": "new_encrypted_metadata_key",
+                "type": "bytes"
+              },
+              {
+                "id": 16,
+                "name": "new_clear_metadata",
                 "type": "bytes"
               },
               {
