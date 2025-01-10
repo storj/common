@@ -35,3 +35,23 @@ func TestUserMetaMarshalJSON(t *testing.T) {
 
 	require.Equal(t, meta, meta2)
 }
+
+func TestDeepUserMeta(t *testing.T) {
+	deepMeta := DeepUserMeta{
+		"s": "text",
+		"o": map[string]interface{}{
+			"a": []interface{}{1.0, 2.0, 3.0},
+		},
+	}
+
+	meta, err := deepMeta.toUserMeta()
+	require.NoError(t, err)
+	require.Equal(t, UserMeta{
+		"s":      "text",
+		"json:o": `{"a":[1,2,3]}`,
+	}, meta)
+
+	deepMeta2, err := meta.toDeepUserMeta()
+	require.NoError(t, err)
+	require.Equal(t, deepMeta, deepMeta2)
+}

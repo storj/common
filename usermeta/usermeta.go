@@ -5,10 +5,12 @@ package usermeta
 
 import (
 	"encoding/json"
+	"strings"
 
 	"storj.io/common/pb"
 )
 
+// UserMeta stores simple string key-value metadata for objects.
 type UserMeta map[string]string
 
 // Marshal user metadata payload using the SerializableMeta structure.
@@ -20,10 +22,16 @@ func Marshal(meta UserMeta) ([]byte, error) {
 	return pb.Marshal(m)
 }
 
-// Marshal a JSON-encoded user metadata using the SerializableMeta structure.
+// Marshal a JSON-encoded, deeply structured user metadata using the
+// SerializableMeta structure.
 func MarshalJSON(meta string) ([]byte, error) {
-	var m UserMeta
-	err := json.Unmarshal([]byte(meta), &m)
+	var dm DeepUserMeta
+	err := json.Unmarshal([]byte(meta), &dm)
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := dm.toUserMeta()
 	if err != nil {
 		return nil, err
 	}
@@ -42,14 +50,20 @@ func Unmarshal(data []byte) (UserMeta, error) {
 	return m.UserDefined, nil
 }
 
-// UnmarshalJSON unmarshals the user metadata payload and returns it as a JSON string.
+// UnmarshalJSON unmarshals the user metadata payload, converts it to a deeply
+// structured metadata and returns it as a JSON string.
 func UnmarshalJSON(data []byte) (string, error) {
-	meta, err := Unmarshal(data)
+	m, err := Unmarshal(data)
 	if err != nil {
 		return "", err
 	}
 
-	j, err := json.Marshal(meta)
+	dm, err := m.toDeepUserMeta()
+	if err != nil {
+		return "", err
+	}
+
+	j, err := json.Marshal(dm)
 	if err != nil {
 		return "", err
 	}
@@ -61,4 +75,43 @@ func UnmarshalJSON(data []byte) (string, error) {
 func Valid(data []byte) bool {
 	_, err := Unmarshal(data)
 	return err == nil
+}
+
+// DeepUserMeta stores an arbitrary deep metadata structures for
+// objects. It can be converted from/to one-level UserMeta objects.
+type DeepUserMeta map[string]interface{}
+
+func (m DeepUserMeta) toUserMeta() (UserMeta, error) {
+	meta := make(UserMeta)
+
+	for k, v := range m {
+		if s, ok := v.(string); ok {
+			meta[k] = s
+		} else {
+			j, err := json.Marshal(v)
+			if err != nil {
+				return nil, err
+			}
+			meta["json:"+k] = string(j)
+		}
+	}
+	return meta, nil
+}
+
+func (m UserMeta) toDeepUserMeta() (DeepUserMeta, error) {
+	meta := make(DeepUserMeta)
+
+	for k, v := range m {
+		if strings.HasPrefix(k, "json:") {
+			var i interface{}
+			err := json.Unmarshal([]byte(v), &i)
+			if err != nil {
+				return nil, err
+			}
+			meta[k[5:]] = i
+		} else {
+			meta[k] = v
+		}
+	}
+	return meta, nil
 }
