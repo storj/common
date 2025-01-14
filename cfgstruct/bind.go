@@ -169,6 +169,10 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 		fieldval := val.Field(i)
 		flagname := hyphenate(snakeCase(field.Name))
 
+		if field.Tag.Get("noflag") == "true" {
+			continue
+		}
+
 		if field.Tag.Get("noprefix") != "true" {
 			flagname = prefix + flagname
 		}

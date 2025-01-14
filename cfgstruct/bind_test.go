@@ -35,6 +35,11 @@ type TestStruct struct {
 	Fields [10]struct {
 		AnotherInt int `default:"6"`
 	}
+
+	// Map won't be used as CLI parameter, but might be used from config file.
+	Map map[string]struct {
+		Name string
+	} `noflag:"true"`
 }
 
 func TestBind(t *testing.T) {
