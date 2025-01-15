@@ -201,7 +201,7 @@ func (server *Server) Run(ctx context.Context) error {
 			return env
 		})
 
-		group.Go(func() error {
+		muxGroup.Go(func() error {
 			defer cancel()
 			_ = space.Serve(crawlLis)
 			return nil

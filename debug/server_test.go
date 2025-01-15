@@ -4,8 +4,11 @@
 package debug
 
 import (
+	"errors"
+	"net"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
 
 	"github.com/spacemonkeygo/monkit/v3"
@@ -66,4 +69,41 @@ m3{scope="test",field=""} 4
 	s := rec.Body.String()
 	require.Contains(t, s, "http_requests_count uri=/one 2")
 
+}
+
+func TestServer_Close(t *testing.T) {
+	ctx := testcontext.New(t)
+
+	for i := 0; i < 1000; i++ {
+		registry := monkit.NewRegistry()
+		lis := newFakeListener()
+		srv := NewServer(zaptest.NewLogger(t), lis, registry, Config{
+			Crawlspace: true,
+		})
+		go func() { _ = srv.Close() }()
+		require.NoError(t, srv.Run(ctx))
+	}
+}
+
+type fakeListener struct {
+	once sync.Once
+	ch   chan struct{}
+}
+
+func newFakeListener() net.Listener {
+	return &fakeListener{
+		ch: make(chan struct{}),
+	}
+}
+
+func (f *fakeListener) Addr() net.Addr { return nil }
+
+func (f *fakeListener) Accept() (net.Conn, error) {
+	<-f.ch
+	return nil, errors.New("closed")
+}
+
+func (f *fakeListener) Close() error {
+	f.once.Do(func() { close(f.ch) })
+	return nil
 }
