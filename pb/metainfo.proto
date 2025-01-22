@@ -254,9 +254,16 @@ message ProjectInfoRequest {
     RequestHeader header = 15;
 }
 
+message EdgeUrlOverrides {
+    bytes auth_service = 1;
+    bytes public_linksharing = 2;
+    bytes private_linksharing = 3;
+}
+
 message ProjectInfoResponse {
     bytes project_salt = 1;
     bytes project_public_id = 2;
+    EdgeUrlOverrides edge_url_overrides = 3;
 }
 
 //---------------------------

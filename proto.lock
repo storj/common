@@ -2512,6 +2512,26 @@
             ]
           },
           {
+            "name": "EdgeUrlOverrides",
+            "fields": [
+              {
+                "id": 1,
+                "name": "auth_service",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "public_linksharing",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "private_linksharing",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
             "name": "ProjectInfoResponse",
             "fields": [
               {
@@ -2523,6 +2543,11 @@
                 "id": 2,
                 "name": "project_public_id",
                 "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "edge_url_overrides",
+                "type": "EdgeUrlOverrides"
               }
             ]
           },

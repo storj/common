@@ -1421,12 +1421,65 @@ func (m *ProjectInfoRequest) GetHeader() *RequestHeader {
 	return nil
 }
 
-type ProjectInfoResponse struct {
-	ProjectSalt          []byte   `protobuf:"bytes,1,opt,name=project_salt,json=projectSalt,proto3" json:"project_salt,omitempty"`
-	ProjectPublicId      []byte   `protobuf:"bytes,2,opt,name=project_public_id,json=projectPublicId,proto3" json:"project_public_id,omitempty"`
+type EdgeUrlOverrides struct {
+	AuthService          []byte   `protobuf:"bytes,1,opt,name=auth_service,json=authService,proto3" json:"auth_service,omitempty"`
+	PublicLinksharing    []byte   `protobuf:"bytes,2,opt,name=public_linksharing,json=publicLinksharing,proto3" json:"public_linksharing,omitempty"`
+	PrivateLinksharing   []byte   `protobuf:"bytes,3,opt,name=private_linksharing,json=privateLinksharing,proto3" json:"private_linksharing,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *EdgeUrlOverrides) Reset()         { *m = EdgeUrlOverrides{} }
+func (m *EdgeUrlOverrides) String() string { return proto.CompactTextString(m) }
+func (*EdgeUrlOverrides) ProtoMessage()    {}
+
+func (m *EdgeUrlOverrides) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EdgeUrlOverrides.Unmarshal(m, b)
+}
+func (m *EdgeUrlOverrides) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EdgeUrlOverrides.Marshal(b, m, deterministic)
+}
+func (m *EdgeUrlOverrides) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EdgeUrlOverrides.Merge(m, src)
+}
+func (m *EdgeUrlOverrides) XXX_Size() int {
+	return xxx_messageInfo_EdgeUrlOverrides.Size(m)
+}
+func (m *EdgeUrlOverrides) XXX_DiscardUnknown() {
+	xxx_messageInfo_EdgeUrlOverrides.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EdgeUrlOverrides proto.InternalMessageInfo
+
+func (m *EdgeUrlOverrides) GetAuthService() []byte {
+	if m != nil {
+		return m.AuthService
+	}
+	return nil
+}
+
+func (m *EdgeUrlOverrides) GetPublicLinksharing() []byte {
+	if m != nil {
+		return m.PublicLinksharing
+	}
+	return nil
+}
+
+func (m *EdgeUrlOverrides) GetPrivateLinksharing() []byte {
+	if m != nil {
+		return m.PrivateLinksharing
+	}
+	return nil
+}
+
+type ProjectInfoResponse struct {
+	ProjectSalt          []byte            `protobuf:"bytes,1,opt,name=project_salt,json=projectSalt,proto3" json:"project_salt,omitempty"`
+	ProjectPublicId      []byte            `protobuf:"bytes,2,opt,name=project_public_id,json=projectPublicId,proto3" json:"project_public_id,omitempty"`
+	EdgeUrlOverrides     *EdgeUrlOverrides `protobuf:"bytes,3,opt,name=edge_url_overrides,json=edgeUrlOverrides,proto3" json:"edge_url_overrides,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
 func (m *ProjectInfoResponse) Reset()         { *m = ProjectInfoResponse{} }
@@ -1461,6 +1514,13 @@ func (m *ProjectInfoResponse) GetProjectSalt() []byte {
 func (m *ProjectInfoResponse) GetProjectPublicId() []byte {
 	if m != nil {
 		return m.ProjectPublicId
+	}
+	return nil
+}
+
+func (m *ProjectInfoResponse) GetEdgeUrlOverrides() *EdgeUrlOverrides {
+	if m != nil {
+		return m.EdgeUrlOverrides
 	}
 	return nil
 }
