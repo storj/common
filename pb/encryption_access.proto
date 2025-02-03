@@ -17,11 +17,13 @@ message EncryptionAccess {
         bytes key = 4;
 
         encryption.CipherSuite path_cipher = 5;
+        encryption.CipherSuite metadata_cipher = 7;
         encryption.EncryptionParameters encryption_parameters = 6;
     }
 
     bytes default_key = 1;
     repeated StoreEntry store_entries = 2;
     encryption.CipherSuite default_path_cipher = 3;
+    encryption.CipherSuite default_metadata_cipher = 5;
     encryption.EncryptionParameters default_encryption_parameters = 4;
 }

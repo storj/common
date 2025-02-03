@@ -139,6 +139,11 @@ func (s *EncryptionAccess) SetDefaultPathCipher(defaultPathCipher storj.CipherSu
 	s.Store.SetDefaultPathCipher(defaultPathCipher)
 }
 
+// SetDefaultMetadataCipher sets which cipher suite to use by default for metadata.
+func (s *EncryptionAccess) SetDefaultMetadataCipher(defaultMetadataCipher storj.CipherSuite) {
+	s.Store.SetDefaultMetadataCipher(defaultMetadataCipher)
+}
+
 // LimitTo limits the data in the encryption access only to the paths that would be
 // allowed by the api key. Any errors that happen due to the consistency of the api
 // key cause no keys to be stored.
@@ -231,7 +236,8 @@ func (s *EncryptionAccess) limitTo(apiKey *macaroon.APIKey) (*encryption.Store, 
 
 	// create the new store that we'll load into and carry some necessary defaults
 	store := encryption.NewStore()
-	store.SetDefaultPathCipher(s.Store.GetDefaultPathCipher()) // keep default path cipher
+	store.SetDefaultPathCipher(s.Store.GetDefaultPathCipher())         // keep default path cipher
+	store.SetDefaultMetadataCipher(s.Store.GetDefaultMetadataCipher()) // keep default metadata cipher
 
 	// add the prefixes to the store, skipping any that fail for any reason
 	for _, prefix := range prefixes {
@@ -254,7 +260,7 @@ func (s *EncryptionAccess) limitTo(apiKey *macaroon.APIKey) (*encryption.Store, 
 			continue // this should not happen given Decrypt succeeded, but whatever
 		}
 
-		if err := store.AddWithCipher(bucket, unencPath, encPath, *key, base.PathCipher); err != nil {
+		if err := store.AddWithCipher(bucket, unencPath, encPath, *key, base.PathCipher, base.MetadataCipher); err != nil {
 			continue
 		}
 	}
@@ -264,13 +270,14 @@ func (s *EncryptionAccess) limitTo(apiKey *macaroon.APIKey) (*encryption.Store, 
 
 func (s *EncryptionAccess) toProto() (*pb.EncryptionAccess, error) {
 	var storeEntries []*pb.EncryptionAccess_StoreEntry
-	err := s.Store.IterateWithCipher(func(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite) error {
+	err := s.Store.IterateWithCipher(func(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite, metadataCipher storj.CipherSuite) error {
 		storeEntries = append(storeEntries, &pb.EncryptionAccess_StoreEntry{
 			Bucket:          []byte(bucket),
 			UnencryptedPath: []byte(unenc.Raw()),
 			EncryptedPath:   []byte(enc.Raw()),
 			Key:             key[:],
 			PathCipher:      pb.CipherSuite(pathCipher),
+			MetadataCipher:  pb.CipherSuite(metadataCipher),
 		})
 		return nil
 	})
@@ -284,9 +291,10 @@ func (s *EncryptionAccess) toProto() (*pb.EncryptionAccess, error) {
 	}
 
 	return &pb.EncryptionAccess{
-		DefaultKey:        defaultKey,
-		StoreEntries:      storeEntries,
-		DefaultPathCipher: pb.CipherSuite(s.Store.GetDefaultPathCipher()),
+		DefaultKey:            defaultKey,
+		StoreEntries:          storeEntries,
+		DefaultPathCipher:     pb.CipherSuite(s.Store.GetDefaultPathCipher()),
+		DefaultMetadataCipher: pb.CipherSuite(s.Store.GetDefaultMetadataCipher()),
 	}, nil
 }
 
@@ -308,6 +316,11 @@ func parseEncryptionAccessFromProto(p *pb.EncryptionAccess) (*EncryptionAccess, 
 		access.SetDefaultPathCipher(storj.EncAESGCM)
 	}
 
+	access.SetDefaultMetadataCipher(storj.CipherSuite(p.DefaultMetadataCipher))
+	if p.DefaultMetadataCipher == pb.CipherSuite_ENC_UNSPECIFIED {
+		access.SetDefaultMetadataCipher(storj.EncAESGCM)
+	}
+
 	for _, entry := range p.StoreEntries {
 		if len(entry.Key) != len(storj.Key{}) {
 			return nil, errors.New("invalid key in encryption access entry")
@@ -321,6 +334,7 @@ func parseEncryptionAccessFromProto(p *pb.EncryptionAccess) (*EncryptionAccess, 
 			paths.NewEncrypted(string(entry.EncryptedPath)),
 			key,
 			storj.CipherSuite(entry.PathCipher),
+			storj.CipherSuite(entry.MetadataCipher),
 		)
 		if err != nil {
 			return nil, fmt.Errorf("invalid encryption access entry: %w", err)

@@ -43,19 +43,27 @@ func abortIfError(err error) {
 	}
 }
 
+func forAllCipherPairs(test func(c1 storj.CipherSuite, c2 storj.CipherSuite)) {
+	forAllCiphers(func(c1 storj.CipherSuite) {
+		forAllCiphers(func(c2 storj.CipherSuite) {
+			test(c1, c2)
+		})
+	})
+}
+
 func ExampleStore() {
 	s := NewStore()
 	ep := paths.NewEncrypted
 	up := paths.NewUnencrypted
 
 	// Add a fairly complicated tree to the store.
-	abortIfError(s.AddWithCipher("b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), storj.EncAESGCM))
-	abortIfError(s.AddWithCipher("b1", up("u1/u2/u3/u4"), ep("e1/e2/e3/e4"), toKey("k4"), storj.EncAESGCM))
-	abortIfError(s.AddWithCipher("b1", up("u1/u5"), ep("e1/e5"), toKey("k5"), storj.EncAESGCM))
-	abortIfError(s.AddWithCipher("b1", up("u6"), ep("e6"), toKey("k6"), storj.EncAESGCM))
-	abortIfError(s.AddWithCipher("b1", up("u6/u7/u8"), ep("e6/e7/e8"), toKey("k8"), storj.EncAESGCM))
-	abortIfError(s.AddWithCipher("b2", up("u1"), ep("e1'"), toKey("k1"), storj.EncAESGCM))
-	abortIfError(s.AddWithCipher("b3", paths.Unencrypted{}, paths.Encrypted{}, toKey("m1"), storj.EncAESGCM))
+	abortIfError(s.AddWithCipher("b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), storj.EncAESGCM, storj.EncAESGCM))
+	abortIfError(s.AddWithCipher("b1", up("u1/u2/u3/u4"), ep("e1/e2/e3/e4"), toKey("k4"), storj.EncAESGCM, storj.EncAESGCM))
+	abortIfError(s.AddWithCipher("b1", up("u1/u5"), ep("e1/e5"), toKey("k5"), storj.EncAESGCM, storj.EncAESGCM))
+	abortIfError(s.AddWithCipher("b1", up("u6"), ep("e6"), toKey("k6"), storj.EncAESGCM, storj.EncAESGCM))
+	abortIfError(s.AddWithCipher("b1", up("u6/u7/u8"), ep("e6/e7/e8"), toKey("k8"), storj.EncAESGCM, storj.EncAESGCM))
+	abortIfError(s.AddWithCipher("b2", up("u1"), ep("e1'"), toKey("k1"), storj.EncAESGCM, storj.EncAESGCM))
+	abortIfError(s.AddWithCipher("b3", paths.Unencrypted{}, paths.Encrypted{}, toKey("m1"), storj.EncAESGCM, storj.EncAESGCM))
 
 	// Look up some complicated queries by the unencrypted path.
 	printLookup(s.LookupUnencrypted("b1", up("u1")))
@@ -107,7 +115,7 @@ func ExampleStore_SetDefaultKey() {
 	ep := paths.NewEncrypted
 	up := paths.NewUnencrypted
 
-	abortIfError(s.AddWithCipher("b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), storj.EncAESGCM))
+	abortIfError(s.AddWithCipher("b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), storj.EncAESGCM, storj.EncAESGCM))
 
 	printLookup(s.LookupUnencrypted("b1", up("u1")))
 	printLookup(s.LookupUnencrypted("b1", up("u1/u2")))
@@ -145,15 +153,15 @@ func TestStoreErrors(t *testing.T) {
 		up := paths.NewUnencrypted
 
 		// Too many encrypted parts
-		require.Error(t, s.AddWithCipher("b1", up("u1"), ep("e1/e2/e3"), storj.Key{}, pathCipher))
+		require.Error(t, s.AddWithCipher("b1", up("u1"), ep("e1/e2/e3"), storj.Key{}, pathCipher, storj.EncNull))
 
 		// Too many unencrypted parts
-		require.Error(t, s.AddWithCipher("b1", up("u1/u2/u3"), ep("e1"), storj.Key{}, pathCipher))
+		require.Error(t, s.AddWithCipher("b1", up("u1/u2/u3"), ep("e1"), storj.Key{}, pathCipher, storj.EncNull))
 
 		// Mismatches
-		require.NoError(t, s.AddWithCipher("b1", up("u1"), ep("e1"), storj.Key{}, pathCipher))
-		require.Error(t, s.AddWithCipher("b1", up("u2"), ep("e1"), storj.Key{}, pathCipher))
-		require.Error(t, s.AddWithCipher("b1", up("u1"), ep("f1"), storj.Key{}, pathCipher))
+		require.NoError(t, s.AddWithCipher("b1", up("u1"), ep("e1"), storj.Key{}, pathCipher, storj.EncNull))
+		require.Error(t, s.AddWithCipher("b1", up("u2"), ep("e1"), storj.Key{}, pathCipher, storj.EncNull))
+		require.Error(t, s.AddWithCipher("b1", up("u1"), ep("f1"), storj.Key{}, pathCipher, storj.EncNull))
 	}
 }
 
@@ -166,9 +174,9 @@ func TestStoreErrorState(t *testing.T) {
 	revealed1, consumed1, base1 := s.LookupUnencrypted("b1", up("u1/u2"))
 
 	// Attempt to do an addition that fails.
-	require.Error(t, s.AddWithCipher("b1", up("u1/u2"), ep("e1/e2/e3"), storj.Key{}, storj.EncNull))
-	require.Error(t, s.AddWithCipher("b1", up("u1/u2"), ep("e1/e2/e3"), storj.Key{}, storj.EncAESGCM))
-	require.Error(t, s.AddWithCipher("b1", up("u1/u2"), ep("e1/e2/e3"), storj.Key{}, storj.EncSecretBox))
+	require.Error(t, s.AddWithCipher("b1", up("u1/u2"), ep("e1/e2/e3"), storj.Key{}, storj.EncNull, storj.EncNull))
+	require.Error(t, s.AddWithCipher("b1", up("u1/u2"), ep("e1/e2/e3"), storj.Key{}, storj.EncAESGCM, storj.EncAESGCM))
+	require.Error(t, s.AddWithCipher("b1", up("u1/u2"), ep("e1/e2/e3"), storj.Key{}, storj.EncSecretBox, storj.EncSecretBox))
 
 	// Ensure that we get the same results as before
 	revealed2, consumed2, base2 := s.LookupUnencrypted("b1", up("u1/u2"))
@@ -180,18 +188,15 @@ func TestStoreErrorState(t *testing.T) {
 
 func TestStoreIterate(t *testing.T) {
 	type storeEntry struct {
-		bucket     string
-		unenc      paths.Unencrypted
-		enc        paths.Encrypted
-		key        storj.Key
-		pathCipher storj.CipherSuite
+		bucket         string
+		unenc          paths.Unencrypted
+		enc            paths.Encrypted
+		key            storj.Key
+		pathCipher     storj.CipherSuite
+		metadataCipher storj.CipherSuite
 	}
 
-	for _, pathCipher := range []storj.CipherSuite{
-		storj.EncNull,
-		storj.EncAESGCM,
-		storj.EncSecretBox,
-	} {
+	forAllCipherPairs(func(pathCipher storj.CipherSuite, metadataCipher storj.CipherSuite) {
 		for _, bypass := range []bool{false, true} {
 			s := NewStore()
 			s.EncryptionBypass = bypass
@@ -200,27 +205,27 @@ func TestStoreIterate(t *testing.T) {
 			up := paths.NewUnencrypted
 
 			expected := map[storeEntry]struct{}{
-				{"b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), pathCipher}:         {},
-				{"b1", up("u1/u2/u3/u4"), ep("e1/e2/e3/e4"), toKey("k4"), pathCipher}:   {},
-				{"b1", up("u1/u5"), ep("e1/e5"), toKey("k5"), pathCipher}:               {},
-				{"b1", up("u6"), ep("e6"), toKey("k6"), pathCipher}:                     {},
-				{"b1", up("u6/u7/u8"), ep("e6/e7/e8"), toKey("k8"), pathCipher}:         {},
-				{"b2", up("u1"), ep("e1'"), toKey("k1"), pathCipher}:                    {},
-				{"b3", paths.Unencrypted{}, paths.Encrypted{}, toKey("m1"), pathCipher}: {},
+				{"b1", up("u1/u2/u3"), ep("e1/e2/e3"), toKey("k3"), pathCipher, metadataCipher}:         {},
+				{"b1", up("u1/u2/u3/u4"), ep("e1/e2/e3/e4"), toKey("k4"), pathCipher, metadataCipher}:   {},
+				{"b1", up("u1/u5"), ep("e1/e5"), toKey("k5"), pathCipher, metadataCipher}:               {},
+				{"b1", up("u6"), ep("e6"), toKey("k6"), pathCipher, metadataCipher}:                     {},
+				{"b1", up("u6/u7/u8"), ep("e6/e7/e8"), toKey("k8"), pathCipher, metadataCipher}:         {},
+				{"b2", up("u1"), ep("e1'"), toKey("k1"), pathCipher, metadataCipher}:                    {},
+				{"b3", paths.Unencrypted{}, paths.Encrypted{}, toKey("m1"), pathCipher, metadataCipher}: {},
 			}
 
 			for entry := range expected {
-				require.NoError(t, s.AddWithCipher(entry.bucket, entry.unenc, entry.enc, entry.key, entry.pathCipher))
+				require.NoError(t, s.AddWithCipher(entry.bucket, entry.unenc, entry.enc, entry.key, entry.pathCipher, entry.metadataCipher))
 			}
 
 			got := make(map[storeEntry]struct{})
-			require.NoError(t, s.IterateWithCipher(func(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite) error {
-				got[storeEntry{bucket, unenc, enc, key, pathCipher}] = struct{}{}
+			require.NoError(t, s.IterateWithCipher(func(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite, metadataCipher storj.CipherSuite) error {
+				got[storeEntry{bucket, unenc, enc, key, pathCipher, metadataCipher}] = struct{}{}
 				return nil
 			}))
 			require.Equal(t, expected, got)
 		}
-	}
+	})
 }
 
 func TestStoreEncryptionBypass(t *testing.T) {
@@ -248,6 +253,7 @@ func TestStoreClone(t *testing.T) {
 	store := NewStore()
 	store.SetDefaultKey(&defaultKey)
 	store.SetDefaultPathCipher(storj.EncAESGCM)
+	store.SetDefaultMetadataCipher(storj.EncAESGCM)
 	err := store.Add("bucket1", paths.NewUnencrypted("path1"), paths.NewEncrypted("encPath1"), pathKey)
 	require.NoError(t, err)
 
@@ -256,6 +262,7 @@ func TestStoreClone(t *testing.T) {
 	assert.Equal(t, store, clone)
 
 	assert.Equal(t, store.defaultPathCipher, clone.defaultPathCipher)
+	assert.Equal(t, store.defaultMetadataCipher, clone.defaultMetadataCipher)
 	assert.Equal(t, store.EncryptionBypass, clone.EncryptionBypass)
 
 	assert.NotSame(t, store.defaultKey, clone.defaultKey)

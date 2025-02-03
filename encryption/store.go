@@ -32,9 +32,10 @@ import (
 //	b1, u6/u7       => <{e8:u8}, [u7], <u6, e6, k6>>
 //	b2, u1          => <{}, [u1], <u1, e1', k1'>>
 type Store struct {
-	roots             map[string]*node
-	defaultKey        *storj.Key
-	defaultPathCipher storj.CipherSuite
+	roots                 map[string]*node
+	defaultKey            *storj.Key
+	defaultPathCipher     storj.CipherSuite
+	defaultMetadataCipher storj.CipherSuite
 
 	// EncryptionBypass makes it so we can interoperate with
 	// the network without having encryption keys. paths will be encrypted but
@@ -51,9 +52,10 @@ func (s *Store) Clone() *Store {
 	}
 
 	clone := &Store{
-		roots:             make(map[string]*node),
-		defaultPathCipher: s.defaultPathCipher,
-		EncryptionBypass:  s.EncryptionBypass,
+		roots:                 make(map[string]*node),
+		defaultPathCipher:     s.defaultPathCipher,
+		defaultMetadataCipher: s.defaultMetadataCipher,
+		EncryptionBypass:      s.EncryptionBypass,
 	}
 
 	// Deep copy the defaultKey if it's not nil
@@ -120,11 +122,12 @@ func (n *node) clone() *node {
 
 // Base represents a key with which to derive further keys at some encrypted/unencrypted path.
 type Base struct {
-	Unencrypted paths.Unencrypted
-	Encrypted   paths.Encrypted
-	Key         storj.Key
-	PathCipher  storj.CipherSuite
-	Default     bool
+	Unencrypted    paths.Unencrypted
+	Encrypted      paths.Encrypted
+	Key            storj.Key
+	PathCipher     storj.CipherSuite
+	MetadataCipher storj.CipherSuite
+	Default        bool
 }
 
 // clone returns a copy of the Base. The implementation can be simple because the
@@ -172,13 +175,23 @@ func (s *Store) GetDefaultPathCipher() storj.CipherSuite {
 	return s.defaultPathCipher
 }
 
+// SetDefaultMetadataCipher  adds a default metadata cipher to be returned for any lookup that does not match a bucket.
+func (s *Store) SetDefaultMetadataCipher(defaultMetadataCipher storj.CipherSuite) {
+	s.defaultMetadataCipher = defaultMetadataCipher
+}
+
+// GetDefaultMetadataCipher returns the default metadata cipher, or EncUnspecified if none has been set.
+func (s *Store) GetDefaultMetadataCipher() storj.CipherSuite {
+	return s.defaultMetadataCipher
+}
+
 // Add creates a mapping from the unencrypted path to the encrypted path and key. It uses the current default cipher.
 func (s *Store) Add(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key) error {
-	return s.AddWithCipher(bucket, unenc, enc, key, s.defaultPathCipher)
+	return s.AddWithCipher(bucket, unenc, enc, key, s.defaultPathCipher, s.defaultMetadataCipher)
 }
 
 // AddWithCipher creates a mapping from the unencrypted path to the encrypted path and key with the given cipher.
-func (s *Store) AddWithCipher(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite) error {
+func (s *Store) AddWithCipher(bucket string, unenc paths.Unencrypted, enc paths.Encrypted, key storj.Key, pathCipher storj.CipherSuite, metadataCipher storj.CipherSuite) error {
 	root, ok := s.roots[bucket]
 	if !ok {
 		root = newNode()
@@ -186,10 +199,11 @@ func (s *Store) AddWithCipher(bucket string, unenc paths.Unencrypted, enc paths.
 
 	// Perform the addition starting at the root node.
 	if err := root.add(unenc.Iterator(), enc.Iterator(), &Base{
-		Unencrypted: unenc,
-		Encrypted:   enc,
-		Key:         key,
-		PathCipher:  pathCipher,
+		Unencrypted:    unenc,
+		Encrypted:      enc,
+		Key:            key,
+		PathCipher:     pathCipher,
+		MetadataCipher: metadataCipher,
 	}); err != nil {
 		return err
 	}
@@ -289,9 +303,10 @@ func (s *Store) LookupEncrypted(bucket string, path paths.Encrypted) (
 
 func (s *Store) defaultBase() *Base {
 	return &Base{
-		Key:        *s.defaultKey,
-		PathCipher: s.defaultPathCipher,
-		Default:    true,
+		Key:            *s.defaultKey,
+		PathCipher:     s.defaultPathCipher,
+		MetadataCipher: s.defaultMetadataCipher,
+		Default:        true,
 	}
 }
 
@@ -358,7 +373,7 @@ func (n *node) iterate(fn func(string, paths.Unencrypted, paths.Encrypted, storj
 }
 
 // IterateWithCipher executes the callback with every value that has been Added to the Store.
-func (s *Store) IterateWithCipher(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key, storj.CipherSuite) error) error {
+func (s *Store) IterateWithCipher(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key, storj.CipherSuite, storj.CipherSuite) error) error {
 	for bucket, root := range s.roots {
 		if err := root.iterateWithCipher(fn, bucket); err != nil {
 			return err
@@ -368,9 +383,9 @@ func (s *Store) IterateWithCipher(fn func(string, paths.Unencrypted, paths.Encry
 }
 
 // iterateWithCipher calls the callback if the node has a base, and recurses to its children.
-func (n *node) iterateWithCipher(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key, storj.CipherSuite) error, bucket string) error {
+func (n *node) iterateWithCipher(fn func(string, paths.Unencrypted, paths.Encrypted, storj.Key, storj.CipherSuite, storj.CipherSuite) error, bucket string) error {
 	if n.base != nil {
-		err := fn(bucket, n.base.Unencrypted, n.base.Encrypted, n.base.Key, n.base.PathCipher)
+		err := fn(bucket, n.base.Unencrypted, n.base.Encrypted, n.base.Key, n.base.PathCipher, n.base.MetadataCipher)
 		if err != nil {
 			return err
 		}

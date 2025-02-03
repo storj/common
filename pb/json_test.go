@@ -25,8 +25,9 @@ func TestMarshalJSON(t *testing.T) {
 			EncryptedPath:   []byte("enc"),
 			Key:             []byte("key"),
 			PathCipher:      CipherSuite_ENC_AESGCM,
+			MetadataCipher:  CipherSuite_ENC_AESGCM,
 		})
 		require.NoError(t, err)
-		require.Equal(t, string(bs), `{"bucket":"bucket","unencrypted_path":"unenc","encrypted_path":"ZW5j","key":"a2V5","path_cipher":"ENC_AESGCM"}`)
+		require.Equal(t, string(bs), `{"bucket":"bucket","unencrypted_path":"unenc","encrypted_path":"ZW5j","key":"a2V5","path_cipher":"ENC_AESGCM","metadata_cipher":"ENC_AESGCM"}`)
 	})
 }

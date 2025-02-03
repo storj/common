@@ -17,6 +17,7 @@ type EncryptionAccess struct {
 	DefaultKey                  []byte                         `protobuf:"bytes,1,opt,name=default_key,json=defaultKey,proto3" json:"default_key,omitempty"`
 	StoreEntries                []*EncryptionAccess_StoreEntry `protobuf:"bytes,2,rep,name=store_entries,json=storeEntries,proto3" json:"store_entries,omitempty"`
 	DefaultPathCipher           CipherSuite                    `protobuf:"varint,3,opt,name=default_path_cipher,json=defaultPathCipher,proto3,enum=encryption.CipherSuite" json:"default_path_cipher,omitempty"`
+	DefaultMetadataCipher       CipherSuite                    `protobuf:"varint,5,opt,name=default_metadata_cipher,json=defaultMetadataCipher,proto3,enum=encryption.CipherSuite" json:"default_metadata_cipher,omitempty"`
 	DefaultEncryptionParameters *EncryptionParameters          `protobuf:"bytes,4,opt,name=default_encryption_parameters,json=defaultEncryptionParameters,proto3" json:"default_encryption_parameters,omitempty"`
 	XXX_NoUnkeyedLiteral        struct{}                       `json:"-"`
 	XXX_unrecognized            []byte                         `json:"-"`
@@ -66,6 +67,13 @@ func (m *EncryptionAccess) GetDefaultPathCipher() CipherSuite {
 	return CipherSuite_ENC_UNSPECIFIED
 }
 
+func (m *EncryptionAccess) GetDefaultMetadataCipher() CipherSuite {
+	if m != nil {
+		return m.DefaultMetadataCipher
+	}
+	return CipherSuite_ENC_UNSPECIFIED
+}
+
 func (m *EncryptionAccess) GetDefaultEncryptionParameters() *EncryptionParameters {
 	if m != nil {
 		return m.DefaultEncryptionParameters
@@ -79,6 +87,7 @@ type EncryptionAccess_StoreEntry struct {
 	EncryptedPath        []byte                `protobuf:"bytes,3,opt,name=encrypted_path,json=encryptedPath,proto3" json:"encrypted_path,omitempty"`
 	Key                  []byte                `protobuf:"bytes,4,opt,name=key,proto3" json:"key,omitempty"`
 	PathCipher           CipherSuite           `protobuf:"varint,5,opt,name=path_cipher,json=pathCipher,proto3,enum=encryption.CipherSuite" json:"path_cipher,omitempty"`
+	MetadataCipher       CipherSuite           `protobuf:"varint,7,opt,name=metadata_cipher,json=metadataCipher,proto3,enum=encryption.CipherSuite" json:"metadata_cipher,omitempty"`
 	EncryptionParameters *EncryptionParameters `protobuf:"bytes,6,opt,name=encryption_parameters,json=encryptionParameters,proto3" json:"encryption_parameters,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
 	XXX_unrecognized     []byte                `json:"-"`
@@ -138,6 +147,13 @@ func (m *EncryptionAccess_StoreEntry) GetKey() []byte {
 func (m *EncryptionAccess_StoreEntry) GetPathCipher() CipherSuite {
 	if m != nil {
 		return m.PathCipher
+	}
+	return CipherSuite_ENC_UNSPECIFIED
+}
+
+func (m *EncryptionAccess_StoreEntry) GetMetadataCipher() CipherSuite {
+	if m != nil {
+		return m.MetadataCipher
 	}
 	return CipherSuite_ENC_UNSPECIFIED
 }

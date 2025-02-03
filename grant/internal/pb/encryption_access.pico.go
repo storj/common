@@ -15,6 +15,7 @@ type EncryptionAccess struct {
 	DefaultKey                  []byte                         `json:"default_key,omitempty"`
 	StoreEntries                []*EncryptionAccess_StoreEntry `json:"store_entries,omitempty"`
 	DefaultPathCipher           CipherSuite                    `json:"default_path_cipher,omitempty"`
+	DefaultMetadataCipher       CipherSuite                    `json:"default_metadata_cipher,omitempty"`
 	DefaultEncryptionParameters *EncryptionParameters          `json:"default_encryption_parameters,omitempty"`
 }
 
@@ -28,6 +29,7 @@ func (m *EncryptionAccess) Encode(c *picobuf.Encoder) bool {
 	}
 	c.Int32(3, (*int32)(&m.DefaultPathCipher))
 	c.Message(4, m.DefaultEncryptionParameters.Encode)
+	c.Int32(5, (*int32)(&m.DefaultMetadataCipher))
 	return true
 }
 
@@ -48,6 +50,7 @@ func (m *EncryptionAccess) Decode(c *picobuf.Decoder) {
 		}
 		m.DefaultEncryptionParameters.Decode(c)
 	})
+	c.Int32(5, (*int32)(&m.DefaultMetadataCipher))
 }
 
 type EncryptionAccess_StoreEntry struct {
@@ -56,6 +59,7 @@ type EncryptionAccess_StoreEntry struct {
 	EncryptedPath        []byte                `json:"encrypted_path,omitempty"`
 	Key                  []byte                `json:"key,omitempty"`
 	PathCipher           CipherSuite           `json:"path_cipher,omitempty"`
+	MetadataCipher       CipherSuite           `json:"metadata_cipher,omitempty"`
 	EncryptionParameters *EncryptionParameters `json:"encryption_parameters,omitempty"`
 }
 
@@ -69,6 +73,7 @@ func (m *EncryptionAccess_StoreEntry) Encode(c *picobuf.Encoder) bool {
 	c.Bytes(4, &m.Key)
 	c.Int32(5, (*int32)(&m.PathCipher))
 	c.Message(6, m.EncryptionParameters.Encode)
+	c.Int32(7, (*int32)(&m.MetadataCipher))
 	return true
 }
 
@@ -87,4 +92,5 @@ func (m *EncryptionAccess_StoreEntry) Decode(c *picobuf.Decoder) {
 		}
 		m.EncryptionParameters.Decode(c)
 	})
+	c.Int32(7, (*int32)(&m.MetadataCipher))
 }
