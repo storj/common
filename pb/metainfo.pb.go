@@ -4011,6 +4011,7 @@ type BeginSegmentRequest struct {
 	StreamId             StreamID         `protobuf:"bytes,1,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id"`
 	Position             *SegmentPosition `protobuf:"bytes,2,opt,name=position,proto3" json:"position,omitempty"`
 	MaxOrderLimit        int64            `protobuf:"varint,3,opt,name=max_order_limit,json=maxOrderLimit,proto3" json:"max_order_limit,omitempty"`
+	LiteRequest          bool             `protobuf:"varint,4,opt,name=lite_request,json=liteRequest,proto3" json:"lite_request,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
 	XXX_unrecognized     []byte           `json:"-"`
 	XXX_sizecache        int32            `json:"-"`
@@ -4057,6 +4058,13 @@ func (m *BeginSegmentRequest) GetMaxOrderLimit() int64 {
 		return m.MaxOrderLimit
 	}
 	return 0
+}
+
+func (m *BeginSegmentRequest) GetLiteRequest() bool {
+	if m != nil {
+		return m.LiteRequest
+	}
+	return false
 }
 
 type BeginSegmentResponse struct {

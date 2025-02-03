@@ -3884,6 +3884,11 @@
                 "id": 3,
                 "name": "max_order_limit",
                 "type": "int64"
+              },
+              {
+                "id": 4,
+                "name": "lite_request",
+                "type": "bool"
               }
             ]
           },

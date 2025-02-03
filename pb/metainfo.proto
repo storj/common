@@ -703,6 +703,7 @@ message BeginSegmentRequest {
     SegmentPosition position = 2;
 
     int64 max_order_limit = 3;
+    bool  lite_request    = 4;
 }
 
 message BeginSegmentResponse {
