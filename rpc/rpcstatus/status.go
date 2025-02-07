@@ -70,21 +70,18 @@ func Code(err error) StatusCode {
 	case errors.Is(err, context.DeadlineExceeded):
 		return DeadlineExceeded
 	default:
-		if code := StatusCode(drpcerr.Code(err)); code != Unknown {
-			return code
-		}
-
-		return Unknown
+		return StatusCode(drpcerr.Code(err))
 	}
 }
 
-// Wrap wraps the error with the provided status code.
-func Wrap(code StatusCode, err error) error {
+// NamedWrap returns the err error wrapped with a defined monkit class name and status code.
+func NamedWrap(name string, code StatusCode, err error) error {
 	if err == nil {
 		return nil
 	}
 
 	ce := &codeErr{
+		name: name,
 		code: code,
 	}
 
@@ -96,14 +93,29 @@ func Wrap(code StatusCode, err error) error {
 	return ce
 }
 
+// NamedError creates and returns an error wrapped with a defined monkit class name and status code.
+func NamedError(name string, code StatusCode, msg string) error {
+	return NamedWrap(name, code, errs.New("%s", msg))
+}
+
+// NamedErrorf creates and returns an error wrapped with a defined monkit class name and status code.
+func NamedErrorf(name string, code StatusCode, format string, a ...any) error {
+	return NamedWrap(name, code, errs.New(format, a...))
+}
+
+// Wrap wraps the error with the provided status code.
+func Wrap(code StatusCode, err error) error {
+	return NamedWrap("", code, err)
+}
+
 // Error wraps the message with a status code into an error.
 func Error(code StatusCode, msg string) error {
-	return Wrap(code, errs.New("%s", msg))
+	return NamedError("", code, msg)
 }
 
 // Errorf : Error :: fmt.Sprintf : fmt.Sprint.
 func Errorf(code StatusCode, format string, a ...interface{}) error {
-	return Wrap(code, errs.New(format, a...))
+	return NamedErrorf("", code, format, a...)
 }
 
 type errsError interface {
@@ -114,6 +126,7 @@ type errsError interface {
 
 // codeErr implements error that can work both in grpc and drpc.
 type codeErr struct {
+	name string
 	errsError
 	code StatusCode
 }
@@ -121,4 +134,5 @@ type codeErr struct {
 func (c *codeErr) Unwrap() error { return c.errsError }
 func (c *codeErr) Cause() error  { return c.errsError }
 
-func (c *codeErr) Code() uint64 { return uint64(c.code) }
+func (c *codeErr) Code() uint64         { return uint64(c.code) }
+func (c *codeErr) Name() (string, bool) { return c.name, c.name != "" }
