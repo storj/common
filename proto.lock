@@ -2036,6 +2036,30 @@
             ]
           },
           {
+            "name": "DeleteObjectsResponseItem.Status",
+            "enum_fields": [
+              {
+                "name": "INTERNAL_ERROR"
+              },
+              {
+                "name": "UNAUTHORIZED",
+                "integer": 1
+              },
+              {
+                "name": "NOT_FOUND",
+                "integer": 2
+              },
+              {
+                "name": "OK",
+                "integer": 3
+              },
+              {
+                "name": "LOCKED",
+                "integer": 4
+              }
+            ]
+          },
+          {
             "name": "CompressedBatchRequest.CompressionType",
             "enum_fields": [
               {
@@ -3457,6 +3481,108 @@
             "name": "FinishDeleteObjectResponse"
           },
           {
+            "name": "DeleteObjectsRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "bypass_governance_retention",
+                "type": "bool"
+              },
+              {
+                "id": 3,
+                "name": "quiet",
+                "type": "bool"
+              },
+              {
+                "id": 4,
+                "name": "items",
+                "type": "DeleteObjectsRequestItem",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "DeleteObjectsRequestItem",
+            "fields": [
+              {
+                "id": 1,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "object_version",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "DeleteObjectsResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "items",
+                "type": "DeleteObjectsResponseItem",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "DeleteObjectsResponseItem",
+            "fields": [
+              {
+                "id": 1,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "requested_object_version",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "removed",
+                "type": "DeleteObjectsResponseItemInfo"
+              },
+              {
+                "id": 4,
+                "name": "marker",
+                "type": "DeleteObjectsResponseItemInfo"
+              },
+              {
+                "id": 5,
+                "name": "status",
+                "type": "Status"
+              }
+            ]
+          },
+          {
+            "name": "DeleteObjectsResponseItemInfo",
+            "fields": [
+              {
+                "id": 1,
+                "name": "object_version",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "status",
+                "type": "Object.Status"
+              }
+            ]
+          },
+          {
             "name": "GetObjectIPsRequest",
             "fields": [
               {
@@ -4720,6 +4846,12 @@
                 "oneof_parent": "Request"
               },
               {
+                "id": 39,
+                "name": "objects_delete",
+                "type": "DeleteObjectsRequest",
+                "oneof_parent": "Request"
+              },
+              {
                 "id": 20,
                 "name": "object_get_ips",
                 "type": "GetObjectIPsRequest",
@@ -4964,6 +5096,12 @@
                 "id": 11,
                 "name": "object_finish_delete",
                 "type": "FinishDeleteObjectResponse",
+                "oneof_parent": "Response"
+              },
+              {
+                "id": 39,
+                "name": "objects_delete",
+                "type": "DeleteObjectsResponse",
                 "oneof_parent": "Response"
               },
               {
@@ -5558,6 +5696,11 @@
                 "name": "FinishDeleteObject",
                 "in_type": "FinishDeleteObjectRequest",
                 "out_type": "FinishDeleteObjectResponse"
+              },
+              {
+                "name": "DeleteObjects",
+                "in_type": "DeleteObjectsRequest",
+                "out_type": "DeleteObjectsResponse"
               },
               {
                 "name": "GetObjectIPs",

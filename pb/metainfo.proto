@@ -42,6 +42,7 @@ service Metainfo {
     rpc ListObjects(ListObjectsRequest) returns (ListObjectsResponse);
     rpc BeginDeleteObject(BeginDeleteObjectRequest) returns (BeginDeleteObjectResponse);
     rpc FinishDeleteObject(FinishDeleteObjectRequest) returns (FinishDeleteObjectResponse);
+    rpc DeleteObjects(DeleteObjectsRequest) returns (DeleteObjectsResponse);
     rpc GetObjectIPs(GetObjectIPsRequest) returns (GetObjectIPsResponse);
     rpc ListPendingObjectStreams(ListPendingObjectStreamsRequest) returns (ListPendingObjectStreamsResponse);
     rpc DownloadObject(DownloadObjectRequest) returns (DownloadObjectResponse);
@@ -574,6 +575,48 @@ message FinishDeleteObjectRequest {
 message FinishDeleteObjectResponse {
 }
 
+message DeleteObjectsRequest {
+    RequestHeader header = 15;
+
+    bytes bucket = 1;
+    bool bypass_governance_retention = 2;
+    bool quiet = 3;
+
+    repeated DeleteObjectsRequestItem items = 4;
+}
+
+message DeleteObjectsRequestItem {
+    bytes encrypted_object_key = 1;
+    bytes object_version = 2;
+}
+
+message DeleteObjectsResponse {
+    repeated DeleteObjectsResponseItem items = 1;
+}
+
+message DeleteObjectsResponseItem {
+    enum Status {
+        INTERNAL_ERROR = 0;
+        UNAUTHORIZED = 1;
+        NOT_FOUND = 2;
+        OK = 3;
+        LOCKED = 4;
+    }
+
+    bytes encrypted_object_key = 1;
+    bytes requested_object_version = 2;
+
+    DeleteObjectsResponseItemInfo removed = 3;
+    DeleteObjectsResponseItemInfo marker = 4;
+
+    Status status = 5;
+}
+
+message DeleteObjectsResponseItemInfo {
+    bytes object_version = 1;
+    Object.Status status = 2;
+}
+
 message GetObjectIPsRequest {
     RequestHeader header = 15;
 
@@ -903,6 +946,7 @@ message BatchRequestItem {
         ListObjectsRequest              object_list = 9;
         BeginDeleteObjectRequest        object_begin_delete = 10;
         FinishDeleteObjectRequest       object_finish_delete = 11;
+        DeleteObjectsRequest            objects_delete = 39;
         GetObjectIPsRequest             object_get_ips = 20;
         ListPendingObjectStreamsRequest object_list_pending_streams = 22;
         DownloadObjectRequest           object_download = 23;
@@ -959,6 +1003,7 @@ message BatchResponseItem {
         ListObjectsResponse              object_list = 9;
         BeginDeleteObjectResponse        object_begin_delete = 10;
         FinishDeleteObjectResponse       object_finish_delete = 11;
+        DeleteObjectsResponse            objects_delete = 39;
         GetObjectIPsResponse             object_get_ips = 20;
         ListPendingObjectStreamsResponse object_list_pending_streams = 22;
         DownloadObjectResponse           object_download = 23;

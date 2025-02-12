@@ -105,6 +105,36 @@ func (x Object_Status) String() string {
 	return proto.EnumName(Object_Status_name, int32(x))
 }
 
+type DeleteObjectsResponseItem_Status int32
+
+const (
+	DeleteObjectsResponseItem_INTERNAL_ERROR DeleteObjectsResponseItem_Status = 0
+	DeleteObjectsResponseItem_UNAUTHORIZED   DeleteObjectsResponseItem_Status = 1
+	DeleteObjectsResponseItem_NOT_FOUND      DeleteObjectsResponseItem_Status = 2
+	DeleteObjectsResponseItem_OK             DeleteObjectsResponseItem_Status = 3
+	DeleteObjectsResponseItem_LOCKED         DeleteObjectsResponseItem_Status = 4
+)
+
+var DeleteObjectsResponseItem_Status_name = map[int32]string{
+	0: "INTERNAL_ERROR",
+	1: "UNAUTHORIZED",
+	2: "NOT_FOUND",
+	3: "OK",
+	4: "LOCKED",
+}
+
+var DeleteObjectsResponseItem_Status_value = map[string]int32{
+	"INTERNAL_ERROR": 0,
+	"UNAUTHORIZED":   1,
+	"NOT_FOUND":      2,
+	"OK":             3,
+	"LOCKED":         4,
+}
+
+func (x DeleteObjectsResponseItem_Status) String() string {
+	return proto.EnumName(DeleteObjectsResponseItem_Status_name, int32(x))
+}
+
 type CompressedBatchRequest_CompressionType int32
 
 const (
@@ -3173,6 +3203,266 @@ func (m *FinishDeleteObjectResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_FinishDeleteObjectResponse proto.InternalMessageInfo
 
+type DeleteObjectsRequest struct {
+	Header                    *RequestHeader              `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Bucket                    []byte                      `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	BypassGovernanceRetention bool                        `protobuf:"varint,2,opt,name=bypass_governance_retention,json=bypassGovernanceRetention,proto3" json:"bypass_governance_retention,omitempty"`
+	Quiet                     bool                        `protobuf:"varint,3,opt,name=quiet,proto3" json:"quiet,omitempty"`
+	Items                     []*DeleteObjectsRequestItem `protobuf:"bytes,4,rep,name=items,proto3" json:"items,omitempty"`
+	XXX_NoUnkeyedLiteral      struct{}                    `json:"-"`
+	XXX_unrecognized          []byte                      `json:"-"`
+	XXX_sizecache             int32                       `json:"-"`
+}
+
+func (m *DeleteObjectsRequest) Reset()         { *m = DeleteObjectsRequest{} }
+func (m *DeleteObjectsRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteObjectsRequest) ProtoMessage()    {}
+
+func (m *DeleteObjectsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteObjectsRequest.Unmarshal(m, b)
+}
+func (m *DeleteObjectsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteObjectsRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteObjectsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteObjectsRequest.Merge(m, src)
+}
+func (m *DeleteObjectsRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteObjectsRequest.Size(m)
+}
+func (m *DeleteObjectsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteObjectsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteObjectsRequest proto.InternalMessageInfo
+
+func (m *DeleteObjectsRequest) GetHeader() *RequestHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
+func (m *DeleteObjectsRequest) GetBucket() []byte {
+	if m != nil {
+		return m.Bucket
+	}
+	return nil
+}
+
+func (m *DeleteObjectsRequest) GetBypassGovernanceRetention() bool {
+	if m != nil {
+		return m.BypassGovernanceRetention
+	}
+	return false
+}
+
+func (m *DeleteObjectsRequest) GetQuiet() bool {
+	if m != nil {
+		return m.Quiet
+	}
+	return false
+}
+
+func (m *DeleteObjectsRequest) GetItems() []*DeleteObjectsRequestItem {
+	if m != nil {
+		return m.Items
+	}
+	return nil
+}
+
+type DeleteObjectsRequestItem struct {
+	EncryptedObjectKey   []byte   `protobuf:"bytes,1,opt,name=encrypted_object_key,json=encryptedObjectKey,proto3" json:"encrypted_object_key,omitempty"`
+	ObjectVersion        []byte   `protobuf:"bytes,2,opt,name=object_version,json=objectVersion,proto3" json:"object_version,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteObjectsRequestItem) Reset()         { *m = DeleteObjectsRequestItem{} }
+func (m *DeleteObjectsRequestItem) String() string { return proto.CompactTextString(m) }
+func (*DeleteObjectsRequestItem) ProtoMessage()    {}
+
+func (m *DeleteObjectsRequestItem) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteObjectsRequestItem.Unmarshal(m, b)
+}
+func (m *DeleteObjectsRequestItem) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteObjectsRequestItem.Marshal(b, m, deterministic)
+}
+func (m *DeleteObjectsRequestItem) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteObjectsRequestItem.Merge(m, src)
+}
+func (m *DeleteObjectsRequestItem) XXX_Size() int {
+	return xxx_messageInfo_DeleteObjectsRequestItem.Size(m)
+}
+func (m *DeleteObjectsRequestItem) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteObjectsRequestItem.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteObjectsRequestItem proto.InternalMessageInfo
+
+func (m *DeleteObjectsRequestItem) GetEncryptedObjectKey() []byte {
+	if m != nil {
+		return m.EncryptedObjectKey
+	}
+	return nil
+}
+
+func (m *DeleteObjectsRequestItem) GetObjectVersion() []byte {
+	if m != nil {
+		return m.ObjectVersion
+	}
+	return nil
+}
+
+type DeleteObjectsResponse struct {
+	Items                []*DeleteObjectsResponseItem `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                     `json:"-"`
+	XXX_unrecognized     []byte                       `json:"-"`
+	XXX_sizecache        int32                        `json:"-"`
+}
+
+func (m *DeleteObjectsResponse) Reset()         { *m = DeleteObjectsResponse{} }
+func (m *DeleteObjectsResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteObjectsResponse) ProtoMessage()    {}
+
+func (m *DeleteObjectsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteObjectsResponse.Unmarshal(m, b)
+}
+func (m *DeleteObjectsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteObjectsResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteObjectsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteObjectsResponse.Merge(m, src)
+}
+func (m *DeleteObjectsResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteObjectsResponse.Size(m)
+}
+func (m *DeleteObjectsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteObjectsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteObjectsResponse proto.InternalMessageInfo
+
+func (m *DeleteObjectsResponse) GetItems() []*DeleteObjectsResponseItem {
+	if m != nil {
+		return m.Items
+	}
+	return nil
+}
+
+type DeleteObjectsResponseItem struct {
+	EncryptedObjectKey     []byte                           `protobuf:"bytes,1,opt,name=encrypted_object_key,json=encryptedObjectKey,proto3" json:"encrypted_object_key,omitempty"`
+	RequestedObjectVersion []byte                           `protobuf:"bytes,2,opt,name=requested_object_version,json=requestedObjectVersion,proto3" json:"requested_object_version,omitempty"`
+	Removed                *DeleteObjectsResponseItemInfo   `protobuf:"bytes,3,opt,name=removed,proto3" json:"removed,omitempty"`
+	Marker                 *DeleteObjectsResponseItemInfo   `protobuf:"bytes,4,opt,name=marker,proto3" json:"marker,omitempty"`
+	Status                 DeleteObjectsResponseItem_Status `protobuf:"varint,5,opt,name=status,proto3,enum=metainfo.DeleteObjectsResponseItem_Status" json:"status,omitempty"`
+	XXX_NoUnkeyedLiteral   struct{}                         `json:"-"`
+	XXX_unrecognized       []byte                           `json:"-"`
+	XXX_sizecache          int32                            `json:"-"`
+}
+
+func (m *DeleteObjectsResponseItem) Reset()         { *m = DeleteObjectsResponseItem{} }
+func (m *DeleteObjectsResponseItem) String() string { return proto.CompactTextString(m) }
+func (*DeleteObjectsResponseItem) ProtoMessage()    {}
+
+func (m *DeleteObjectsResponseItem) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteObjectsResponseItem.Unmarshal(m, b)
+}
+func (m *DeleteObjectsResponseItem) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteObjectsResponseItem.Marshal(b, m, deterministic)
+}
+func (m *DeleteObjectsResponseItem) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteObjectsResponseItem.Merge(m, src)
+}
+func (m *DeleteObjectsResponseItem) XXX_Size() int {
+	return xxx_messageInfo_DeleteObjectsResponseItem.Size(m)
+}
+func (m *DeleteObjectsResponseItem) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteObjectsResponseItem.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteObjectsResponseItem proto.InternalMessageInfo
+
+func (m *DeleteObjectsResponseItem) GetEncryptedObjectKey() []byte {
+	if m != nil {
+		return m.EncryptedObjectKey
+	}
+	return nil
+}
+
+func (m *DeleteObjectsResponseItem) GetRequestedObjectVersion() []byte {
+	if m != nil {
+		return m.RequestedObjectVersion
+	}
+	return nil
+}
+
+func (m *DeleteObjectsResponseItem) GetRemoved() *DeleteObjectsResponseItemInfo {
+	if m != nil {
+		return m.Removed
+	}
+	return nil
+}
+
+func (m *DeleteObjectsResponseItem) GetMarker() *DeleteObjectsResponseItemInfo {
+	if m != nil {
+		return m.Marker
+	}
+	return nil
+}
+
+func (m *DeleteObjectsResponseItem) GetStatus() DeleteObjectsResponseItem_Status {
+	if m != nil {
+		return m.Status
+	}
+	return DeleteObjectsResponseItem_INTERNAL_ERROR
+}
+
+type DeleteObjectsResponseItemInfo struct {
+	ObjectVersion        []byte        `protobuf:"bytes,1,opt,name=object_version,json=objectVersion,proto3" json:"object_version,omitempty"`
+	Status               Object_Status `protobuf:"varint,2,opt,name=status,proto3,enum=metainfo.Object_Status" json:"status,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *DeleteObjectsResponseItemInfo) Reset()         { *m = DeleteObjectsResponseItemInfo{} }
+func (m *DeleteObjectsResponseItemInfo) String() string { return proto.CompactTextString(m) }
+func (*DeleteObjectsResponseItemInfo) ProtoMessage()    {}
+
+func (m *DeleteObjectsResponseItemInfo) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteObjectsResponseItemInfo.Unmarshal(m, b)
+}
+func (m *DeleteObjectsResponseItemInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteObjectsResponseItemInfo.Marshal(b, m, deterministic)
+}
+func (m *DeleteObjectsResponseItemInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteObjectsResponseItemInfo.Merge(m, src)
+}
+func (m *DeleteObjectsResponseItemInfo) XXX_Size() int {
+	return xxx_messageInfo_DeleteObjectsResponseItemInfo.Size(m)
+}
+func (m *DeleteObjectsResponseItemInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteObjectsResponseItemInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteObjectsResponseItemInfo proto.InternalMessageInfo
+
+func (m *DeleteObjectsResponseItemInfo) GetObjectVersion() []byte {
+	if m != nil {
+		return m.ObjectVersion
+	}
+	return nil
+}
+
+func (m *DeleteObjectsResponseItemInfo) GetStatus() Object_Status {
+	if m != nil {
+		return m.Status
+	}
+	return Object_INVALID
+}
+
 type GetObjectIPsRequest struct {
 	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
 	Bucket               []byte         `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
@@ -5204,6 +5494,7 @@ type BatchRequestItem struct {
 	//	*BatchRequestItem_ObjectList
 	//	*BatchRequestItem_ObjectBeginDelete
 	//	*BatchRequestItem_ObjectFinishDelete
+	//	*BatchRequestItem_ObjectsDelete
 	//	*BatchRequestItem_ObjectGetIps
 	//	*BatchRequestItem_ObjectListPendingStreams
 	//	*BatchRequestItem_ObjectDownload
@@ -5302,6 +5593,9 @@ type BatchRequestItem_ObjectBeginDelete struct {
 type BatchRequestItem_ObjectFinishDelete struct {
 	ObjectFinishDelete *FinishDeleteObjectRequest `protobuf:"bytes,11,opt,name=object_finish_delete,json=objectFinishDelete,proto3,oneof" json:"object_finish_delete,omitempty"`
 }
+type BatchRequestItem_ObjectsDelete struct {
+	ObjectsDelete *DeleteObjectsRequest `protobuf:"bytes,39,opt,name=objects_delete,json=objectsDelete,proto3,oneof" json:"objects_delete,omitempty"`
+}
 type BatchRequestItem_ObjectGetIps struct {
 	ObjectGetIps *GetObjectIPsRequest `protobuf:"bytes,20,opt,name=object_get_ips,json=objectGetIps,proto3,oneof" json:"object_get_ips,omitempty"`
 }
@@ -5381,6 +5675,7 @@ func (*BatchRequestItem_ObjectGet) isBatchRequestItem_Request()                 
 func (*BatchRequestItem_ObjectList) isBatchRequestItem_Request()                       {}
 func (*BatchRequestItem_ObjectBeginDelete) isBatchRequestItem_Request()                {}
 func (*BatchRequestItem_ObjectFinishDelete) isBatchRequestItem_Request()               {}
+func (*BatchRequestItem_ObjectsDelete) isBatchRequestItem_Request()                    {}
 func (*BatchRequestItem_ObjectGetIps) isBatchRequestItem_Request()                     {}
 func (*BatchRequestItem_ObjectListPendingStreams) isBatchRequestItem_Request()         {}
 func (*BatchRequestItem_ObjectDownload) isBatchRequestItem_Request()                   {}
@@ -5511,6 +5806,13 @@ func (m *BatchRequestItem) GetObjectBeginDelete() *BeginDeleteObjectRequest {
 func (m *BatchRequestItem) GetObjectFinishDelete() *FinishDeleteObjectRequest {
 	if x, ok := m.GetRequest().(*BatchRequestItem_ObjectFinishDelete); ok {
 		return x.ObjectFinishDelete
+	}
+	return nil
+}
+
+func (m *BatchRequestItem) GetObjectsDelete() *DeleteObjectsRequest {
+	if x, ok := m.GetRequest().(*BatchRequestItem_ObjectsDelete); ok {
+		return x.ObjectsDelete
 	}
 	return nil
 }
@@ -5680,6 +5982,7 @@ func (*BatchRequestItem) XXX_OneofWrappers() []interface{} {
 		(*BatchRequestItem_ObjectList)(nil),
 		(*BatchRequestItem_ObjectBeginDelete)(nil),
 		(*BatchRequestItem_ObjectFinishDelete)(nil),
+		(*BatchRequestItem_ObjectsDelete)(nil),
 		(*BatchRequestItem_ObjectGetIps)(nil),
 		(*BatchRequestItem_ObjectListPendingStreams)(nil),
 		(*BatchRequestItem_ObjectDownload)(nil),
@@ -5802,6 +6105,7 @@ type BatchResponseItem struct {
 	//	*BatchResponseItem_ObjectList
 	//	*BatchResponseItem_ObjectBeginDelete
 	//	*BatchResponseItem_ObjectFinishDelete
+	//	*BatchResponseItem_ObjectsDelete
 	//	*BatchResponseItem_ObjectGetIps
 	//	*BatchResponseItem_ObjectListPendingStreams
 	//	*BatchResponseItem_ObjectDownload
@@ -5900,6 +6204,9 @@ type BatchResponseItem_ObjectBeginDelete struct {
 type BatchResponseItem_ObjectFinishDelete struct {
 	ObjectFinishDelete *FinishDeleteObjectResponse `protobuf:"bytes,11,opt,name=object_finish_delete,json=objectFinishDelete,proto3,oneof" json:"object_finish_delete,omitempty"`
 }
+type BatchResponseItem_ObjectsDelete struct {
+	ObjectsDelete *DeleteObjectsResponse `protobuf:"bytes,39,opt,name=objects_delete,json=objectsDelete,proto3,oneof" json:"objects_delete,omitempty"`
+}
 type BatchResponseItem_ObjectGetIps struct {
 	ObjectGetIps *GetObjectIPsResponse `protobuf:"bytes,20,opt,name=object_get_ips,json=objectGetIps,proto3,oneof" json:"object_get_ips,omitempty"`
 }
@@ -5979,6 +6286,7 @@ func (*BatchResponseItem_ObjectGet) isBatchResponseItem_Response()              
 func (*BatchResponseItem_ObjectList) isBatchResponseItem_Response()                       {}
 func (*BatchResponseItem_ObjectBeginDelete) isBatchResponseItem_Response()                {}
 func (*BatchResponseItem_ObjectFinishDelete) isBatchResponseItem_Response()               {}
+func (*BatchResponseItem_ObjectsDelete) isBatchResponseItem_Response()                    {}
 func (*BatchResponseItem_ObjectGetIps) isBatchResponseItem_Response()                     {}
 func (*BatchResponseItem_ObjectListPendingStreams) isBatchResponseItem_Response()         {}
 func (*BatchResponseItem_ObjectDownload) isBatchResponseItem_Response()                   {}
@@ -6109,6 +6417,13 @@ func (m *BatchResponseItem) GetObjectBeginDelete() *BeginDeleteObjectResponse {
 func (m *BatchResponseItem) GetObjectFinishDelete() *FinishDeleteObjectResponse {
 	if x, ok := m.GetResponse().(*BatchResponseItem_ObjectFinishDelete); ok {
 		return x.ObjectFinishDelete
+	}
+	return nil
+}
+
+func (m *BatchResponseItem) GetObjectsDelete() *DeleteObjectsResponse {
+	if x, ok := m.GetResponse().(*BatchResponseItem_ObjectsDelete); ok {
+		return x.ObjectsDelete
 	}
 	return nil
 }
@@ -6278,6 +6593,7 @@ func (*BatchResponseItem) XXX_OneofWrappers() []interface{} {
 		(*BatchResponseItem_ObjectList)(nil),
 		(*BatchResponseItem_ObjectBeginDelete)(nil),
 		(*BatchResponseItem_ObjectFinishDelete)(nil),
+		(*BatchResponseItem_ObjectsDelete)(nil),
 		(*BatchResponseItem_ObjectGetIps)(nil),
 		(*BatchResponseItem_ObjectListPendingStreams)(nil),
 		(*BatchResponseItem_ObjectDownload)(nil),
