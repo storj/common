@@ -41,6 +41,14 @@ const (
 	Unauthenticated    StatusCode = 16
 	MethodNotAllowed   StatusCode = 17
 
+	BucketNameMissing    StatusCode = 10014
+	BucketNameInvalid    StatusCode = 10015
+	ObjectKeyMissing     StatusCode = 10016
+	ObjectKeyTooLong     StatusCode = 10017
+	ObjectVersionInvalid StatusCode = 10018
+
+	BucketNotFound StatusCode = 10019
+
 	ObjectLockEndpointsDisabled                      StatusCode = 10000
 	ObjectLockDisabledForProject                     StatusCode = 10001
 	ObjectLockInvalidBucketState                     StatusCode = 10002
@@ -56,6 +64,9 @@ const (
 
 	PlacementInvalidValue      StatusCode = 10012
 	PlacementConflictingValues StatusCode = 10013
+
+	DeleteObjectsNoItems      StatusCode = 10020
+	DeleteObjectsTooManyItems StatusCode = 10021
 )
 
 // Code returns the status code associated with the error.
