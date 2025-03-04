@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"math"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -233,6 +234,23 @@ func TestUniqueNodeIDs(t *testing.T) {
 
 	list := IDs.Unique()
 	assert.Equal(t, len(list), 5)
+}
+
+func TestNodeIDList_Flag(t *testing.T) {
+	flag := strings.Join([]string{
+		testrand.NodeID().String(),
+		testrand.NodeID().String(),
+		testrand.NodeID().String(),
+	}, ",")
+
+	var nodeIDs storj.NodeIDList
+	require.NoError(t, nodeIDs.Set(""))
+	require.Len(t, nodeIDs, 0)
+
+	require.NoError(t, nodeIDs.Set(flag))
+	require.Len(t, nodeIDs, 3)
+
+	require.Equal(t, flag, nodeIDs.String())
 }
 
 func BenchmarkNodeID_Less(b *testing.B) {

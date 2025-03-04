@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"math/bits"
+	"strings"
 
 	"github.com/zeebo/errs"
 
@@ -353,4 +354,34 @@ next:
 	}
 
 	return result
+}
+
+// Type is required for pflag.Value.
+func (n NodeIDList) Type() string {
+	return "storj.NodeIDList"
+}
+
+// Set is required for pflag.Value.
+func (n *NodeIDList) Set(s string) error {
+	*n = (*n)[:0]
+
+	if s == "" {
+		return nil
+	}
+
+	idsStrings := strings.Split(s, ",")
+	for _, idString := range idsStrings {
+		id, err := NodeIDFromString(idString)
+		if err != nil {
+			return err
+		}
+
+		*n = append(*n, id)
+	}
+	return nil
+}
+
+// String is required for pflag.Value.
+func (n NodeIDList) String() string {
+	return strings.Join(n.Strings(), ",")
 }
