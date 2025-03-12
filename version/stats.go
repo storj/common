@@ -37,11 +37,12 @@ func (info *Info) Stats(cb func(key monkit.SeriesKey, field string, val float64)
 	crc := atomic.LoadUint32(&info.commitHashCRC)
 	if crc == 0 {
 		c := crc32.NewIEEE()
-		_, err := c.Write([]byte(buildCommitHash))
+		_, err := c.Write([]byte(info.CommitHash))
 		if err != nil {
 			panic(err)
 		}
-		atomic.StoreUint32(&info.commitHashCRC, c.Sum32())
+		crc = c.Sum32()
+		atomic.StoreUint32(&info.commitHashCRC, crc)
 	}
 	cb(key, "commit", float64(crc))
 	cb(key, "major", float64(info.Version.Major))
