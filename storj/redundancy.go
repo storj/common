@@ -3,6 +3,14 @@
 
 package storj
 
+import (
+	"database/sql/driver"
+	"encoding/binary"
+	"strconv"
+
+	"github.com/zeebo/errs"
+)
+
 // RedundancyScheme specifies the parameters and the algorithm for redundancy.
 type RedundancyScheme struct {
 	// Algorithm determines the algorithm to be used for redundancy.
@@ -53,6 +61,76 @@ func (scheme RedundancyScheme) PieceSize(size int64) int64 {
 	encodedSize := stripes * int64(scheme.StripeSize())
 	pieceSize := encodedSize / int64(scheme.RequiredShares)
 	return pieceSize
+}
+
+// Value implements the driver.Valuer interface.
+func (scheme RedundancyScheme) Value() (driver.Value, error) {
+	switch {
+	case scheme.ShareSize < 0 || scheme.ShareSize >= 1<<24:
+		return nil, errs.New("invalid share size %v", scheme.ShareSize)
+	case scheme.RequiredShares < 0 || scheme.RequiredShares >= 1<<8:
+		return nil, errs.New("invalid required shares %v", scheme.RequiredShares)
+	case scheme.RepairShares < 0 || scheme.RepairShares >= 1<<8:
+		return nil, errs.New("invalid repair shares %v", scheme.RepairShares)
+	case scheme.OptimalShares < 0 || scheme.OptimalShares >= 1<<8:
+		return nil, errs.New("invalid optimal shares %v", scheme.OptimalShares)
+	case scheme.TotalShares < 0 || scheme.TotalShares >= 1<<8:
+		return nil, errs.New("invalid total shares %v", scheme.TotalShares)
+	}
+
+	var bytes [8]byte
+	bytes[0] = byte(scheme.Algorithm)
+
+	// little endian uint32
+	bytes[1] = byte(scheme.ShareSize >> 0)
+	bytes[2] = byte(scheme.ShareSize >> 8)
+	bytes[3] = byte(scheme.ShareSize >> 16)
+
+	bytes[4] = byte(scheme.RequiredShares)
+	bytes[5] = byte(scheme.RepairShares)
+	bytes[6] = byte(scheme.OptimalShares)
+	bytes[7] = byte(scheme.TotalShares)
+
+	return int64(binary.LittleEndian.Uint64(bytes[:])), nil
+}
+
+// Scan implements the sql.Scanner interface.
+func (scheme *RedundancyScheme) Scan(value any) error {
+	switch value := value.(type) {
+	case int64:
+		var bytes [8]byte
+		binary.LittleEndian.PutUint64(bytes[:], uint64(value))
+
+		scheme.Algorithm = RedundancyAlgorithm(bytes[0])
+
+		// little endian uint32
+		scheme.ShareSize = int32(bytes[1]) | int32(bytes[2])<<8 | int32(bytes[3])<<16
+
+		scheme.RequiredShares = int16(bytes[4])
+		scheme.RepairShares = int16(bytes[5])
+		scheme.OptimalShares = int16(bytes[6])
+		scheme.TotalShares = int16(bytes[7])
+
+		return nil
+	default:
+		return errs.New("unable to scan %T into RedundancyScheme", value)
+	}
+}
+
+// DecodeSpanner implements spanner.Decoder.
+func (scheme RedundancyScheme) DecodeSpanner(val any) (err error) {
+	if v, ok := val.(string); ok {
+		val, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return errs.New("unable to scan %T into RedundancyScheme: %v", val, err)
+		}
+	}
+	return scheme.Scan(val)
+}
+
+// EncodeSpanner implements spanner.Encoder.
+func (scheme RedundancyScheme) EncodeSpanner() (any, error) {
+	return scheme.Value()
 }
 
 // RedundancyAlgorithm is the algorithm used for redundancy.

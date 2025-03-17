@@ -102,3 +102,56 @@ func TestRedundancyPieceSize(t *testing.T) {
 		require.Equal(t, tc.ExpectedSize, redundancy.PieceSize(tc.Size), errTag)
 	}
 }
+
+func TestRedundancyScheme_DB_EncodeDecode(t *testing.T) {
+	schemeIn := storj.RedundancyScheme{
+		Algorithm:      storj.ReedSolomon,
+		ShareSize:      1,
+		RepairShares:   2,
+		RequiredShares: 3,
+		OptimalShares:  4,
+		TotalShares:    5,
+	}
+
+	value, err := schemeIn.Value()
+	require.NoError(t, err)
+
+	require.Equal(t, int64(361416082004640001), value)
+
+	var schemOut storj.RedundancyScheme
+
+	err = schemOut.Scan(int64(0))
+	require.NoError(t, err)
+	require.Equal(t, storj.RedundancyScheme{}, schemOut)
+
+	err = schemOut.Scan(value)
+	require.NoError(t, err)
+
+	require.Equal(t, schemeIn, schemOut)
+
+	valueSpanner, err := schemeIn.EncodeSpanner()
+	require.NoError(t, err)
+
+	var schemOutSpanner storj.RedundancyScheme
+	err = schemOutSpanner.Scan(valueSpanner)
+	require.NoError(t, err)
+
+	require.Equal(t, schemeIn, schemOutSpanner)
+
+	err = schemOut.Scan("invalid_value")
+	require.Error(t, err)
+
+	err = schemOutSpanner.Scan([]byte("invalid_value_spanner"))
+	require.Error(t, err)
+
+	for _, wrongSchem := range []storj.RedundancyScheme{
+		{ShareSize: -1},
+		{RequiredShares: -1},
+		{RepairShares: -1},
+		{OptimalShares: -1},
+		{TotalShares: -1},
+	} {
+		_, err := wrongSchem.Value()
+		require.Error(t, err)
+	}
+}
