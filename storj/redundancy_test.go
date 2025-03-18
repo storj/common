@@ -133,7 +133,7 @@ func TestRedundancyScheme_DB_EncodeDecode(t *testing.T) {
 	require.NoError(t, err)
 
 	var schemOutSpanner storj.RedundancyScheme
-	err = schemOutSpanner.Scan(valueSpanner)
+	err = schemOutSpanner.DecodeSpanner(valueSpanner)
 	require.NoError(t, err)
 
 	require.Equal(t, schemeIn, schemOutSpanner)

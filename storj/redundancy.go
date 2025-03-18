@@ -118,7 +118,7 @@ func (scheme *RedundancyScheme) Scan(value any) error {
 }
 
 // DecodeSpanner implements spanner.Decoder.
-func (scheme RedundancyScheme) DecodeSpanner(val any) (err error) {
+func (scheme *RedundancyScheme) DecodeSpanner(val any) (err error) {
 	if v, ok := val.(string); ok {
 		val, err = strconv.ParseInt(v, 10, 64)
 		if err != nil {
