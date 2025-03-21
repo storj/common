@@ -52,7 +52,7 @@ func (server *PrometheusEndpoint) PrometheusMetrics(w http.ResponseWriter, r *ht
 		measurement := sanitize(key.Measurement)
 		for tag, tagVal := range key.Tags.All() {
 			components = append(components,
-				fmt.Sprintf("%s=%q", sanitize(tag), sanitize(tagVal)))
+				fmt.Sprintf("%s=%q", sanitize(tag), tagVal))
 		}
 		components = append(components,
 			fmt.Sprintf("field=%q", sanitize(field)))
