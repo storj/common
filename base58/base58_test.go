@@ -81,7 +81,7 @@ func TestBase58(t *testing.T) {
 	for x, test := range hexTests {
 		b, err := hex.DecodeString(test.in)
 		if err != nil {
-			t.Errorf("hex.DecodeString failed failed #%d: got: %s", x, test.in)
+			t.Errorf("hex.DecodeString failed #%d: got: %s", x, test.in)
 			continue
 		}
 		if res := base58.Decode(test.out); !bytes.Equal(res, b) {

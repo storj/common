@@ -8,7 +8,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/gob"
-	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -64,7 +64,7 @@ func TestHandlers_Register(t *testing.T) {
 		handlers.Register(testHandler)
 
 		err = handlers[i].NewHandlerFunc(opts[i])(exts[i], chains[i])
-		assert.Errorf(t, err, fmt.Sprintf("%v", i))
+		assert.Errorf(t, err, strconv.Itoa(i))
 	}
 }
 

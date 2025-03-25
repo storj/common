@@ -40,7 +40,7 @@ func TestFileRanger(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed making tempfile")
 		}
-		_, err = fh.Write([]byte(example.data))
+		_, err = fh.WriteString(example.data)
 		if err != nil {
 			t.Fatalf("failed writing data")
 		}

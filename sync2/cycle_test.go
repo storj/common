@@ -68,7 +68,7 @@ func TestCycle_Basic(t *testing.T) {
 
 				countAfterRestart := atomic.LoadInt64(&count)
 				if countAfterRestart == countAfterTrigger {
-					return fmt.Errorf("cycle has not restarted")
+					return errors.New("cycle has not restarted")
 				}
 
 				return nil
@@ -217,7 +217,7 @@ func TestCycle_TimeTriggered(t *testing.T) {
 		defer ranOnce.Release()
 
 		if sync2.IsManuallyTriggeredCycle(ctx) {
-			return fmt.Errorf("shouldn't be manually triggered")
+			return errors.New("shouldn't be manually triggered")
 		}
 		return nil
 	})
@@ -242,7 +242,7 @@ func TestCycle_ManuallyTriggered(t *testing.T) {
 	cycle.Start(ctx, &group, func(ctx context.Context) error {
 		if check {
 			if !sync2.IsManuallyTriggeredCycle(ctx) {
-				return fmt.Errorf("should be manually triggered")
+				return errors.New("should be manually triggered")
 			}
 		}
 		return nil

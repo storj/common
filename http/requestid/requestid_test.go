@@ -29,7 +29,7 @@ func TestAddToContext(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		rw := httptest.NewRecorder()
 
-		request, err := http.NewRequestWithContext(ctx, "GET", "", http.NoBody)
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, "", http.NoBody)
 		require.NoError(t, err)
 		handler.ServeHTTP(rw, request)
 
@@ -40,7 +40,7 @@ func TestAddToContext(t *testing.T) {
 	t.Run("too-long", func(t *testing.T) {
 		rw := httptest.NewRecorder()
 
-		request, err := http.NewRequestWithContext(ctx, "GET", "", http.NoBody)
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, "", http.NoBody)
 		require.NoError(t, err)
 		const tooLongKey = "01234567890123456789012345678901234567890123456789012345678901234567890123456789"
 		request.Header.Set(HeaderKey, tooLongKey)
@@ -60,7 +60,7 @@ func TestPropagate(t *testing.T) {
 	requestID := "test-request-id"
 	reqctx := context.WithValue(ctx, contextKey{}, requestID)
 
-	request, err := http.NewRequestWithContext(reqctx, "GET", "", http.NoBody)
+	request, err := http.NewRequestWithContext(reqctx, http.MethodGet, "", http.NoBody)
 	require.NoError(t, err)
 
 	Propagate(reqctx, request)

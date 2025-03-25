@@ -276,7 +276,7 @@ func PercentageToCursor(pct int) RolloutBytes {
 	return cursor
 }
 
-// ShouldUpdate checks if for the the given rollout state, a user with the given nodeID should update.
+// ShouldUpdate checks if for the given rollout state, a user with the given nodeID should update.
 // Deprecated and should eventually be unexported. Please use ShouldUpdateVersion instead.
 func ShouldUpdate(rollout Rollout, nodeID storj.NodeID) bool {
 	return isRolloutCandidate(nodeID, rollout)

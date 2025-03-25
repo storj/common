@@ -7,6 +7,7 @@ import (
 	"container/list"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"testing"
 	"time"
 
@@ -423,7 +424,7 @@ func runBenchmarkFilterSlice(b *testing.B, n int) {
 func BenchmarkFilterSlice(b *testing.B) {
 	for _, size := range []int{10, 100, 1000} {
 		size := size
-		b.Run(fmt.Sprint(size), func(b *testing.B) { runBenchmarkFilterSlice(b, size) })
+		b.Run(strconv.Itoa(size), func(b *testing.B) { runBenchmarkFilterSlice(b, size) })
 	}
 }
 
@@ -444,6 +445,6 @@ func runBenchmarkFilterList(b *testing.B, n int) {
 func BenchmarkFilterList(b *testing.B) {
 	for _, size := range []int{10, 100, 1000} {
 		size := size
-		b.Run(fmt.Sprint(size), func(b *testing.B) { runBenchmarkFilterList(b, size) })
+		b.Run(strconv.Itoa(size), func(b *testing.B) { runBenchmarkFilterList(b, size) })
 	}
 }

@@ -49,7 +49,7 @@ func DoubleSHA256PublicKey(k crypto.PublicKey) ([sha256.Size]byte, error) {
 	return end, nil
 }
 
-// Temporary returns false to indicate that is is a non-temporary error.
+// Temporary returns false to indicate that this is a non-temporary error.
 func (nte NonTemporaryError) Temporary() bool {
 	return false
 }

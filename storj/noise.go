@@ -4,8 +4,8 @@
 package storj
 
 import (
-	"fmt"
 	"net/url"
+	"strconv"
 
 	"storj.io/common/base58"
 )
@@ -37,7 +37,7 @@ func (info *NoiseInfo) IsZero() bool {
 // WriteTo assists in serializing a NoiseInfo to a NodeURL.
 func (info *NoiseInfo) WriteTo(values url.Values) {
 	if info.Proto != NoiseProto_Unset {
-		values.Set("noise_proto", fmt.Sprint(int(info.Proto)))
+		values.Set("noise_proto", strconv.Itoa(int(info.Proto)))
 	}
 	if info.PublicKey != "" {
 		values.Set("noise_pub", base58.CheckEncode([]byte(info.PublicKey), 0))

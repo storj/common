@@ -55,7 +55,7 @@ func TestMetricsServer(t *testing.T) {
 	caCertPool.AppendCertsFromPEM(caCert)
 
 	t.Run("http client must fail", func(t *testing.T) {
-		req, err := http.NewRequestWithContext(ctx, "GET", "http://"+listener.Addr().String()+"/metrics", nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://"+listener.Addr().String()+"/metrics", nil)
 		require.NoError(t, err)
 
 		client := &http.Client{}
@@ -70,7 +70,7 @@ func TestMetricsServer(t *testing.T) {
 	})
 
 	t.Run("https client must fail without client ca", func(t *testing.T) {
-		req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("https://%s/metrics", listener.Addr()), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("https://%s/metrics", listener.Addr()), nil)
 		require.NoError(t, err)
 
 		client := &http.Client{
@@ -91,7 +91,7 @@ func TestMetricsServer(t *testing.T) {
 
 	t.Run("https client must work with client ca", func(t *testing.T) {
 		parts := strings.Split(listener.Addr().String(), ":")
-		req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("https://127.0.0.1:%s/metrics", parts[len(parts)-1]), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("https://127.0.0.1:%s/metrics", parts[len(parts)-1]), nil)
 		require.NoError(t, err)
 
 		cert, err := tls.LoadX509KeyPair("testdata/client1.crt", "testdata/client1.key")

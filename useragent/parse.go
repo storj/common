@@ -10,32 +10,32 @@ import (
 )
 
 // This parsing implements useragents based on:
-//   https://tools.ietf.org/html/rfc7231#section-5.5.3
+// https://tools.ietf.org/html/rfc7231#section-5.5.3
 //
-// User-Agent = product *( RWS ( product / comment ) )
+//	User-Agent = product *( RWS ( product / comment ) )
 //
-// product         = token ["/" product-version]
-// product-version = token
+//	product         = token ["/" product-version]
+//	product-version = token
 //
-// token          = 1*tchar
+//	token          = 1*tchar
 //
-// tchar          = "!" / "#" / "$" / "%" / "&" / "'" / "*"
-//                / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
-//                / DIGIT / ALPHA
-//                ; any VCHAR, except delimiters
+//	tchar          = "!" / "#" / "$" / "%" / "&" / "'" / "*"
+//	               / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
+//	               / DIGIT / ALPHA
+//	               ; any VCHAR, except delimiters
 //
-// quoted-string  = DQUOTE *( qdtext / quoted-pair ) DQUOTE
-// qdtext         = HTAB / SP /%x21 / %x23-5B / %x5D-7E / obs-text
-// obs-text       = %x80-FF
+//	quoted-string  = DQUOTE *( qdtext / quoted-pair ) DQUOTE
+//	qdtext         = HTAB / SP /%x21 / %x23-5B / %x5D-7E / obs-text
+//	obs-text       = %x80-FF
 //
-// comment        = "(" *( ctext / quoted-pair / comment ) ")"
-// ctext          = HTAB / SP / %x21-27 / %x2A-5B / %x5D-7E / obs-text
+//	comment        = "(" *( ctext / quoted-pair / comment ) ")"
+//	ctext          = HTAB / SP / %x21-27 / %x2A-5B / %x5D-7E / obs-text
 //
-// quoted-pair    = "\" ( HTAB / SP / VCHAR / obs-text )
+//	quoted-pair    = "\" ( HTAB / SP / VCHAR / obs-text )
 //
-// delimiters     = DQUOTE and "(),/:;<=>?@[\]{}".
+//	delimiters     = DQUOTE and "(),/:;<=>?@[\]{}".
 //
-// VCHAR          = %x21-7E ; any 7bit ansi character, except space
+//	VCHAR          = %x21-7E ; any 7bit ansi character, except space
 
 // The code below uses variations of
 //   `Mozilla/5.0 (Linux; U; Android 4.4.3;)`

@@ -72,13 +72,13 @@ func (tm *Machine) BlockThenAdvance(ctx context.Context, minimumTimerCount int, 
 }
 
 // Now provides functionality equivalent to time.Now according to the
-// the time machine clock.
+// time machine clock.
 func (tm *Machine) Now() time.Time {
 	return tm.backend.Now()
 }
 
 // Since provides functionality equivalent to time.Since according to the
-// the time machine clock.
+// time machine clock.
 func (tm *Machine) Since(t time.Time) time.Duration {
 	return tm.backend.Since(t)
 }
@@ -96,7 +96,7 @@ type machineBackend struct {
 }
 
 // Now provides functionality equivalent to time.Now according to the
-// the time machine clock.
+// time machine clock.
 func (backend *machineBackend) Now() time.Time {
 	backend.mu.Lock()
 	defer backend.mu.Unlock()
@@ -104,7 +104,7 @@ func (backend *machineBackend) Now() time.Time {
 }
 
 // Since provides functionality equivalent to time.Since according to the
-// the time machine clock.
+// time machine clock.
 func (backend *machineBackend) Since(t time.Time) time.Duration {
 	return backend.Now().Sub(t)
 }

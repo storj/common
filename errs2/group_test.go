@@ -4,7 +4,7 @@
 package errs2_test
 
 import (
-	"fmt"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,16 +15,16 @@ import (
 func TestGroup(t *testing.T) {
 	group := errs2.Group{}
 	group.Go(func() error {
-		return fmt.Errorf("first")
+		return errors.New("first")
 	})
 	group.Go(func() error {
 		return nil
 	})
 	group.Go(func() error {
-		return fmt.Errorf("second")
+		return errors.New("second")
 	})
 	group.Go(func() error {
-		return fmt.Errorf("third")
+		return errors.New("third")
 	})
 
 	allErrors := group.Wait()

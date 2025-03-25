@@ -5,7 +5,6 @@ package process
 
 import (
 	"context"
-	"fmt"
 	"net"
 
 	"github.com/spacemonkeygo/monkit/v3"
@@ -36,7 +35,7 @@ func initDebug(log *zap.Logger, r *monkit.Registry, atomicLevel *zap.AtomicLevel
 
 	go func() {
 		server := debug.NewServerWithAtomicLevel(log, ln, r, debugConfig.Debug, atomicLevel)
-		log.Debug(fmt.Sprintf("debug server listening on %s", ln.Addr().String()))
+		log.Debug("debug server listening on " + ln.Addr().String())
 		err := server.Run(context.TODO())
 		if err != nil {
 			log.Error("debug server died", zap.Error(err))

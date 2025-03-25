@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"os"
+
 	"storj.io/common/version/buildinfo"
 )
 

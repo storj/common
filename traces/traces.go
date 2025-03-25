@@ -5,10 +5,10 @@ package traces
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	tracetagger "github.com/jtolds/tracetagger/v2"
 	monkit "github.com/spacemonkeygo/monkit/v3"
@@ -23,7 +23,7 @@ var (
 // CollectTraces starts storing all known tagged traces on disk,
 // until cancel is called.
 func CollectTraces() (cancel func()) {
-	path := filepath.Join(os.TempDir(), "storj-traces", fmt.Sprint(os.Getpid()))
+	path := filepath.Join(os.TempDir(), "storj-traces", strconv.Itoa(os.Getpid()))
 	disable := TagDB.Enable()
 	cancelCollect := tracetagger.TracesWithTag(TagDB, 10000, func(spans []*collect.FinishedSpan, capped bool) {
 		name := tracetagger.TracePathPrefix(spans, capped)

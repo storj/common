@@ -4,8 +4,6 @@
 package debug
 
 import (
-	"fmt"
-
 	"github.com/spacemonkeygo/monkit/v3"
 
 	"storj.io/common/rpc/rpcstatus"
@@ -42,7 +40,7 @@ func init() {
 			}
 		}
 		if code != 0 {
-			return fmt.Sprintf("drpc_%s", rpcstatus.StatusCode(code).String()), true
+			return "drpc_" + rpcstatus.StatusCode(code).String(), true
 		}
 		return "", false
 	})

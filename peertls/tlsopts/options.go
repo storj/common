@@ -34,7 +34,7 @@ type Options struct {
 	Cert              *tls.Certificate
 }
 
-// VerificationFuncs keeps track of of client and server peer certificate verification
+// VerificationFuncs keeps track of client and server peer certificate verification
 // functions for use in tls handshakes.
 type VerificationFuncs struct {
 	client []peertls.PeerCertVerificationFunc

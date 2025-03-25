@@ -199,7 +199,7 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 
 			if field.Tag.Get("internal") == "true" {
 				if def != "" {
-					panic(fmt.Sprintf("unapplicable default value set for internal flag: %s", flagname))
+					panic("unapplicable default value set for internal flag: " + flagname)
 				}
 				continue
 			}
@@ -245,9 +245,9 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 				bindConfig(flags, flagname+".", fieldval, vars, setupCommand, onlyForSetup, isDev, isTest)
 			}
 		case reflect.Array:
-			digits := len(fmt.Sprint(fieldval.Len()))
+			digits := len(strconv.Itoa(fieldval.Len()))
 			for j := 0; j < fieldval.Len(); j++ {
-				padding := strings.Repeat("0", digits-len(fmt.Sprint(j)))
+				padding := strings.Repeat("0", digits-len(strconv.Itoa(j)))
 				bindConfig(flags, fmt.Sprintf("%s.%s%d.", flagname, padding, j), fieldval.Index(j), vars, setupCommand, onlyForSetup, isDev, isTest)
 			}
 		default:
@@ -256,7 +256,7 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 
 			if field.Tag.Get("internal") == "true" {
 				if def != "" {
-					panic(fmt.Sprintf("unapplicable default value set for internal flag: %s", flagname))
+					panic("unapplicable default value set for internal flag: " + flagname)
 				}
 				continue
 			}
@@ -312,7 +312,7 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 				}
 				flags.StringSliceVar(fieldaddr.(*[]string), flagname, defaultValues, help)
 			default:
-				panic(fmt.Sprintf("invalid field type: %s", field.Type.String()))
+				panic("invalid field type: " + field.Type.String())
 			}
 			if onlyForSetup {
 				SetBoolAnnotation(flags, flagname, "setup", true)
@@ -436,7 +436,7 @@ func FindFlagEarly(flagName string) string {
 	for i, arg := range os.Args {
 		if strings.HasPrefix(arg, fmt.Sprintf("--%s=", flagName)) {
 			return strings.TrimPrefix(arg, fmt.Sprintf("--%s=", flagName))
-		} else if arg == fmt.Sprintf("--%s", flagName) && i < len(os.Args)-1 {
+		} else if arg == "--"+flagName && i < len(os.Args)-1 {
 			return os.Args[i+1]
 		}
 	}

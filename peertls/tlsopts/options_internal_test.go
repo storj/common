@@ -5,7 +5,7 @@ package tlsopts
 
 import (
 	"crypto/x509"
-	"fmt"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -14,9 +14,9 @@ import (
 )
 
 func TestRemoveNils(t *testing.T) {
-	e1 := fmt.Errorf("error 1")
+	e1 := errors.New("error 1")
 	f1 := peertls.PeerCertVerificationFunc(func([][]byte, [][]*x509.Certificate) error { return e1 })
-	e2 := fmt.Errorf("error 2")
+	e2 := errors.New("error 2")
 	f2 := peertls.PeerCertVerificationFunc(func([][]byte, [][]*x509.Certificate) error { return e2 })
 
 	l := removeNils([]peertls.PeerCertVerificationFunc{f1, nil, nil, f2})
