@@ -18,18 +18,34 @@ func ApplyNewTransformers(r *monkit.Registry) *monkit.Registry {
 	return r.WithTransformers(monkit.NewDeltaTransformer())
 }
 
+// PrometheusEndpointConfig is a configuration for PrometheusEndpoint.
+type PrometheusEndpointConfig struct {
+	SanitizeValues bool `help:"Sanitize all values" default:"true"`
+}
+
 // PrometheusEndpoint includes all the information to server Prometheus compatible HTTP pages.
 type PrometheusEndpoint struct {
-	registryMu   sync.Mutex
-	registries   map[string]*monkit.Registry
-	baseRegistry *monkit.Registry
+	registryMu     sync.Mutex
+	registries     map[string]*monkit.Registry
+	baseRegistry   *monkit.Registry
+	sanitizeValues bool
+}
+
+// NewPrometheusEndpointFromConfig creates an initialized PrometheusEndpoint based on configuration..
+func NewPrometheusEndpointFromConfig(registry *monkit.Registry, cfg PrometheusEndpointConfig) *PrometheusEndpoint {
+	return &PrometheusEndpoint{
+		baseRegistry:   registry,
+		registries:     map[string]*monkit.Registry{},
+		sanitizeValues: cfg.SanitizeValues,
+	}
 }
 
 // NewPrometheusEndpoint creates an initialized PrometheusEndpoint.
 func NewPrometheusEndpoint(registry *monkit.Registry) *PrometheusEndpoint {
 	return &PrometheusEndpoint{
-		baseRegistry: registry,
-		registries:   map[string]*monkit.Registry{},
+		baseRegistry:   registry,
+		registries:     map[string]*monkit.Registry{},
+		sanitizeValues: true,
 	}
 }
 
@@ -51,8 +67,10 @@ func (server *PrometheusEndpoint) PrometheusMetrics(w http.ResponseWriter, r *ht
 
 		measurement := sanitize(key.Measurement)
 		for tag, tagVal := range key.Tags.All() {
-			components = append(components,
-				fmt.Sprintf("%s=%q", sanitize(tag), sanitize(tagVal)))
+			if server.sanitizeValues {
+				tagVal = sanitize(tagVal)
+			}
+			components = append(components, fmt.Sprintf("%s=%q", sanitize(tag), tagVal))
 		}
 		components = append(components,
 			fmt.Sprintf("field=%q", sanitize(field)))
