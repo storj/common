@@ -127,10 +127,17 @@ func (id *PieceID) Scan(src interface{}) (err error) {
 // DecodeSpanner implements spanner.Decoder.
 func (id *PieceID) DecodeSpanner(val any) (err error) {
 	if v, ok := val.(string); ok {
-		val, err = base64.StdEncoding.DecodeString(v)
+		var buffer [32]byte
+		b, err := base64.StdEncoding.AppendDecode(buffer[:0], []byte(v))
 		if err != nil {
 			return err
 		}
+		x, err := PieceIDFromBytes(b)
+		if err != nil {
+			return ErrPieceID.Wrap(err)
+		}
+		*id = x
+		return nil
 	}
 	return id.Scan(val)
 }

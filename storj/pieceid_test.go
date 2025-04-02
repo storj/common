@@ -4,6 +4,7 @@
 package storj_test
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"testing"
 
@@ -80,4 +81,16 @@ func TestPieceID_UnmarshalJSON(t *testing.T) {
 
 	assert.Error(t, json.Unmarshal([]byte(`""`+originalPieceID.String()+`""`), &pieceid))
 	assert.Error(t, json.Unmarshal([]byte(`{}`), &pieceid))
+}
+
+func BenchmarkPieceID_DecodeSpanner(b *testing.B) {
+	a := storj.NewPieceID()
+	encoded := base64.StdEncoding.EncodeToString(a[:])
+	b.ReportAllocs()
+	b.ResetTimer()
+
+	var v storj.PieceID
+	for i := 0; i < b.N; i++ {
+		_ = v.DecodeSpanner(encoded)
+	}
 }
