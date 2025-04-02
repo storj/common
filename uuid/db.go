@@ -38,10 +38,17 @@ func (uuid *UUID) Scan(value interface{}) error {
 // DecodeSpanner implements spanner.Decoder.
 func (uuid *UUID) DecodeSpanner(val any) (err error) {
 	if v, ok := val.(string); ok {
-		val, err = base64.StdEncoding.DecodeString(v)
+		var buffer [16]byte
+		b, err := base64.StdEncoding.AppendDecode(buffer[:0], []byte(v))
 		if err != nil {
 			return err
 		}
+		x, err := FromBytes(b)
+		if err != nil {
+			return Error.Wrap(err)
+		}
+		*uuid = x
+		return nil
 	}
 	return uuid.Scan(val)
 }

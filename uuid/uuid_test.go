@@ -4,6 +4,7 @@
 package uuid_test
 
 import (
+	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
 	"math"
@@ -310,4 +311,16 @@ func BenchmarkCompare(b *testing.B) {
 		}
 		runtime.KeepAlive(total)
 	})
+}
+
+func BenchmarkDecodeSpanner(b *testing.B) {
+	a := testrand.UUID()
+	encoded := base64.StdEncoding.EncodeToString(a[:])
+	b.ReportAllocs()
+	b.ResetTimer()
+
+	var v uuid.UUID
+	for i := 0; i < b.N; i++ {
+		_ = v.DecodeSpanner(encoded)
+	}
 }
