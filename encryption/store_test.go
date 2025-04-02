@@ -5,6 +5,7 @@ package encryption
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -284,4 +285,24 @@ func TestStoreClone(t *testing.T) {
 
 	assert.NotSame(t, store.roots["bucket1"].enc["encPath1"].base, clone.roots["bucket1"].enc["encPath1"].base)
 	assert.Equal(t, store.roots["bucket1"].enc["encPath1"].base, clone.roots["bucket1"].enc["encPath1"].base)
+}
+
+func TestStoreCloneAllocations(t *testing.T) {
+	allocs := func(depth int) int {
+		store := NewStore()
+		store.SetDefaultKey(new(storj.Key))
+		store.SetDefaultPathCipher(storj.EncAESGCM)
+
+		path := strings.Repeat("x/", depth)
+		path = path[:len(path)-1]
+
+		err := store.Add("bucket1", paths.NewUnencrypted(path), paths.NewEncrypted(path), testrand.Key())
+		require.NoError(t, err)
+
+		return int(testing.AllocsPerRun(10, func() { _ = store.Clone() }))
+	}
+
+	for i := 1; i < 100; i++ {
+		require.Less(t, allocs(i), 100*i, "should not have non-linear allocations")
+	}
 }

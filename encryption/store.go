@@ -95,9 +95,19 @@ func (n *node) clone() *node {
 		base:     n.base.clone(),
 	}
 
+	clones := make(map[*node]*node)
+	cloneNode := func(n *node) *node {
+		c, ok := clones[n]
+		if !ok {
+			c = n.clone()
+			clones[n] = c
+		}
+		return c
+	}
+
 	// Deep copy the unenc map
 	for k, v := range n.unenc {
-		clone.unenc[k] = v.clone()
+		clone.unenc[k] = cloneNode(v)
 	}
 
 	// Deep copy the unencMap map
@@ -107,7 +117,7 @@ func (n *node) clone() *node {
 
 	// Deep copy the enc map
 	for k, v := range n.enc {
-		clone.enc[k] = v.clone()
+		clone.enc[k] = cloneNode(v)
 	}
 
 	// Deep copy the encMap map
