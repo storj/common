@@ -3038,6 +3038,11 @@
                 "id": 5,
                 "name": "desired_nodes",
                 "type": "int32"
+              },
+              {
+                "id": 7,
+                "name": "lite_request",
+                "type": "bool"
               }
             ]
           },

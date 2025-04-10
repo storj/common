@@ -413,6 +413,9 @@ message DownloadObjectRequest {
     // In some specific cases it can be useful to request more nodes, downloading from more nodes can be faster, but also
     // more expensive.
     int32 desired_nodes = 5;
+    // determine if satellite should return unsigned order limits.
+    // in this case, the order limits needs to be signed by client.
+    bool lite_request   = 7;
 }
 
 message Range {
@@ -746,6 +749,8 @@ message BeginSegmentRequest {
     SegmentPosition position = 2;
 
     int64 max_order_limit = 3;
+    // determine if satellite should return unsigned order limits.
+    // in this case, the order limits needs to be signed by client.    
     bool  lite_request    = 4;
 }
 

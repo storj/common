@@ -798,7 +798,6 @@ var xxx_messageInfo_SetBucketVersioningResponse proto.InternalMessageInfo
 type DefaultRetention struct {
 	Mode Retention_Mode `protobuf:"varint,1,opt,name=mode,proto3,enum=metainfo.Retention_Mode" json:"mode,omitempty"`
 	// Types that are valid to be assigned to Duration:
-	//
 	//	*DefaultRetention_Days
 	//	*DefaultRetention_Years
 	Duration             isDefaultRetention_Duration `protobuf_oneof:"Duration"`
@@ -2204,7 +2203,10 @@ type DownloadObjectRequest struct {
 	//
 	// In some specific cases it can be useful to request more nodes, downloading from more nodes can be faster, but also
 	// more expensive.
-	DesiredNodes         int32    `protobuf:"varint,5,opt,name=desired_nodes,json=desiredNodes,proto3" json:"desired_nodes,omitempty"`
+	DesiredNodes int32 `protobuf:"varint,5,opt,name=desired_nodes,json=desiredNodes,proto3" json:"desired_nodes,omitempty"`
+	// determine if satellite should return unsigned order limits.
+	// in this case, the order limits needs to be signed by client.
+	LiteRequest          bool     `protobuf:"varint,7,opt,name=lite_request,json=liteRequest,proto3" json:"lite_request,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2281,9 +2283,15 @@ func (m *DownloadObjectRequest) GetDesiredNodes() int32 {
 	return 0
 }
 
+func (m *DownloadObjectRequest) GetLiteRequest() bool {
+	if m != nil {
+		return m.LiteRequest
+	}
+	return false
+}
+
 type Range struct {
 	// Types that are valid to be assigned to Range:
-	//
 	//	*Range_StartLimit
 	//	*Range_Start
 	//	*Range_Suffix
@@ -4105,6 +4113,7 @@ func (m *GetObjectLegalHoldResponse) GetEnabled() bool {
 	return false
 }
 
+//
 // Only for satellite use
 //
 // TODO this needs to be removed BUT unfortunately libuplink is using it and
@@ -4297,14 +4306,16 @@ func (m *SegmentPosition) GetIndex() int32 {
 }
 
 type BeginSegmentRequest struct {
-	Header               *RequestHeader   `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
-	StreamId             StreamID         `protobuf:"bytes,1,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id"`
-	Position             *SegmentPosition `protobuf:"bytes,2,opt,name=position,proto3" json:"position,omitempty"`
-	MaxOrderLimit        int64            `protobuf:"varint,3,opt,name=max_order_limit,json=maxOrderLimit,proto3" json:"max_order_limit,omitempty"`
-	LiteRequest          bool             `protobuf:"varint,4,opt,name=lite_request,json=liteRequest,proto3" json:"lite_request,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
+	Header        *RequestHeader   `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	StreamId      StreamID         `protobuf:"bytes,1,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id"`
+	Position      *SegmentPosition `protobuf:"bytes,2,opt,name=position,proto3" json:"position,omitempty"`
+	MaxOrderLimit int64            `protobuf:"varint,3,opt,name=max_order_limit,json=maxOrderLimit,proto3" json:"max_order_limit,omitempty"`
+	// determine if satellite should return unsigned order limits.
+	// in this case, the order limits needs to be signed by client.
+	LiteRequest          bool     `protobuf:"varint,4,opt,name=lite_request,json=liteRequest,proto3" json:"lite_request,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *BeginSegmentRequest) Reset()         { *m = BeginSegmentRequest{} }
@@ -5478,7 +5489,6 @@ func (m *BatchRequest) GetRequests() []*BatchRequestItem {
 
 type BatchRequestItem struct {
 	// Types that are valid to be assigned to Request:
-	//
 	//	*BatchRequestItem_BucketCreate
 	//	*BatchRequestItem_BucketGet
 	//	*BatchRequestItem_BucketGetLocation
@@ -6089,7 +6099,6 @@ func (m *BatchResponse) GetResponses() []*BatchResponseItem {
 
 type BatchResponseItem struct {
 	// Types that are valid to be assigned to Response:
-	//
 	//	*BatchResponseItem_BucketCreate
 	//	*BatchResponseItem_BucketGet
 	//	*BatchResponseItem_BucketGetLocation
