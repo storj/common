@@ -374,6 +374,8 @@ message CommitObjectRequest {
     bytes encrypted_metadata_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes encrypted_metadata = 3; // TODO: set maximum size limit
     bytes encrypted_metadata_encrypted_key = 4;
+
+    repeated string if_none_match = 6;
 }
 
 message CommitObjectResponse {
@@ -1129,6 +1131,8 @@ message FinishCopyObjectRequest {
     bytes new_encrypted_metadata_key_nonce = 4 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes new_encrypted_metadata_key = 5;
     repeated EncryptedKeyAndNonce new_segment_keys = 6;
+
+    repeated string if_none_match = 12;
 }
 
 message FinishCopyObjectResponse {

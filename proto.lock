@@ -2942,6 +2942,12 @@
                 "id": 4,
                 "name": "encrypted_metadata_encrypted_key",
                 "type": "bytes"
+              },
+              {
+                "id": 6,
+                "name": "if_none_match",
+                "type": "string",
+                "is_repeated": true
               }
             ]
           },
@@ -5578,6 +5584,12 @@
                 "id": 6,
                 "name": "new_segment_keys",
                 "type": "EncryptedKeyAndNonce",
+                "is_repeated": true
+              },
+              {
+                "id": 12,
+                "name": "if_none_match",
+                "type": "string",
                 "is_repeated": true
               }
             ]

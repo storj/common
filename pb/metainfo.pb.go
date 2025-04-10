@@ -1984,6 +1984,7 @@ type CommitObjectRequest struct {
 	EncryptedMetadataNonce        Nonce    `protobuf:"bytes,2,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
 	EncryptedMetadata             []byte   `protobuf:"bytes,3,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
 	EncryptedMetadataEncryptedKey []byte   `protobuf:"bytes,4,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
+	IfNoneMatch                   []string `protobuf:"bytes,6,rep,name=if_none_match,json=ifNoneMatch,proto3" json:"if_none_match,omitempty"`
 	XXX_NoUnkeyedLiteral          struct{} `json:"-"`
 	XXX_unrecognized              []byte   `json:"-"`
 	XXX_sizecache                 int32    `json:"-"`
@@ -2035,6 +2036,13 @@ func (m *CommitObjectRequest) GetEncryptedMetadata() []byte {
 func (m *CommitObjectRequest) GetEncryptedMetadataEncryptedKey() []byte {
 	if m != nil {
 		return m.EncryptedMetadataEncryptedKey
+	}
+	return nil
+}
+
+func (m *CommitObjectRequest) GetIfNoneMatch() []string {
+	if m != nil {
+		return m.IfNoneMatch
 	}
 	return nil
 }
@@ -7088,6 +7096,7 @@ type FinishCopyObjectRequest struct {
 	NewEncryptedMetadataKeyNonce Nonce                   `protobuf:"bytes,4,opt,name=new_encrypted_metadata_key_nonce,json=newEncryptedMetadataKeyNonce,proto3,customtype=Nonce" json:"new_encrypted_metadata_key_nonce"`
 	NewEncryptedMetadataKey      []byte                  `protobuf:"bytes,5,opt,name=new_encrypted_metadata_key,json=newEncryptedMetadataKey,proto3" json:"new_encrypted_metadata_key,omitempty"`
 	NewSegmentKeys               []*EncryptedKeyAndNonce `protobuf:"bytes,6,rep,name=new_segment_keys,json=newSegmentKeys,proto3" json:"new_segment_keys,omitempty"`
+	IfNoneMatch                  []string                `protobuf:"bytes,12,rep,name=if_none_match,json=ifNoneMatch,proto3" json:"if_none_match,omitempty"`
 	XXX_NoUnkeyedLiteral         struct{}                `json:"-"`
 	XXX_unrecognized             []byte                  `json:"-"`
 	XXX_sizecache                int32                   `json:"-"`
@@ -7181,6 +7190,13 @@ func (m *FinishCopyObjectRequest) GetNewEncryptedMetadataKey() []byte {
 func (m *FinishCopyObjectRequest) GetNewSegmentKeys() []*EncryptedKeyAndNonce {
 	if m != nil {
 		return m.NewSegmentKeys
+	}
+	return nil
+}
+
+func (m *FinishCopyObjectRequest) GetIfNoneMatch() []string {
+	if m != nil {
+		return m.IfNoneMatch
 	}
 	return nil
 }
