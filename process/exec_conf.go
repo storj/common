@@ -34,6 +34,10 @@ import (
 // DefaultCfgFilename is the default filename used for storing a configuration.
 const DefaultCfgFilename = "config.yaml"
 
+// DefaultSecretFilename is the name of the additional configuration file.
+// NOTE: it's parsed as regular yaml, no encryption is provided. It's the responsibility of the runtime environment to make it safe (eg. map a Kubernetes secret).
+const DefaultSecretFilename = "secrets.yaml"
+
 var (
 	mon = monkit.Package()
 
@@ -197,13 +201,19 @@ func ViperWithCustomConfig(cmd *cobra.Command, loadConfig func(cmd *cobra.Comman
 // LoadConfig loads configuration into *viper.Viper from file specified with "config-dir" flag.
 func LoadConfig(cmd *cobra.Command, vip *viper.Viper) error {
 	cfgFlag := cmd.Flags().Lookup("config-dir")
-	if cfgFlag != nil && cfgFlag.Value.String() != "" {
-		path := filepath.Join(os.ExpandEnv(cfgFlag.Value.String()), DefaultCfgFilename)
-		if fileExists(path) {
-			setupCommand := cmd.Annotations["type"] == "setup"
-			vip.SetConfigFile(path)
-			if err := vip.ReadInConfig(); err != nil && !setupCommand {
-				return err
+	var loadConfig = (*viper.Viper).ReadInConfig
+	for ix, cf := range []string{DefaultCfgFilename, DefaultSecretFilename} {
+		if ix > 0 {
+			loadConfig = (*viper.Viper).MergeInConfig
+		}
+		if cfgFlag != nil && cfgFlag.Value.String() != "" {
+			path := filepath.Join(os.ExpandEnv(cfgFlag.Value.String()), cf)
+			if fileExists(path) {
+				setupCommand := cmd.Annotations["type"] == "setup"
+				vip.SetConfigFile(path)
+				if err := loadConfig(vip); err != nil && !setupCommand {
+					return err
+				}
 			}
 		}
 	}

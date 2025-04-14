@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"storj.io/common/storj"
@@ -208,4 +209,62 @@ func TestHidden(t *testing.T) {
 	require.Contains(t, string(actualConfigFile), expectedConfigZ)
 	require.NotContains(t, string(actualConfigFile), "# y: ")
 	require.NotContains(t, string(actualConfigFile), "# x: ")
+}
+
+func TestLoadConfig(t *testing.T) {
+	// Set up a command that does nothing.
+	cmd := &cobra.Command{RunE: func(cmd *cobra.Command, args []string) error { return nil }}
+
+	// Setup test directory and config files
+	ctx := testcontext.New(t)
+	defer ctx.Cleanup()
+
+	configDir := ctx.Dir("config")
+
+	// Setup default config file
+	defaultConfigContent := "x: 5\ny: test"
+	defaultConfigPath := filepath.Join(configDir, DefaultCfgFilename)
+	err := os.WriteFile(defaultConfigPath, []byte(defaultConfigContent), 0644)
+	require.NoError(t, err)
+
+	// Add config-dir flag
+	cmd.Flags().String("config-dir", "", "configuration directory")
+	err = cmd.Flags().Set("config-dir", configDir)
+	require.NoError(t, err)
+
+	t.Run("load configs without secrets", func(t *testing.T) {
+		vip1 := viper.New()
+		err = LoadConfig(cmd, vip1)
+		require.NoError(t, err)
+		assert.Equal(t, 5, vip1.GetInt("x"))
+		assert.Equal(t, "test", vip1.GetString("y"))
+	})
+
+	// Setup secrets config file
+	secretConfigContent := "z: secret"
+	secretConfigPath := filepath.Join(configDir, DefaultSecretFilename)
+	err = os.WriteFile(secretConfigPath, []byte(secretConfigContent), 0644)
+	require.NoError(t, err)
+
+	t.Run("load configs", func(t *testing.T) {
+		vip1 := viper.New()
+		err = LoadConfig(cmd, vip1)
+		require.NoError(t, err)
+
+		assert.Equal(t, 5, vip1.GetInt("x"))
+		assert.Equal(t, "test", vip1.GetString("y"))
+		assert.Equal(t, "secret", vip1.GetString("z"))
+	})
+
+	t.Run("load non existing config", func(t *testing.T) {
+		// Test non-existing config directory
+		nonExistingDir := filepath.Join(ctx.Dir("nonexistent"), "config")
+		err = cmd.Flags().Set("config-dir", nonExistingDir)
+		require.NoError(t, err)
+
+		vip := viper.New()
+		err = LoadConfig(cmd, vip)
+		require.NoError(t, err)
+	})
+
 }
