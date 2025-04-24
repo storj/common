@@ -503,6 +503,17 @@
                 "id": 3,
                 "name": "endpoint",
                 "type": "string"
+              },
+              {
+                "id": 4,
+                "name": "free_tier_restricted_expiration",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  }
+                ]
               }
             ]
           }
@@ -517,6 +528,14 @@
                 "out_type": "EdgeRegisterAccessResponse"
               }
             ]
+          }
+        ],
+        "imports": [
+          {
+            "path": "gogo.proto"
+          },
+          {
+            "path": "google/protobuf/timestamp.proto"
           }
         ],
         "package": {

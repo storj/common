@@ -4,6 +4,8 @@
 package pb
 
 import (
+	time "time"
+
 	proto "github.com/gogo/protobuf/proto"
 )
 
@@ -69,10 +71,13 @@ type EdgeRegisterAccessResponse struct {
 	// Alphanumeric string.
 	SecretKey string `protobuf:"bytes,2,opt,name=secret_key,json=secretKey,proto3" json:"secret_key,omitempty"`
 	// HTTP(S) URL to the Gateway.
-	Endpoint             string   `protobuf:"bytes,3,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Endpoint string `protobuf:"bytes,3,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
+	// Restricted expiration date of the access grant.
+	// It is set if the original expiration date surpassed the free-tier limit.
+	FreeTierRestrictedExpiration *time.Time `protobuf:"bytes,4,opt,name=free_tier_restricted_expiration,json=freeTierRestrictedExpiration,proto3,stdtime" json:"free_tier_restricted_expiration,omitempty"`
+	XXX_NoUnkeyedLiteral         struct{}   `json:"-"`
+	XXX_unrecognized             []byte     `json:"-"`
+	XXX_sizecache                int32      `json:"-"`
 }
 
 func (m *EdgeRegisterAccessResponse) Reset()         { *m = EdgeRegisterAccessResponse{} }
@@ -116,4 +121,11 @@ func (m *EdgeRegisterAccessResponse) GetEndpoint() string {
 		return m.Endpoint
 	}
 	return ""
+}
+
+func (m *EdgeRegisterAccessResponse) GetFreeTierRestrictedExpiration() *time.Time {
+	if m != nil {
+		return m.FreeTierRestrictedExpiration
+	}
+	return nil
 }
