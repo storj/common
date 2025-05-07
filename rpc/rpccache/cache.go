@@ -158,6 +158,7 @@ func (c *Cache) filterCacheKey(key interface{}) {
 
 	for _, ent := range c.entries[key] {
 		if c.opts.stale(ent.val) {
+			_ = c.closeEntry(ent)
 			c.filterEntryLocked(ent)
 		}
 	}
