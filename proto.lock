@@ -4996,6 +4996,12 @@
                 "oneof_parent": "Request"
               },
               {
+                "id": 40,
+                "name": "segment_begin_retry_pieces",
+                "type": "RetryBeginSegmentPiecesRequest",
+                "oneof_parent": "Request"
+              },
+              {
                 "id": 25,
                 "name": "part_delete",
                 "type": "DeletePartRequest",
@@ -5246,6 +5252,12 @@
                 "id": 18,
                 "name": "segment_download",
                 "type": "DownloadSegmentResponse",
+                "oneof_parent": "Response"
+              },
+              {
+                "id": 40,
+                "name": "segment_begin_retry_pieces",
+                "type": "RetryBeginSegmentPiecesResponse",
                 "oneof_parent": "Response"
               },
               {

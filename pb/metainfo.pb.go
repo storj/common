@@ -798,6 +798,7 @@ var xxx_messageInfo_SetBucketVersioningResponse proto.InternalMessageInfo
 type DefaultRetention struct {
 	Mode Retention_Mode `protobuf:"varint,1,opt,name=mode,proto3,enum=metainfo.Retention_Mode" json:"mode,omitempty"`
 	// Types that are valid to be assigned to Duration:
+	//
 	//	*DefaultRetention_Days
 	//	*DefaultRetention_Years
 	Duration             isDefaultRetention_Duration `protobuf_oneof:"Duration"`
@@ -2300,6 +2301,7 @@ func (m *DownloadObjectRequest) GetLiteRequest() bool {
 
 type Range struct {
 	// Types that are valid to be assigned to Range:
+	//
 	//	*Range_StartLimit
 	//	*Range_Start
 	//	*Range_Suffix
@@ -4121,7 +4123,6 @@ func (m *GetObjectLegalHoldResponse) GetEnabled() bool {
 	return false
 }
 
-//
 // Only for satellite use
 //
 // TODO this needs to be removed BUT unfortunately libuplink is using it and
@@ -5497,6 +5498,7 @@ func (m *BatchRequest) GetRequests() []*BatchRequestItem {
 
 type BatchRequestItem struct {
 	// Types that are valid to be assigned to Request:
+	//
 	//	*BatchRequestItem_BucketCreate
 	//	*BatchRequestItem_BucketGet
 	//	*BatchRequestItem_BucketGetLocation
@@ -5532,6 +5534,7 @@ type BatchRequestItem struct {
 	//	*BatchRequestItem_SegmentFinishDelete
 	//	*BatchRequestItem_SegmentList
 	//	*BatchRequestItem_SegmentDownload
+	//	*BatchRequestItem_SegmentBeginRetryPieces
 	//	*BatchRequestItem_PartDelete
 	//	*BatchRequestItem_RevokeApiKey
 	Request              isBatchRequestItem_Request `protobuf_oneof:"Request"`
@@ -5671,6 +5674,9 @@ type BatchRequestItem_SegmentList struct {
 type BatchRequestItem_SegmentDownload struct {
 	SegmentDownload *DownloadSegmentRequest `protobuf:"bytes,18,opt,name=segment_download,json=segmentDownload,proto3,oneof" json:"segment_download,omitempty"`
 }
+type BatchRequestItem_SegmentBeginRetryPieces struct {
+	SegmentBeginRetryPieces *RetryBeginSegmentPiecesRequest `protobuf:"bytes,40,opt,name=segment_begin_retry_pieces,json=segmentBeginRetryPieces,proto3,oneof" json:"segment_begin_retry_pieces,omitempty"`
+}
 type BatchRequestItem_PartDelete struct {
 	PartDelete *DeletePartRequest `protobuf:"bytes,25,opt,name=part_delete,json=partDelete,proto3,oneof" json:"part_delete,omitempty"`
 }
@@ -5713,6 +5719,7 @@ func (*BatchRequestItem_SegmentBeginDelete) isBatchRequestItem_Request()        
 func (*BatchRequestItem_SegmentFinishDelete) isBatchRequestItem_Request()              {}
 func (*BatchRequestItem_SegmentList) isBatchRequestItem_Request()                      {}
 func (*BatchRequestItem_SegmentDownload) isBatchRequestItem_Request()                  {}
+func (*BatchRequestItem_SegmentBeginRetryPieces) isBatchRequestItem_Request()          {}
 func (*BatchRequestItem_PartDelete) isBatchRequestItem_Request()                       {}
 func (*BatchRequestItem_RevokeApiKey) isBatchRequestItem_Request()                     {}
 
@@ -5968,6 +5975,13 @@ func (m *BatchRequestItem) GetSegmentDownload() *DownloadSegmentRequest {
 	return nil
 }
 
+func (m *BatchRequestItem) GetSegmentBeginRetryPieces() *RetryBeginSegmentPiecesRequest {
+	if x, ok := m.GetRequest().(*BatchRequestItem_SegmentBeginRetryPieces); ok {
+		return x.SegmentBeginRetryPieces
+	}
+	return nil
+}
+
 func (m *BatchRequestItem) GetPartDelete() *DeletePartRequest {
 	if x, ok := m.GetRequest().(*BatchRequestItem_PartDelete); ok {
 		return x.PartDelete
@@ -6020,6 +6034,7 @@ func (*BatchRequestItem) XXX_OneofWrappers() []interface{} {
 		(*BatchRequestItem_SegmentFinishDelete)(nil),
 		(*BatchRequestItem_SegmentList)(nil),
 		(*BatchRequestItem_SegmentDownload)(nil),
+		(*BatchRequestItem_SegmentBeginRetryPieces)(nil),
 		(*BatchRequestItem_PartDelete)(nil),
 		(*BatchRequestItem_RevokeApiKey)(nil),
 	}
@@ -6107,6 +6122,7 @@ func (m *BatchResponse) GetResponses() []*BatchResponseItem {
 
 type BatchResponseItem struct {
 	// Types that are valid to be assigned to Response:
+	//
 	//	*BatchResponseItem_BucketCreate
 	//	*BatchResponseItem_BucketGet
 	//	*BatchResponseItem_BucketGetLocation
@@ -6142,6 +6158,7 @@ type BatchResponseItem struct {
 	//	*BatchResponseItem_SegmentFinishDelete
 	//	*BatchResponseItem_SegmentList
 	//	*BatchResponseItem_SegmentDownload
+	//	*BatchResponseItem_SegmentBeginRetryPieces
 	//	*BatchResponseItem_PartDelete
 	//	*BatchResponseItem_RevokeApiKey
 	Response             isBatchResponseItem_Response `protobuf_oneof:"Response"`
@@ -6281,6 +6298,9 @@ type BatchResponseItem_SegmentList struct {
 type BatchResponseItem_SegmentDownload struct {
 	SegmentDownload *DownloadSegmentResponse `protobuf:"bytes,18,opt,name=segment_download,json=segmentDownload,proto3,oneof" json:"segment_download,omitempty"`
 }
+type BatchResponseItem_SegmentBeginRetryPieces struct {
+	SegmentBeginRetryPieces *RetryBeginSegmentPiecesResponse `protobuf:"bytes,40,opt,name=segment_begin_retry_pieces,json=segmentBeginRetryPieces,proto3,oneof" json:"segment_begin_retry_pieces,omitempty"`
+}
 type BatchResponseItem_PartDelete struct {
 	PartDelete *DeletePartResponse `protobuf:"bytes,25,opt,name=part_delete,json=partDelete,proto3,oneof" json:"part_delete,omitempty"`
 }
@@ -6323,6 +6343,7 @@ func (*BatchResponseItem_SegmentBeginDelete) isBatchResponseItem_Response()     
 func (*BatchResponseItem_SegmentFinishDelete) isBatchResponseItem_Response()              {}
 func (*BatchResponseItem_SegmentList) isBatchResponseItem_Response()                      {}
 func (*BatchResponseItem_SegmentDownload) isBatchResponseItem_Response()                  {}
+func (*BatchResponseItem_SegmentBeginRetryPieces) isBatchResponseItem_Response()          {}
 func (*BatchResponseItem_PartDelete) isBatchResponseItem_Response()                       {}
 func (*BatchResponseItem_RevokeApiKey) isBatchResponseItem_Response()                     {}
 
@@ -6578,6 +6599,13 @@ func (m *BatchResponseItem) GetSegmentDownload() *DownloadSegmentResponse {
 	return nil
 }
 
+func (m *BatchResponseItem) GetSegmentBeginRetryPieces() *RetryBeginSegmentPiecesResponse {
+	if x, ok := m.GetResponse().(*BatchResponseItem_SegmentBeginRetryPieces); ok {
+		return x.SegmentBeginRetryPieces
+	}
+	return nil
+}
+
 func (m *BatchResponseItem) GetPartDelete() *DeletePartResponse {
 	if x, ok := m.GetResponse().(*BatchResponseItem_PartDelete); ok {
 		return x.PartDelete
@@ -6630,6 +6658,7 @@ func (*BatchResponseItem) XXX_OneofWrappers() []interface{} {
 		(*BatchResponseItem_SegmentFinishDelete)(nil),
 		(*BatchResponseItem_SegmentList)(nil),
 		(*BatchResponseItem_SegmentDownload)(nil),
+		(*BatchResponseItem_SegmentBeginRetryPieces)(nil),
 		(*BatchResponseItem_PartDelete)(nil),
 		(*BatchResponseItem_RevokeApiKey)(nil),
 	}

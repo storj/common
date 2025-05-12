@@ -974,8 +974,9 @@ message BatchRequestItem {
         BeginDeleteSegmentRequest  segment_begin_delete = 15;
         FinishDeleteSegmentRequest segment_finish_delete = 16;
 
-        ListSegmentsRequest    segment_list = 17;
-        DownloadSegmentRequest segment_download = 18;
+        ListSegmentsRequest            segment_list = 17;
+        DownloadSegmentRequest         segment_download = 18;
+        RetryBeginSegmentPiecesRequest segment_begin_retry_pieces = 40;
 
         DeletePartRequest part_delete = 25;
 
@@ -1031,8 +1032,9 @@ message BatchResponseItem {
         BeginDeleteSegmentResponse  segment_begin_delete = 15;
         FinishDeleteSegmentResponse segment_finish_delete = 16;
 
-        ListSegmentsResponse    segment_list = 17;
-        DownloadSegmentResponse segment_download = 18;
+        ListSegmentsResponse            segment_list = 17;
+        DownloadSegmentResponse         segment_download = 18;
+        RetryBeginSegmentPiecesResponse segment_begin_retry_pieces = 40;
 
         DeletePartResponse part_delete = 25;
 
