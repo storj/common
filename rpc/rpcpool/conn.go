@@ -151,6 +151,7 @@ func (c *poolConn) NewStream(ctx context.Context, rpc string, enc drpc.Encoding)
 
 	stream, err := pv.conn.NewStream(ctx, rpc, enc)
 	if err != nil {
+		c.pool.put(c.pk, pv)
 		return nil, err
 	}
 

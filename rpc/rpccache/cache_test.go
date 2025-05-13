@@ -7,7 +7,9 @@ import (
 	"container/list"
 	"fmt"
 	"math/rand"
+	"runtime"
 	"strconv"
+	"sync"
 	"testing"
 	"time"
 
@@ -24,7 +26,7 @@ func TestCache_Expiration(t *testing.T) {
 
 	c := New(Options{
 		Expiration: time.Nanosecond,
-		Close: func(val interface{}) error {
+		Close: func(val any) error {
 			require.Equal(t, val, "val")
 			close(called)
 			return nil
@@ -50,7 +52,7 @@ func TestCache_Expiration_Evicted(t *testing.T) {
 	c := New(Options{
 		Capacity:   1,
 		Expiration: time.Hour,
-		Close: func(val interface{}) error {
+		Close: func(val any) error {
 			require.Equal(t, val, "val0")
 			close(called)
 			return nil
@@ -70,7 +72,7 @@ func TestCache_Expiration_Evicted(t *testing.T) {
 // TestCache_Stale checks that the stale predicate is called on Take.
 func TestCache_Stale(t *testing.T) {
 	c := New(Options{
-		Stale: func(val interface{}) bool {
+		Stale: func(val any) bool {
 			return val == "val0"
 		},
 	})
@@ -89,7 +91,7 @@ func TestCache_Capacity(t *testing.T) {
 
 	c := New(Options{
 		Capacity: 1,
-		Close: func(val interface{}) error {
+		Close: func(val any) error {
 			require.Equal(t, val, "val0")
 			close(called)
 			return nil
@@ -114,7 +116,7 @@ func TestCache_Capacity_Negative(t *testing.T) {
 
 	c := New(Options{
 		Capacity: -1,
-		Close: func(val interface{}) error {
+		Close: func(val any) error {
 			require.Equal(t, val, "val")
 			close(called)
 			return nil
@@ -138,7 +140,7 @@ func TestCache_KeyCapacity(t *testing.T) {
 
 	c := New(Options{
 		KeyCapacity: 1,
-		Close: func(val interface{}) error {
+		Close: func(val any) error {
 			require.Equal(t, val, "val0")
 			close(called)
 			return nil
@@ -164,7 +166,7 @@ func TestCache_KeyCapacity_Negative(t *testing.T) {
 
 	c := New(Options{
 		KeyCapacity: -1,
-		Close: func(val interface{}) error {
+		Close: func(val any) error {
 			require.Equal(t, val, "val")
 			close(called)
 			return nil
@@ -178,6 +180,75 @@ func TestCache_KeyCapacity_Negative(t *testing.T) {
 	case <-ctx.Done():
 		t.FailNow()
 	}
+}
+
+func TestCache_ShortExpirationEventuallyClears(t *testing.T) {
+	var chanMu sync.Mutex
+	var chans []chan struct{}
+
+	newChan := func() chan struct{} {
+		ch := make(chan struct{})
+		chanMu.Lock()
+		chans = append(chans, ch)
+		chanMu.Unlock()
+		return ch
+	}
+
+	defer func() {
+		for _, ch := range chans {
+			select {
+			case <-ch:
+			default:
+				t.Error("some channel did not close")
+				return
+			}
+		}
+	}()
+
+	c := New(Options{
+		Expiration: 1,
+
+		Close: func(val any) error {
+			go close(val.(chan struct{}))
+			return nil
+		},
+
+		Stale: func(val any) bool {
+			select {
+			case <-val.(chan struct{}):
+				return true
+			default:
+				return false
+			}
+		},
+	})
+
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := 0; i < 10000; i++ {
+				x := c.Take("key")
+				if x == nil {
+					x = newChan()
+				}
+				c.Put("key", x)
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	start := time.Now()
+	for time.Since(start) < 2*time.Second {
+		if c.Cached() == 0 {
+			return
+		}
+		runtime.Gosched()
+	}
+
+	t.Fatal("cache did not clear")
 }
 
 func TestCache_Fuzz(t *testing.T) {
@@ -207,7 +278,7 @@ func runFuzz(t *testing.T, rng *rand.Rand, capacity, keyCapacity int) {
 	// event is some event that happened with the cache
 	type event struct {
 		key    string
-		val    interface{}
+		val    any
 		action string // "put" | "take" | "closed"
 	}
 
@@ -224,10 +295,10 @@ func runFuzz(t *testing.T, rng *rand.Rand, capacity, keyCapacity int) {
 	}
 
 	// stale defines about 10% of the values to be stale
-	stale := func(val interface{}) bool { return val.(string)[6:] >= "val90" }
+	stale := func(val any) bool { return val.(string)[6:] >= "val90" }
 
 	// filter removes a value from a slice
-	filter := func(vals []interface{}, val interface{}) []interface{} {
+	filter := func(vals []any, val any) []any {
 		j := 0
 		for i := range vals {
 			if vals[i] == val {
@@ -247,7 +318,7 @@ func runFuzz(t *testing.T, rng *rand.Rand, capacity, keyCapacity int) {
 		Capacity:    capacity,
 		KeyCapacity: keyCapacity,
 		Stale:       stale,
-		Close: func(val interface{}) error {
+		Close: func(val any) error {
 			log = append(log, event{
 				key:    val.(string)[:5],
 				val:    val.(string),
@@ -281,10 +352,10 @@ func runFuzz(t *testing.T, rng *rand.Rand, capacity, keyCapacity int) {
 	//   5. every value is eventually closed
 	//   6. no values remain in the cache
 
-	state := make(map[string][]interface{})
-	order := make([]interface{}, 0)
+	state := make(map[string][]any)
+	order := make([]any, 0)
 	checked := make(map[int]bool)
-	openValues := make(map[interface{}]bool)
+	openValues := make(map[any]bool)
 
 	// we pre-declare the variables here so that we can get logging of the events
 	// but only if the test fails.

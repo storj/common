@@ -4,6 +4,7 @@
 package rpccache
 
 import (
+	"container/list"
 	"sync"
 	"time"
 
@@ -48,31 +49,31 @@ type Options struct {
 
 	// Stale is optionally called on values before they are returned
 	// to see if they should be discarded. Nil means no check is made.
-	Stale func(interface{}) bool
+	Stale func(any) bool
 
 	// Close is optionally called on any value removed from the Cache.
-	Close func(interface{}) error
+	Close func(any) error
 
 	// Unblocked is optional and called on values before they are returned
 	// to see if they are available to be used. Nil means no check is made.
-	Unblocked func(interface{}) bool
+	Unblocked func(any) bool
 }
 
-func (c Options) close(val interface{}) error {
+func (c Options) close(val any) error {
 	if c.Close == nil {
 		return nil
 	}
 	return c.Close(val)
 }
 
-func (c Options) stale(val interface{}) bool {
+func (c Options) stale(val any) bool {
 	if c.Stale == nil {
 		return false
 	}
 	return c.Stale(val)
 }
 
-func (c Options) unblocked(val interface{}) bool {
+func (c Options) unblocked(val any) bool {
 	if c.Unblocked == nil {
 		return true
 	}
@@ -84,17 +85,18 @@ func (c Options) unblocked(val interface{}) bool {
 //
 
 type entry struct {
-	key interface{}
-	val interface{}
+	key any
+	val any
 	exp *time.Timer
+	ele *list.Element
 }
 
 // Cache is an expiring, stale-checking LRU of keys to multiple values.
 type Cache struct {
 	opts    Options
 	mu      sync.Mutex
-	entries map[interface{}][]*entry
-	order   []*entry
+	entries map[any][]*entry
+	order   *list.List
 	closed  bool
 }
 
@@ -102,8 +104,17 @@ type Cache struct {
 func New(opts Options) *Cache {
 	return &Cache{
 		opts:    opts,
-		entries: make(map[interface{}][]*entry),
+		entries: make(map[any][]*entry),
+		order:   list.New(),
 	}
+}
+
+// Cached returns the number of cached entries.
+func (c *Cache) Cached() int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	return c.order.Len()
 }
 
 //
@@ -140,28 +151,23 @@ func filterEntry(entries []*entry, ent *entry) []*entry {
 //
 // It should only be called with the mutex held.
 func (c *Cache) filterEntryLocked(ent *entry) {
-	entries := c.entries[ent.key]
-	if len(entries) <= 1 {
+	filtered := filterEntry(c.entries[ent.key], ent)
+	if len(filtered) == 0 {
 		delete(c.entries, ent.key)
 	} else {
-		c.entries[ent.key] = filterEntry(entries, ent)
+		c.entries[ent.key] = filtered
 	}
-	c.order = filterEntry(c.order, ent)
+	if ent.ele != nil {
+		c.order.Remove(ent.ele)
+		ent.ele = nil
+	}
 }
 
-// filterCacheKey removes any closed or expired conns from the list
-// of entries for the key, deleting the key from the entries map if
-// necessary.
-func (c *Cache) filterCacheKey(key interface{}) {
+func (c *Cache) filterEntry(ent *entry) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	for _, ent := range c.entries[key] {
-		if c.opts.stale(ent.val) {
-			_ = c.closeEntry(ent)
-			c.filterEntryLocked(ent)
-		}
-	}
+	c.filterEntryLocked(ent)
 }
 
 //
@@ -171,10 +177,11 @@ func (c *Cache) filterCacheKey(key interface{}) {
 // oldestEntryLocked returns the oldest Put entry from the Cache or nil
 // if one does not exist.
 func (c *Cache) oldestEntryLocked() *entry {
-	if len(c.order) == 0 {
+	ele := c.order.Back()
+	if ele == nil {
 		return nil
 	}
-	return c.order[0]
+	return ele.Value.(*entry)
 }
 
 //
@@ -192,8 +199,8 @@ func (c *Cache) Close() (err error) {
 		}
 	}
 
-	c.entries = make(map[interface{}][]*entry)
-	c.order = nil
+	c.entries = make(map[any][]*entry)
+	c.order.Init()
 	c.closed = true
 
 	return err
@@ -201,7 +208,7 @@ func (c *Cache) Close() (err error) {
 
 // Take acquires a value from the cache if one exists. It returns
 // nil if one does not.
-func (c *Cache) Take(key interface{}) interface{} {
+func (c *Cache) Take(key any) any {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -232,7 +239,7 @@ func (c *Cache) Take(key interface{}) interface{} {
 
 // Put places the connection in to the cache with the provided key. It
 // returns any errors closing any connections necessary to do the job.
-func (c *Cache) Put(key, val interface{}) {
+func (c *Cache) Put(key, val any) {
 	if c.opts.Capacity < 0 || c.opts.KeyCapacity < 0 || c.opts.stale(val) {
 		_ = c.opts.close(val)
 		return
@@ -260,7 +267,7 @@ func (c *Cache) Put(key, val interface{}) {
 
 	// ensure we have enough overall capacity
 	for {
-		if c.opts.Capacity == 0 || len(c.order) < c.opts.Capacity {
+		if c.opts.Capacity == 0 || c.order.Len() < c.opts.Capacity {
 			break
 		}
 
@@ -272,15 +279,15 @@ func (c *Cache) Put(key, val interface{}) {
 	// create and push the new entry into the map and order list
 	ent := &entry{key: key, val: val}
 	c.entries[key] = append(c.entries[key], ent)
-	c.order = append(c.order, ent)
+	ent.ele = c.order.PushFront(ent)
 
 	// we set expiration last so that the connection is already in
 	// the data structure so we don't have to worry about filterCacheKey
 	// even though it's protected by the mutex. defensive.
 	if c.opts.Expiration > 0 {
 		ent.exp = time.AfterFunc(c.opts.Expiration, func() {
-			_ = c.opts.close(val)
-			c.filterCacheKey(key)
+			_ = c.opts.close(ent.val)
+			c.filterEntry(ent)
 		})
 	}
 }
