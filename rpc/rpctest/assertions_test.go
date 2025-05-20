@@ -154,7 +154,7 @@ func (tb *fakeTB) Name() string {
 	return "fake"
 }
 
-func (tb *fakeTB) Errorf(format string, args ...interface{}) {
+func (tb *fakeTB) Errorf(format string, args ...any) {
 	tb.failed = true
 }
 

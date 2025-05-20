@@ -87,7 +87,7 @@ func (id StreamID) Value() (driver.Value, error) {
 }
 
 // Scan extracts a stream ID from a database field.
-func (id *StreamID) Scan(src interface{}) (err error) {
+func (id *StreamID) Scan(src any) (err error) {
 	b, ok := src.([]byte)
 	if !ok {
 		return ErrStreamID.New("Stream ID Scan expects []byte")

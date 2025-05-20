@@ -28,7 +28,7 @@ type Cycle struct {
 	interval time.Duration
 
 	ticker  *time.Ticker
-	control chan interface{}
+	control chan any
 
 	stopping chan struct{}
 	stopped  chan struct{}
@@ -66,7 +66,7 @@ func (cycle *Cycle) initialize() {
 	cycle.init.Do(func() {
 		cycle.stopped = make(chan struct{})
 		cycle.stopping = make(chan struct{})
-		cycle.control = make(chan interface{})
+		cycle.control = make(chan any)
 	})
 }
 
@@ -181,7 +181,7 @@ func (cycle *Cycle) Close() {
 }
 
 // sendControl sends a control message.
-func (cycle *Cycle) sendControl(message interface{}) {
+func (cycle *Cycle) sendControl(message any) {
 	cycle.initialize()
 	select {
 	case cycle.control <- message:

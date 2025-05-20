@@ -23,7 +23,7 @@ func TestCompatibility(t *testing.T) {
 	check(t, pb.PieceHash{}, pb.PieceHashSigning{})
 }
 
-func check(t *testing.T, a, b interface{}) {
+func check(t *testing.T, a, b any) {
 	afields := fields(a)
 	bfields := fields(b)
 	assert.Equal(t, afields, bfields, fmt.Sprintf("%T and %T definitions don't match", a, b))
@@ -35,7 +35,7 @@ type Field struct {
 	Index string
 }
 
-func fields(v interface{}) []Field {
+func fields(v any) []Field {
 	t := reflect.ValueOf(v).Type()
 	if t.Kind() != reflect.Struct {
 		panic(t.Kind())

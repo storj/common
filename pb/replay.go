@@ -33,7 +33,7 @@ type drpcReplaySafePiecestoreDescription struct{}
 
 func (drpcReplaySafePiecestoreDescription) NumMethods() int { return 2 }
 
-func (drpcReplaySafePiecestoreDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
+func (drpcReplaySafePiecestoreDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, any, bool) {
 	switch n {
 	case 0:
 		rpc, enc, receiver, method, ok := (DRPCPiecestoreDescription{}).Method(0)

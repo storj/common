@@ -14,7 +14,7 @@ func (uuid UUID) Value() (driver.Value, error) {
 }
 
 // Scan implements sql.Scanner interface.
-func (uuid *UUID) Scan(value interface{}) error {
+func (uuid *UUID) Scan(value any) error {
 	switch value := value.(type) {
 	case []byte:
 		x, err := FromBytes(value)
@@ -75,7 +75,7 @@ func (n NullUUID) Value() (driver.Value, error) {
 }
 
 // Scan implements sql.Scanner interface.
-func (n *NullUUID) Scan(value interface{}) error {
+func (n *NullUUID) Scan(value any) error {
 	if value == nil {
 		n.UUID, n.Valid = UUID{}, false
 		return nil

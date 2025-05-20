@@ -23,22 +23,22 @@ type SaveConfigOption func(*SaveConfigOptions)
 
 // SaveConfigOptions controls the behavior of SaveConfig.
 type SaveConfigOptions struct {
-	Overrides        map[string]interface{}
+	Overrides        map[string]any
 	RemoveDeprecated bool
 }
 
 // SaveConfigWithOverrides sets the overrides to the provided map.
-func SaveConfigWithOverrides(overrides map[string]interface{}) SaveConfigOption {
+func SaveConfigWithOverrides(overrides map[string]any) SaveConfigOption {
 	return func(opts *SaveConfigOptions) {
 		opts.Overrides = overrides
 	}
 }
 
 // SaveConfigWithOverride adds a single override to SaveConfig.
-func SaveConfigWithOverride(name string, value interface{}) SaveConfigOption {
+func SaveConfigWithOverride(name string, value any) SaveConfigOption {
 	return func(opts *SaveConfigOptions) {
 		if opts.Overrides == nil {
-			opts.Overrides = make(map[string]interface{})
+			opts.Overrides = make(map[string]any)
 		}
 		opts.Overrides[name] = value
 	}
@@ -80,7 +80,7 @@ func SaveConfig(cmd *cobra.Command, outfile string, opts ...SaveConfigOption) er
 	//
 
 	type configValue struct {
-		value   interface{}
+		value   any
 		comment string
 		set     bool
 	}
@@ -88,10 +88,10 @@ func SaveConfig(cmd *cobra.Command, outfile string, opts ...SaveConfigOption) er
 	var flatKeys []string
 
 	// N.B. we have to pre-declare the function so that it can make recursive calls.
-	var filterAndFlatten func(string, map[string]interface{})
-	filterAndFlatten = func(base string, settings map[string]interface{}) {
+	var filterAndFlatten func(string, map[string]any)
+	filterAndFlatten = func(base string, settings map[string]any) {
 		for key, value := range settings {
-			if value, ok := value.(map[string]interface{}); ok {
+			if value, ok := value.(map[string]any); ok {
 				filterAndFlatten(base+key+".", value)
 				continue
 			}
@@ -179,7 +179,7 @@ func SaveConfig(cmd *cobra.Command, outfile string, opts ...SaveConfigOption) er
 			lines = append(lines, []byte("# "+config.comment))
 		}
 
-		data, err := yaml.Marshal(map[string]interface{}{key: config.value})
+		data, err := yaml.Marshal(map[string]any{key: config.value})
 		if err != nil {
 			return errs.Wrap(err)
 		}

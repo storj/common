@@ -13,7 +13,7 @@ import (
 type thunkResponse[T io.Closer] struct {
 	result   T
 	err      error
-	panicVal interface{}
+	panicVal any
 }
 
 // A thunk represents some amount of background work that will create
@@ -53,7 +53,7 @@ func (t *thunk[T]) trigger() {
 	t.ch = ch
 
 	go func() {
-		res, panicVal, err := func() (val T, panicVal interface{}, err error) {
+		res, panicVal, err := func() (val T, panicVal any, err error) {
 			defer func() {
 				panicVal = recover()
 			}()

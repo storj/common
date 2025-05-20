@@ -102,7 +102,7 @@ func (id SerialNumber) Value() (driver.Value, error) {
 }
 
 // Scan extracts a SerialNumber from a database field.
-func (id *SerialNumber) Scan(src interface{}) (err error) {
+func (id *SerialNumber) Scan(src any) (err error) {
 	b, ok := src.([]byte)
 	if !ok {
 		return ErrSerialNumber.New("SerialNumber Scan expects []byte")

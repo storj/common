@@ -66,7 +66,7 @@ func (c CountryCode) Value() (driver.Value, error) {
 }
 
 // Scan implements the sql.Scanner interface.
-func (c *CountryCode) Scan(value interface{}) error {
+func (c *CountryCode) Scan(value any) error {
 	if value == nil {
 		*c = None
 		return nil

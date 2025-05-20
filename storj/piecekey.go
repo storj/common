@@ -149,7 +149,7 @@ func (key PiecePublicKey) Value() (driver.Value, error) {
 func (key PiecePrivateKey) Value() (driver.Value, error) { return key.Bytes(), nil }
 
 // Scan extracts a PiecePublicKey from a database field.
-func (key *PiecePublicKey) Scan(src interface{}) (err error) {
+func (key *PiecePublicKey) Scan(src any) (err error) {
 	b, ok := src.([]byte)
 	if !ok {
 		return ErrPieceKey.New("PiecePublicKey Scan expects []byte")
@@ -160,7 +160,7 @@ func (key *PiecePublicKey) Scan(src interface{}) (err error) {
 }
 
 // Scan extracts a PiecePrivateKey from a database field.
-func (key *PiecePrivateKey) Scan(src interface{}) (err error) {
+func (key *PiecePrivateKey) Scan(src any) (err error) {
 	b, ok := src.([]byte)
 	if !ok {
 		return ErrPieceKey.New("PiecePrivateKey Scan expects []byte")

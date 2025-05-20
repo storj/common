@@ -52,7 +52,7 @@ func (p PlacementConstraint) Value() (driver.Value, error) {
 }
 
 // Scan implements the sql.Scanner interface.
-func (p *PlacementConstraint) Scan(value interface{}) error {
+func (p *PlacementConstraint) Scan(value any) error {
 	if value == nil {
 		*p = DefaultPlacement
 		return nil

@@ -125,7 +125,7 @@ func Error(code StatusCode, msg string) error {
 }
 
 // Errorf : Error :: fmt.Sprintf : fmt.Sprint.
-func Errorf(code StatusCode, format string, a ...interface{}) error {
+func Errorf(code StatusCode, format string, a ...any) error {
 	return NamedErrorf("", code, format, a...)
 }
 

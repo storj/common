@@ -123,7 +123,7 @@ func (t *TCPConnector) DialContextUnencryptedUnprefixed(ctx context.Context, add
 		return t.lowLevelDial(ctx, t.providedDialer, "provided", address)
 	}
 
-	getCtxBool := func(key interface{}) bool {
+	getCtxBool := func(key any) bool {
 		v, ok := ctx.Value(key).(bool)
 		return v && ok
 	}

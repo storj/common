@@ -23,7 +23,7 @@ func NewWorkPlace() *Workplace {
 // worker represents an active work.
 type worker struct {
 	// jobTag is a unique identifier for the work.
-	jobTag interface{}
+	jobTag any
 	// cancel cancels the running job.
 	cancel func()
 	// done will be closed after the func returns.
@@ -32,7 +32,7 @@ type worker struct {
 
 // Start tries to spawn a goroutine in background. It returns false, when it cannot cancel the previous work,
 // the context is cancelled or the workplace itself has been canceled.
-func (place *Workplace) Start(root context.Context, jobTag interface{}, shouldCancel func(jobTag interface{}) bool, fn func(ctx context.Context)) (started bool) {
+func (place *Workplace) Start(root context.Context, jobTag any, shouldCancel func(jobTag any) bool, fn func(ctx context.Context)) (started bool) {
 	place.mu.Lock()
 	defer place.mu.Unlock()
 

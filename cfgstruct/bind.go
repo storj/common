@@ -112,11 +112,11 @@ type confVar struct {
 // Bind sets flags on a FlagSet that match the configuration struct
 // 'config'. This works by traversing the config struct using the 'reflect'
 // package.
-func Bind(flags FlagSet, config interface{}, opts ...BindOpt) {
+func Bind(flags FlagSet, config any, opts ...BindOpt) {
 	bind(flags, config, opts...)
 }
 
-func bind(flags FlagSet, config interface{}, opts ...BindOpt) {
+func bind(flags FlagSet, config any, opts ...BindOpt) {
 	ptrtype := reflect.TypeOf(config)
 	if ptrtype.Kind() != reflect.Ptr {
 		panic(fmt.Sprintf("invalid config type: %#v. Expecting pointer to struct.", config))
@@ -375,7 +375,7 @@ func getDefault(tag reflect.StructTag, isTest, isDev bool, flagname string) stri
 	return ""
 }
 
-func setSourceAnnotation(flagset interface{}, name, source string) {
+func setSourceAnnotation(flagset any, name, source string) {
 	switch source {
 	case AnySource:
 	case FlagSource:
@@ -386,7 +386,7 @@ func setSourceAnnotation(flagset interface{}, name, source string) {
 	setStringAnnotation(flagset, name, "source", source)
 }
 
-func setStringAnnotation(flagset interface{}, name, key, value string) {
+func setStringAnnotation(flagset any, name, key, value string) {
 	flags, ok := flagset.(*pflag.FlagSet)
 	if !ok {
 		return
@@ -399,7 +399,7 @@ func setStringAnnotation(flagset interface{}, name, key, value string) {
 }
 
 // SetBoolAnnotation sets an annotation (if it can) on flagset with a value of []string{"true|false"}.
-func SetBoolAnnotation(flagset interface{}, name, key string, value bool) {
+func SetBoolAnnotation(flagset any, name, key string, value bool) {
 	flags, ok := flagset.(*pflag.FlagSet)
 	if !ok {
 		return

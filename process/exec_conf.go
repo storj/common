@@ -44,7 +44,7 @@ var (
 	commandMtx   sync.Mutex
 	contexts     = map[*cobra.Command]context.Context{}
 	cancels      = map[*cobra.Command]context.CancelFunc{}
-	configs      = map[*cobra.Command][]interface{}{}
+	configs      = map[*cobra.Command][]any{}
 	vipers       = map[*cobra.Command]*viper.Viper{}
 	atomicLevels = map[*cobra.Command]*zap.AtomicLevel{}
 )
@@ -52,7 +52,7 @@ var (
 // Bind sets flags on a command that match the configuration struct
 // 'config'. It ensures that the config has all of the values loaded into it
 // when the command runs.
-func Bind(cmd *cobra.Command, config interface{}, opts ...cfgstruct.BindOpt) {
+func Bind(cmd *cobra.Command, config any, opts ...cfgstruct.BindOpt) {
 	commandMtx.Lock()
 	defer commandMtx.Unlock()
 

@@ -21,7 +21,7 @@ func TestEncoder(t *testing.T) {
 
 	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zap.DPanicLevel)).Named("test")
 
-	got := make(map[string]interface{})
+	got := make(map[string]any)
 
 	logger.Debug("a", zap.Bool("b", true))
 	require.NoError(t, logger.Sync())
@@ -32,18 +32,18 @@ func TestEncoder(t *testing.T) {
 	require.True(t, ok)
 	assert.True(t, b)
 
-	labels, ok := got["logging.googleapis.com/labels"].(map[string]interface{})
+	labels, ok := got["logging.googleapis.com/labels"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, labels, 1)
 	assert.Equal(t, "test", labels["name"])
 
-	timestamp, ok := got["timestamp"].(map[string]interface{})
+	timestamp, ok := got["timestamp"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, timestamp, 2)
 	assert.NotZero(t, timestamp["seconds"])
 	assert.NotZero(t, timestamp["nanos"])
 
-	sourceLocation, ok := got["logging.googleapis.com/sourceLocation"].(map[string]interface{})
+	sourceLocation, ok := got["logging.googleapis.com/sourceLocation"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, sourceLocation, 3)
 	assert.NotEmpty(t, sourceLocation["file"])
@@ -58,7 +58,7 @@ func TestEncoder(t *testing.T) {
 
 	require.NoError(t, json.NewDecoder(buf).Decode(&got))
 
-	labels, ok = got["logging.googleapis.com/labels"].(map[string]interface{})
+	labels, ok = got["logging.googleapis.com/labels"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, labels, 2)
 	assert.Equal(t, "e", labels["d"])
@@ -71,7 +71,7 @@ func TestEncoder(t *testing.T) {
 
 	require.NoError(t, json.NewDecoder(buf).Decode(&got))
 
-	labels, ok = got["logging.googleapis.com/labels"].(map[string]interface{})
+	labels, ok = got["logging.googleapis.com/labels"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, labels, 2)
 	assert.Equal(t, "h", labels["g"])
@@ -84,7 +84,7 @@ func TestEncoder(t *testing.T) {
 
 	require.NoError(t, json.NewDecoder(buf).Decode(&got))
 
-	labels, ok = got["logging.googleapis.com/labels"].(map[string]interface{})
+	labels, ok = got["logging.googleapis.com/labels"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, labels, 2)
 	assert.Equal(t, "j", labels["error"])
@@ -100,7 +100,7 @@ func TestEncoderChildLogger(t *testing.T) {
 	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zap.DPanicLevel)).Named("test")
 	childLogger := logger.With(zap.String("name", "child"))
 
-	got := make(map[string]interface{})
+	got := make(map[string]any)
 
 	childLogger.Debug("a", zap.Bool("b", true))
 	require.NoError(t, childLogger.Sync())
@@ -111,18 +111,18 @@ func TestEncoderChildLogger(t *testing.T) {
 	require.True(t, ok)
 	assert.True(t, b)
 
-	labels, ok := got["logging.googleapis.com/labels"].(map[string]interface{})
+	labels, ok := got["logging.googleapis.com/labels"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, labels, 1)
 	assert.Equal(t, "test", labels["name"])
 
-	timestamp, ok := got["timestamp"].(map[string]interface{})
+	timestamp, ok := got["timestamp"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, timestamp, 2)
 	assert.NotZero(t, timestamp["seconds"])
 	assert.NotZero(t, timestamp["nanos"])
 
-	sourceLocation, ok := got["logging.googleapis.com/sourceLocation"].(map[string]interface{})
+	sourceLocation, ok := got["logging.googleapis.com/sourceLocation"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, sourceLocation, 3)
 	assert.NotEmpty(t, sourceLocation["file"])
@@ -137,7 +137,7 @@ func TestEncoderChildLogger(t *testing.T) {
 
 	require.NoError(t, json.NewDecoder(buf).Decode(&got))
 
-	labels, ok = got["logging.googleapis.com/labels"].(map[string]interface{})
+	labels, ok = got["logging.googleapis.com/labels"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, labels, 2)
 	assert.Equal(t, "e", labels["d"])
@@ -150,7 +150,7 @@ func TestEncoderChildLogger(t *testing.T) {
 
 	require.NoError(t, json.NewDecoder(buf).Decode(&got))
 
-	labels, ok = got["logging.googleapis.com/labels"].(map[string]interface{})
+	labels, ok = got["logging.googleapis.com/labels"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, labels, 2)
 	assert.Equal(t, "h", labels["g"])
@@ -163,7 +163,7 @@ func TestEncoderChildLogger(t *testing.T) {
 
 	require.NoError(t, json.NewDecoder(buf).Decode(&got))
 
-	labels, ok = got["logging.googleapis.com/labels"].(map[string]interface{})
+	labels, ok = got["logging.googleapis.com/labels"].(map[string]any)
 	require.True(t, ok)
 	assert.Len(t, labels, 2)
 	assert.Equal(t, "j", labels["error"])

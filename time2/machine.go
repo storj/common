@@ -303,12 +303,12 @@ func dropTimer(timers *timerHeap, timer *fakeTimer) (dropped bool) {
 
 type timerHeap []*fakeTimer
 
-func (h timerHeap) Len() int            { return len(h) }
-func (h timerHeap) Less(i, j int) bool  { return h[i].when.Before(h[j].when) }
-func (h timerHeap) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }
-func (h *timerHeap) Push(x interface{}) { *h = append(*h, x.(*fakeTimer)) }
+func (h timerHeap) Len() int           { return len(h) }
+func (h timerHeap) Less(i, j int) bool { return h[i].when.Before(h[j].when) }
+func (h timerHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+func (h *timerHeap) Push(x any)        { *h = append(*h, x.(*fakeTimer)) }
 
-func (h *timerHeap) Pop() interface{} {
+func (h *timerHeap) Pop() any {
 	old := *h
 	n := len(old)
 	x := old[n-1]

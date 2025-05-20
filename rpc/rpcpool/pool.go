@@ -50,10 +50,10 @@ func New(opts Options) *Pool {
 			Expiration:  opts.IdleExpiration,
 			Capacity:    opts.Capacity,
 			KeyCapacity: opts.KeyCapacity,
-			Close: func(pv interface{}) error {
+			Close: func(pv any) error {
 				return pv.(*poolValue).conn.Close()
 			},
-			Stale: func(pv interface{}) bool {
+			Stale: func(pv any) bool {
 				if opts.MaxLifetime != 0 && time.Since(pv.(*poolValue).created) > opts.MaxLifetime {
 					return true
 				}
@@ -64,7 +64,7 @@ func New(opts Options) *Pool {
 					return false
 				}
 			},
-			Unblocked: func(pv interface{}) bool {
+			Unblocked: func(pv any) bool {
 				select {
 				case <-pv.(*poolValue).conn.Unblocked():
 					return true

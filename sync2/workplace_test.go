@@ -23,7 +23,7 @@ func TestWorkplace(t *testing.T) {
 
 	{ // starts ok
 		started := place.Start(firstCtx, 256,
-			func(jobTag interface{}) bool {
+			func(jobTag any) bool {
 				t.Fatal("shouldn't be called, because there's no job running")
 				return false
 			},
@@ -37,7 +37,7 @@ func TestWorkplace(t *testing.T) {
 	{ // finishes ok
 		called := false
 		started := place.Start(ctx, 1,
-			func(jobTag interface{}) bool {
+			func(jobTag any) bool {
 				called = true
 				return false
 			},
@@ -47,7 +47,7 @@ func TestWorkplace(t *testing.T) {
 	}
 
 	{ // overrides, but waits until completes
-		started := place.Start(ctx, 32, func(jobTag interface{}) bool {
+		started := place.Start(ctx, 32, func(jobTag any) bool {
 			return jobTag == 256
 		}, func(ctx context.Context) {
 			// if the first one and this is started concurrently,

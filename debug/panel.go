@@ -117,7 +117,7 @@ func (panel *Panel) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func buttonsTemplateExecute(w io.Writer, panel *Panel) error {
 	var b bytes.Buffer
-	pf := func(format string, args ...interface{}) {
+	pf := func(format string, args ...any) {
 		_, _ = fmt.Fprintf(&b, format, args...)
 	}
 

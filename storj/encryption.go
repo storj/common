@@ -189,7 +189,7 @@ func (nonce Nonce) Value() (driver.Value, error) {
 }
 
 // Scan extracts a Nonce from a database field.
-func (nonce *Nonce) Scan(src interface{}) (err error) {
+func (nonce *Nonce) Scan(src any) (err error) {
 	if src == nil {
 		*nonce = Nonce{}
 		return
@@ -238,7 +238,7 @@ func (pkey EncryptedPrivateKey) Value() (driver.Value, error) {
 }
 
 // Scan extracts a EncryptedPrivateKey from a database field.
-func (pkey *EncryptedPrivateKey) Scan(src interface{}) (err error) {
+func (pkey *EncryptedPrivateKey) Scan(src any) (err error) {
 	b, ok := src.([]byte)
 	if !ok {
 		return ErrEncryptedPrivateKey.New("EncryptedPrivateKey Scan expects []byte")

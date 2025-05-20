@@ -36,8 +36,8 @@ func TestUnmarshal(t *testing.T) {
 	for _, tt := range []struct {
 		name string
 		csv  string
-		obj  interface{}
-		out  interface{}
+		obj  any
+		out  any
 		err  string
 	}{
 		{
@@ -169,7 +169,7 @@ func TestUnmarshal(t *testing.T) {
 }
 
 func TestUnmarshalFailsToUnmarshalField(t *testing.T) {
-	for _, s := range []interface{}{
+	for _, s := range []any{
 		&struct {
 			Field int64 `csv:"field"`
 		}{},

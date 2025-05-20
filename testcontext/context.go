@@ -61,9 +61,9 @@ type TB interface {
 
 	Cleanup(f func())
 
-	Log(args ...interface{})
-	Error(args ...interface{})
-	Fatal(args ...interface{})
+	Log(args ...any)
+	Error(args ...any)
+	Fatal(args ...any)
 }
 
 func init() {

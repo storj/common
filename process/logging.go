@@ -186,7 +186,7 @@ func (p *prettyEncoder) Clone() zapcore.Encoder {
 	return rv
 }
 
-func sortedKeys(m map[string]interface{}) []string {
+func sortedKeys(m map[string]any) []string {
 	keys := make([]string, 0, len(m))
 	for key := range m {
 		keys = append(keys, key)

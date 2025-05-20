@@ -16,8 +16,8 @@ func TestMarshal(t *testing.T) {
 
 	for _, tt := range []struct {
 		name string
-		in   interface{}
-		out  interface{}
+		in   any
+		out  any
 		err  string
 	}{
 		{

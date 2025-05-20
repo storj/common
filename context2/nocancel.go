@@ -44,7 +44,7 @@ func (ctx noCancelContext) String() string {
 // Value returns the value associated with this context for key, or nil
 // if no value is associated with key. Successive calls to Value with
 // the same key returns the same result.
-func (ctx noCancelContext) Value(key interface{}) interface{} {
+func (ctx noCancelContext) Value(key any) any {
 	return ctx.ctx.Value(key)
 }
 
