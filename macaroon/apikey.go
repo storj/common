@@ -96,11 +96,22 @@ const (
 
 	// APIKeyVersionObjectLock is the API key version that introduces support
 	// for Object Lock actions.
-	APIKeyVersionObjectLock APIKeyVersion = 1
+	APIKeyVersionObjectLock APIKeyVersion = 1 << 0 // 0b001
 
-	// APIKeyVersionLatest is the latest API key version.
-	APIKeyVersionLatest APIKeyVersion = APIKeyVersionObjectLock
+	// APIKeyVersionAuditable is the API key version that introduces support
+	// for auditability.
+	APIKeyVersionAuditable APIKeyVersion = 1 << 1 // 0b010
 )
+
+// SupportsObjectLock returns true if the API key version supports Object Lock actions.
+func (v APIKeyVersion) SupportsObjectLock() bool {
+	return v&APIKeyVersionObjectLock != 0
+}
+
+// SupportsAuditability returns true if the API key is auditable.
+func (v APIKeyVersion) SupportsAuditability() bool {
+	return v&APIKeyVersionAuditable != 0
+}
 
 // Action specifies the specific operation being performed that the Macaroon will validate.
 type Action struct {
@@ -179,7 +190,7 @@ func (a *APIKey) Check(ctx context.Context, secret []byte, version APIKeyVersion
 		return Error.New("no timestamp provided")
 	}
 
-	if version < APIKeyVersionObjectLock {
+	if !version.SupportsObjectLock() {
 		// API keys created before the introduction of granular Object Lock permissions
 		// should be denied the ability to perform granular Object Lock actions.
 		switch action.Op {
