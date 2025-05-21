@@ -176,10 +176,7 @@ func GenerateInitiatorConf(peer *pb.NoiseInfo) (noise.Config, error) {
 
 func signablePublicKey(ts time.Time, key []byte) []byte {
 	var buf [8]byte
-	tsnano := ts.UnixNano()
-	if tsnano < 0 {
-		tsnano = 0
-	}
+	tsnano := max(ts.UnixNano(), 0)
 	binary.BigEndian.PutUint64(buf[:], uint64(tsnano))
 	return append(buf[:], key...)
 }

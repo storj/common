@@ -7,6 +7,7 @@ import (
 	"database/sql/driver"
 	"encoding/base64"
 	"encoding/binary"
+	"slices"
 	"strconv"
 
 	"github.com/zeebo/errs"
@@ -234,7 +235,7 @@ type EncryptedPrivateKey []byte
 
 // Value converts a EncryptedPrivateKey to a database field.
 func (pkey EncryptedPrivateKey) Value() (driver.Value, error) {
-	return append([]byte{}, pkey...), nil
+	return slices.Clone(pkey), nil
 }
 
 // Scan extracts a EncryptedPrivateKey from a database field.
@@ -243,7 +244,7 @@ func (pkey *EncryptedPrivateKey) Scan(src any) (err error) {
 	if !ok {
 		return ErrEncryptedPrivateKey.New("EncryptedPrivateKey Scan expects []byte")
 	}
-	*pkey = append([]byte{}, b...)
+	*pkey = slices.Clone(b)
 	return nil
 }
 

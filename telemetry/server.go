@@ -104,7 +104,7 @@ func (h handlerWrapper) Handle(ctx context.Context, m *admission.Message) {
 
 	// Even though we don't use the headers, if they exist on the buffer we
 	// need to read them off.
-	for i := 0; i < numHeaders; i++ {
+	for range numHeaders {
 		data, _, _, err = r.NextHeader(data)
 		if err != nil {
 			finish(&err)

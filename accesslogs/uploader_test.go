@@ -34,7 +34,7 @@ func TestLimits(t *testing.T) {
 		shutdownTimeout: time.Second,
 	})
 
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		require.NoError(t, u.queueUpload(s, "test", "test", testrand.Bytes(memory.KiB)))
 	}
 	require.ErrorIs(t, u.queueUpload(s, "test", "test", testrand.Bytes(memory.KiB)), ErrQueueLimit)
@@ -61,7 +61,7 @@ func TestQueueNoLimit(t *testing.T) {
 	defer ctx.Check(u.close)
 	ctx.Go(u.run)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		require.NoError(t, u.queueUploadWithoutQueueLimit(s, "test", "test", testrand.Bytes(memory.KiB)))
 	}
 }
@@ -92,7 +92,7 @@ func TestQueueNoLimitErroringStorage(t *testing.T) {
 	defer ctx.Check(u.close)
 	ctx.Go(u.run)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		require.NoError(t, u.queueUploadWithoutQueueLimit(s, "test", "test", testrand.Bytes(memory.KiB)))
 	}
 }
@@ -116,7 +116,7 @@ func TestQueueErroringStorage(t *testing.T) {
 	defer ctx.Check(u.close)
 	ctx.Go(u.run)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		require.NoError(t, u.queueUpload(s, "test", "test", testrand.Bytes(memory.KiB)))
 	}
 }

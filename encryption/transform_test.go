@@ -103,7 +103,7 @@ func TestTransformer(t *testing.T) {
 }
 
 func TestTransformWriter(t *testing.T) {
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		tr := NopTransformer(64)
 		data := testrand.BytesInt(tr.InBlockSize()*100 + testrand.Intn(tr.InBlockSize()))
 

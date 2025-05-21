@@ -106,7 +106,6 @@ func TestMarshal(t *testing.T) {
 			err: `strictcsv: unable to marshal field "Field": OHNO`,
 		},
 	} {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			out, err := MarshalString(tt.in)
 			if tt.err != "" {

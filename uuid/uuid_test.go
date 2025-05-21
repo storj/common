@@ -97,7 +97,7 @@ func TestBasic(t *testing.T) {
 }
 
 func TestRandom(t *testing.T) {
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		x, err := uuid.New()
 		require.NoError(t, err)
 		require.False(t, x.IsZero())
@@ -135,13 +135,13 @@ func TestJSON(t *testing.T) {
 }
 
 func TestLess(t *testing.T) {
-	for k := 0; k < len(uuid.UUID{}); k++ {
+	for k := range len(uuid.UUID{}) {
 		var a, b uuid.UUID
 		a[k], b[k] = 1, 2
 		require.True(t, a.Less(b))
 	}
 
-	for k := 0; k < 100; k++ {
+	for range 100 {
 		var x, y uuid.UUID
 		a, b := testrand.Int63n(math.MaxInt64), testrand.Int63n(math.MaxInt64)
 		binary.BigEndian.PutUint64(x[:], uint64(a))
@@ -195,7 +195,7 @@ func TestCompare(t *testing.T) {
 	var a uuid.UUID
 	require.Equal(t, 0, a.Compare(a)) //nolint:gocritic
 
-	for k := 0; k < len(uuid.UUID{}); k++ {
+	for k := range len(uuid.UUID{}) {
 		var a, b uuid.UUID
 		a[k], b[k] = 1, 2
 		require.Equal(t, 0, a.Compare(a)) //nolint:gocritic
@@ -204,7 +204,7 @@ func TestCompare(t *testing.T) {
 		require.Equal(t, 1, b.Compare(a))
 	}
 
-	for k := 0; k < 100; k++ {
+	for range 100 {
 		var x, y uuid.UUID
 		a, b := testrand.Int63n(math.MaxInt64), testrand.Int63n(math.MaxInt64)
 		binary.BigEndian.PutUint64(x[:], uint64(a))

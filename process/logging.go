@@ -6,6 +6,7 @@ package process
 import (
 	"flag"
 	"fmt"
+	"maps"
 	"net/url"
 	"os"
 	"sort"
@@ -180,9 +181,7 @@ func newPrettyEncoder(config zapcore.EncoderConfig) *prettyEncoder {
 
 func (p *prettyEncoder) Clone() zapcore.Encoder {
 	rv := newPrettyEncoder(p.config)
-	for key, val := range p.MapObjectEncoder.Fields {
-		rv.MapObjectEncoder.Fields[key] = val
-	}
+	maps.Copy(rv.MapObjectEncoder.Fields, p.MapObjectEncoder.Fields)
 	return rv
 }
 

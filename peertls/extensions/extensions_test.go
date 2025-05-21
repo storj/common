@@ -31,7 +31,7 @@ func TestHandlers_Register(t *testing.T) {
 		chains   [][][]*x509.Certificate
 	)
 
-	for idx := 0; idx < 5; idx++ {
+	for idx := range 5 {
 		i := idx
 
 		ids = append(ids, &extensions.ExtensionID{2, 999, 999, i})
@@ -77,7 +77,7 @@ func TestHandlers_WithOptions(t *testing.T) {
 		chains   [][][]*x509.Certificate
 	)
 
-	for idx := 0; idx < 5; idx++ {
+	for idx := range 5 {
 		i := idx
 
 		ids = append(ids, &extensions.ExtensionID{2, 999, 999, i})

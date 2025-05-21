@@ -6,6 +6,7 @@ package experiment
 
 import (
 	"context"
+	"slices"
 	"strings"
 )
 
@@ -46,10 +47,8 @@ func Has(ctx context.Context, exp string) bool {
 		return false
 	}
 	if s, ok := value.(string); ok {
-		for _, e := range strings.Split(s, ",") {
-			if e == exp {
-				return true
-			}
+		if slices.Contains(strings.Split(s, ","), exp) {
+			return true
 		}
 	}
 	return false

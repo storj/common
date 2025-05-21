@@ -1,6 +1,6 @@
 module storj.test/buildinfo
 
-go 1.20
+go 1.23.0
 
 replace storj.io/common => ../../../
 

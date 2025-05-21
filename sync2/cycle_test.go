@@ -29,7 +29,6 @@ func TestCycle_Basic(t *testing.T) {
 	var pointer = sync2.NewCycle(time.Second)
 
 	for _, cycle := range []*sync2.Cycle{pointer, &inplace} {
-		cycle := cycle
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
 			defer cycle.Close()
@@ -52,7 +51,7 @@ func TestCycle_Basic(t *testing.T) {
 				cycle.Pause()
 
 				startingCount := atomic.LoadInt64(&count)
-				for i := 0; i < expected-1; i++ {
+				for range expected - 1 {
 					cycle.Trigger()
 				}
 				cycle.TriggerWait()

@@ -21,7 +21,7 @@ func NewCertChain(length int, versionNumber storj.IDVersionNumber) (keys []crypt
 		return nil, nil, err
 	}
 
-	for i := 0; i < length; i++ {
+	for i := range length {
 		key, err := pkcrypto.GeneratePrivateKey()
 		if err != nil {
 			return nil, nil, err

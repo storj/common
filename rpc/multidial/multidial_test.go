@@ -81,7 +81,7 @@ func TestBasic_ServerKeepsConnsOpen(t *testing.T) {
 
 			_, err = peer.server.Write([]byte("response"))
 			require.NoError(t, err)
-			for i := 0; i < 10; i++ {
+			for range 10 {
 				runtime.Gosched()
 			}
 
@@ -90,7 +90,7 @@ func TestBasic_ServerKeepsConnsOpen(t *testing.T) {
 		}(peerIdx, peer)
 	}
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		_, err = conn.Write(data[i*1024 : (i+1)*1024])
 		require.NoError(t, err)
 	}
@@ -150,7 +150,7 @@ func TestBasic_ServerClosesUnneededConn(t *testing.T) {
 			}
 
 			<-closed
-			for i := 0; i < 10; i++ {
+			for range 10 {
 				runtime.Gosched()
 			}
 
@@ -164,7 +164,7 @@ func TestBasic_ServerClosesUnneededConn(t *testing.T) {
 		}(peerIdx, peer)
 	}
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		_, err = conn.Write(data[i*1024 : (i+1)*1024])
 		require.NoError(t, err)
 	}

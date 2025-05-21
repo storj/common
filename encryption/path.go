@@ -397,7 +397,7 @@ func encodeSegment(segment []byte) []byte {
 
 	result := make([]byte, 0, len(segment)*2+1)
 	result = append(result, notEmptyComponentPrefix)
-	for i := 0; i < len(segment); i++ {
+	for i := range segment {
 		switch segment[i] {
 		case escapeSlash:
 			result = append(result, []byte{escapeSlash, 1}...)

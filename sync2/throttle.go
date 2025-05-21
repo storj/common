@@ -50,10 +50,7 @@ func (throttle *Throttle) ConsumeOrWait(maxAmount int64) (int64, error) {
 		throttle.consumer.Wait()
 	}
 
-	available := throttle.available
-	if available > maxAmount {
-		available = maxAmount
-	}
+	available := min(throttle.available, maxAmount)
 	throttle.available -= available
 	throttle.producer.Signal()
 

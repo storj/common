@@ -8,6 +8,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
+	"slices"
 )
 
 // Macaroon is a struct that determine contextual caveats and authorization.
@@ -108,7 +109,7 @@ func (m *Macaroon) Head() (head []byte) {
 	if len(m.head) == 0 {
 		return nil
 	}
-	return append([]byte(nil), m.head...)
+	return slices.Clone(m.head)
 }
 
 // CaveatLen returns the number of caveats this macaroon has.
@@ -123,7 +124,7 @@ func (m *Macaroon) Caveats() (caveats [][]byte) {
 	}
 	caveats = make([][]byte, 0, len(m.caveats))
 	for _, cav := range m.caveats {
-		caveats = append(caveats, append([]byte(nil), cav...))
+		caveats = append(caveats, slices.Clone(cav))
 	}
 	return caveats
 }
@@ -133,7 +134,7 @@ func (m *Macaroon) Tail() (tail []byte) {
 	if len(m.tail) == 0 {
 		return nil
 	}
-	return append([]byte(nil), m.tail...)
+	return slices.Clone(m.tail)
 }
 
 // Copy return copy of macaroon.

@@ -149,7 +149,7 @@ func TestNodeID_Compare(t *testing.T) {
 	var a storj.NodeID
 	require.Equal(t, 0, a.Compare(a)) //nolint:gocritic
 
-	for k := 0; k < len(storj.NodeID{}); k++ {
+	for k := range len(storj.NodeID{}) {
 		var a, b storj.NodeID
 		a[k], b[k] = 1, 2
 		require.Equal(t, 0, a.Compare(a)) //nolint:gocritic
@@ -158,7 +158,7 @@ func TestNodeID_Compare(t *testing.T) {
 		require.Equal(t, 1, b.Compare(a))
 	}
 
-	for k := 0; k < 100; k++ {
+	for range 100 {
 		var x, y storj.NodeID
 		a, b := testrand.Int63n(math.MaxInt64), testrand.Int63n(math.MaxInt64)
 		binary.BigEndian.PutUint64(x[:], uint64(a))

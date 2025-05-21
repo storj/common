@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"fmt"
 	"runtime/pprof"
+	"slices"
 	"sort"
 	"strings"
 
@@ -60,13 +61,7 @@ func filterMatches(sample *profile.Sample, filterLabel map[string]string) bool {
 			continue
 		}
 
-		found := false
-		for _, value := range values {
-			if value == expected {
-				found = true
-				break
-			}
-		}
+		found := slices.Contains(values, expected)
 		if !found {
 			return false
 		}

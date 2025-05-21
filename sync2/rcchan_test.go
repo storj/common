@@ -74,7 +74,7 @@ func TestReceiverClosableChan_BlockingSend(t *testing.T) {
 	})
 
 	<-sending
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		// make sure the send is blocked
 		runtime.Gosched()
 	}
@@ -110,7 +110,7 @@ func TestReceiverClosableChan_UnableToSend(t *testing.T) {
 	})
 
 	<-sending
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		// make sure the send is blocked
 		runtime.Gosched()
 	}
@@ -144,7 +144,7 @@ func TestReceiverClosableChan_BlockingReceive(t *testing.T) {
 	})
 
 	<-receiving
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		// make sure the receive is blocked
 		runtime.Gosched()
 	}
@@ -176,7 +176,7 @@ func TestReceiverClosableChan_ContextCanceled(t *testing.T) {
 	})
 
 	<-receiving
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		// make sure the receive is blocked
 		runtime.Gosched()
 	}
@@ -187,7 +187,7 @@ func TestReceiverClosableChan_ContextCanceled(t *testing.T) {
 
 	toSend := 3
 	var expected []int
-	for i := 0; i < toSend; i++ {
+	for i := range toSend {
 		require.True(t, ch.BlockingSend(i))
 		expected = append(expected, i)
 	}

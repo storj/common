@@ -107,7 +107,6 @@ func TestProcessorWithShipment(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			ctx := testcontext.New(t)
 			defer ctx.Cleanup()
@@ -141,7 +140,7 @@ func TestProcessorWithShipment(t *testing.T) {
 			entry1 := newTestEntry("entry1")
 			entry2 := newTestEntry("entry2")
 
-			for i := 0; i < 10; i++ {
+			for range 10 {
 				require.NoError(t, p.QueueEntry(s, key1, entry1))
 				require.NoError(t, p.QueueEntry(s, key2, entry1))
 				require.NoError(t, p.QueueEntry(s, key1, entry2))
@@ -204,7 +203,7 @@ func TestProcessorWithInterval(t *testing.T) {
 	entry1 := newTestEntry("entry1")
 	entry2 := newTestEntry("entry2")
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		require.NoError(t, p.QueueEntry(s, key1, entry1))
 		require.NoError(t, p.QueueEntry(s, key2, entry1))
 		require.NoError(t, p.QueueEntry(s, key1, entry2))

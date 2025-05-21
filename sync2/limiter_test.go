@@ -19,7 +19,7 @@ func TestLimiterLimiting(t *testing.T) {
 	ctx := context.Background()
 	limiter := sync2.NewLimiter(Limit)
 	counter := int32(0)
-	for i := 0; i < N; i++ {
+	for range N {
 		limiter.Go(ctx, func() {
 			if atomic.AddInt32(&counter, 1) > Limit {
 				panic("limit exceeded")
@@ -46,7 +46,7 @@ func TestLimiterCanceling(t *testing.T) {
 	allreturned := make(chan struct{})
 
 	go func() {
-		for i := 0; i < N; i++ {
+		for range N {
 			limiter.Go(ctx, func() {
 				if atomic.AddInt32(&counter, 1) > Limit {
 					panic("limit exceeded")
@@ -59,7 +59,7 @@ func TestLimiterCanceling(t *testing.T) {
 		close(allreturned)
 	}()
 
-	for i := 0; i < Limit; i++ {
+	for range Limit {
 		<-waitForCancel
 	}
 	cancel()

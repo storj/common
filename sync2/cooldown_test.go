@@ -41,7 +41,7 @@ func TestCooldown_Basic(t *testing.T) {
 
 	group.Go(func() error {
 		defer cooldown.Stop()
-		for i := 0; i < 10; i++ {
+		for range 10 {
 			cooldown.Trigger()
 		}
 		return nil

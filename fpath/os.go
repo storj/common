@@ -11,6 +11,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 
 	"github.com/zeebo/errs"
@@ -95,10 +96,8 @@ func IsValidSetupDir(name string) (ok bool, err error) {
 			return false, err
 		}
 
-		for _, filename := range filenames {
-			if filename == "config.yaml" {
-				return false, nil
-			}
+		if slices.Contains(filenames, "config.yaml") {
+			return false, nil
 		}
 	}
 }

@@ -96,7 +96,7 @@ func TestVersion_IsZero(t *testing.T) {
 
 func TestRollout_MarshalJSON_UnmarshalJSON(t *testing.T) {
 	var arbitraryRollout version.Rollout
-	for i := 0; i < len(version.RolloutBytes{}); i++ {
+	for i := range len(version.RolloutBytes{}) {
 		arbitraryRollout.Seed[i] = byte(i)
 		arbitraryRollout.Cursor[i] = byte(i * 2)
 	}
@@ -116,7 +116,6 @@ func TestRollout_MarshalJSON_UnmarshalJSON(t *testing.T) {
 	}
 
 	for _, scenario := range scenarios {
-		scenario := scenario
 		t.Run(scenario.name, func(t *testing.T) {
 			var actualRollout version.Rollout
 
@@ -149,7 +148,7 @@ func TestShouldUpdate(t *testing.T) {
 		}
 		testrand.Read(rollout.Seed[:])
 
-		for i := 0; i < total; i++ {
+		for range total {
 			var nodeID storj.NodeID
 			testrand.Read(nodeID[:])
 

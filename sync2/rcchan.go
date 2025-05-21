@@ -31,7 +31,7 @@ func MakeReceiverClosableChan[T any](bufferSize int) *ReceiverClosableChan[T] {
 		vals:        make(chan T, bufferSize),
 		outstanding: bufferSize,
 	}
-	for i := 0; i < bufferSize; i++ {
+	for range bufferSize {
 		c.slots <- struct{}{}
 	}
 	return c

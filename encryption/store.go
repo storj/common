@@ -4,6 +4,8 @@
 package encryption
 
 import (
+	"maps"
+
 	"github.com/zeebo/errs"
 
 	"storj.io/common/paths"
@@ -111,9 +113,7 @@ func (n *node) clone() *node {
 	}
 
 	// Deep copy the unencMap map
-	for k, v := range n.unencMap {
-		clone.unencMap[k] = v
-	}
+	maps.Copy(clone.unencMap, n.unencMap)
 
 	// Deep copy the enc map
 	for k, v := range n.enc {
@@ -121,9 +121,7 @@ func (n *node) clone() *node {
 	}
 
 	// Deep copy the encMap map
-	for k, v := range n.encMap {
-		clone.encMap[k] = v
-	}
+	maps.Copy(clone.encMap, n.encMap)
 
 	return clone
 }

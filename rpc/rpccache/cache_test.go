@@ -224,11 +224,11 @@ func TestCache_ShortExpirationEventuallyClears(t *testing.T) {
 	})
 
 	var wg sync.WaitGroup
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for i := 0; i < 10000; i++ {
+			for range 10000 {
 				x := c.Take("key")
 				if x == nil {
 					x = newChan()
@@ -263,9 +263,7 @@ func TestCache_Fuzz(t *testing.T) {
 
 	sizes := []int{1, 2, 3, 4}
 	for _, capSize := range sizes {
-		capSize := capSize
 		for _, keyCapSize := range sizes {
-			keyCapSize := keyCapSize
 
 			title := fmt.Sprintf("Cap:%2d KeyCap:%d", 10*capSize, keyCapSize)
 			t.Run(title, func(t *testing.T) { runFuzz(t, rng, capSize, keyCapSize) })
@@ -329,7 +327,7 @@ func runFuzz(t *testing.T, rng *rand.Rand, capacity, keyCapacity int) {
 	})
 
 	// generate the fuzz events
-	for i := 0; i < 10000; i++ {
+	for range 10000 {
 		ev := getEvent()
 		switch ev.action {
 		case "put":
@@ -494,14 +492,13 @@ func runBenchmarkFilterSlice(b *testing.B, n int) {
 
 func BenchmarkFilterSlice(b *testing.B) {
 	for _, size := range []int{10, 100, 1000} {
-		size := size
 		b.Run(strconv.Itoa(size), func(b *testing.B) { runBenchmarkFilterSlice(b, size) })
 	}
 }
 
 func runBenchmarkFilterList(b *testing.B, n int) {
 	l := list.New()
-	for i := 0; i < n; i++ {
+	for range n {
 		l.PushBack(new(entry))
 	}
 	b.ResetTimer()
@@ -515,7 +512,6 @@ func runBenchmarkFilterList(b *testing.B, n int) {
 
 func BenchmarkFilterList(b *testing.B) {
 	for _, size := range []int{10, 100, 1000} {
-		size := size
 		b.Run(strconv.Itoa(size), func(b *testing.B) { runBenchmarkFilterList(b, size) })
 	}
 }

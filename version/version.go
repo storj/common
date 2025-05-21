@@ -240,7 +240,7 @@ func PercentageToCursorF(pct float64) RolloutBytes {
 	// NB: convert the max value to a number, multiply by the percentage, convert back.
 	var maxInt, maskInt big.Int
 	var maxBytes RolloutBytes
-	for i := 0; i < len(maxBytes); i++ {
+	for i := range len(maxBytes) {
 		maxBytes[i] = 255
 	}
 
@@ -264,7 +264,7 @@ func PercentageToCursor(pct int) RolloutBytes {
 	// NB: convert the max value to a number, multiply by the percentage, convert back.
 	var maxInt, maskInt big.Int
 	var maxBytes RolloutBytes
-	for i := 0; i < len(maxBytes); i++ {
+	for i := range len(maxBytes) {
 		maxBytes[i] = 255
 	}
 	maxInt.SetBytes(maxBytes[:])

@@ -6,6 +6,7 @@ package macaroon
 import (
 	"encoding/binary"
 	"errors"
+	"slices"
 )
 
 type fieldType int
@@ -114,7 +115,7 @@ func ParseMacaroon(data []byte) (_ *Macaroon, err error) {
 		if len(section) == 0 || section[0].fieldType != fieldIdentifier {
 			return nil, errors.New("no Identifier in caveat")
 		}
-		cav := append([]byte(nil), section[0].data...)
+		cav := slices.Clone(section[0].data)
 		section = section[1:]
 		if len(section) == 0 {
 			// First party caveat.

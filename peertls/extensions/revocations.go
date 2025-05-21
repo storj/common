@@ -10,6 +10,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/binary"
+	"slices"
 	"time"
 
 	"github.com/zeebo/errs"
@@ -141,7 +142,7 @@ func (r Revocation) Verify(signingCert *x509.Certificate) error {
 func (r *Revocation) TBSBytes() []byte {
 	var tsBytes [binary.MaxVarintLen64]byte
 	binary.PutVarint(tsBytes[:], r.Timestamp)
-	toHash := append(append([]byte{}, r.KeyHash...), tsBytes[:]...)
+	toHash := slices.Concat(r.KeyHash, tsBytes[:])
 
 	return pkcrypto.SHA256Hash(toHash)
 }

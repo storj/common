@@ -155,7 +155,6 @@ func TestUnmarshal(t *testing.T) {
 			err:  `strictcsv: field "Field" missing csv tag`,
 		},
 	} {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			err := UnmarshalString(tt.csv, tt.obj)
 			if tt.err != "" {

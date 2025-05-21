@@ -74,7 +74,7 @@ m3{scope="test",field=""} 4
 func TestServer_Close(t *testing.T) {
 	ctx := testcontext.New(t)
 
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		registry := monkit.NewRegistry()
 		lis := newFakeListener()
 		srv := NewServer(zaptest.NewLogger(t), lis, registry, Config{

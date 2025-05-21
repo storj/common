@@ -25,7 +25,7 @@ func TestFence(t *testing.T) {
 	var fence sync2.Fence
 	var done int32
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		group.Go(func() error {
 			if !fence.Wait(ctx) {
 				return errors.New("got false from Wait")
@@ -40,7 +40,7 @@ func TestFence(t *testing.T) {
 	// wait a bit for all goroutines to hit the fence
 	time.Sleep(100 * time.Millisecond)
 
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		group.Go(func() error {
 			atomic.StoreInt32(&done, 1)
 			fence.Release()
@@ -62,7 +62,7 @@ func TestFence_ContextCancel(t *testing.T) {
 	var group errgroup.Group
 	var fence sync2.Fence
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		group.Go(func() error {
 			if fence.Wait(ctx) {
 				return errors.New("got true from Wait")

@@ -35,7 +35,7 @@ func TestNoFalsePositive(t *testing.T) {
 func TestBytes(t *testing.T) {
 	for _, count := range []int64{0, 100, 1000, 10000} {
 		filter := bloomfilter.NewOptimal(count, 0.1)
-		for i := int64(0); i < count; i++ {
+		for range count {
 			id := testrand.PieceID()
 			filter.Add(id)
 		}
@@ -124,14 +124,14 @@ func TestApproximateFalsePositives(t *testing.T) {
 		for _, n := range []int64{1000, 10000, 100000, 1000000} {
 			fpp := []float64{}
 
-			for k := 0; k < measurements; k++ {
+			for range measurements {
 				filter := bloomfilter.NewOptimal(n, p)
-				for i := int64(0); i < n; i++ {
+				for range n {
 					filter.Add(testrand.PieceID())
 				}
 
 				positive := 0
-				for k := 0; k < validation; k++ {
+				for range validation {
 					if filter.Contains(testrand.PieceID()) {
 						positive++
 					}

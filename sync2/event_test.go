@@ -39,7 +39,7 @@ func TestEvent(t *testing.T) {
 	// this ensures that the `Wait` doesn't release early.
 	time.Sleep(100 * time.Millisecond)
 
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		group.Go(func() error {
 			atomic.StoreInt32(&done, 1)
 			event.Signal()
@@ -77,7 +77,7 @@ func TestEvent_ContextCancel(t *testing.T) {
 	var group errgroup.Group
 	var event sync2.Event
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		group.Go(func() error {
 			if event.Wait(ctx) {
 				return errors.New("got true from Wait")

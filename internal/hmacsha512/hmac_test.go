@@ -25,7 +25,7 @@ var sinkSum [hmacsha512.Size]byte
 var sinkBytes []byte
 
 func TestRandom(t *testing.T) {
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		key := make([]byte, 21*(i+1))
 		node1 := NodeID{}
 		node2 := NodeID{}
@@ -73,7 +73,7 @@ func BenchmarkInlined(b *testing.B) {
 
 		var mac hmacsha512.Partial
 		mac.Init(pieceID[:])
-		for k := 0; k < 100; k++ {
+		for k := range 100 {
 			nodeid := NodeID{byte(k), byte(k), byte(k), byte(k)}
 			mac.Write(nodeid[:])
 			var num [4]byte
@@ -88,7 +88,7 @@ func BenchmarkStandard(b *testing.B) {
 	for i := 0 + 1; i < b.N+1; i++ {
 		pieceID := PieceID{byte(i), byte(i), byte(i), byte(i)}
 		mac := hmac.New(sha512.New, pieceID[:])
-		for k := 0; k < 100; k++ {
+		for k := range 100 {
 			nodeid := NodeID{byte(k), byte(k), byte(k), byte(k)}
 			mac.Reset()
 			_, _ = mac.Write(nodeid[:])

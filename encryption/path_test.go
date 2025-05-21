@@ -230,7 +230,7 @@ func TestSegmentEncoding(t *testing.T) {
 	}
 
 	// additional random segments
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		segments = append(segments, testrand.BytesInt(testrand.Intn(256)))
 	}
 
@@ -279,7 +279,7 @@ func TestValidateEncodedSegment(t *testing.T) {
 func TestEncodingDecodingStress(t *testing.T) {
 	specials := [...]byte{0x00, 0x01, 0x02, 0x03, 'A', '/', '\\', 0x2d, 0x2e, 0x2f, 0xfd, 0xfe, 0xff}
 	const n = len(specials)
-	for i := 0; i < n*n*n; i++ {
+	for i := range n * n * n {
 		var segment [3]byte
 		segment[0] = specials[i%n]
 		segment[1] = specials[i/n%n]
@@ -290,7 +290,7 @@ func TestEncodingDecodingStress(t *testing.T) {
 	}
 
 	// random segments
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		segment := testrand.BytesInt(testrand.Intn(256))
 		_ = encodeSegment(segment)
 		_, _ = decodeSegment(segment)

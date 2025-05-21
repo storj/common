@@ -8,6 +8,7 @@ import (
 	"errors"
 	"io"
 	"net"
+	"slices"
 	"sync/atomic"
 	"time"
 
@@ -125,7 +126,7 @@ func (s *setup) setDeadline(t time.Time, typ requestType) (err error) {
 	}
 	s.request(req, req)
 
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		err = (<-req.Response).Err
 		if err == nil {
 			return nil
@@ -150,11 +151,11 @@ func (s *setup) Write(p []byte) (n int, err error) {
 	req := connRequest{
 		Response: make(chan connResponse, 2),
 		Type:     typeWrite,
-		Buf:      append([]byte(nil), p...),
+		Buf:      slices.Clone(p),
 	}
 	s.request(req, req)
 
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		answer := <-req.Response
 		n, err = answer.N, answer.Err
 		if err == nil {
@@ -184,7 +185,7 @@ func (s *setup) Read(p []byte) (n int, conn net.Conn, err error) {
 		Buf:      p2,
 	})
 
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		answer := <-resp
 		n, err = answer.N, answer.Err
 		if err != nil {

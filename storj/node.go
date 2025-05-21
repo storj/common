@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"math/bits"
+	"slices"
 	"strings"
 
 	"github.com/zeebo/errs"
@@ -332,12 +333,7 @@ func (n NodeIDList) Less(i, j int) bool { return n[i].Less(n[j]) }
 
 // Contains tests if the node IDs contain id.
 func (n NodeIDList) Contains(id NodeID) bool {
-	for _, nid := range n {
-		if nid == id {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(n, id)
 }
 
 // Unique returns slice of the unique node IDs.

@@ -56,7 +56,7 @@ func TestMetrics(t *testing.T) {
 	//  * serving will return an error
 	// in the good case serving should return last and should return a closed
 	// error
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		err := <-errs
 		assert.NoError(t, err)
 	}

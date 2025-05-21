@@ -187,7 +187,6 @@ func InitMetricsWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Reg
 func Report(ctx context.Context) error {
 	var group errgroup.Group
 	for _, c := range clients {
-		c := c
 		group.Go(func() error {
 			return c.Report(ctx)
 		})

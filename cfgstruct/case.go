@@ -20,7 +20,7 @@ func snakeCase(val string) string {
 	}
 	runes := []rune(val)
 	rv := make([]rune, 0, len(runes))
-	for i := 0; i < len(runes); i++ {
+	for i := range runes {
 		rv = append(rv, unicode.ToLower(runes[i]))
 		if i < len(runes)-1 &&
 			unicode.IsLower(runes[i]) &&

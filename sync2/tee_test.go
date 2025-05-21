@@ -34,7 +34,7 @@ func TestTee_Basic(t *testing.T) {
 			return nil
 		})
 
-		for i := 0; i < len(readers); i++ {
+		for i := range readers {
 			i := i
 			group.Go(func() error {
 				data, err := io.ReadAll(readers[i])
@@ -67,7 +67,7 @@ func TestTee_CloseWithError(t *testing.T) {
 			return nil
 		})
 
-		for i := 0; i < len(readers); i++ {
+		for i := range readers {
 			i := i
 			group.Go(func() error {
 				_, err := io.ReadAll(readers[i])

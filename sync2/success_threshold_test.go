@@ -73,7 +73,6 @@ func TestNewSuccessThreshold(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 
 		t.Run(tc.desc, func(t *testing.T) {
 			t.Parallel()
@@ -102,7 +101,7 @@ func TestSuccessThreshold_AllSuccess(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	wg.Add(tasks)
-	for i := 0; i < tasks; i++ {
+	for range tasks {
 		go func() {
 			successThreshold.Success()
 			wg.Done()
@@ -129,7 +128,7 @@ func TestSuccessThreshold_AllFailures(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	wg.Add(tasks)
-	for i := 0; i < tasks; i++ {
+	for range tasks {
 		go func() {
 			successThreshold.Failure()
 			wg.Done()
@@ -158,7 +157,7 @@ func TestSuccessThreshold_FailuresWithReachedSuccessThreshold(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(tasks)
 	successfulTasksDone := make(chan struct{}, successfulTasks)
-	for i := 0; i < tasks; i++ {
+	for i := range tasks {
 		go func(i int) {
 
 			// Alternate tasks with success & failure
@@ -200,7 +199,7 @@ func TestSuccessThreshold_FailuresWithoutReachedSuccessThreshold(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	wg.Add(tasks)
-	for i := 0; i < tasks; i++ {
+	for i := range tasks {
 		go func(i int) {
 			// Alternate tasks with success & failure
 			if i%2 == 0 {
@@ -234,7 +233,7 @@ func TestSuccessThreshold_ExtraTasksAreFine(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	wg.Add(tasks + extraTasks)
-	for i := 0; i < (tasks + extraTasks); i++ {
+	for i := range tasks + extraTasks {
 		go func(i int) {
 			if i%2 == 0 {
 				successThreshold.Success()
@@ -265,7 +264,7 @@ func TestSuccessThreshold_SuccessRateCloseTo0(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(tasks)
 	completedTasks := make(chan struct{}, expectedThreshold)
-	for i := 0; i < tasks; i++ {
+	for range tasks {
 		go func() {
 			completedTasks <- struct{}{}
 			successThreshold.Success()
@@ -300,7 +299,7 @@ func TestSuccessThreshold_SuccessThresholdNumTasks(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	wg.Add(tasks)
-	for i := 0; i < tasks; i++ {
+	for range tasks {
 		go func() {
 			successThreshold.Success()
 			wg.Done()
@@ -325,7 +324,7 @@ func TestSuccessThreshold_CallingWaitMoreThanOnce(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 	wg.Add(tasks)
-	for i := 0; i < tasks; i++ {
+	for range tasks {
 		go func() {
 			successThreshold.Success()
 			wg.Done()

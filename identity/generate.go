@@ -61,7 +61,7 @@ func GenerateKeys(ctx context.Context, minDifficulty uint16, concurrency int, ve
 	defer cancel()
 	errchan := make(chan error, concurrency)
 
-	for i := 0; i < concurrency; i++ {
+	for range concurrency {
 		go func() {
 			for {
 				k, id, err := GenerateKey(ctx, minDifficulty, version)

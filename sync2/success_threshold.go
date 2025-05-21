@@ -45,12 +45,8 @@ func NewSuccessThreshold(tasks int, successThreshold float64) (*SuccessThreshold
 		)
 	}
 
-	tasksToSuccess := int64(math.Ceil(float64(tasks) * successThreshold))
-
 	// just in case of floating point issues
-	if tasksToSuccess > int64(tasks) {
-		tasksToSuccess = int64(tasks)
-	}
+	tasksToSuccess := min(int64(math.Ceil(float64(tasks)*successThreshold)), int64(tasks))
 
 	return &SuccessThreshold{
 		toSucceed: tasksToSuccess,

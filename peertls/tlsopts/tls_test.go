@@ -16,7 +16,7 @@ import (
 )
 
 func TestVerifyIdentity_success(t *testing.T) {
-	for i := 0; i < 50; i++ {
+	for i := range 50 {
 		ident, err := testidentity.PregeneratedIdentity(i, storj.LatestIDVersion())
 		require.NoError(t, err)
 
@@ -26,7 +26,7 @@ func TestVerifyIdentity_success(t *testing.T) {
 }
 
 func TestVerifyIdentity_success_signed(t *testing.T) {
-	for i := 0; i < 50; i++ {
+	for i := range 50 {
 		ident, err := testidentity.PregeneratedSignedIdentity(i, storj.LatestIDVersion())
 		require.NoError(t, err)
 

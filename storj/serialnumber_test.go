@@ -19,7 +19,7 @@ func TestSerialNumber_Encode(t *testing.T) {
 	_, err = storj.SerialNumberFromBytes([]byte{1, 2, 3, 4, 5})
 	assert.Error(t, err)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		serialNumber := testrand.SerialNumber()
 
 		fromString, err := storj.SerialNumberFromString(serialNumber.String())

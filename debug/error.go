@@ -13,7 +13,7 @@ func init() {
 	monkit.AddErrorNameHandler(func(err error) (string, bool) {
 		var code uint64
 	forLoop:
-		for i := 0; i < 100; i++ {
+		for range 100 {
 			if v, ok := err.(interface{ Name() (string, bool) }); ok {
 				if cls, ok := v.Name(); ok && cls != "" {
 					return cls, true

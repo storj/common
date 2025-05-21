@@ -30,7 +30,7 @@ func TestPieceID_Encode(t *testing.T) {
 	_, err = storj.PieceIDFromBytes([]byte{1, 2, 3, 4, 5})
 	assert.Error(t, err)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		pieceid := storj.NewPieceID()
 
 		fromString, err := storj.PieceIDFromString(pieceid.String())

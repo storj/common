@@ -21,7 +21,7 @@ func TestLabels(t *testing.T) {
 	t.Cleanup(cancel)
 
 	pprof.Do(ctx, pprof.Labels("name", label), func(c context.Context) {
-		for k := 0; k < 3; k++ {
+		for range 3 {
 			go func() { <-c.Done() }()
 		}
 	})

@@ -210,11 +210,8 @@ func OptimalParameters(expectedElements int64, falsePositiveRate float64, maxSiz
 func getHashCountAndSize(expectedElements int64, falsePositiveRate float64) (hashCount byte, size int) {
 	// calculation based on https://en.wikipedia.org/wiki/Bloom_filter#Optimal_number_of_hash_functions
 	bitsPerElement := -1.44 * math.Log2(falsePositiveRate)
-	hashCountInt := int(math.Ceil(bitsPerElement * math.Log(2)))
-	if hashCountInt > 32 {
-		// it will never be larger, but just in case to avoid overflow
-		hashCountInt = 32
-	}
+	// it will never be larger, but just in case to avoid overflow
+	hashCountInt := min(int(math.Ceil(bitsPerElement*math.Log(2))), 32)
 	size = int(math.Ceil(float64(expectedElements) * bitsPerElement / 8))
 
 	return byte(hashCountInt), size

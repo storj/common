@@ -66,7 +66,7 @@ func TestMetrics(t *testing.T) {
 		return nil
 	})
 
-	for i := 0; i < expectedMetric; i++ {
+	for range expectedMetric {
 		key := <-keys
 		value := <-values
 

@@ -6,6 +6,7 @@
 package crawlspace
 
 import (
+	"maps"
 	"reflect"
 	"sync"
 
@@ -28,7 +29,5 @@ func Register(name string, val any) {
 func Apply(env reflectlang.Environment) {
 	mu.Lock()
 	defer mu.Unlock()
-	for key, val := range globalEnv {
-		env[key] = val
-	}
+	maps.Copy(env, globalEnv)
 }

@@ -21,11 +21,11 @@ func TestBasic(t *testing.T) {
 
 	const N = 10
 
-	for i := 0; i < N; i++ {
+	for i := range N {
 		queue.Enqueue(i)
 	}
 
-	for i := 0; i < N; i++ {
+	for i := range N {
 		v, ok := queue.Dequeue()
 		require.True(t, ok)
 		require.Equal(t, i, v)
@@ -42,7 +42,7 @@ func TestNoBreaks(t *testing.T) {
 	const N = 10
 
 	var senders errgroup.Group
-	for i := 0; i < N; i++ {
+	for i := range N {
 		i := i
 		senders.Go(func() error {
 			queue.Enqueue(i)
@@ -84,19 +84,19 @@ func TestConcurrent(t *testing.T) {
 
 	_ = sync2.Concurrently(
 		func() error {
-			for i := 0; i < N; i++ {
+			for i := range N {
 				queue.Enqueue(i)
 			}
 			return nil
 		},
 		func() error {
-			for i := 0; i < N; i++ {
+			for i := range N {
 				queue.Enqueue(N + i)
 			}
 			return nil
 		},
 		func() error {
-			for i := 0; i < N; i++ {
+			for i := range N {
 				queue.Enqueue(2*N + i)
 			}
 			return nil

@@ -61,7 +61,7 @@ func TestStubConnectionAsync(t *testing.T) {
 	stream, err := stub.NewStream(context.Background(), "/test/hello1", nil)
 	require.Nil(t, err)
 
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		err = stream.MsgSend(&helloMessage{
 			"ping" + strconv.Itoa(i),
 		}, nil)

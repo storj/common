@@ -13,7 +13,7 @@ import (
 )
 
 func TestStreamID_Encode(t *testing.T) {
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		expectedSize := testrand.Intn(255)
 		streamID := testrand.StreamID(expectedSize)
 

@@ -87,7 +87,7 @@ func BenchmarkRegistry(b *testing.B) {
 	r := eventstat.Registry{}
 	counter := r.NewTagCounter("user_agents", "agent")
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < 10000; j++ {
+		for range 10000 {
 			counter("awscli")
 			counter("uplink")
 			counter("uplink")

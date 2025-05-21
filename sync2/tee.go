@@ -39,7 +39,7 @@ func NewTeeFile(readers int, tempdir string) ([]PipeReader, PipeWriter, error) {
 	tee.noreader.L = &tee.mu
 
 	teeReaders := make([]PipeReader, readers)
-	for i := 0; i < readers; i++ {
+	for i := range readers {
 		teeReaders[i] = &teeReader{
 			tee: tee,
 			buffer: &sharedFile{
@@ -72,7 +72,7 @@ func NewTeeInmemory(readers int, blockSize int64) ([]PipeReader, PipeWriter, err
 	tee.noreader.L = &tee.mu
 
 	teeReaders := make([]PipeReader, readers)
-	for i := 0; i < readers; i++ {
+	for i := range readers {
 		teeReaders[i] = &teeReader{
 			tee: tee,
 			buffer: &blockReader{
