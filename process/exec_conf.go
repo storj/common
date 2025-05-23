@@ -25,7 +25,6 @@ import (
 	"github.com/zeebo/errs"
 	"github.com/zeebo/structs"
 	"go.uber.org/zap"
-	"golang.org/x/sync/errgroup"
 
 	"storj.io/common/cfgstruct"
 	"storj.io/common/version"
@@ -351,24 +350,11 @@ func cleanup(cmd *cobra.Command, opts *ExecOptions) {
 			if certPathFlag != nil {
 				certPath = certPathFlag.Value.String()
 			}
-			collector, unregister, err := InitTracingWithHostname(ctx, logger, nil, certPath)
+			unregister, err := InitTracingWithHostname(ctx, logger, nil, certPath)
 			if err != nil {
 				logger.Debug("failed to initialize tracing collector", zap.Error(err))
-			} else if collector != nil {
-				ctx, cancel := context.WithCancel(ctx)
-				var eg errgroup.Group
-				eg.Go(func() error {
-					collector.Run(ctx)
-					return nil
-				})
-				defer func() {
-					cancel()
-					unregister()
-					err := eg.Wait()
-					if err != nil {
-						logger.Debug("failed to stop tracing collector", zap.Error(err))
-					}
-				}()
+			} else if unregister != nil {
+				defer unregister()
 			}
 		}
 

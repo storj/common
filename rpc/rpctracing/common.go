@@ -15,6 +15,9 @@ const (
 	ParentID = "parent-id"
 	// Sampled is the key we use to store sampled flag into context.
 	Sampled = "sampled"
+	// TraceHost is the host to send the traces to. If unprovided, the default
+	// is used.
+	TraceHost = "trace-host"
 )
 
 var mon = monkit.Package()

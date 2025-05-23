@@ -55,5 +55,9 @@ func (c *TracingWrapper) trace(ctx context.Context) context.Context {
 		Sampled:  strconv.FormatBool(sampled),
 	}
 
+	if traceHost, exist := span.Trace().Get(TraceHost).(string); exist {
+		data[TraceHost] = traceHost
+	}
+
 	return drpcmetadata.AddPairs(ctx, data)
 }

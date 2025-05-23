@@ -34,7 +34,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	storj.io/drpc v0.0.35-0.20250513201419-f7819ea69b55
 	storj.io/eventkit v0.0.0-20250410172343-61f26d3de156
-	storj.io/monkit-jaeger v0.0.0-20240221095020-52b0792fa6cd
+	storj.io/monkit-jaeger v0.0.0-20250523220404-454c1b072fad
 	storj.io/picobuf v0.0.4
 )
 

@@ -8,9 +8,11 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/spacemonkeygo/monkit/v3"
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 
 	"storj.io/common/identity"
 	"storj.io/common/rpc/rpctracing"
@@ -27,6 +29,7 @@ var (
 	tracingBufferSize   = flag.Int("tracing.buffer-size", 0, "buffer size for collector batch packet size")
 	tracingQueueSize    = flag.Int("tracing.queue-size", 0, "buffer size for collector queue size")
 	tracingInterval     = flag.Duration("tracing.interval", 0, "how frequently to flush traces to tracing agent")
+	tracingHostRegex    = flag.String("tracing.host-regex", `\.storj\.tools:[0-9]+$`, "the possible hostnames that trace-host designated traces can be sent to")
 )
 
 const (
@@ -35,17 +38,17 @@ const (
 )
 
 // InitTracing initializes distributed tracing with an instance ID.
-func InitTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string) (*jaeger.ThriftCollector, func(), error) {
+func InitTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string) (func(), error) {
 	return initTracing(ctx, log, r, instanceID, []jaeger.Tag{})
 }
 
 // InitTracingWithCertPath initializes distributed tracing with certificate path.
-func InitTracingWithCertPath(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (*jaeger.ThriftCollector, func(), error) {
+func InitTracingWithCertPath(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (func(), error) {
 	return initTracing(ctx, log, r, nodeIDFromCertPath(ctx, log, certDir), []jaeger.Tag{})
 }
 
 // InitTracingWithHostname initializes distributed tracing with nodeID and hostname.
-func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (*jaeger.ThriftCollector, func(), error) {
+func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Registry, certDir string) (func(), error) {
 	var processInfo []jaeger.Tag
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -60,14 +63,25 @@ func InitTracingWithHostname(ctx context.Context, log *zap.Logger, r *monkit.Reg
 	return initTracing(ctx, log, r, nodeIDFromCertPath(ctx, log, certDir), processInfo)
 }
 
-func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string, processInfo []jaeger.Tag) (collector *jaeger.ThriftCollector, cancel func(), err error) {
+type traceCollectorFactoryFunc func(hostTarget string) (jaeger.ClosableTraceCollector, error)
+
+func (f traceCollectorFactoryFunc) MakeCollector(hostTarget string) (jaeger.ClosableTraceCollector, error) {
+	return f(hostTarget)
+}
+
+func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string, processInfo []jaeger.Tag) (cleanup func(), err error) {
 	if r == nil {
 		r = monkit.Default
 	}
 
+	hostRegex, err := regexp.Compile(*tracingHostRegex)
+	if err != nil {
+		return nil, err
+	}
+
 	if !*tracingEnabled {
 		log.Debug("Anonymized tracing disabled")
-		return nil, nil, nil
+		return nil, nil
 	}
 
 	log.Info("Anonymized tracing enabled")
@@ -84,15 +98,55 @@ func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	if len(processName) > maxInstanceLength {
 		processName = processName[:maxInstanceLength]
 	}
-	collector, err = jaeger.NewThriftCollector(log, *tracingAgent, processName, processInfo, *tracingBufferSize, *tracingQueueSize, *tracingInterval)
+	collector, err := jaeger.NewThriftCollector(log, *tracingAgent, processName, processInfo, *tracingBufferSize, *tracingQueueSize, *tracingInterval)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	cancel = jaeger.RegisterJaeger(r, collector, jaeger.Options{
+	var eg errgroup.Group
+
+	collectorCtx, collectorCtxCancel := context.WithCancel(ctx)
+	eg.Go(func() error {
+		collector.Run(collectorCtx)
+		return nil
+	})
+
+	unregister := jaeger.RegisterJaeger(r, collector, jaeger.Options{
 		Fraction: *tracingSamplingRate,
 		Excluded: rpctracing.IsExcluded,
+		CollectorFactory: traceCollectorFactoryFunc(func(targetHost string) (jaeger.ClosableTraceCollector, error) {
+			targetCollector, err := jaeger.NewThriftCollector(log, targetHost, processName,
+				processInfo, *tracingBufferSize, *tracingQueueSize, *tracingInterval)
+			if err != nil {
+				return nil, err
+			}
+			targetCollectorCtx, targetCollectorCancel := context.WithCancel(collectorCtx)
+			eg.Go(func() error {
+				targetCollector.Run(targetCollectorCtx)
+				return nil
+			})
+			return &closableCollector{
+				cancel:                 targetCollectorCancel,
+				ClosableTraceCollector: targetCollector,
+			}, nil
+		}),
+		CollectorFactoryHostMatch: hostRegex,
 	})
-	return collector, cancel, nil
+	return func() {
+		unregister()
+		collectorCtxCancel()
+		_ = collector.Close()
+		_ = eg.Wait()
+	}, nil
+}
+
+type closableCollector struct {
+	jaeger.ClosableTraceCollector
+	cancel func()
+}
+
+func (collector *closableCollector) Close() error {
+	collector.cancel()
+	return collector.ClosableTraceCollector.Close()
 }
 
 func nodeIDFromCertPath(ctx context.Context, log *zap.Logger, certPath string) string {
