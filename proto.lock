@@ -2298,6 +2298,71 @@
             ]
           },
           {
+            "name": "BucketTag",
+            "fields": [
+              {
+                "id": 1,
+                "name": "key",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "value",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "GetBucketTaggingRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "name",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "GetBucketTaggingResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "tags",
+                "type": "BucketTag",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "SetBucketTaggingRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "name",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "tags",
+                "type": "BucketTag",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "SetBucketTaggingResponse"
+          },
+          {
             "name": "GetBucketVersioningRequest",
             "fields": [
               {
@@ -4839,6 +4904,18 @@
                 "oneof_parent": "Request"
               },
               {
+                "id": 41,
+                "name": "bucket_get_tagging",
+                "type": "GetBucketTaggingRequest",
+                "oneof_parent": "Request"
+              },
+              {
+                "id": 42,
+                "name": "bucket_set_tagging",
+                "type": "SetBucketTaggingRequest",
+                "oneof_parent": "Request"
+              },
+              {
                 "id": 31,
                 "name": "bucket_get_versioning",
                 "type": "GetBucketVersioningRequest",
@@ -5095,6 +5172,18 @@
                 "id": 30,
                 "name": "bucket_get_location",
                 "type": "GetBucketLocationResponse",
+                "oneof_parent": "Response"
+              },
+              {
+                "id": 41,
+                "name": "bucket_get_tagging",
+                "type": "GetBucketTaggingResponse",
+                "oneof_parent": "Response"
+              },
+              {
+                "id": 42,
+                "name": "bucket_set_tagging",
+                "type": "SetBucketTaggingResponse",
                 "oneof_parent": "Response"
               },
               {
@@ -5724,6 +5813,16 @@
                 "name": "GetBucketLocation",
                 "in_type": "GetBucketLocationRequest",
                 "out_type": "GetBucketLocationResponse"
+              },
+              {
+                "name": "GetBucketTagging",
+                "in_type": "GetBucketTaggingRequest",
+                "out_type": "GetBucketTaggingResponse"
+              },
+              {
+                "name": "SetBucketTagging",
+                "in_type": "SetBucketTaggingRequest",
+                "out_type": "SetBucketTaggingResponse"
               },
               {
                 "name": "GetBucketVersioning",

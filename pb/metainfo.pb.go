@@ -632,6 +632,210 @@ func (m *GetBucketLocationResponse) GetLocation() []byte {
 	return nil
 }
 
+type BucketTag struct {
+	Key                  []byte   `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Value                []byte   `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *BucketTag) Reset()         { *m = BucketTag{} }
+func (m *BucketTag) String() string { return proto.CompactTextString(m) }
+func (*BucketTag) ProtoMessage()    {}
+
+func (m *BucketTag) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_BucketTag.Unmarshal(m, b)
+}
+func (m *BucketTag) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_BucketTag.Marshal(b, m, deterministic)
+}
+func (m *BucketTag) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BucketTag.Merge(m, src)
+}
+func (m *BucketTag) XXX_Size() int {
+	return xxx_messageInfo_BucketTag.Size(m)
+}
+func (m *BucketTag) XXX_DiscardUnknown() {
+	xxx_messageInfo_BucketTag.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BucketTag proto.InternalMessageInfo
+
+func (m *BucketTag) GetKey() []byte {
+	if m != nil {
+		return m.Key
+	}
+	return nil
+}
+
+func (m *BucketTag) GetValue() []byte {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+type GetBucketTaggingRequest struct {
+	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Name                 []byte         `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *GetBucketTaggingRequest) Reset()         { *m = GetBucketTaggingRequest{} }
+func (m *GetBucketTaggingRequest) String() string { return proto.CompactTextString(m) }
+func (*GetBucketTaggingRequest) ProtoMessage()    {}
+
+func (m *GetBucketTaggingRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetBucketTaggingRequest.Unmarshal(m, b)
+}
+func (m *GetBucketTaggingRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetBucketTaggingRequest.Marshal(b, m, deterministic)
+}
+func (m *GetBucketTaggingRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetBucketTaggingRequest.Merge(m, src)
+}
+func (m *GetBucketTaggingRequest) XXX_Size() int {
+	return xxx_messageInfo_GetBucketTaggingRequest.Size(m)
+}
+func (m *GetBucketTaggingRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetBucketTaggingRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetBucketTaggingRequest proto.InternalMessageInfo
+
+func (m *GetBucketTaggingRequest) GetHeader() *RequestHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
+func (m *GetBucketTaggingRequest) GetName() []byte {
+	if m != nil {
+		return m.Name
+	}
+	return nil
+}
+
+type GetBucketTaggingResponse struct {
+	Tags                 []*BucketTag `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *GetBucketTaggingResponse) Reset()         { *m = GetBucketTaggingResponse{} }
+func (m *GetBucketTaggingResponse) String() string { return proto.CompactTextString(m) }
+func (*GetBucketTaggingResponse) ProtoMessage()    {}
+
+func (m *GetBucketTaggingResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetBucketTaggingResponse.Unmarshal(m, b)
+}
+func (m *GetBucketTaggingResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetBucketTaggingResponse.Marshal(b, m, deterministic)
+}
+func (m *GetBucketTaggingResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetBucketTaggingResponse.Merge(m, src)
+}
+func (m *GetBucketTaggingResponse) XXX_Size() int {
+	return xxx_messageInfo_GetBucketTaggingResponse.Size(m)
+}
+func (m *GetBucketTaggingResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetBucketTaggingResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetBucketTaggingResponse proto.InternalMessageInfo
+
+func (m *GetBucketTaggingResponse) GetTags() []*BucketTag {
+	if m != nil {
+		return m.Tags
+	}
+	return nil
+}
+
+type SetBucketTaggingRequest struct {
+	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Name                 []byte         `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Tags                 []*BucketTag   `protobuf:"bytes,2,rep,name=tags,proto3" json:"tags,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *SetBucketTaggingRequest) Reset()         { *m = SetBucketTaggingRequest{} }
+func (m *SetBucketTaggingRequest) String() string { return proto.CompactTextString(m) }
+func (*SetBucketTaggingRequest) ProtoMessage()    {}
+
+func (m *SetBucketTaggingRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetBucketTaggingRequest.Unmarshal(m, b)
+}
+func (m *SetBucketTaggingRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetBucketTaggingRequest.Marshal(b, m, deterministic)
+}
+func (m *SetBucketTaggingRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetBucketTaggingRequest.Merge(m, src)
+}
+func (m *SetBucketTaggingRequest) XXX_Size() int {
+	return xxx_messageInfo_SetBucketTaggingRequest.Size(m)
+}
+func (m *SetBucketTaggingRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetBucketTaggingRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetBucketTaggingRequest proto.InternalMessageInfo
+
+func (m *SetBucketTaggingRequest) GetHeader() *RequestHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
+func (m *SetBucketTaggingRequest) GetName() []byte {
+	if m != nil {
+		return m.Name
+	}
+	return nil
+}
+
+func (m *SetBucketTaggingRequest) GetTags() []*BucketTag {
+	if m != nil {
+		return m.Tags
+	}
+	return nil
+}
+
+type SetBucketTaggingResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SetBucketTaggingResponse) Reset()         { *m = SetBucketTaggingResponse{} }
+func (m *SetBucketTaggingResponse) String() string { return proto.CompactTextString(m) }
+func (*SetBucketTaggingResponse) ProtoMessage()    {}
+
+func (m *SetBucketTaggingResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetBucketTaggingResponse.Unmarshal(m, b)
+}
+func (m *SetBucketTaggingResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetBucketTaggingResponse.Marshal(b, m, deterministic)
+}
+func (m *SetBucketTaggingResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetBucketTaggingResponse.Merge(m, src)
+}
+func (m *SetBucketTaggingResponse) XXX_Size() int {
+	return xxx_messageInfo_SetBucketTaggingResponse.Size(m)
+}
+func (m *SetBucketTaggingResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetBucketTaggingResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetBucketTaggingResponse proto.InternalMessageInfo
+
 type GetBucketVersioningRequest struct {
 	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
 	Name                 []byte         `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -5560,6 +5764,8 @@ type BatchRequestItem struct {
 	//	*BatchRequestItem_BucketCreate
 	//	*BatchRequestItem_BucketGet
 	//	*BatchRequestItem_BucketGetLocation
+	//	*BatchRequestItem_BucketGetTagging
+	//	*BatchRequestItem_BucketSetTagging
 	//	*BatchRequestItem_BucketGetVersioning
 	//	*BatchRequestItem_BucketSetVersioning
 	//	*BatchRequestItem_BucketGetObjectLockConfiguration
@@ -5635,6 +5841,12 @@ type BatchRequestItem_BucketGet struct {
 }
 type BatchRequestItem_BucketGetLocation struct {
 	BucketGetLocation *GetBucketLocationRequest `protobuf:"bytes,30,opt,name=bucket_get_location,json=bucketGetLocation,proto3,oneof" json:"bucket_get_location,omitempty"`
+}
+type BatchRequestItem_BucketGetTagging struct {
+	BucketGetTagging *GetBucketTaggingRequest `protobuf:"bytes,41,opt,name=bucket_get_tagging,json=bucketGetTagging,proto3,oneof" json:"bucket_get_tagging,omitempty"`
+}
+type BatchRequestItem_BucketSetTagging struct {
+	BucketSetTagging *SetBucketTaggingRequest `protobuf:"bytes,42,opt,name=bucket_set_tagging,json=bucketSetTagging,proto3,oneof" json:"bucket_set_tagging,omitempty"`
 }
 type BatchRequestItem_BucketGetVersioning struct {
 	BucketGetVersioning *GetBucketVersioningRequest `protobuf:"bytes,31,opt,name=bucket_get_versioning,json=bucketGetVersioning,proto3,oneof" json:"bucket_get_versioning,omitempty"`
@@ -5745,6 +5957,8 @@ type BatchRequestItem_RevokeApiKey struct {
 func (*BatchRequestItem_BucketCreate) isBatchRequestItem_Request()                     {}
 func (*BatchRequestItem_BucketGet) isBatchRequestItem_Request()                        {}
 func (*BatchRequestItem_BucketGetLocation) isBatchRequestItem_Request()                {}
+func (*BatchRequestItem_BucketGetTagging) isBatchRequestItem_Request()                 {}
+func (*BatchRequestItem_BucketSetTagging) isBatchRequestItem_Request()                 {}
 func (*BatchRequestItem_BucketGetVersioning) isBatchRequestItem_Request()              {}
 func (*BatchRequestItem_BucketSetVersioning) isBatchRequestItem_Request()              {}
 func (*BatchRequestItem_BucketGetObjectLockConfiguration) isBatchRequestItem_Request() {}
@@ -5805,6 +6019,20 @@ func (m *BatchRequestItem) GetBucketGet() *GetBucketRequest {
 func (m *BatchRequestItem) GetBucketGetLocation() *GetBucketLocationRequest {
 	if x, ok := m.GetRequest().(*BatchRequestItem_BucketGetLocation); ok {
 		return x.BucketGetLocation
+	}
+	return nil
+}
+
+func (m *BatchRequestItem) GetBucketGetTagging() *GetBucketTaggingRequest {
+	if x, ok := m.GetRequest().(*BatchRequestItem_BucketGetTagging); ok {
+		return x.BucketGetTagging
+	}
+	return nil
+}
+
+func (m *BatchRequestItem) GetBucketSetTagging() *SetBucketTaggingRequest {
+	if x, ok := m.GetRequest().(*BatchRequestItem_BucketSetTagging); ok {
+		return x.BucketSetTagging
 	}
 	return nil
 }
@@ -6060,6 +6288,8 @@ func (*BatchRequestItem) XXX_OneofWrappers() []interface{} {
 		(*BatchRequestItem_BucketCreate)(nil),
 		(*BatchRequestItem_BucketGet)(nil),
 		(*BatchRequestItem_BucketGetLocation)(nil),
+		(*BatchRequestItem_BucketGetTagging)(nil),
+		(*BatchRequestItem_BucketSetTagging)(nil),
 		(*BatchRequestItem_BucketGetVersioning)(nil),
 		(*BatchRequestItem_BucketSetVersioning)(nil),
 		(*BatchRequestItem_BucketGetObjectLockConfiguration)(nil),
@@ -6184,6 +6414,8 @@ type BatchResponseItem struct {
 	//	*BatchResponseItem_BucketCreate
 	//	*BatchResponseItem_BucketGet
 	//	*BatchResponseItem_BucketGetLocation
+	//	*BatchResponseItem_BucketGetTagging
+	//	*BatchResponseItem_BucketSetTagging
 	//	*BatchResponseItem_BucketGetVersioning
 	//	*BatchResponseItem_BucketSetVersioning
 	//	*BatchResponseItem_BucketGetObjectLockConfiguration
@@ -6259,6 +6491,12 @@ type BatchResponseItem_BucketGet struct {
 }
 type BatchResponseItem_BucketGetLocation struct {
 	BucketGetLocation *GetBucketLocationResponse `protobuf:"bytes,30,opt,name=bucket_get_location,json=bucketGetLocation,proto3,oneof" json:"bucket_get_location,omitempty"`
+}
+type BatchResponseItem_BucketGetTagging struct {
+	BucketGetTagging *GetBucketTaggingResponse `protobuf:"bytes,41,opt,name=bucket_get_tagging,json=bucketGetTagging,proto3,oneof" json:"bucket_get_tagging,omitempty"`
+}
+type BatchResponseItem_BucketSetTagging struct {
+	BucketSetTagging *SetBucketTaggingResponse `protobuf:"bytes,42,opt,name=bucket_set_tagging,json=bucketSetTagging,proto3,oneof" json:"bucket_set_tagging,omitempty"`
 }
 type BatchResponseItem_BucketGetVersioning struct {
 	BucketGetVersioning *GetBucketVersioningResponse `protobuf:"bytes,31,opt,name=bucket_get_versioning,json=bucketGetVersioning,proto3,oneof" json:"bucket_get_versioning,omitempty"`
@@ -6369,6 +6607,8 @@ type BatchResponseItem_RevokeApiKey struct {
 func (*BatchResponseItem_BucketCreate) isBatchResponseItem_Response()                     {}
 func (*BatchResponseItem_BucketGet) isBatchResponseItem_Response()                        {}
 func (*BatchResponseItem_BucketGetLocation) isBatchResponseItem_Response()                {}
+func (*BatchResponseItem_BucketGetTagging) isBatchResponseItem_Response()                 {}
+func (*BatchResponseItem_BucketSetTagging) isBatchResponseItem_Response()                 {}
 func (*BatchResponseItem_BucketGetVersioning) isBatchResponseItem_Response()              {}
 func (*BatchResponseItem_BucketSetVersioning) isBatchResponseItem_Response()              {}
 func (*BatchResponseItem_BucketGetObjectLockConfiguration) isBatchResponseItem_Response() {}
@@ -6429,6 +6669,20 @@ func (m *BatchResponseItem) GetBucketGet() *GetBucketResponse {
 func (m *BatchResponseItem) GetBucketGetLocation() *GetBucketLocationResponse {
 	if x, ok := m.GetResponse().(*BatchResponseItem_BucketGetLocation); ok {
 		return x.BucketGetLocation
+	}
+	return nil
+}
+
+func (m *BatchResponseItem) GetBucketGetTagging() *GetBucketTaggingResponse {
+	if x, ok := m.GetResponse().(*BatchResponseItem_BucketGetTagging); ok {
+		return x.BucketGetTagging
+	}
+	return nil
+}
+
+func (m *BatchResponseItem) GetBucketSetTagging() *SetBucketTaggingResponse {
+	if x, ok := m.GetResponse().(*BatchResponseItem_BucketSetTagging); ok {
+		return x.BucketSetTagging
 	}
 	return nil
 }
@@ -6684,6 +6938,8 @@ func (*BatchResponseItem) XXX_OneofWrappers() []interface{} {
 		(*BatchResponseItem_BucketCreate)(nil),
 		(*BatchResponseItem_BucketGet)(nil),
 		(*BatchResponseItem_BucketGetLocation)(nil),
+		(*BatchResponseItem_BucketGetTagging)(nil),
+		(*BatchResponseItem_BucketSetTagging)(nil),
 		(*BatchResponseItem_BucketGetVersioning)(nil),
 		(*BatchResponseItem_BucketSetVersioning)(nil),
 		(*BatchResponseItem_BucketGetObjectLockConfiguration)(nil),

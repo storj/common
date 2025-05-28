@@ -28,6 +28,8 @@ service Metainfo {
     rpc CreateBucket(CreateBucketRequest) returns (CreateBucketResponse);
     rpc GetBucket(GetBucketRequest) returns (GetBucketResponse);
     rpc GetBucketLocation(GetBucketLocationRequest) returns (GetBucketLocationResponse);
+    rpc GetBucketTagging(GetBucketTaggingRequest) returns (GetBucketTaggingResponse);
+    rpc SetBucketTagging(SetBucketTaggingRequest) returns (SetBucketTaggingResponse);
     rpc GetBucketVersioning(GetBucketVersioningRequest) returns (GetBucketVersioningResponse);
     rpc SetBucketVersioning(SetBucketVersioningRequest) returns (SetBucketVersioningResponse);
     rpc GetBucketObjectLockConfiguration(GetBucketObjectLockConfigurationRequest) returns (GetBucketObjectLockConfigurationResponse);
@@ -138,6 +140,31 @@ message GetBucketLocationRequest {
 
 message GetBucketLocationResponse {
     bytes location = 1;
+}
+
+message BucketTag {
+    bytes key = 1;
+    bytes value = 2;
+}
+
+message GetBucketTaggingRequest {
+    RequestHeader header = 15;
+
+    bytes name = 1;
+}
+
+message GetBucketTaggingResponse {
+    repeated BucketTag tags = 1;
+}
+
+message SetBucketTaggingRequest {
+    RequestHeader header = 15;
+
+    bytes name = 1;
+    repeated BucketTag tags = 2;
+}
+
+message SetBucketTaggingResponse {
 }
 
 message GetBucketVersioningRequest {
@@ -761,7 +788,7 @@ message BeginSegmentRequest {
 
     int64 max_order_limit = 3;
     // determine if satellite should return unsigned order limits.
-    // in this case, the order limits needs to be signed by client.    
+    // in this case, the order limits needs to be signed by client.
     bool  lite_request    = 4;
 }
 
@@ -949,6 +976,8 @@ message BatchRequestItem {
         CreateBucketRequest                      bucket_create = 1;
         GetBucketRequest                         bucket_get = 2;
         GetBucketLocationRequest                 bucket_get_location = 30;
+        GetBucketTaggingRequest                  bucket_get_tagging = 41;
+        SetBucketTaggingRequest                  bucket_set_tagging = 42;
         GetBucketVersioningRequest               bucket_get_versioning = 31;
         SetBucketVersioningRequest               bucket_set_versioning = 32;
         GetBucketObjectLockConfigurationRequest  bucket_get_object_lock_configuration = 33;
@@ -1007,6 +1036,8 @@ message BatchResponseItem {
         CreateBucketResponse                     bucket_create = 1;
         GetBucketResponse                        bucket_get = 2;
         GetBucketLocationResponse                bucket_get_location = 30;
+        GetBucketTaggingResponse                 bucket_get_tagging = 41;
+        SetBucketTaggingResponse                 bucket_set_tagging = 42;
         GetBucketVersioningResponse              bucket_get_versioning = 31;
         SetBucketVersioningResponse              bucket_set_versioning = 32;
         GetBucketObjectLockConfigurationResponse bucket_get_object_lock_configuration = 33;
