@@ -4,7 +4,9 @@
 package debug
 
 import (
+	"compress/gzip"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"sync"
@@ -49,6 +51,12 @@ func NewPrometheusEndpoint(registry *monkit.Registry) *PrometheusEndpoint {
 	}
 }
 
+// supportsGzip checks if the client supports gzip compression.
+func supportsGzip(r *http.Request) bool {
+	acceptEncoding := r.Header.Get("Accept-Encoding")
+	return strings.Contains(acceptEncoding, "gzip")
+}
+
 // PrometheusMetrics writes monkit data in  https://prometheus.io/docs/instrumenting/exposition_formats/.
 func (server *PrometheusEndpoint) PrometheusMetrics(w http.ResponseWriter, r *http.Request) {
 	// We have to collect all of the metrics before we write. This is because we do not
@@ -58,6 +66,21 @@ func (server *PrometheusEndpoint) PrometheusMetrics(w http.ResponseWriter, r *ht
 	//     optional HELP and TYPE lines first (in no particular order). Beyond that,
 	//     reproducible sorting in repeated expositions is preferred but not required,
 	//     i.e. do not sort if the computational cost is prohibitive.
+
+	var writer io.Writer
+	writer = w
+	if supportsGzip(r) {
+		w.Header().Set("Content-Encoding", "gzip")
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+		gzipWriter := gzip.NewWriter(w)
+		writer = gzipWriter
+		defer func() {
+			if err := gzipWriter.Close(); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		}()
+	}
 
 	data := make(map[string][]string)
 	var components []string
@@ -80,9 +103,9 @@ func (server *PrometheusEndpoint) PrometheusMetrics(w http.ResponseWriter, r *ht
 	})
 
 	for measurement, samples := range data {
-		_, _ = fmt.Fprintln(w, "# TYPE", measurement, "gauge")
+		_, _ = fmt.Fprintln(writer, "# TYPE", measurement, "gauge")
 		for _, sample := range samples {
-			_, _ = fmt.Fprintf(w, "%s%s\n", measurement, sample)
+			_, _ = fmt.Fprintf(writer, "%s%s\n", measurement, sample)
 		}
 	}
 }

@@ -4,7 +4,9 @@
 package debug
 
 import (
+	"compress/gzip"
 	"errors"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -106,4 +108,64 @@ func (f *fakeListener) Accept() (net.Conn, error) {
 func (f *fakeListener) Close() error {
 	f.once.Do(func() { close(f.ch) })
 	return nil
+}
+
+func TestPrometheusMetrics_GzipCompression(t *testing.T) {
+	ctx := testcontext.New(t)
+	registry := monkit.NewRegistry()
+
+	t.Run("supported by client", func(t *testing.T) {
+		endpoint := NewPrometheusEndpoint(registry)
+
+		registry.ScopeNamed("test").Chain(
+			monkit.StatSourceFunc(func(cb func(key monkit.SeriesKey, field string, val float64)) {
+				cb(monkit.NewSeriesKey("test_metric"), "field1", 42)
+			}))
+
+		rec := httptest.NewRecorder()
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/metrics", nil)
+		require.NoError(t, err)
+		req.Header.Set("Accept-Encoding", "gzip, deflate")
+
+		endpoint.PrometheusMetrics(rec, req)
+
+		require.Equal(t, "gzip", rec.Header().Get("Content-Encoding"))
+		require.Equal(t, "text/plain; charset=utf-8", rec.Header().Get("Content-Type"))
+
+		gzipReader, err := gzip.NewReader(rec.Body)
+		require.NoError(t, err)
+		defer ctx.Check(gzipReader.Close)
+
+		decompressed, err := io.ReadAll(gzipReader)
+		require.NoError(t, err)
+
+		body := string(decompressed)
+		require.Contains(t, body, "# TYPE test_metric gauge")
+		require.Contains(t, body, "test_metric{scope=\"test\",field=\"field1\"} 42")
+	})
+
+	t.Run("not supported by client", func(t *testing.T) {
+		endpoint := NewPrometheusEndpoint(registry)
+
+		registry.ScopeNamed("test").Chain(
+			monkit.StatSourceFunc(func(cb func(key monkit.SeriesKey, field string, val float64)) {
+				cb(monkit.NewSeriesKey("test_metric"), "field1", 42)
+			}))
+
+		for _, encoding := range []string{"", "deflate"} {
+			rec := httptest.NewRecorder()
+			req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/metrics", nil)
+			require.NoError(t, err)
+			if encoding != "" {
+				req.Header.Set("Accept-Encoding", "deflate")
+			}
+
+			endpoint.PrometheusMetrics(rec, req)
+
+			require.Empty(t, rec.Header().Get("Content-Encoding"))
+			body := rec.Body.String()
+			require.Contains(t, body, "# TYPE test_metric gauge")
+			require.Contains(t, body, "test_metric{scope=\"test\",field=\"field1\"} 42")
+		}
+	})
 }
