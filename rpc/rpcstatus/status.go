@@ -67,6 +67,12 @@ const (
 
 	DeleteObjectsNoItems      StatusCode = 10020
 	DeleteObjectsTooManyItems StatusCode = 10021
+
+	TooManyTags     StatusCode = 10022
+	TagKeyInvalid   StatusCode = 10023
+	TagKeyDuplicate StatusCode = 10024
+	TagValueInvalid StatusCode = 10025
+	TagsNotFound    StatusCode = 10026
 )
 
 // Code returns the status code associated with the error.
