@@ -521,6 +521,9 @@ message ListObjectsRequest {
     // version_cursor can be provided to include all versions starting after
     // that version.
     bool include_all_versions = 9;
+
+    // allow prefix that is not terminated in a forward slash
+    bool arbitrary_prefix = 11;
 }
 
 message ListObjectsResponse {

@@ -3267,6 +3267,11 @@
                 "id": 9,
                 "name": "include_all_versions",
                 "type": "bool"
+              },
+              {
+                "id": 11,
+                "name": "arbitrary_prefix",
+                "type": "bool"
               }
             ]
           },

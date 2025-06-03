@@ -2743,7 +2743,9 @@ type ListObjectsRequest struct {
 	// will only include the latest version of the object. An optional
 	// version_cursor can be provided to include all versions starting after
 	// that version.
-	IncludeAllVersions   bool     `protobuf:"varint,9,opt,name=include_all_versions,json=includeAllVersions,proto3" json:"include_all_versions,omitempty"`
+	IncludeAllVersions bool `protobuf:"varint,9,opt,name=include_all_versions,json=includeAllVersions,proto3" json:"include_all_versions,omitempty"`
+	// allow prefix that is not terminated in a forward slash
+	ArbitraryPrefix      bool     `protobuf:"varint,11,opt,name=arbitrary_prefix,json=arbitraryPrefix,proto3" json:"arbitrary_prefix,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2844,6 +2846,13 @@ func (m *ListObjectsRequest) GetUseObjectIncludes() bool {
 func (m *ListObjectsRequest) GetIncludeAllVersions() bool {
 	if m != nil {
 		return m.IncludeAllVersions
+	}
+	return false
+}
+
+func (m *ListObjectsRequest) GetArbitraryPrefix() bool {
+	if m != nil {
+		return m.ArbitraryPrefix
 	}
 	return false
 }
