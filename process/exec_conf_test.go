@@ -88,7 +88,7 @@ func TestExec_InvalidValues(t *testing.T) {
 		defer setargs(args)()
 
 		for k, v := range env {
-			defer setenv(k, v)()
+			defer setenv(k, v)() //nolint go-critic: intentionally open until end of func.
 		}
 		Bind(cmd, &config)
 

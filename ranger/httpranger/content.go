@@ -123,40 +123,44 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 
 		go func() {
 			for _, ra := range ranges {
-				part, err := mw.CreatePart(ra.mimeHeader(ctype, size))
-				if err != nil {
-					if err := pw.CloseWithError(err); err != nil {
-						log.Printf("Error Closing pipewriter with errors: %s", err)
+				failed := func() bool {
+					part, err := mw.CreatePart(ra.mimeHeader(ctype, size))
+					if err != nil {
+						if err := pw.CloseWithError(err); err != nil {
+							log.Printf("Error Closing pipewriter with errors: %s", err)
+						}
+						return true
 					}
 
-					return
-				}
-				partReader, err := content.Range(ctx, ra.Start, ra.Length)
-				if err != nil {
-					if err := pw.CloseWithError(err); err != nil {
-						log.Printf("Error Closing pipewriter with errors: %s", err)
+					partReader, err := content.Range(ctx, ra.Start, ra.Length)
+					if err != nil {
+						if err := pw.CloseWithError(err); err != nil {
+							log.Printf("Error Closing pipewriter with errors: %s", err)
+						}
+						return true
 					}
 
-					return
-				}
-				defer func() {
-					if err := partReader.Close(); err != nil {
-						log.Printf("Error Closing partReader: %s", err)
+					defer func() {
+						if err := partReader.Close(); err != nil {
+							log.Printf("Error Closing partReader: %s", err)
+						}
+					}()
+					if _, err := io.Copy(part, partReader); err != nil {
+						if err := pw.CloseWithError(err); err != nil {
+							log.Printf("Error Closing pipewriter with errors: %s", err)
+						}
+						return true
 					}
+
+					return false
 				}()
-
-				if _, err := io.Copy(part, partReader); err != nil {
-					if err := pw.CloseWithError(err); err != nil {
-						log.Printf("Error Closing pipewriter with errors: %s", err)
-					}
-
+				if failed {
 					return
 				}
 			}
 			if err := mw.Close(); err != nil {
 				log.Printf("Error Closing writer: %s", err)
 			}
-
 			if err := pw.Close(); err != nil {
 				log.Printf("Error closing pipewriter: %s", err)
 			}

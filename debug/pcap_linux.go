@@ -64,7 +64,7 @@ func capturePackets(ctx context.Context, stop *atomic.Bool) {
 			continue
 		}
 		trace.Logf(ctx, "trace-debug", "opened handle for %q", iface.Name)
-		defer eh.Close()
+		defer eh.Close() //nolint go-critic: intentionally open until end of func.
 
 		handles = append(handles, Handle{
 			eh:    eh,
