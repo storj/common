@@ -230,6 +230,7 @@ message DeleteBucketRequest {
 
     bytes name = 1;
     bool  delete_all = 2;
+    bool  bypass_governance_retention = 3;
 }
 
 message DeleteBucketResponse {

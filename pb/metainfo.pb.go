@@ -1296,12 +1296,13 @@ func (m *GetBucketObjectLockConfigurationResponse) GetConfiguration() *ObjectLoc
 }
 
 type DeleteBucketRequest struct {
-	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
-	Name                 []byte         `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	DeleteAll            bool           `protobuf:"varint,2,opt,name=delete_all,json=deleteAll,proto3" json:"delete_all,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
+	Header                    *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Name                      []byte         `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	DeleteAll                 bool           `protobuf:"varint,2,opt,name=delete_all,json=deleteAll,proto3" json:"delete_all,omitempty"`
+	BypassGovernanceRetention bool           `protobuf:"varint,3,opt,name=bypass_governance_retention,json=bypassGovernanceRetention,proto3" json:"bypass_governance_retention,omitempty"`
+	XXX_NoUnkeyedLiteral      struct{}       `json:"-"`
+	XXX_unrecognized          []byte         `json:"-"`
+	XXX_sizecache             int32          `json:"-"`
 }
 
 func (m *DeleteBucketRequest) Reset()         { *m = DeleteBucketRequest{} }
@@ -1343,6 +1344,13 @@ func (m *DeleteBucketRequest) GetName() []byte {
 func (m *DeleteBucketRequest) GetDeleteAll() bool {
 	if m != nil {
 		return m.DeleteAll
+	}
+	return false
+}
+
+func (m *DeleteBucketRequest) GetBypassGovernanceRetention() bool {
+	if m != nil {
+		return m.BypassGovernanceRetention
 	}
 	return false
 }
