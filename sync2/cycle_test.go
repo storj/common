@@ -282,3 +282,31 @@ func TestCycle_DelayStart(t *testing.T) {
 
 	require.NoError(t, group.Wait())
 }
+
+func TestCycle_PauseSyncs(t *testing.T) {
+	t.Parallel()
+
+	cycle := sync2.NewCycle(time.Second)
+	defer cycle.Close()
+
+	ctx := context.Background()
+
+	value := 0
+	var ranOnce sync2.Fence
+	var group errgroup.Group
+	cycle.Start(ctx, &group, func(ctx context.Context) error {
+		ranOnce.Release()
+		value++
+		return nil
+	})
+
+	cycle.Trigger()
+	ranOnce.Wait(ctx)
+	cycle.Pause()
+	// read to check that Pause waits and syncs before returning
+	// when, the cycle func and pause doesn't sync, it would trigger the race detector
+	t.Log(value)
+	cycle.Stop()
+
+	require.NoError(t, group.Wait())
+}
