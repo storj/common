@@ -30,10 +30,10 @@ type Conn struct {
 	once sync.Once
 	// The Conn.stream varible should never be directly accessed.
 	// Always use Conn.getStream() instead.
-	stream quic.Stream
+	stream *quic.Stream
 
 	acceptErr error
-	session   quic.Connection
+	session   *quic.Conn
 }
 
 // Read implements the Conn Read method.
@@ -72,7 +72,7 @@ func (c *Conn) Write(b []byte) (_ int, err error) {
 	return n, nil
 }
 
-func (c *Conn) getStream() (quic.Stream, error) {
+func (c *Conn) getStream() (*quic.Stream, error) {
 	// Outgoing connections `stream` gets set when the Conn is initialized.
 	// It's only with incoming connections that `stream == nil` and this
 	// AcceptStream() code happens.

@@ -14,7 +14,7 @@ if ! check-dependency -check "redis;bolt" ./...; then
     exit -1;
 fi
 
-if ! check-dependency -ignore "test;common/process;common/rpc/quic" -check "test" -except "internal/testlog" ./...; then
+if ! check-dependency -ignore "test;common/process" -check "test" -except "internal/testlog" ./...; then
     echo "packages not related to test functionality should not bring in testing related things";
     exit -1;
 fi
