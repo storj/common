@@ -6,6 +6,7 @@ package storj
 import (
 	"database/sql/driver"
 	"encoding/binary"
+	"fmt"
 	"strconv"
 
 	"github.com/zeebo/errs"
@@ -131,6 +132,24 @@ func (scheme *RedundancyScheme) DecodeSpanner(val any) (err error) {
 // EncodeSpanner implements spanner.Encoder.
 func (scheme RedundancyScheme) EncodeSpanner() (any, error) {
 	return scheme.Value()
+}
+
+// String returns the string representation of scheme.
+// It satisfies the fmt.Stringer interface.
+func (scheme RedundancyScheme) String() string {
+	var algorithm string
+	switch scheme.Algorithm {
+	case InvalidRedundancyAlgorithm:
+		algorithm = "XX"
+	case ReedSolomon:
+		algorithm = "RS"
+	default:
+		algorithm = fmt.Sprintf("unknown RedundancyScheme(%v)", scheme.Algorithm)
+	}
+
+	return fmt.Sprintf("%s:%d/%d/%d/%d",
+		algorithm, scheme.RequiredShares, scheme.RepairShares, scheme.OptimalShares, scheme.TotalShares,
+	)
 }
 
 // RedundancyAlgorithm is the algorithm used for redundancy.

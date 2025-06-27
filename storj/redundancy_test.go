@@ -155,3 +155,52 @@ func TestRedundancyScheme_DB_EncodeDecode(t *testing.T) {
 		require.Error(t, err)
 	}
 }
+
+func TestRedundancyScheme_String(t *testing.T) {
+	cases := []struct {
+		name     string
+		scheme   storj.RedundancyScheme
+		expected string
+	}{
+		{
+			name: "invalid algorithm",
+			scheme: storj.RedundancyScheme{
+				Algorithm:      storj.InvalidRedundancyAlgorithm,
+				RequiredShares: 3,
+				RepairShares:   2,
+				OptimalShares:  5,
+				TotalShares:    6,
+			},
+			expected: "XX:3/2/5/6",
+		},
+		{
+			name: "Reed-Solomon algorithm",
+			scheme: storj.RedundancyScheme{
+				Algorithm:      storj.ReedSolomon,
+				RequiredShares: 4,
+				RepairShares:   3,
+				OptimalShares:  6,
+				TotalShares:    8,
+			},
+			expected: "RS:4/3/6/8",
+		},
+		{
+			name: "invalid value for algorithm",
+			scheme: storj.RedundancyScheme{
+				Algorithm:      storj.RedundancyAlgorithm(255),
+				RequiredShares: 29,
+				RepairShares:   40,
+				OptimalShares:  80,
+				TotalShares:    100,
+			},
+			expected: "unknown RedundancyScheme(255):29/40/80/100",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := tc.scheme.String()
+			assert.Equal(t, tc.expected, result)
+		})
+	}
+}
