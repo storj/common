@@ -449,6 +449,10 @@ message DownloadObjectRequest {
     // determine if satellite should return unsigned order limits.
     // in this case, the order limits needs to be signed by client.
     bool lite_request   = 7;
+
+    // can be used by trusted uplinks to notify satellite it's not regular download
+    // but part of server side copy operation
+    bool server_side_copy = 8;
 }
 
 message Range {
@@ -920,6 +924,10 @@ message DownloadSegmentRequest {
 
     // see DownloadObjectRequest.desired_nodes for more explanation.
     int32 desired_nodes = 3;
+
+    // can be used by trusted uplinks to notify satellite it's not regular download
+    // but part of server side copy operation
+    bool server_side_copy = 4;
 }
 
 message DownloadSegmentResponse {

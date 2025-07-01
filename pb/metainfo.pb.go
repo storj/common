@@ -2451,7 +2451,10 @@ type DownloadObjectRequest struct {
 	DesiredNodes int32 `protobuf:"varint,5,opt,name=desired_nodes,json=desiredNodes,proto3" json:"desired_nodes,omitempty"`
 	// determine if satellite should return unsigned order limits.
 	// in this case, the order limits needs to be signed by client.
-	LiteRequest          bool     `protobuf:"varint,7,opt,name=lite_request,json=liteRequest,proto3" json:"lite_request,omitempty"`
+	LiteRequest bool `protobuf:"varint,7,opt,name=lite_request,json=liteRequest,proto3" json:"lite_request,omitempty"`
+	// can be used by trusted uplinks to notify satellite it's not regular download
+	// but part of server side copy operation
+	ServerSideCopy       bool     `protobuf:"varint,8,opt,name=server_side_copy,json=serverSideCopy,proto3" json:"server_side_copy,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -2531,6 +2534,13 @@ func (m *DownloadObjectRequest) GetDesiredNodes() int32 {
 func (m *DownloadObjectRequest) GetLiteRequest() bool {
 	if m != nil {
 		return m.LiteRequest
+	}
+	return false
+}
+
+func (m *DownloadObjectRequest) GetServerSideCopy() bool {
+	if m != nil {
+		return m.ServerSideCopy
 	}
 	return false
 }
@@ -5440,7 +5450,10 @@ type DownloadSegmentRequest struct {
 	StreamId       StreamID         `protobuf:"bytes,1,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id"`
 	CursorPosition *SegmentPosition `protobuf:"bytes,2,opt,name=cursor_position,json=cursorPosition,proto3" json:"cursor_position,omitempty"`
 	// see DownloadObjectRequest.desired_nodes for more explanation.
-	DesiredNodes         int32    `protobuf:"varint,3,opt,name=desired_nodes,json=desiredNodes,proto3" json:"desired_nodes,omitempty"`
+	DesiredNodes int32 `protobuf:"varint,3,opt,name=desired_nodes,json=desiredNodes,proto3" json:"desired_nodes,omitempty"`
+	// can be used by trusted uplinks to notify satellite it's not regular download
+	// but part of server side copy operation
+	ServerSideCopy       bool     `protobuf:"varint,4,opt,name=server_side_copy,json=serverSideCopy,proto3" json:"server_side_copy,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -5487,6 +5500,13 @@ func (m *DownloadSegmentRequest) GetDesiredNodes() int32 {
 		return m.DesiredNodes
 	}
 	return 0
+}
+
+func (m *DownloadSegmentRequest) GetServerSideCopy() bool {
+	if m != nil {
+		return m.ServerSideCopy
+	}
+	return false
 }
 
 type DownloadSegmentResponse struct {

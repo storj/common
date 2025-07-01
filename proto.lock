@@ -3153,6 +3153,11 @@
                 "id": 7,
                 "name": "lite_request",
                 "type": "bool"
+              },
+              {
+                "id": 8,
+                "name": "server_side_copy",
+                "type": "bool"
               }
             ]
           },
@@ -4718,6 +4723,11 @@
                 "id": 3,
                 "name": "desired_nodes",
                 "type": "int32"
+              },
+              {
+                "id": 4,
+                "name": "server_side_copy",
+                "type": "bool"
               }
             ]
           },
