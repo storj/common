@@ -532,6 +532,8 @@ message ListObjectsRequest {
     RequestHeader header = 15;
 
     bytes  bucket           = 1;
+    // delimiter is only used when recursive is false
+    bytes  delimiter        = 12;
     bytes  encrypted_prefix = 2;
     bytes  encrypted_cursor = 3;
     bytes  version_cursor   = 10;

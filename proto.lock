@@ -3299,6 +3299,11 @@
                 "type": "bytes"
               },
               {
+                "id": 12,
+                "name": "delimiter",
+                "type": "bytes"
+              },
+              {
                 "id": 2,
                 "name": "encrypted_prefix",
                 "type": "bytes"

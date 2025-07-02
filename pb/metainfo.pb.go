@@ -2945,8 +2945,10 @@ func (m *GetObjectResponse) GetObject() *Object {
 }
 
 type ListObjectsRequest struct {
-	Header          *RequestHeader          `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
-	Bucket          []byte                  `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	Header *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Bucket []byte         `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	// delimiter is only used when recursive is false
+	Delimiter       []byte                  `protobuf:"bytes,12,opt,name=delimiter,proto3" json:"delimiter,omitempty"`
 	EncryptedPrefix []byte                  `protobuf:"bytes,2,opt,name=encrypted_prefix,json=encryptedPrefix,proto3" json:"encrypted_prefix,omitempty"`
 	EncryptedCursor []byte                  `protobuf:"bytes,3,opt,name=encrypted_cursor,json=encryptedCursor,proto3" json:"encrypted_cursor,omitempty"`
 	VersionCursor   []byte                  `protobuf:"bytes,10,opt,name=version_cursor,json=versionCursor,proto3" json:"version_cursor,omitempty"`
@@ -3005,6 +3007,13 @@ func (m *ListObjectsRequest) GetHeader() *RequestHeader {
 func (m *ListObjectsRequest) GetBucket() []byte {
 	if m != nil {
 		return m.Bucket
+	}
+	return nil
+}
+
+func (m *ListObjectsRequest) GetDelimiter() []byte {
+	if m != nil {
+		return m.Delimiter
 	}
 	return nil
 }
