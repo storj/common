@@ -269,6 +269,36 @@
             ]
           },
           {
+            "name": "HashstoreSettings",
+            "fields": [
+              {
+                "id": 1,
+                "name": "active_migrate",
+                "type": "bool"
+              },
+              {
+                "id": 2,
+                "name": "passive_migrate",
+                "type": "bool"
+              },
+              {
+                "id": 3,
+                "name": "write_to_new",
+                "type": "bool"
+              },
+              {
+                "id": 4,
+                "name": "read_new_first",
+                "type": "bool"
+              },
+              {
+                "id": 5,
+                "name": "ttl_to_new",
+                "type": "bool"
+              }
+            ]
+          },
+          {
             "name": "CheckInResponse",
             "fields": [
               {
@@ -295,6 +325,11 @@
                 "id": 5,
                 "name": "node_tag_error_message",
                 "type": "string"
+              },
+              {
+                "id": 6,
+                "name": "hashstore_settings",
+                "type": "HashstoreSettings"
               }
             ]
           },

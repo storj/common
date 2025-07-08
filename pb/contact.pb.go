@@ -111,15 +111,84 @@ func (m *CheckInRequest) GetSignedTags() *SignedNodeTagSets {
 	return nil
 }
 
-type CheckInResponse struct {
-	PingNodeSuccess      bool     `protobuf:"varint,1,opt,name=ping_node_success,json=pingNodeSuccess,proto3" json:"ping_node_success,omitempty"`
-	PingErrorMessage     string   `protobuf:"bytes,2,opt,name=ping_error_message,json=pingErrorMessage,proto3" json:"ping_error_message,omitempty"`
-	PingNodeSuccessQuic  bool     `protobuf:"varint,3,opt,name=ping_node_success_quic,json=pingNodeSuccessQuic,proto3" json:"ping_node_success_quic,omitempty"`
-	NodeTagSuccess       bool     `protobuf:"varint,4,opt,name=node_tag_success,json=nodeTagSuccess,proto3" json:"node_tag_success,omitempty"`
-	NodeTagErrorMessage  string   `protobuf:"bytes,5,opt,name=node_tag_error_message,json=nodeTagErrorMessage,proto3" json:"node_tag_error_message,omitempty"`
+type HashstoreSettings struct {
+	ActiveMigrate        bool     `protobuf:"varint,1,opt,name=active_migrate,json=activeMigrate,proto3" json:"active_migrate,omitempty"`
+	PassiveMigrate       bool     `protobuf:"varint,2,opt,name=passive_migrate,json=passiveMigrate,proto3" json:"passive_migrate,omitempty"`
+	WriteToNew           bool     `protobuf:"varint,3,opt,name=write_to_new,json=writeToNew,proto3" json:"write_to_new,omitempty"`
+	ReadNewFirst         bool     `protobuf:"varint,4,opt,name=read_new_first,json=readNewFirst,proto3" json:"read_new_first,omitempty"`
+	TtlToNew             bool     `protobuf:"varint,5,opt,name=ttl_to_new,json=ttlToNew,proto3" json:"ttl_to_new,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *HashstoreSettings) Reset()         { *m = HashstoreSettings{} }
+func (m *HashstoreSettings) String() string { return proto.CompactTextString(m) }
+func (*HashstoreSettings) ProtoMessage()    {}
+
+func (m *HashstoreSettings) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_HashstoreSettings.Unmarshal(m, b)
+}
+func (m *HashstoreSettings) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_HashstoreSettings.Marshal(b, m, deterministic)
+}
+func (m *HashstoreSettings) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_HashstoreSettings.Merge(m, src)
+}
+func (m *HashstoreSettings) XXX_Size() int {
+	return xxx_messageInfo_HashstoreSettings.Size(m)
+}
+func (m *HashstoreSettings) XXX_DiscardUnknown() {
+	xxx_messageInfo_HashstoreSettings.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_HashstoreSettings proto.InternalMessageInfo
+
+func (m *HashstoreSettings) GetActiveMigrate() bool {
+	if m != nil {
+		return m.ActiveMigrate
+	}
+	return false
+}
+
+func (m *HashstoreSettings) GetPassiveMigrate() bool {
+	if m != nil {
+		return m.PassiveMigrate
+	}
+	return false
+}
+
+func (m *HashstoreSettings) GetWriteToNew() bool {
+	if m != nil {
+		return m.WriteToNew
+	}
+	return false
+}
+
+func (m *HashstoreSettings) GetReadNewFirst() bool {
+	if m != nil {
+		return m.ReadNewFirst
+	}
+	return false
+}
+
+func (m *HashstoreSettings) GetTtlToNew() bool {
+	if m != nil {
+		return m.TtlToNew
+	}
+	return false
+}
+
+type CheckInResponse struct {
+	PingNodeSuccess      bool               `protobuf:"varint,1,opt,name=ping_node_success,json=pingNodeSuccess,proto3" json:"ping_node_success,omitempty"`
+	PingErrorMessage     string             `protobuf:"bytes,2,opt,name=ping_error_message,json=pingErrorMessage,proto3" json:"ping_error_message,omitempty"`
+	PingNodeSuccessQuic  bool               `protobuf:"varint,3,opt,name=ping_node_success_quic,json=pingNodeSuccessQuic,proto3" json:"ping_node_success_quic,omitempty"`
+	NodeTagSuccess       bool               `protobuf:"varint,4,opt,name=node_tag_success,json=nodeTagSuccess,proto3" json:"node_tag_success,omitempty"`
+	NodeTagErrorMessage  string             `protobuf:"bytes,5,opt,name=node_tag_error_message,json=nodeTagErrorMessage,proto3" json:"node_tag_error_message,omitempty"`
+	HashstoreSettings    *HashstoreSettings `protobuf:"bytes,6,opt,name=hashstore_settings,json=hashstoreSettings,proto3" json:"hashstore_settings,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
 }
 
 func (m *CheckInResponse) Reset()         { *m = CheckInResponse{} }
@@ -177,6 +246,13 @@ func (m *CheckInResponse) GetNodeTagErrorMessage() string {
 		return m.NodeTagErrorMessage
 	}
 	return ""
+}
+
+func (m *CheckInResponse) GetHashstoreSettings() *HashstoreSettings {
+	if m != nil {
+		return m.HashstoreSettings
+	}
+	return nil
 }
 
 type GetTimeRequest struct {

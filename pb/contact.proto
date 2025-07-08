@@ -41,12 +41,21 @@ message CheckInRequest {
     node.SignedNodeTagSets signed_tags = 8;
 }
 
+message HashstoreSettings {
+    bool active_migrate = 1;
+    bool passive_migrate = 2;
+    bool write_to_new = 3;
+    bool read_new_first = 4;
+    bool ttl_to_new = 5;
+}
+
 message CheckInResponse {
     bool ping_node_success = 1;
     string ping_error_message = 2;
     bool ping_node_success_quic = 3;
     bool node_tag_success = 4;
     string node_tag_error_message = 5;
+    HashstoreSettings hashstore_settings = 6;
 }
 
 message GetTimeRequest {}
