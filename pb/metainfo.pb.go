@@ -3260,14 +3260,17 @@ func (m *ObjectListItem) GetPlainSize() int64 {
 }
 
 type ObjectListItemIncludes struct {
-	// rename to include_custom_metadata
+	// metadata includes metadata and etag.
+	// TODO: rename to include_custom_metadata
 	Metadata bool `protobuf:"varint,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// Because of compatibility with older clients
 	// we need to invert the boolean so it defaults to false.
-	ExcludeSystemMetadata bool     `protobuf:"varint,2,opt,name=exclude_system_metadata,json=excludeSystemMetadata,proto3" json:"exclude_system_metadata,omitempty"`
-	XXX_NoUnkeyedLiteral  struct{} `json:"-"`
-	XXX_unrecognized      []byte   `json:"-"`
-	XXX_sizecache         int32    `json:"-"`
+	ExcludeSystemMetadata bool `protobuf:"varint,2,opt,name=exclude_system_metadata,json=excludeSystemMetadata,proto3" json:"exclude_system_metadata,omitempty"`
+	// include_etag includes the encrypted etag and the nonce and encryption_key.
+	IncludeEtag          bool     `protobuf:"varint,3,opt,name=include_etag,json=includeEtag,proto3" json:"include_etag,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *ObjectListItemIncludes) Reset()         { *m = ObjectListItemIncludes{} }
@@ -3302,6 +3305,13 @@ func (m *ObjectListItemIncludes) GetMetadata() bool {
 func (m *ObjectListItemIncludes) GetExcludeSystemMetadata() bool {
 	if m != nil {
 		return m.ExcludeSystemMetadata
+	}
+	return false
+}
+
+func (m *ObjectListItemIncludes) GetIncludeEtag() bool {
+	if m != nil {
+		return m.IncludeEtag
 	}
 	return false
 }

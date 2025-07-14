@@ -108,7 +108,7 @@ type OrderLimit struct {
 	DeprecatedUplinkId *NodeID `protobuf:"bytes,3,opt,name=deprecated_uplink_id,json=deprecatedUplinkId,proto3,customtype=NodeID" json:"deprecated_uplink_id,omitempty"`
 	// public key that will be used to sign orders and piece hash
 	UplinkPublicKey PiecePublicKey `protobuf:"bytes,13,opt,name=uplink_public_key,json=uplinkPublicKey,proto3,customtype=PiecePublicKey" json:"uplink_public_key"`
-	// storage node who can re claimthe order limit specified by serial
+	// storage node who can re claim the order limit specified by serial
 	StorageNodeId NodeID `protobuf:"bytes,4,opt,name=storage_node_id,json=storageNodeId,proto3,customtype=NodeID" json:"storage_node_id"`
 	// piece which is allowed to be touched
 	PieceId PieceID `protobuf:"bytes,5,opt,name=piece_id,json=pieceId,proto3,customtype=PieceID" json:"piece_id"`

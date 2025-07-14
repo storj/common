@@ -3539,6 +3539,11 @@
                 "id": 2,
                 "name": "exclude_system_metadata",
                 "type": "bool"
+              },
+              {
+                "id": 3,
+                "name": "include_etag",
+                "type": "bool"
               }
             ]
           },

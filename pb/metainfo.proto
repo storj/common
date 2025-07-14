@@ -588,11 +588,14 @@ message ObjectListItem {
 }
 
 message ObjectListItemIncludes {
-    // rename to include_custom_metadata
+    // metadata includes metadata and etag.
+    // TODO: rename to include_custom_metadata
     bool metadata = 1;
     // Because of compatibility with older clients
     // we need to invert the boolean so it defaults to false.
     bool exclude_system_metadata = 2;
+    // include_etag includes the encrypted etag and the nonce and encryption_key.
+    bool include_etag = 3;
 }
 
 message BeginDeleteObjectRequest {
