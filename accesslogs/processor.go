@@ -31,6 +31,9 @@ const (
 	defaultShipmentLimit      = 63 * memory.MiB
 	defaultUploaderQueueLimit = 100
 	defaultUploaderRetryLimit = 3
+
+	lf     = '\n'
+	lfSize = 1
 )
 
 var (
@@ -138,7 +141,7 @@ func NewProcessor(log *zap.Logger, opts Options) *Processor {
 func (p *Processor) QueueEntry(store Storage, key Key, entry Entry) (err error) {
 	defer mon.Task()(nil)(&err)
 
-	entrySize := entry.Size().Int()
+	entrySize := entry.Size().Int() + lfSize
 
 	if g := atomic.LoadInt64(&p.globalSize); g+int64(entrySize) > p.globalLimit.Int64() {
 		// NOTE(artur): this is a best-effort check; we could return an
@@ -283,9 +286,9 @@ func (p *parcel) add(upload uploader, size int, s string) (shipped int, err erro
 
 	currentSize := p.current.Len()
 	// fast path
-	if currentSize+size+1 < p.shipmentLimit {
+	if currentSize+size < p.shipmentLimit {
 		p.current.WriteString(s)
-		p.current.WriteRune('\n')
+		p.current.WriteByte(lf)
 		return 0, nil
 	}
 	// slow…
@@ -305,7 +308,7 @@ func (p *parcel) add(upload uploader, size int, s string) (shipped int, err erro
 	shipped = currentSize
 	// add again
 	p.current.WriteString(s)
-	p.current.WriteRune('\n')
+	p.current.WriteByte(lf)
 	return shipped, nil
 }
 
