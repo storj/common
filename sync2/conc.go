@@ -32,3 +32,20 @@ func Go(fns ...func()) (wait func()) {
 	}
 	return wg.Wait
 }
+
+// Parallel runs things in parallel for all vs.
+func Parallel[T any](vs []T, fn func(T)) {
+	if len(vs) == 0 {
+		return
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(len(vs))
+	defer wg.Wait()
+	for _, v := range vs {
+		go func() {
+			defer wg.Done()
+			fn(v)
+		}()
+	}
+}

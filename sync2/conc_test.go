@@ -23,3 +23,14 @@ func TestGo(t *testing.T) {
 	wait()
 	require.Equal(t, int32(2), a)
 }
+
+func TestParallel(t *testing.T) {
+	values := []int64{1, 3, 7}
+
+	total := int64(0)
+	sync2.Parallel(values, func(t int64) {
+		atomic.AddInt64(&total, t)
+	})
+
+	require.Equal(t, int64(11), total)
+}
