@@ -3544,6 +3544,11 @@
                 "id": 3,
                 "name": "include_etag",
                 "type": "bool"
+              },
+              {
+                "id": 4,
+                "name": "include_etag_or_metadata",
+                "type": "bool"
               }
             ]
           },

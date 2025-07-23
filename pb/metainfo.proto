@@ -588,7 +588,7 @@ message ObjectListItem {
 }
 
 message ObjectListItemIncludes {
-    // metadata includes metadata and etag.
+    // metadata includes metadata and the nonce and encryption_key.
     // TODO: rename to include_custom_metadata
     bool metadata = 1;
     // Because of compatibility with older clients
@@ -596,6 +596,11 @@ message ObjectListItemIncludes {
     bool exclude_system_metadata = 2;
     // include_etag includes the encrypted etag and the nonce and encryption_key.
     bool include_etag = 3;
+    // include_etag_or_metadata includes encrypted etag and when it doesn't exist then metadata.
+    // It also includes key and nonce needed to decrypt the information.
+    // This is used to support etag in a backwards compatible way, because we cannot backfill etag
+    // information from metadata to etag on the satellite side due to encryption.
+    bool include_etag_or_metadata = 4;
 }
 
 message BeginDeleteObjectRequest {
