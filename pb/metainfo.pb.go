@@ -3268,14 +3268,14 @@ type ObjectListItemIncludes struct {
 	ExcludeSystemMetadata bool `protobuf:"varint,2,opt,name=exclude_system_metadata,json=excludeSystemMetadata,proto3" json:"exclude_system_metadata,omitempty"`
 	// include_etag includes the encrypted etag and the nonce and encryption_key.
 	IncludeEtag bool `protobuf:"varint,3,opt,name=include_etag,json=includeEtag,proto3" json:"include_etag,omitempty"`
-	// include_etag_or_metadata includes encrypted etag and when it doesn't exist then metadata.
+	// include_etag_or_custom_metadata includes encrypted etag and when it doesn't exist then metadata.
 	// It also includes key and nonce needed to decrypt the information.
 	// This is used to support etag in a backwards compatible way, because we cannot backfill etag
 	// information from metadata to etag on the satellite side due to encryption.
-	IncludeEtagOrMetadata bool     `protobuf:"varint,4,opt,name=include_etag_or_metadata,json=includeEtagOrMetadata,proto3" json:"include_etag_or_metadata,omitempty"`
-	XXX_NoUnkeyedLiteral  struct{} `json:"-"`
-	XXX_unrecognized      []byte   `json:"-"`
-	XXX_sizecache         int32    `json:"-"`
+	IncludeEtagOrCustomMetadata bool     `protobuf:"varint,4,opt,name=include_etag_or_custom_metadata,json=includeEtagOrCustomMetadata,proto3" json:"include_etag_or_custom_metadata,omitempty"`
+	XXX_NoUnkeyedLiteral        struct{} `json:"-"`
+	XXX_unrecognized            []byte   `json:"-"`
+	XXX_sizecache               int32    `json:"-"`
 }
 
 func (m *ObjectListItemIncludes) Reset()         { *m = ObjectListItemIncludes{} }
@@ -3321,9 +3321,9 @@ func (m *ObjectListItemIncludes) GetIncludeEtag() bool {
 	return false
 }
 
-func (m *ObjectListItemIncludes) GetIncludeEtagOrMetadata() bool {
+func (m *ObjectListItemIncludes) GetIncludeEtagOrCustomMetadata() bool {
 	if m != nil {
-		return m.IncludeEtagOrMetadata
+		return m.IncludeEtagOrCustomMetadata
 	}
 	return false
 }

@@ -3547,7 +3547,7 @@
               },
               {
                 "id": 4,
-                "name": "include_etag_or_metadata",
+                "name": "include_etag_or_custom_metadata",
                 "type": "bool"
               }
             ]
