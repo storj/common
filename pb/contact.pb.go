@@ -15,6 +15,27 @@ import (
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type LostPieceReason int32
+
+const (
+	LostPieceReason_ZERO_HASH     LostPieceReason = 0
+	LostPieceReason_HASH_MISMATCH LostPieceReason = 1
+)
+
+var LostPieceReason_name = map[int32]string{
+	0: "ZERO_HASH",
+	1: "HASH_MISMATCH",
+}
+
+var LostPieceReason_value = map[string]int32{
+	"ZERO_HASH":     0,
+	"HASH_MISMATCH": 1,
+}
+
+func (x LostPieceReason) String() string {
+	return proto.EnumName(LostPieceReason_name, int32(x))
+}
+
 type CheckInRequest struct {
 	Address  string        `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Version  *NodeVersion  `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
@@ -457,3 +478,104 @@ func (m *PingMeResponse) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_PingMeResponse proto.InternalMessageInfo
+
+type AmnestyReportRequest struct {
+	LostPieces           []*LostPiece `protobuf:"bytes,1,rep,name=lost_pieces,json=lostPieces,proto3" json:"lost_pieces,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *AmnestyReportRequest) Reset()         { *m = AmnestyReportRequest{} }
+func (m *AmnestyReportRequest) String() string { return proto.CompactTextString(m) }
+func (*AmnestyReportRequest) ProtoMessage()    {}
+
+func (m *AmnestyReportRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AmnestyReportRequest.Unmarshal(m, b)
+}
+func (m *AmnestyReportRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AmnestyReportRequest.Marshal(b, m, deterministic)
+}
+func (m *AmnestyReportRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AmnestyReportRequest.Merge(m, src)
+}
+func (m *AmnestyReportRequest) XXX_Size() int {
+	return xxx_messageInfo_AmnestyReportRequest.Size(m)
+}
+func (m *AmnestyReportRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_AmnestyReportRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AmnestyReportRequest proto.InternalMessageInfo
+
+func (m *AmnestyReportRequest) GetLostPieces() []*LostPiece {
+	if m != nil {
+		return m.LostPieces
+	}
+	return nil
+}
+
+type LostPiece struct {
+	PieceId              PieceID         `protobuf:"bytes,1,opt,name=piece_id,json=pieceId,proto3,customtype=PieceID" json:"piece_id"`
+	Reason               LostPieceReason `protobuf:"varint,2,opt,name=reason,proto3,enum=contact.LostPieceReason" json:"reason,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *LostPiece) Reset()         { *m = LostPiece{} }
+func (m *LostPiece) String() string { return proto.CompactTextString(m) }
+func (*LostPiece) ProtoMessage()    {}
+
+func (m *LostPiece) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LostPiece.Unmarshal(m, b)
+}
+func (m *LostPiece) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LostPiece.Marshal(b, m, deterministic)
+}
+func (m *LostPiece) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LostPiece.Merge(m, src)
+}
+func (m *LostPiece) XXX_Size() int {
+	return xxx_messageInfo_LostPiece.Size(m)
+}
+func (m *LostPiece) XXX_DiscardUnknown() {
+	xxx_messageInfo_LostPiece.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LostPiece proto.InternalMessageInfo
+
+func (m *LostPiece) GetReason() LostPieceReason {
+	if m != nil {
+		return m.Reason
+	}
+	return LostPieceReason_ZERO_HASH
+}
+
+type AmnestyReportResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *AmnestyReportResponse) Reset()         { *m = AmnestyReportResponse{} }
+func (m *AmnestyReportResponse) String() string { return proto.CompactTextString(m) }
+func (*AmnestyReportResponse) ProtoMessage()    {}
+
+func (m *AmnestyReportResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AmnestyReportResponse.Unmarshal(m, b)
+}
+func (m *AmnestyReportResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AmnestyReportResponse.Marshal(b, m, deterministic)
+}
+func (m *AmnestyReportResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AmnestyReportResponse.Merge(m, src)
+}
+func (m *AmnestyReportResponse) XXX_Size() int {
+	return xxx_messageInfo_AmnestyReportResponse.Size(m)
+}
+func (m *AmnestyReportResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AmnestyReportResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AmnestyReportResponse proto.InternalMessageInfo

@@ -124,6 +124,7 @@ type DRPCNodeClient interface {
 	CheckIn(ctx context.Context, in *CheckInRequest) (*CheckInResponse, error)
 	PingMe(ctx context.Context, in *PingMeRequest) (*PingMeResponse, error)
 	GetTime(ctx context.Context, in *GetTimeRequest) (*GetTimeResponse, error)
+	AmnestyReport(ctx context.Context, in *AmnestyReportRequest) (*AmnestyReportResponse, error)
 }
 
 type drpcNodeClient struct {
@@ -163,10 +164,20 @@ func (c *drpcNodeClient) GetTime(ctx context.Context, in *GetTimeRequest) (*GetT
 	return out, nil
 }
 
+func (c *drpcNodeClient) AmnestyReport(ctx context.Context, in *AmnestyReportRequest) (*AmnestyReportResponse, error) {
+	out := new(AmnestyReportResponse)
+	err := c.cc.Invoke(ctx, "/contact.Node/AmnestyReport", drpcEncoding_File_contact_proto{}, in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 type DRPCNodeServer interface {
 	CheckIn(context.Context, *CheckInRequest) (*CheckInResponse, error)
 	PingMe(context.Context, *PingMeRequest) (*PingMeResponse, error)
 	GetTime(context.Context, *GetTimeRequest) (*GetTimeResponse, error)
+	AmnestyReport(context.Context, *AmnestyReportRequest) (*AmnestyReportResponse, error)
 }
 
 type DRPCNodeUnimplementedServer struct{}
@@ -183,9 +194,13 @@ func (s *DRPCNodeUnimplementedServer) GetTime(context.Context, *GetTimeRequest) 
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
+func (s *DRPCNodeUnimplementedServer) AmnestyReport(context.Context, *AmnestyReportRequest) (*AmnestyReportResponse, error) {
+	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
+}
+
 type DRPCNodeDescription struct{}
 
-func (DRPCNodeDescription) NumMethods() int { return 3 }
+func (DRPCNodeDescription) NumMethods() int { return 4 }
 
 func (DRPCNodeDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, interface{}, bool) {
 	switch n {
@@ -216,6 +231,15 @@ func (DRPCNodeDescription) Method(n int) (string, drpc.Encoding, drpc.Receiver, 
 						in1.(*GetTimeRequest),
 					)
 			}, DRPCNodeServer.GetTime, true
+	case 3:
+		return "/contact.Node/AmnestyReport", drpcEncoding_File_contact_proto{},
+			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
+				return srv.(DRPCNodeServer).
+					AmnestyReport(
+						ctx,
+						in1.(*AmnestyReportRequest),
+					)
+			}, DRPCNodeServer.AmnestyReport, true
 	default:
 		return "", nil, nil, nil, false
 	}
@@ -279,6 +303,26 @@ func (x *drpcNode_GetTimeStream) GetStream() drpc.Stream {
 }
 
 func (x *drpcNode_GetTimeStream) SendAndClose(m *GetTimeResponse) error {
+	if err := x.MsgSend(m, drpcEncoding_File_contact_proto{}); err != nil {
+		return err
+	}
+	return x.CloseSend()
+}
+
+type DRPCNode_AmnestyReportStream interface {
+	drpc.Stream
+	SendAndClose(*AmnestyReportResponse) error
+}
+
+type drpcNode_AmnestyReportStream struct {
+	drpc.Stream
+}
+
+func (x *drpcNode_AmnestyReportStream) GetStream() drpc.Stream {
+	return x.Stream
+}
+
+func (x *drpcNode_AmnestyReportStream) SendAndClose(m *AmnestyReportResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_contact_proto{}); err != nil {
 		return err
 	}

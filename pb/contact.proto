@@ -20,6 +20,7 @@ service Node {
     rpc CheckIn(CheckInRequest) returns (CheckInResponse);
     rpc PingMe(PingMeRequest) returns (PingMeResponse);
     rpc GetTime(GetTimeRequest) returns (GetTimeResponse);
+    rpc AmnestyReport(AmnestyReportRequest) returns (AmnestyReportResponse);
 }
 
 message CheckInRequest {
@@ -79,3 +80,21 @@ message PingMeRequest {
 }
 
 message PingMeResponse {}
+
+message AmnestyReportRequest {
+    repeated LostPiece lost_pieces = 1;
+}
+
+enum LostPieceReason {
+    ZERO_HASH = 0;
+    HASH_MISMATCH = 1;
+}
+
+message LostPiece {
+    bytes piece_id = 1 [(gogoproto.customtype) = "PieceID",
+(gogoproto.nullable) = false];
+    LostPieceReason reason = 2;
+}
+
+message AmnestyReportResponse {
+}

@@ -222,6 +222,20 @@
     {
       "protopath": "pb:/:contact.proto",
       "def": {
+        "enums": [
+          {
+            "name": "LostPieceReason",
+            "enum_fields": [
+              {
+                "name": "ZERO_HASH"
+              },
+              {
+                "name": "HASH_MISMATCH",
+                "integer": 1
+              }
+            ]
+          }
+        ],
         "messages": [
           {
             "name": "CheckInRequest",
@@ -384,6 +398,45 @@
           },
           {
             "name": "PingMeResponse"
+          },
+          {
+            "name": "AmnestyReportRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "lost_pieces",
+                "type": "LostPiece",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
+            "name": "LostPiece",
+            "fields": [
+              {
+                "id": 1,
+                "name": "piece_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "PieceID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "reason",
+                "type": "LostPieceReason"
+              }
+            ]
+          },
+          {
+            "name": "AmnestyReportResponse"
           }
         ],
         "services": [
@@ -414,6 +467,11 @@
                 "name": "GetTime",
                 "in_type": "GetTimeRequest",
                 "out_type": "GetTimeResponse"
+              },
+              {
+                "name": "AmnestyReport",
+                "in_type": "AmnestyReportRequest",
+                "out_type": "AmnestyReportResponse"
               }
             ]
           }
