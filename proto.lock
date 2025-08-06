@@ -224,6 +224,26 @@
       "def": {
         "enums": [
           {
+            "name": "CheckInRequest.Feature",
+            "enum_fields": [
+              {
+                "name": "NO_FEATURES"
+              },
+              {
+                "name": "TCP_FASTOPEN_ENABLED",
+                "integer": 1
+              },
+              {
+                "name": "HASHSTORE_FOR_NEW",
+                "integer": 2
+              },
+              {
+                "name": "HASHSTORE_MEMTBL",
+                "integer": 4
+              }
+            ]
+          },
+          {
             "name": "LostPieceReason",
             "enum_fields": [
               {

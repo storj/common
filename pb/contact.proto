@@ -36,8 +36,20 @@ message CheckInRequest {
 
     int32 debounce_limit = 6;
 
-    // features is a set of bit flags of the NodeAddress.Features enum.
+    // features is a set of bit flags
     uint64 features = 7;
+
+    // these must all be powers of two, since they are bitwise ORed into
+    // the features field.
+    enum Feature {
+        NO_FEATURES = 0;
+
+        TCP_FASTOPEN_ENABLED = 1;
+
+        HASHSTORE_FOR_NEW = 2;
+
+        HASHSTORE_MEMTBL = 4;
+    }
 
     node.SignedNodeTagSets signed_tags = 8;
 }

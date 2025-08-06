@@ -36,6 +36,35 @@ func (x LostPieceReason) String() string {
 	return proto.EnumName(LostPieceReason_name, int32(x))
 }
 
+// these must all be powers of two, since they are bitwise ORed into
+// the features field.
+type CheckInRequest_Feature int32
+
+const (
+	CheckInRequest_NO_FEATURES          CheckInRequest_Feature = 0
+	CheckInRequest_TCP_FASTOPEN_ENABLED CheckInRequest_Feature = 1
+	CheckInRequest_HASHSTORE_FOR_NEW    CheckInRequest_Feature = 2
+	CheckInRequest_HASHSTORE_MEMTBL     CheckInRequest_Feature = 4
+)
+
+var CheckInRequest_Feature_name = map[int32]string{
+	0: "NO_FEATURES",
+	1: "TCP_FASTOPEN_ENABLED",
+	2: "HASHSTORE_FOR_NEW",
+	4: "HASHSTORE_MEMTBL",
+}
+
+var CheckInRequest_Feature_value = map[string]int32{
+	"NO_FEATURES":          0,
+	"TCP_FASTOPEN_ENABLED": 1,
+	"HASHSTORE_FOR_NEW":    2,
+	"HASHSTORE_MEMTBL":     4,
+}
+
+func (x CheckInRequest_Feature) String() string {
+	return proto.EnumName(CheckInRequest_Feature_name, int32(x))
+}
+
 type CheckInRequest struct {
 	Address  string        `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Version  *NodeVersion  `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
@@ -46,7 +75,7 @@ type CheckInRequest struct {
 	// NoiseKeyAttestation.
 	NoiseKeyAttestation *NoiseKeyAttestation `protobuf:"bytes,5,opt,name=noise_key_attestation,json=noiseKeyAttestation,proto3" json:"noise_key_attestation,omitempty"`
 	DebounceLimit       int32                `protobuf:"varint,6,opt,name=debounce_limit,json=debounceLimit,proto3" json:"debounce_limit,omitempty"`
-	// features is a set of bit flags of the NodeAddress.Features enum.
+	// features is a set of bit flags
 	Features             uint64             `protobuf:"varint,7,opt,name=features,proto3" json:"features,omitempty"`
 	SignedTags           *SignedNodeTagSets `protobuf:"bytes,8,opt,name=signed_tags,json=signedTags,proto3" json:"signed_tags,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
