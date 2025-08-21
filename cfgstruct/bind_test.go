@@ -1,7 +1,7 @@
 // Copyright (C) 2019 Storj Labs, Inc.
 // See LICENSE for copying information.
 
-package cfgstruct
+package cfgstruct_test
 
 import (
 	"testing"
@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/require"
 
+	"storj.io/common/cfgstruct"
 	"storj.io/common/memory"
 	"storj.io/common/storj"
 )
@@ -45,7 +46,7 @@ type TestStruct struct {
 func TestBind(t *testing.T) {
 	f := pflag.NewFlagSet("test", pflag.PanicOnError)
 	var c TestStruct
-	Bind(f, &c, UseReleaseDefaults())
+	cfgstruct.Bind(f, &c, cfgstruct.UseReleaseDefaults())
 
 	require.Equal(t, c.String, string("dev"))
 	require.Equal(t, c.StringSlice, []string{"dev"})
@@ -123,7 +124,7 @@ func TestConfDir(t *testing.T) {
 			}
 		}
 	}
-	Bind(f, &c, UseReleaseDefaults(), ConfDir("confpath"))
+	cfgstruct.Bind(f, &c, cfgstruct.UseReleaseDefaults(), cfgstruct.ConfDir("confpath"))
 	require.Equal(t, f.Lookup("string").DefValue, "-confpath+")
 	require.Equal(t, f.Lookup("my-struct1.string").DefValue, "1confpath2")
 	require.Equal(t, f.Lookup("my-struct1.my-struct2.string").DefValue, "2confpath3")
@@ -132,7 +133,7 @@ func TestConfDir(t *testing.T) {
 func TestBindDevDefaults(t *testing.T) {
 	f := pflag.NewFlagSet("test", pflag.PanicOnError)
 	var c TestStruct
-	Bind(f, &c, UseDevDefaults())
+	cfgstruct.Bind(f, &c, cfgstruct.UseDevDefaults())
 
 	node1, err := storj.NodeIDFromString("12EayRS2V1kEsWESU9QMRseFhdxYxKicsiFmxrsLZHeLUtdps3S")
 	require.NoError(t, err)
@@ -200,7 +201,7 @@ func TestHiddenDev(t *testing.T) {
 		Int     int         `default:"2"`
 		Size    memory.Size `default:"0" hidden:"true"`
 	}
-	Bind(f, &c, UseDevDefaults())
+	cfgstruct.Bind(f, &c, cfgstruct.UseDevDefaults())
 
 	flagString := f.Lookup("string")
 	flagStringHide := f.Lookup("string2")
@@ -225,7 +226,7 @@ func TestHiddenRelease(t *testing.T) {
 		Int64   int64  `releaseDefault:"0" devDefault:"1"`
 		Int     int    `default:"2"`
 	}
-	Bind(f, &c, UseReleaseDefaults())
+	cfgstruct.Bind(f, &c, cfgstruct.UseReleaseDefaults())
 
 	flagString := f.Lookup("string")
 	flagStringHide := f.Lookup("string2")
@@ -247,7 +248,7 @@ func TestSource(t *testing.T) {
 	}
 
 	f := pflag.NewFlagSet("test", pflag.PanicOnError)
-	Bind(f, &c, UseReleaseDefaults())
+	cfgstruct.Bind(f, &c, cfgstruct.UseReleaseDefaults())
 
 	unset := f.Lookup("unset")
 	require.NotNil(t, unset)
@@ -269,7 +270,7 @@ func TestSource(t *testing.T) {
 func TestBindTestDefaults(t *testing.T) {
 	f := pflag.NewFlagSet("test", pflag.PanicOnError)
 	var c TestStruct
-	Bind(f, &c, UseTestDefaults(), ConfigVar("TESTINTERVAL", "30s"))
+	cfgstruct.Bind(f, &c, cfgstruct.UseTestDefaults(), cfgstruct.ConfigVar("TESTINTERVAL", "30s"))
 
 	node1, err := storj.NodeIDFromString("12EayRS2V1kEsWESU9QMRseFhdxYxKicsiFmxrsLZHeLUtdps3S")
 	require.NoError(t, err)
@@ -330,7 +331,7 @@ func TestBindTestDefaults(t *testing.T) {
 func TestWrongSyntax(t *testing.T) {
 	f := pflag.NewFlagSet("test", pflag.ContinueOnError)
 	var c TestStruct
-	Bind(f, &c, UseReleaseDefaults())
+	cfgstruct.Bind(f, &c, cfgstruct.UseReleaseDefaults())
 	err := f.Parse([]string{
 		"--node-url=foo@bar",
 	})
@@ -343,7 +344,7 @@ func TestBindWithPrefix(t *testing.T) {
 	var c struct {
 		Flag string
 	}
-	Bind(f, &c, UseTestDefaults(), Prefix("pfx"))
+	cfgstruct.Bind(f, &c, cfgstruct.UseTestDefaults(), cfgstruct.Prefix("pfx"))
 
 	err := f.Parse([]string{
 		"--pfx.flag=2",
@@ -352,4 +353,29 @@ func TestBindWithPrefix(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, c.Flag, string("2"))
 
+}
+
+func TestCustomFlagName(t *testing.T) {
+	f := pflag.NewFlagSet("test", pflag.PanicOnError)
+
+	t.Run("OK", func(t *testing.T) {
+		var c struct {
+			Flag string `flagname:"flag-name"`
+		}
+		cfgstruct.Bind(f, &c)
+		err := f.Parse([]string{
+			"--flag-name=value",
+		})
+		require.NoError(t, err)
+		require.Equal(t, "value", c.Flag)
+	})
+
+	t.Run("Invalid flag name", func(t *testing.T) {
+		var c struct {
+			Flag string `flagname:"flag.name"`
+		}
+		require.Panics(t, func() {
+			cfgstruct.Bind(f, &c)
+		})
+	})
 }

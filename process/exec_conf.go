@@ -111,7 +111,7 @@ func ExecWithCustomOptions(cmd *cobra.Command, opts ExecOptions) {
 	}
 
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
-	cleanup(cmd, &opts)
+	InitBeforeExecute(cmd, &opts)
 	err = cmd.Execute()
 
 	if err != nil {
@@ -228,9 +228,10 @@ func getRoot(cmd *cobra.Command) *cobra.Command {
 	return cmd
 }
 
-func cleanup(cmd *cobra.Command, opts *ExecOptions) {
+// InitBeforeExecute performs initialization before execution of the provided command.
+func InitBeforeExecute(cmd *cobra.Command, opts *ExecOptions) {
 	for _, ccmd := range cmd.Commands() {
-		cleanup(ccmd, opts)
+		InitBeforeExecute(ccmd, opts)
 	}
 	if cmd.Run != nil {
 		panic("Please use cobra's RunE instead of Run")

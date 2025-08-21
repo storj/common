@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -38,6 +39,8 @@ var (
 		AnySource,
 		FlagSource,
 	}
+
+	flagNameRegex = regexp.MustCompile(`^\p{Ll}[\p{Ll}\p{N}-]*$`)
 )
 
 // BindOpt is an option for the Bind method.
@@ -167,10 +170,18 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
 		fieldval := val.Field(i)
-		flagname := hyphenate(snakeCase(field.Name))
 
 		if field.Tag.Get("noflag") == "true" {
 			continue
+		}
+
+		flagname := field.Tag.Get("flagname")
+		if flagname != "" {
+			if !flagNameRegex.MatchString(flagname) {
+				panic(fmt.Sprintf("invalid flag name %q for field %s: must begin with a lowercase letter followed by zero or more lowercase letters, numbers, or hyphens", field.Name, flagname))
+			}
+		} else {
+			flagname = hyphenate(snakeCase(field.Name))
 		}
 
 		if field.Tag.Get("noprefix") != "true" {
