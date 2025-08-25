@@ -252,6 +252,10 @@
               {
                 "name": "HASH_MISMATCH",
                 "integer": 1
+              },
+              {
+                "name": "READ_FAILURE",
+                "integer": 2
               }
             ]
           }
