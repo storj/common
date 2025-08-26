@@ -2729,6 +2729,16 @@
                 "name": "storage_node_address",
                 "type": "node.NodeAddress"
               }
+            ],
+            "maps": [
+              {
+                "key_type": "string",
+                "field": {
+                  "id": 3,
+                  "name": "tags",
+                  "type": "bytes"
+                }
+              }
             ]
           },
           {
@@ -4333,6 +4343,77 @@
                 "id": 4,
                 "name": "redundancy_scheme",
                 "type": "pointerdb.RedundancyScheme"
+              },
+              {
+                "id": 5,
+                "name": "cohort_requirements",
+                "type": "CohortRequirements"
+              }
+            ]
+          },
+          {
+            "name": "CohortRequirements",
+            "fields": [
+              {
+                "id": 1,
+                "name": "and",
+                "type": "And",
+                "oneof_parent": "Requirement"
+              },
+              {
+                "id": 2,
+                "name": "literal",
+                "type": "Literal",
+                "oneof_parent": "Requirement"
+              },
+              {
+                "id": 3,
+                "name": "withhold",
+                "type": "Withhold",
+                "oneof_parent": "Requirement"
+              }
+            ],
+            "messages": [
+              {
+                "name": "And",
+                "fields": [
+                  {
+                    "id": 1,
+                    "name": "requirements",
+                    "type": "CohortRequirements",
+                    "is_repeated": true
+                  }
+                ]
+              },
+              {
+                "name": "Literal",
+                "fields": [
+                  {
+                    "id": 1,
+                    "name": "value",
+                    "type": "int32"
+                  }
+                ]
+              },
+              {
+                "name": "Withhold",
+                "fields": [
+                  {
+                    "id": 1,
+                    "name": "tag_key",
+                    "type": "string"
+                  },
+                  {
+                    "id": 2,
+                    "name": "amount",
+                    "type": "int32"
+                  },
+                  {
+                    "id": 3,
+                    "name": "child",
+                    "type": "CohortRequirements"
+                  }
+                ]
               }
             ]
           },
