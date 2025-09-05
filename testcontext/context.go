@@ -87,13 +87,21 @@ func NewWithContext(parentCtx context.Context, test TB) *Context {
 }
 
 // NewWithTimeout creates a new test context with a given timeout.
+// Negative timeout disables the timeout.
 func NewWithTimeout(test TB, timeout time.Duration) *Context {
 	return NewWithContextAndTimeout(context.Background(), test, timeout)
 }
 
 // NewWithContextAndTimeout  creates a new test context with a given timeout and the parent context.
+// Negative timeout disables the timeout.
 func NewWithContextAndTimeout(parentCtx context.Context, test TB, timeout time.Duration) *Context {
-	timedctx, cancel := context.WithTimeout(parentCtx, timeout)
+	var timedctx context.Context
+	var cancel context.CancelFunc
+	if timeout > 0 {
+		timedctx, cancel = context.WithTimeout(parentCtx, timeout)
+	} else {
+		timedctx, cancel = context.WithCancel(parentCtx)
+	}
 	group, errctx := errgroup.WithContext(timedctx)
 
 	ctx := &Context{
