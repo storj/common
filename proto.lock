@@ -2785,6 +2785,21 @@
                 "type": "bytes"
               },
               {
+                "id": 4,
+                "name": "project_created_at",
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
                 "id": 3,
                 "name": "edge_url_overrides",
                 "type": "EdgeUrlOverrides"

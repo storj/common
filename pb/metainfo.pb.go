@@ -1726,6 +1726,7 @@ func (m *EdgeUrlOverrides) GetPrivateLinksharing() []byte {
 type ProjectInfoResponse struct {
 	ProjectSalt          []byte            `protobuf:"bytes,1,opt,name=project_salt,json=projectSalt,proto3" json:"project_salt,omitempty"`
 	ProjectPublicId      []byte            `protobuf:"bytes,2,opt,name=project_public_id,json=projectPublicId,proto3" json:"project_public_id,omitempty"`
+	ProjectCreatedAt     time.Time         `protobuf:"bytes,4,opt,name=project_created_at,json=projectCreatedAt,proto3,stdtime" json:"project_created_at"`
 	EdgeUrlOverrides     *EdgeUrlOverrides `protobuf:"bytes,3,opt,name=edge_url_overrides,json=edgeUrlOverrides,proto3" json:"edge_url_overrides,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
@@ -1766,6 +1767,13 @@ func (m *ProjectInfoResponse) GetProjectPublicId() []byte {
 		return m.ProjectPublicId
 	}
 	return nil
+}
+
+func (m *ProjectInfoResponse) GetProjectCreatedAt() time.Time {
+	if m != nil {
+		return m.ProjectCreatedAt
+	}
+	return time.Time{}
 }
 
 func (m *ProjectInfoResponse) GetEdgeUrlOverrides() *EdgeUrlOverrides {

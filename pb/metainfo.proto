@@ -293,6 +293,7 @@ message EdgeUrlOverrides {
 message ProjectInfoResponse {
     bytes project_salt = 1;
     bytes project_public_id = 2;
+    google.protobuf.Timestamp project_created_at = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     EdgeUrlOverrides edge_url_overrides = 3;
 }
 
