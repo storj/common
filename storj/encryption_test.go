@@ -4,6 +4,7 @@
 package storj_test
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -95,6 +96,37 @@ func TestKey_IsZero(t *testing.T) {
 		key := &storj.Key{'k'}
 		require.False(t, key.IsZero())
 	})
+}
+
+func TestEncryptedParameters_Scan(t *testing.T) {
+	tmp := storj.EncryptionParameters{}
+	require.Error(t, tmp.Scan(byte(32)))
+	require.Error(t, tmp.Scan(false))
+	require.Error(t, tmp.Scan([]byte{}))
+
+	for _, ep := range []storj.EncryptionParameters{
+		{CipherSuite: storj.EncUnspecified, BlockSize: 123},
+		{CipherSuite: storj.EncNull, BlockSize: 0},
+		{CipherSuite: storj.EncAESGCM, BlockSize: 512},
+		{CipherSuite: storj.EncSecretBox, BlockSize: 1024},
+		{CipherSuite: storj.EncNullBase64URL, BlockSize: 41232},
+	} {
+		v, err := ep.Value()
+		require.NoError(t, err)
+
+		x, ok := v.(int64)
+		require.True(t, ok)
+
+		var tmp storj.EncryptionParameters
+		err = tmp.Scan(x)
+		require.NoError(t, err)
+		require.Equal(t, ep, tmp)
+
+		s := strconv.FormatInt(x, 10)
+		err = tmp.DecodeSpanner(s)
+		require.NoError(t, err)
+		require.Equal(t, ep, tmp)
+	}
 }
 
 // TestNonce_Scan tests (*Nonce).Scan().
