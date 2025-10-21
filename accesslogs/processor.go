@@ -96,6 +96,7 @@ type Options struct {
 		QueueLimit      int           `user:"true" help:"log file upload queue limit" default:"100"`
 		RetryLimit      int           `user:"true" help:"maximum number of retries for log file uploads" default:"3"`
 		ShutdownTimeout time.Duration `user:"true" help:"time limit waiting for queued logs to finish uploading when gateway is shutting down" default:"1m"`
+		UploadTimeout   time.Duration `user:"true" help:"time limit for each individual log file upload" default:"5m"`
 	}
 }
 
@@ -118,6 +119,9 @@ func NewProcessor(log *zap.Logger, opts Options) *Processor {
 	if opts.UploadingOptions.ShutdownTimeout <= 0 {
 		opts.UploadingOptions.ShutdownTimeout = time.Minute
 	}
+	if opts.UploadingOptions.UploadTimeout <= 0 {
+		opts.UploadingOptions.UploadTimeout = 5 * time.Minute
+	}
 
 	return &Processor{
 		log: log,
@@ -126,6 +130,7 @@ func NewProcessor(log *zap.Logger, opts Options) *Processor {
 			queueLimit:      opts.UploadingOptions.QueueLimit,
 			retryLimit:      opts.UploadingOptions.RetryLimit,
 			shutdownTimeout: opts.UploadingOptions.ShutdownTimeout,
+			uploadTimeout:   opts.UploadingOptions.UploadTimeout,
 		}),
 
 		defaultEntryLimit:       opts.DefaultEntryLimit,

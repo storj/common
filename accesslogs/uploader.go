@@ -79,6 +79,7 @@ type sequentialUploader struct {
 	queueLimit      int
 	retryLimit      int
 	shutdownTimeout time.Duration
+	uploadTimeout   time.Duration
 
 	mu          sync.Mutex
 	queue       chan upload
@@ -94,6 +95,7 @@ type sequentialUploaderOptions struct {
 	queueLimit      int
 	retryLimit      int
 	shutdownTimeout time.Duration
+	uploadTimeout   time.Duration
 }
 
 func newSequentialUploader(log *zap.Logger, opts sequentialUploaderOptions) *sequentialUploader {
@@ -103,6 +105,7 @@ func newSequentialUploader(log *zap.Logger, opts sequentialUploaderOptions) *seq
 		queueLimit:      opts.queueLimit,
 		retryLimit:      opts.retryLimit,
 		shutdownTimeout: opts.shutdownTimeout,
+		uploadTimeout:   opts.uploadTimeout,
 		queue:           make(chan upload, opts.queueLimit),
 	}
 }
@@ -192,9 +195,10 @@ func (u *sequentialUploader) run() error {
 	for {
 		select {
 		case up := <-u.queue:
-			// TODO(artur): we need to figure out what context we want
-			// to pass here. WithTimeout(Background, …)?
-			if err := up.store.Put(context.TODO(), up.bucket, up.key, up.body); err != nil {
+			ctx, cancel := context.WithTimeout(context.Background(), u.uploadTimeout)
+			err := up.store.Put(ctx, up.bucket, up.key, up.body)
+			cancel()
+			if err != nil {
 				if up.retries == u.retryLimit {
 					mon.Event("upload_dropped")
 					u.log.Error("retry limit reached",
