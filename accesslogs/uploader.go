@@ -65,11 +65,12 @@ type uploader interface {
 var _ uploader = (*sequentialUploader)(nil)
 
 type upload struct {
-	store   Storage
-	bucket  string
-	key     string
-	body    []byte
-	retries int
+	store         Storage
+	bucket        string
+	key           string
+	body          []byte
+	retries       int
+	uploadTimeout time.Duration
 }
 
 type sequentialUploader struct {
@@ -132,11 +133,12 @@ func (u *sequentialUploader) queueUpload(store Storage, bucket, key string, body
 	u.mu.Unlock()
 
 	u.queue <- upload{
-		store:   store,
-		bucket:  bucket,
-		key:     key,
-		body:    body,
-		retries: 0,
+		store:         store,
+		bucket:        bucket,
+		key:           key,
+		body:          body,
+		retries:       0,
+		uploadTimeout: u.uploadTimeout,
 	}
 
 	return nil
@@ -157,11 +159,12 @@ func (u *sequentialUploader) queueUploadWithoutQueueLimit(store Storage, bucket,
 	u.mu.Unlock()
 
 	u.queue <- upload{
-		store:   store,
-		bucket:  bucket,
-		key:     key,
-		body:    body,
-		retries: 0,
+		store:         store,
+		bucket:        bucket,
+		key:           key,
+		body:          body,
+		retries:       0,
+		uploadTimeout: u.uploadTimeout,
 	}
 
 	return nil
@@ -195,7 +198,7 @@ func (u *sequentialUploader) run() error {
 	for {
 		select {
 		case up := <-u.queue:
-			ctx, cancel := context.WithTimeout(context.Background(), u.uploadTimeout)
+			ctx, cancel := context.WithTimeout(context.Background(), up.uploadTimeout)
 			err := up.store.Put(ctx, up.bucket, up.key, up.body)
 			cancel()
 			if err != nil {
