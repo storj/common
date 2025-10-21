@@ -46,6 +46,8 @@ type Config struct {
 	ControlTitle string `hidden:"true"`
 	Control      bool   `releaseDefault:"false" devDefault:"true" hidden:"true"`
 
+	PrometheusSanitize bool `default:"true" help:"if true, sanitize prometheus metric names and labels" hidden:"true"`
+
 	Crawlspace bool `help:"if true, enable crawlspace on debug port" default:"false" hidden:"true"`
 }
 
@@ -84,10 +86,12 @@ func NewServer(log *zap.Logger, listener net.Listener, registry *monkit.Registry
 // NewServerWithAtomicLevel returns a new debug.Server with logging endpoint enabled.
 func NewServerWithAtomicLevel(log *zap.Logger, listener net.Listener, registry *monkit.Registry, config Config, atomicLevel *zap.AtomicLevel, extensions ...Extension) *Server {
 	server := &Server{
-		log:                log,
-		listener:           listener,
-		PrometheusEndpoint: NewPrometheusEndpoint(registry),
-		config:             config,
+		log:      log,
+		listener: listener,
+		PrometheusEndpoint: NewPrometheusEndpointFromConfig(registry, PrometheusEndpointConfig{
+			SanitizeValues: config.PrometheusSanitize,
+		}),
+		config: config,
 	}
 
 	server.server.Handler = &server.mux
