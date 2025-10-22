@@ -17,7 +17,7 @@ require (
 	github.com/jtolio/noiseconn v0.0.0-20230111204749-d7ec1a08b0b8
 	github.com/quic-go/quic-go v0.53.0
 	github.com/shopspring/decimal v1.2.0
-	github.com/spacemonkeygo/monkit/v3 v3.0.22
+	github.com/spacemonkeygo/monkit/v3 v3.0.25-0.20251022131615-eb24eb109368
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
