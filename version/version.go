@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -19,6 +20,8 @@ import (
 	"github.com/blang/semver/v4"
 	"github.com/zeebo/errs"
 	"go.uber.org/zap"
+	"golang.org/x/mod/module"
+	msemver "golang.org/x/mod/semver"
 
 	"storj.io/common/pb"
 	"storj.io/common/storj"
@@ -323,30 +326,103 @@ func ShouldUpdateVersion(currentVersion SemVer, nodeID storj.NodeID, requested P
 	return Version{}, "New version is being rolled out but hasn't made it to this node yet", nil
 }
 
-func getInfoFromBuildTags() Info {
-	if buildVersion == "" && buildTimestamp == "" && buildCommitHash == "" && buildRelease == "" {
-		return Info{}
-	}
-	timestamp, err := strconv.ParseInt(buildTimestamp, 10, 64)
-	if err != nil {
-		panic(VerError.Wrap(err))
-	}
-	info := Info{
-		Timestamp:  time.Unix(timestamp, 0),
-		CommitHash: buildCommitHash,
-		Release:    strings.ToLower(buildRelease) == "true",
-		Modified:   strings.Contains(buildCommitHash, "dirty"),
+// getInfoFromBuildInfo constructs an Info from Go's runtime/debug build info,
+// and, failing to get the right information from that, build tags, where
+// appropriate.
+//
+// If Go build info has version information for the main module and is not a
+// Go pseudo-version, then that version is used. Go module Pseudo-versions are
+// explicitly ignored, as they indicate this build didn't actually have a
+// version tag explicitly set.
+//
+// If Go build info has VCS information, then the commit timestamp, revision,
+// and whether the repo is modified/dirty is used.
+//
+// These fields fall back, if they are not able to be determined from Go build
+// information, to the defined link-time fields of buildTimestamp,
+// buildCommitHash, and buildVersion.
+//
+// Finally, there is a "release" setting for the build. This is determined
+// in the following way:
+//   - If a linker tag sets the "release" setting, that takes precedence, above
+//     anything else. This is different than all the other linker fields.
+//   - Otherwise, release is true if the Go build info version is set, valid,
+//     not a pseudo version, the commit hash is set, the repo wasn't dirty, and
+//     the commit timestamp is nonzero.
+//   - Release is false in all other cases.
+func getInfoFromBuildInfo() (rv Info) {
+	versionSet := false
+	if binfo, ok := debug.ReadBuildInfo(); ok {
+		version := msemver.Canonical(binfo.Main.Version)
+		rv.Modified = msemver.Build(binfo.Main.Version) != ""
+		if module.IsPseudoVersion(version) {
+			// Go always makes a version. We're going to explicitly set
+			// made up versions to mean an explicit version was unprovided.
+			version = ""
+		}
+
+		for _, setting := range binfo.Settings {
+			switch setting.Key {
+			case "vcs.time":
+				timestamp, err := time.Parse(time.RFC3339, setting.Value)
+				if err != nil {
+					panic(err)
+				}
+				rv.Timestamp = timestamp
+			case "vcs.revision":
+				rv.CommitHash = setting.Value
+			case "vcs.modified":
+				var err error
+				rv.Modified, err = strconv.ParseBool(setting.Value)
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
+
+		rv.Release = (msemver.IsValid(version) &&
+			!rv.Modified &&
+			!rv.Timestamp.IsZero() &&
+			rv.CommitHash != "")
+
+		if sv, err := NewSemVer(version); err == nil {
+			rv.Version = sv
+			versionSet = true
+		} else {
+			rv.Release = false
+		}
 	}
 
-	sv, err := NewSemVer(buildVersion)
-	if err != nil {
-		panic(err)
+	if rv.Timestamp.IsZero() && buildTimestamp != "" {
+		timestamp, err := strconv.ParseInt(buildTimestamp, 10, 64)
+		if err != nil {
+			panic(VerError.Wrap(err))
+		}
+		rv.Timestamp = time.Unix(timestamp, 0)
 	}
 
-	info.Version = sv
-
-	if Build.Timestamp.Unix() == 0 || Build.CommitHash == "" {
-		Build.Release = false
+	if rv.CommitHash == "" && buildCommitHash != "" {
+		rv.CommitHash = buildCommitHash
+		if strings.Contains(buildCommitHash, "dirty") {
+			rv.Modified = true
+		}
 	}
-	return info
+
+	if !versionSet && buildVersion != "" {
+		sv, err := NewSemVer(buildVersion)
+		if err != nil {
+			panic(err)
+		}
+		rv.Version = sv
+	}
+
+	if buildRelease != "" {
+		var err error
+		rv.Release, err = strconv.ParseBool(buildRelease)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return rv
 }

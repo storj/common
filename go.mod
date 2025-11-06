@@ -29,6 +29,7 @@ require (
 	github.com/zeebo/structs v1.0.2
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.38.0
+	golang.org/x/mod v0.18.0
 	golang.org/x/sync v0.14.0
 	golang.org/x/sys v0.33.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -93,7 +94,6 @@ require (
 	go.uber.org/mock v0.5.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
-	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/oauth2 v0.17.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
