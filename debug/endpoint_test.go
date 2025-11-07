@@ -30,8 +30,6 @@ func TestRemoteDebugServer_CollectRuntimeTraces_Unauthenticated(t *testing.T) {
 func TestRemoteDebugServer_CollectRuntimeTraces_SomeData(t *testing.T) {
 	if trace.IsEnabled() {
 		t.Skip("tracing already enabled")
-	} else if !traceEnabled {
-		t.Skip("tracing not enabled")
 	}
 
 	endpoint := NewEndpoint(func(ctx context.Context) error { return nil })
@@ -67,8 +65,6 @@ func TestRemoteDebugServer_CollectRuntimeTraces2_Unauthenticated(t *testing.T) {
 func TestRemoteDebugServer_CollectRuntimeTraces2_SomeData(t *testing.T) {
 	if trace.IsEnabled() {
 		t.Skip("tracing already enabled")
-	} else if !traceEnabled {
-		t.Skip("tracing not enabled")
 	}
 
 	endpoint := NewEndpoint(func(ctx context.Context) error { return nil })

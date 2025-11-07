@@ -5,7 +5,6 @@ package debug
 
 import (
 	"context"
-	"runtime"
 	"runtime/trace"
 	"sync"
 	"sync/atomic"
@@ -37,9 +36,6 @@ func (f *Endpoint) CollectRuntimeTraces(_ *pb.CollectRuntimeTracesRequest, strea
 	if err := f.Auth(stream.Context()); err != nil {
 		return rpcstatus.Wrap(rpcstatus.Unauthenticated, err)
 	}
-	if !traceEnabled {
-		return rpcstatus.Wrap(rpcstatus.FailedPrecondition, errs.New("trace is not enabled: %v", runtime.Version()))
-	}
 
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -59,9 +55,6 @@ func (f *Endpoint) CollectRuntimeTraces(_ *pb.CollectRuntimeTracesRequest, strea
 func (f *Endpoint) CollectRuntimeTraces2(stream pb.DRPCDebug_CollectRuntimeTraces2Stream) error {
 	if err := f.Auth(stream.Context()); err != nil {
 		return rpcstatus.Wrap(rpcstatus.Unauthenticated, err)
-	}
-	if !traceEnabled {
-		return rpcstatus.Wrap(rpcstatus.FailedPrecondition, errs.New("trace is not enabled: %v", runtime.Version()))
 	}
 
 	f.mu.Lock()
