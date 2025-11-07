@@ -70,16 +70,27 @@ func (f traceCollectorFactoryFunc) MakeCollector(hostTarget string) (jaeger.Clos
 }
 
 func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, instanceID string, processInfo []jaeger.Tag) (cleanup func(), err error) {
+	// Snapshot all flag values first to avoid data races with concurrent goroutines
+	enabled := *tracingEnabled
+	samplingRate := *tracingSamplingRate
+	agentAddr := *tracingAgent
+	app := *tracingApp
+	appSuffix := *tracingAppSuffix
+	bufferSize := *tracingBufferSize
+	queueSize := *tracingQueueSize
+	interval := *tracingInterval
+	hostRegexStr := *tracingHostRegex
+
 	if r == nil {
 		r = monkit.Default
 	}
 
-	hostRegex, err := regexp.Compile(*tracingHostRegex)
+	hostRegex, err := regexp.Compile(hostRegexStr)
 	if err != nil {
 		return nil, err
 	}
 
-	if !*tracingEnabled {
+	if !enabled {
 		log.Debug("Anonymized tracing disabled")
 		return nil, nil
 	}
@@ -94,11 +105,11 @@ func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 		Value: instanceID,
 	})
 
-	processName := *tracingApp + *tracingAppSuffix
+	processName := app + appSuffix
 	if len(processName) > maxInstanceLength {
 		processName = processName[:maxInstanceLength]
 	}
-	collector, err := jaeger.NewThriftCollector(log, *tracingAgent, processName, processInfo, *tracingBufferSize, *tracingQueueSize, *tracingInterval)
+	collector, err := jaeger.NewThriftCollector(log, agentAddr, processName, processInfo, bufferSize, queueSize, interval)
 	if err != nil {
 		return nil, err
 	}
@@ -111,11 +122,11 @@ func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 	})
 
 	unregister := jaeger.RegisterJaeger(r, collector, jaeger.Options{
-		Fraction: *tracingSamplingRate,
+		Fraction: samplingRate,
 		Excluded: rpctracing.IsExcluded,
 		CollectorFactory: traceCollectorFactoryFunc(func(targetHost string) (jaeger.ClosableTraceCollector, error) {
 			targetCollector, err := jaeger.NewThriftCollector(log, targetHost, processName,
-				processInfo, *tracingBufferSize, *tracingQueueSize, *tracingInterval)
+				processInfo, bufferSize, queueSize, interval)
 			if err != nil {
 				return nil, err
 			}

@@ -33,8 +33,9 @@ func initDebug(log *zap.Logger, r *monkit.Registry, atomicLevel *zap.AtomicLevel
 		return err
 	}
 
+	server := debug.NewServerWithAtomicLevel(log, ln, r, debugConfig.Debug, atomicLevel)
+
 	go func() {
-		server := debug.NewServerWithAtomicLevel(log, ln, r, debugConfig.Debug, atomicLevel)
 		log.Debug("debug server listening on " + ln.Addr().String())
 		err := server.Run(context.TODO())
 		if err != nil {
