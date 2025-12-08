@@ -34,6 +34,8 @@ service Metainfo {
     rpc SetBucketVersioning(SetBucketVersioningRequest) returns (SetBucketVersioningResponse);
     rpc GetBucketObjectLockConfiguration(GetBucketObjectLockConfigurationRequest) returns (GetBucketObjectLockConfigurationResponse);
     rpc SetBucketObjectLockConfiguration(SetBucketObjectLockConfigurationRequest) returns (SetBucketObjectLockConfigurationResponse);
+    rpc GetBucketNotificationConfiguration(GetBucketNotificationConfigurationRequest) returns (GetBucketNotificationConfigurationResponse);
+    rpc SetBucketNotificationConfiguration(SetBucketNotificationConfigurationRequest) returns (SetBucketNotificationConfigurationResponse);
     rpc DeleteBucket(DeleteBucketRequest) returns (DeleteBucketResponse);
     rpc ListBuckets(ListBucketsRequest) returns (ListBucketsResponse);
 
@@ -223,6 +225,36 @@ message GetBucketObjectLockConfigurationRequest {
 
 message GetBucketObjectLockConfigurationResponse {
     ObjectLockConfiguration configuration = 1;
+}
+
+message FilterRule {
+    string prefix = 1;
+    string suffix = 2;
+}
+
+message NotificationConfiguration {
+    string id = 1;
+    string topic_name = 2;
+    repeated string events = 3;
+    FilterRule filter = 4;
+}
+
+message SetBucketNotificationConfigurationRequest {
+    RequestHeader header = 1;
+    bytes name = 2;
+    NotificationConfiguration configuration = 3;
+}
+
+message SetBucketNotificationConfigurationResponse {
+}
+
+message GetBucketNotificationConfigurationRequest {
+    RequestHeader header = 1;
+    bytes name = 2;
+}
+
+message GetBucketNotificationConfigurationResponse {
+    NotificationConfiguration configuration = 1;
 }
 
 message DeleteBucketRequest {

@@ -1295,6 +1295,286 @@ func (m *GetBucketObjectLockConfigurationResponse) GetConfiguration() *ObjectLoc
 	return nil
 }
 
+type FilterRule struct {
+	Prefix               string   `protobuf:"bytes,1,opt,name=prefix,proto3" json:"prefix,omitempty"`
+	Suffix               string   `protobuf:"bytes,2,opt,name=suffix,proto3" json:"suffix,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FilterRule) Reset()         { *m = FilterRule{} }
+func (m *FilterRule) String() string { return proto.CompactTextString(m) }
+func (*FilterRule) ProtoMessage()    {}
+
+func (m *FilterRule) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FilterRule.Unmarshal(m, b)
+}
+func (m *FilterRule) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FilterRule.Marshal(b, m, deterministic)
+}
+func (m *FilterRule) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FilterRule.Merge(m, src)
+}
+func (m *FilterRule) XXX_Size() int {
+	return xxx_messageInfo_FilterRule.Size(m)
+}
+func (m *FilterRule) XXX_DiscardUnknown() {
+	xxx_messageInfo_FilterRule.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FilterRule proto.InternalMessageInfo
+
+func (m *FilterRule) GetPrefix() string {
+	if m != nil {
+		return m.Prefix
+	}
+	return ""
+}
+
+func (m *FilterRule) GetSuffix() string {
+	if m != nil {
+		return m.Suffix
+	}
+	return ""
+}
+
+type NotificationConfiguration struct {
+	Id                   string      `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	TopicName            string      `protobuf:"bytes,2,opt,name=topic_name,json=topicName,proto3" json:"topic_name,omitempty"`
+	Events               []string    `protobuf:"bytes,3,rep,name=events,proto3" json:"events,omitempty"`
+	Filter               *FilterRule `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *NotificationConfiguration) Reset()         { *m = NotificationConfiguration{} }
+func (m *NotificationConfiguration) String() string { return proto.CompactTextString(m) }
+func (*NotificationConfiguration) ProtoMessage()    {}
+
+func (m *NotificationConfiguration) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NotificationConfiguration.Unmarshal(m, b)
+}
+func (m *NotificationConfiguration) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NotificationConfiguration.Marshal(b, m, deterministic)
+}
+func (m *NotificationConfiguration) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NotificationConfiguration.Merge(m, src)
+}
+func (m *NotificationConfiguration) XXX_Size() int {
+	return xxx_messageInfo_NotificationConfiguration.Size(m)
+}
+func (m *NotificationConfiguration) XXX_DiscardUnknown() {
+	xxx_messageInfo_NotificationConfiguration.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NotificationConfiguration proto.InternalMessageInfo
+
+func (m *NotificationConfiguration) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *NotificationConfiguration) GetTopicName() string {
+	if m != nil {
+		return m.TopicName
+	}
+	return ""
+}
+
+func (m *NotificationConfiguration) GetEvents() []string {
+	if m != nil {
+		return m.Events
+	}
+	return nil
+}
+
+func (m *NotificationConfiguration) GetFilter() *FilterRule {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+type SetBucketNotificationConfigurationRequest struct {
+	Header               *RequestHeader             `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
+	Name                 []byte                     `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Configuration        *NotificationConfiguration `protobuf:"bytes,3,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *SetBucketNotificationConfigurationRequest) Reset() {
+	*m = SetBucketNotificationConfigurationRequest{}
+}
+func (m *SetBucketNotificationConfigurationRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*SetBucketNotificationConfigurationRequest) ProtoMessage() {}
+
+func (m *SetBucketNotificationConfigurationRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetBucketNotificationConfigurationRequest.Unmarshal(m, b)
+}
+func (m *SetBucketNotificationConfigurationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetBucketNotificationConfigurationRequest.Marshal(b, m, deterministic)
+}
+func (m *SetBucketNotificationConfigurationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetBucketNotificationConfigurationRequest.Merge(m, src)
+}
+func (m *SetBucketNotificationConfigurationRequest) XXX_Size() int {
+	return xxx_messageInfo_SetBucketNotificationConfigurationRequest.Size(m)
+}
+func (m *SetBucketNotificationConfigurationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetBucketNotificationConfigurationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetBucketNotificationConfigurationRequest proto.InternalMessageInfo
+
+func (m *SetBucketNotificationConfigurationRequest) GetHeader() *RequestHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
+func (m *SetBucketNotificationConfigurationRequest) GetName() []byte {
+	if m != nil {
+		return m.Name
+	}
+	return nil
+}
+
+func (m *SetBucketNotificationConfigurationRequest) GetConfiguration() *NotificationConfiguration {
+	if m != nil {
+		return m.Configuration
+	}
+	return nil
+}
+
+type SetBucketNotificationConfigurationResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SetBucketNotificationConfigurationResponse) Reset() {
+	*m = SetBucketNotificationConfigurationResponse{}
+}
+func (m *SetBucketNotificationConfigurationResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*SetBucketNotificationConfigurationResponse) ProtoMessage() {}
+
+func (m *SetBucketNotificationConfigurationResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetBucketNotificationConfigurationResponse.Unmarshal(m, b)
+}
+func (m *SetBucketNotificationConfigurationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetBucketNotificationConfigurationResponse.Marshal(b, m, deterministic)
+}
+func (m *SetBucketNotificationConfigurationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetBucketNotificationConfigurationResponse.Merge(m, src)
+}
+func (m *SetBucketNotificationConfigurationResponse) XXX_Size() int {
+	return xxx_messageInfo_SetBucketNotificationConfigurationResponse.Size(m)
+}
+func (m *SetBucketNotificationConfigurationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetBucketNotificationConfigurationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetBucketNotificationConfigurationResponse proto.InternalMessageInfo
+
+type GetBucketNotificationConfigurationRequest struct {
+	Header               *RequestHeader `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
+	Name                 []byte         `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *GetBucketNotificationConfigurationRequest) Reset() {
+	*m = GetBucketNotificationConfigurationRequest{}
+}
+func (m *GetBucketNotificationConfigurationRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*GetBucketNotificationConfigurationRequest) ProtoMessage() {}
+
+func (m *GetBucketNotificationConfigurationRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetBucketNotificationConfigurationRequest.Unmarshal(m, b)
+}
+func (m *GetBucketNotificationConfigurationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetBucketNotificationConfigurationRequest.Marshal(b, m, deterministic)
+}
+func (m *GetBucketNotificationConfigurationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetBucketNotificationConfigurationRequest.Merge(m, src)
+}
+func (m *GetBucketNotificationConfigurationRequest) XXX_Size() int {
+	return xxx_messageInfo_GetBucketNotificationConfigurationRequest.Size(m)
+}
+func (m *GetBucketNotificationConfigurationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetBucketNotificationConfigurationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetBucketNotificationConfigurationRequest proto.InternalMessageInfo
+
+func (m *GetBucketNotificationConfigurationRequest) GetHeader() *RequestHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
+func (m *GetBucketNotificationConfigurationRequest) GetName() []byte {
+	if m != nil {
+		return m.Name
+	}
+	return nil
+}
+
+type GetBucketNotificationConfigurationResponse struct {
+	Configuration        *NotificationConfiguration `protobuf:"bytes,1,opt,name=configuration,proto3" json:"configuration,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *GetBucketNotificationConfigurationResponse) Reset() {
+	*m = GetBucketNotificationConfigurationResponse{}
+}
+func (m *GetBucketNotificationConfigurationResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*GetBucketNotificationConfigurationResponse) ProtoMessage() {}
+
+func (m *GetBucketNotificationConfigurationResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetBucketNotificationConfigurationResponse.Unmarshal(m, b)
+}
+func (m *GetBucketNotificationConfigurationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetBucketNotificationConfigurationResponse.Marshal(b, m, deterministic)
+}
+func (m *GetBucketNotificationConfigurationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetBucketNotificationConfigurationResponse.Merge(m, src)
+}
+func (m *GetBucketNotificationConfigurationResponse) XXX_Size() int {
+	return xxx_messageInfo_GetBucketNotificationConfigurationResponse.Size(m)
+}
+func (m *GetBucketNotificationConfigurationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetBucketNotificationConfigurationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetBucketNotificationConfigurationResponse proto.InternalMessageInfo
+
+func (m *GetBucketNotificationConfigurationResponse) GetConfiguration() *NotificationConfiguration {
+	if m != nil {
+		return m.Configuration
+	}
+	return nil
+}
+
 type DeleteBucketRequest struct {
 	Header                    *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
 	Name                      []byte         `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`

@@ -2623,6 +2623,95 @@
             ]
           },
           {
+            "name": "FilterRule",
+            "fields": [
+              {
+                "id": 1,
+                "name": "prefix",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "suffix",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "NotificationConfiguration",
+            "fields": [
+              {
+                "id": 1,
+                "name": "id",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "topic_name",
+                "type": "string"
+              },
+              {
+                "id": 3,
+                "name": "events",
+                "type": "string",
+                "is_repeated": true
+              },
+              {
+                "id": 4,
+                "name": "filter",
+                "type": "FilterRule"
+              }
+            ]
+          },
+          {
+            "name": "SetBucketNotificationConfigurationRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 2,
+                "name": "name",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "configuration",
+                "type": "NotificationConfiguration"
+              }
+            ]
+          },
+          {
+            "name": "SetBucketNotificationConfigurationResponse"
+          },
+          {
+            "name": "GetBucketNotificationConfigurationRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 2,
+                "name": "name",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "name": "GetBucketNotificationConfigurationResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "configuration",
+                "type": "NotificationConfiguration"
+              }
+            ]
+          },
+          {
             "name": "DeleteBucketRequest",
             "fields": [
               {
@@ -6096,6 +6185,16 @@
                 "name": "SetBucketObjectLockConfiguration",
                 "in_type": "SetBucketObjectLockConfigurationRequest",
                 "out_type": "SetBucketObjectLockConfigurationResponse"
+              },
+              {
+                "name": "GetBucketNotificationConfiguration",
+                "in_type": "GetBucketNotificationConfigurationRequest",
+                "out_type": "GetBucketNotificationConfigurationResponse"
+              },
+              {
+                "name": "SetBucketNotificationConfiguration",
+                "in_type": "SetBucketNotificationConfigurationRequest",
+                "out_type": "SetBucketNotificationConfigurationResponse"
               },
               {
                 "name": "DeleteBucket",
