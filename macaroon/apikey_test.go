@@ -86,7 +86,27 @@ func TestSerializeParseRestrictAndCheck(t *testing.T) {
 		require.True(t, ErrUnauthorized.Has(err))
 		err = key.Check(ctx, secret, APIKeyVersionAuditable, action1, nil)
 		require.True(t, ErrUnauthorized.Has(err))
+		err = key.Check(ctx, secret, APIKeyVersionEventing, action1, nil)
+		require.True(t, ErrUnauthorized.Has(err))
 		err = key.Check(ctx, secret, APIKeyVersionAuditable|APIKeyVersionMin, action1, nil)
+		require.True(t, ErrUnauthorized.Has(err))
+		err = key.Check(ctx, secret, APIKeyVersionAuditable|APIKeyVersionEventing, action1, nil)
+		require.True(t, ErrUnauthorized.Has(err))
+	}
+
+	for _, actionType := range []ActionType{
+		ActionPutBucketNotificationConfiguration,
+		ActionGetBucketNotificationConfiguration,
+	} {
+		action1.Op = actionType
+		require.NoError(t, key.Check(ctx, secret, APIKeyVersionEventing, action1, nil))
+		err = key.Check(ctx, secret, APIKeyVersionMin, action1, nil)
+		require.True(t, ErrUnauthorized.Has(err))
+		err = key.Check(ctx, secret, APIKeyVersionAuditable, action1, nil)
+		require.True(t, ErrUnauthorized.Has(err))
+		err = key.Check(ctx, secret, APIKeyVersionObjectLock, action1, nil)
+		require.True(t, ErrUnauthorized.Has(err))
+		err = key.Check(ctx, secret, APIKeyVersionObjectLock|APIKeyVersionAuditable, action1, nil)
 		require.True(t, ErrUnauthorized.Has(err))
 	}
 }

@@ -68,6 +68,16 @@
                 "type": "bool"
               },
               {
+                "id": 14,
+                "name": "disallow_put_bucket_notification_configuration",
+                "type": "bool"
+              },
+              {
+                "id": 15,
+                "name": "disallow_get_bucket_notification_configuration",
+                "type": "bool"
+              },
+              {
                 "id": 10,
                 "name": "allowed_paths",
                 "type": "Path",
