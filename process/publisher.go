@@ -53,7 +53,7 @@ func InitEventStatPublisher(ctx context.Context, log *zap.Logger, r *eventstat.R
 		}
 
 		go publisher.Run(ctx)
-		log.Info("Event stat publisher is enabled", zap.String("instance ID", opts.Instance))
+		log.Info("Event stat publisher is enabled", zap.String("instance_id", opts.Instance))
 	}
 	return nil
 }

@@ -10,6 +10,8 @@
 // to comply with the specification to make the message, level, time, and other
 // fields gain special meaning that later allows us to construct powerful
 // queries. Reference: https://cloud.google.com/logging/docs/structured-logging.
+//
+//zapfields:ignore-file
 package gcloudlogging
 
 import (

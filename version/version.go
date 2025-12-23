@@ -227,11 +227,11 @@ func (info Info) String() (out string) {
 // Log prints out the version information to a zap compatible log.
 func (info Info) Log(logger func(msg string, fields ...zap.Field)) {
 	logger("Version info",
-		zap.Stringer("Version", info.Version.Version),
-		zap.String("Commit Hash", info.CommitHash),
-		zap.Stringer("Build Timestamp", info.Timestamp),
-		zap.Bool("Release Build", info.Release),
-		zap.Bool("Modified", info.Modified))
+		zap.Stringer("version", info.Version.Version),
+		zap.String("commit_hash", info.CommitHash),
+		zap.Stringer("build_timestamp", info.Timestamp),
+		zap.Bool("release_build", info.Release),
+		zap.Bool("modified", info.Modified))
 }
 
 // PercentageToCursorF calculates the cursor value for the given floating point percentage.

@@ -105,7 +105,7 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 		return nil
 	}
 
-	log.Info("Telemetry enabled", zap.String("instance ID", instanceID))
+	log.Info("Telemetry enabled", zap.String("instance_id", instanceID))
 
 	for _, address := range strings.Split(*metricCollector, ",") {
 		c, err := telemetry.NewClient(address, telemetry.ClientOpts{
@@ -127,7 +127,7 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 
 		dest(ctx, log, *metricEventCollector, eventkit.DefaultRegistry, appName, instanceID)
 
-		log.Info("Event collection enabled", zap.String("instance ID", instanceID))
+		log.Info("Event collection enabled", zap.String("instance_id", instanceID))
 		eventRegistry.Scope("init").Event("init")
 	}
 

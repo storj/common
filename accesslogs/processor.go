@@ -209,9 +209,9 @@ func (p *Processor) timedFlush(key Key, interval time.Duration) error {
 
 		mon.IntVal("globalLimit").Observe(atomic.AddInt64(&p.globalSize, int64(-shipped)))
 		p.log.Debug("timed flush",
-			zap.String("PublicProjectID", key.PublicProjectID.String()),
-			zap.String("Bucket", key.Bucket),
-			zap.String("Prefix", key.Prefix),
+			zap.String("public_project_id", key.PublicProjectID.String()),
+			zap.String("bucket", key.Bucket),
+			zap.String("prefix", key.Prefix),
 			zap.Int("size", shipped),
 			zap.Error(err),
 		)
@@ -249,9 +249,9 @@ func (p *Processor) Close() (err error) {
 		key, parcel := k.(Key), v.(*parcel)
 		if err := parcel.close(p.upload); err != nil {
 			p.log.Error("couldn't close",
-				zap.String("PublicProjectID", key.PublicProjectID.String()),
-				zap.String("Bucket", key.Bucket),
-				zap.String("Prefix", key.Prefix),
+				zap.String("public_project_id", key.PublicProjectID.String()),
+				zap.String("bucket", key.Bucket),
+				zap.String("prefix", key.Prefix),
 				zap.Error(err),
 			)
 			g.Add(errs.New("couldn't close %s/%s/%s: %w", key.PublicProjectID, key.Bucket, key.Prefix, err))

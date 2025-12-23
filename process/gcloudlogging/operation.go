@@ -1,6 +1,7 @@
 // Copyright (C) 2023 Storj Labs, Inc.
 // See LICENSE for copying information.
 
+//zapfields:ignore-file
 package gcloudlogging
 
 import (

@@ -325,7 +325,7 @@ func InitBeforeExecute(cmd *cobra.Command, opts *ExecOptions) {
 				logger.Debug("unable to resolve path", zap.Error(err))
 			}
 
-			logger.Info("Configuration loaded", zap.String("Location", path))
+			logger.Info("Configuration loaded", zap.String("location", path))
 		}
 
 		defer func() { _ = logger.Sync() }()
@@ -335,14 +335,14 @@ func InitBeforeExecute(cmd *cobra.Command, opts *ExecOptions) {
 		// okay now that logging is working, inform about the broken keys
 		if cmd.Annotations["type"] != "helper" {
 			for key := range missingKeys {
-				logger.Info("Invalid configuration file key", zap.String("Key", key))
+				logger.Info("Invalid configuration file key", zap.String("key", key))
 			}
 		}
 		for key := range brokenKeys {
 			if opts.FailOnValueError {
 				return errs.New("Invalid configuration file value for key: %s", key)
 			}
-			logger.Info("Invalid configuration file value for key", zap.String("Key", key))
+			logger.Info("Invalid configuration file value for key", zap.String("key", key))
 		}
 
 		if opts.InitTracing {

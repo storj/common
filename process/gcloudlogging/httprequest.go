@@ -89,5 +89,5 @@ func (req *HTTPRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 // LogHTTPRequest returns a zapcore.Field for HTTPRequest.
 func LogHTTPRequest(req *HTTPRequest) zapcore.Field {
-	return zap.Object("httpRequest", req)
+	return zap.Object("http_request", req)
 }
