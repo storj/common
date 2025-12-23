@@ -5282,6 +5282,18 @@
                 "oneof_parent": "Request"
               },
               {
+                "id": 43,
+                "name": "bucket_get_notification_configuration",
+                "type": "GetBucketNotificationConfigurationRequest",
+                "oneof_parent": "Request"
+              },
+              {
+                "id": 44,
+                "name": "bucket_set_notification_configuration",
+                "type": "SetBucketNotificationConfigurationRequest",
+                "oneof_parent": "Request"
+              },
+              {
                 "id": 3,
                 "name": "bucket_delete",
                 "type": "DeleteBucketRequest",
@@ -5550,6 +5562,18 @@
                 "id": 38,
                 "name": "bucket_set_object_lock_configuration",
                 "type": "SetBucketObjectLockConfigurationResponse",
+                "oneof_parent": "Response"
+              },
+              {
+                "id": 43,
+                "name": "bucket_get_notification_configuration",
+                "type": "GetBucketNotificationConfigurationResponse",
+                "oneof_parent": "Response"
+              },
+              {
+                "id": 44,
+                "name": "bucket_set_notification_configuration",
+                "type": "SetBucketNotificationConfigurationResponse",
                 "oneof_parent": "Response"
               },
               {
