@@ -8,6 +8,7 @@ import (
 )
 
 // FromBuild returns version string for a module.
+//
 // Deprecated: use buildinfo package, which doesn't have any 3rd party dependencies.
 func FromBuild(modname string) (string, error) {
 	return buildinfo.FromBuild(modname)

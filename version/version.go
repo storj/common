@@ -262,6 +262,7 @@ func PercentageToCursorF(pct float64) RolloutBytes {
 }
 
 // PercentageToCursor calculates the cursor value for the given percentage of nodes which should update.
+//
 // Deprecated: use PercentageToCursorF which is more precise.
 func PercentageToCursor(pct int) RolloutBytes {
 	// NB: convert the max value to a number, multiply by the percentage, convert back.
@@ -280,6 +281,7 @@ func PercentageToCursor(pct int) RolloutBytes {
 }
 
 // ShouldUpdate checks if for the given rollout state, a user with the given nodeID should update.
+//
 // Deprecated and should eventually be unexported. Please use ShouldUpdateVersion instead.
 func ShouldUpdate(rollout Rollout, nodeID storj.NodeID) bool {
 	return isRolloutCandidate(nodeID, rollout)

@@ -15,8 +15,8 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"storj.io/common/identity"
-	"storj.io/common/rpc/rpctracing"
 	"storj.io/common/telemetry"
+	"storj.io/common/tracing"
 	jaeger "storj.io/monkit-jaeger"
 )
 
@@ -123,7 +123,7 @@ func initTracing(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 
 	unregister := jaeger.RegisterJaeger(r, collector, jaeger.Options{
 		Fraction: samplingRate,
-		Excluded: rpctracing.IsExcluded,
+		Excluded: tracing.IsExcluded,
 		CollectorFactory: traceCollectorFactoryFunc(func(targetHost string) (jaeger.ClosableTraceCollector, error) {
 			targetCollector, err := jaeger.NewThriftCollector(log, targetHost, processName,
 				processInfo, bufferSize, queueSize, interval)
