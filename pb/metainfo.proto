@@ -384,6 +384,10 @@ message Object {
     bytes encrypted_metadata_encrypted_key = 17;
     bytes encrypted_etag                   = 22;
 
+    ObjectChecksumAlgorithm checksum_algorithm    = 23;
+    bool                    is_checksum_composite = 24;
+    bytes                   encrypted_checksum    = 25;
+
     // fixed_segment_size is 0 for migrated objects.
     int64                           fixed_segment_size    = 11;
     pointerdb.RedundancyScheme      redundancy_scheme     = 12;
@@ -421,6 +425,10 @@ message BeginObjectRequest {
     bytes encrypted_metadata_encrypted_key = 11;
     bytes encrypted_etag                   = 14;
 
+    ObjectChecksumAlgorithm checksum_algorithm    = 16;
+    bool                    is_checksum_composite = 17;
+    bytes                   encrypted_checksum    = 18;
+
     Retention retention = 12;
     bool legal_hold = 13;
 }
@@ -450,6 +458,10 @@ message CommitObjectRequest {
     bytes encrypted_metadata = 3; // TODO: set maximum size limit
     bytes encrypted_metadata_encrypted_key = 4;
     bytes encrypted_etag                   = 7;
+
+    ObjectChecksumAlgorithm checksum_algorithm    = 8;
+    bool                    is_checksum_composite = 9;
+    bytes                   encrypted_checksum    = 10;
 
     repeated string if_none_match = 6;
 }
@@ -627,6 +639,10 @@ message ObjectListItem {
     bytes encrypted_metadata       = 8;
     bytes encrypted_etag           = 14;
 
+    ObjectChecksumAlgorithm checksum_algorithm    = 15;
+    bool                    is_checksum_composite = 16;
+    bytes                   encrypted_checksum    = 17;
+
     // plain_size is 0 for migrated objects.
     int64 plain_size = 10;
 
@@ -647,6 +663,9 @@ message ObjectListItemIncludes {
     // This is used to support etag in a backwards compatible way, because we cannot backfill etag
     // information from metadata to etag on the satellite side due to encryption.
     bool include_etag_or_custom_metadata = 4;
+    // include_checksum indicates that the object's checksum algorithm, checksum type,
+    // and checksum value should be included.
+    bool include_checksum = 5;
 }
 
 message BeginDeleteObjectRequest {
@@ -907,6 +926,7 @@ message CommitSegmentRequest {
     int64 plain_size = 6;
 
     bytes encrypted_e_tag = 7;
+    bytes encrypted_checksum = 8;
 
     repeated SegmentPieceUploadResult upload_result = 5;
 }
@@ -934,6 +954,7 @@ message MakeInlineSegmentRequest {
     int64 plain_size = 6;
 
     bytes encrypted_e_tag = 7;
+    bytes encrypted_checksum = 8;
 }
 
 message MakeInlineSegmentResponse {}
@@ -991,6 +1012,7 @@ message SegmentListItem {
     int64 plain_offset = 4;
     google.protobuf.Timestamp created_at = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     bytes encrypted_e_tag = 5;
+    bytes encrypted_checksum = 8;
     bytes encrypted_key_nonce = 6 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes encrypted_key = 7;
 }
@@ -1241,6 +1263,8 @@ message BeginCopyObjectResponse {
     bytes encrypted_metadata_key = 3;
     repeated EncryptedKeyAndNonce segment_keys = 4;
     encryption.EncryptionParameters encryption_parameters = 5;
+
+    ObjectChecksumAlgorithm checksum_algorithm = 6;
 }
 
 // Uplink uploads the newly encrypted metadata for the destination
@@ -1259,12 +1283,22 @@ message FinishCopyObjectRequest {
     Retention retention = 10;
     bool legal_hold = 11;
 
-    // if false, keep existing metadata by ignoring 'new_encrypted_metadata'
-    bool override_metadata = 8;
-    bytes new_encrypted_metadata = 7;
     bytes new_encrypted_metadata_key_nonce = 4 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes new_encrypted_metadata_key = 5;
-    bytes new_encrypted_etag = 13;
+
+    // override_metadata indicates whether the copied object's metadata should be entirely sourced
+    // from the "new_"-prefixed metadata fields, preventing any of the source object's metadata from
+    // being applied. If false, only new_encrypted_metadata_key and new_encrypted_metadata_key_nonce
+    // will be applied, and the rest of the metadata will come from the source object.
+    bool override_metadata       = 8;
+
+    bytes new_encrypted_metadata = 7;
+    bytes new_encrypted_etag     = 13;
+
+    ObjectChecksumAlgorithm new_checksum_algorithm    = 14;
+    bool                    new_is_checksum_composite = 16;
+    bytes                   new_encrypted_checksum    = 17;
+
     repeated EncryptedKeyAndNonce new_segment_keys = 6;
 
     repeated string if_none_match = 12;

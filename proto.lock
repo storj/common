@@ -3062,6 +3062,21 @@
                 "type": "bytes"
               },
               {
+                "id": 23,
+                "name": "checksum_algorithm",
+                "type": "ObjectChecksumAlgorithm"
+              },
+              {
+                "id": 24,
+                "name": "is_checksum_composite",
+                "type": "bool"
+              },
+              {
+                "id": 25,
+                "name": "encrypted_checksum",
+                "type": "bytes"
+              },
+              {
                 "id": 11,
                 "name": "fixed_segment_size",
                 "type": "int64"
@@ -3190,6 +3205,21 @@
                 "type": "bytes"
               },
               {
+                "id": 16,
+                "name": "checksum_algorithm",
+                "type": "ObjectChecksumAlgorithm"
+              },
+              {
+                "id": 17,
+                "name": "is_checksum_composite",
+                "type": "bool"
+              },
+              {
+                "id": 18,
+                "name": "encrypted_checksum",
+                "type": "bytes"
+              },
+              {
                 "id": 12,
                 "name": "retention",
                 "type": "Retention"
@@ -3302,6 +3332,21 @@
               {
                 "id": 7,
                 "name": "encrypted_etag",
+                "type": "bytes"
+              },
+              {
+                "id": 8,
+                "name": "checksum_algorithm",
+                "type": "ObjectChecksumAlgorithm"
+              },
+              {
+                "id": 9,
+                "name": "is_checksum_composite",
+                "type": "bool"
+              },
+              {
+                "id": 10,
+                "name": "encrypted_checksum",
                 "type": "bytes"
               },
               {
@@ -3717,6 +3762,21 @@
                 "type": "bytes"
               },
               {
+                "id": 15,
+                "name": "checksum_algorithm",
+                "type": "ObjectChecksumAlgorithm"
+              },
+              {
+                "id": 16,
+                "name": "is_checksum_composite",
+                "type": "bool"
+              },
+              {
+                "id": 17,
+                "name": "encrypted_checksum",
+                "type": "bytes"
+              },
+              {
                 "id": 10,
                 "name": "plain_size",
                 "type": "int64"
@@ -3758,6 +3818,11 @@
               {
                 "id": 4,
                 "name": "include_etag_or_custom_metadata",
+                "type": "bool"
+              },
+              {
+                "id": 5,
+                "name": "include_checksum",
                 "type": "bool"
               }
             ]
@@ -4651,6 +4716,11 @@
                 "type": "bytes"
               },
               {
+                "id": 8,
+                "name": "encrypted_checksum",
+                "type": "bytes"
+              },
+              {
                 "id": 5,
                 "name": "upload_result",
                 "type": "SegmentPieceUploadResult",
@@ -4759,6 +4829,11 @@
               {
                 "id": 7,
                 "name": "encrypted_e_tag",
+                "type": "bytes"
+              },
+              {
+                "id": 8,
+                "name": "encrypted_checksum",
                 "type": "bytes"
               }
             ]
@@ -4998,6 +5073,11 @@
               {
                 "id": 5,
                 "name": "encrypted_e_tag",
+                "type": "bytes"
+              },
+              {
+                "id": 8,
+                "name": "encrypted_checksum",
                 "type": "bytes"
               },
               {
@@ -6024,6 +6104,11 @@
                 "id": 5,
                 "name": "encryption_parameters",
                 "type": "encryption.EncryptionParameters"
+              },
+              {
+                "id": 6,
+                "name": "checksum_algorithm",
+                "type": "ObjectChecksumAlgorithm"
               }
             ]
           },
@@ -6076,16 +6161,6 @@
                 "type": "bool"
               },
               {
-                "id": 8,
-                "name": "override_metadata",
-                "type": "bool"
-              },
-              {
-                "id": 7,
-                "name": "new_encrypted_metadata",
-                "type": "bytes"
-              },
-              {
                 "id": 4,
                 "name": "new_encrypted_metadata_key_nonce",
                 "type": "bytes",
@@ -6106,8 +6181,33 @@
                 "type": "bytes"
               },
               {
+                "id": 8,
+                "name": "override_metadata",
+                "type": "bool"
+              },
+              {
+                "id": 7,
+                "name": "new_encrypted_metadata",
+                "type": "bytes"
+              },
+              {
                 "id": 13,
                 "name": "new_encrypted_etag",
+                "type": "bytes"
+              },
+              {
+                "id": 14,
+                "name": "new_checksum_algorithm",
+                "type": "ObjectChecksumAlgorithm"
+              },
+              {
+                "id": 16,
+                "name": "new_is_checksum_composite",
+                "type": "bool"
+              },
+              {
+                "id": 17,
+                "name": "new_encrypted_checksum",
                 "type": "bytes"
               },
               {
