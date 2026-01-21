@@ -6159,6 +6159,52 @@
                 "type": "bytes"
               }
             ]
+          },
+          {
+            "name": "LicenseInfoRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "type",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "bucket_name",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "LicenseInfo",
+            "fields": [
+              {
+                "id": 1,
+                "name": "type",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "expires_at",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "LicenseInfoResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "licenses",
+                "type": "LicenseInfo",
+                "is_repeated": true
+              }
+            ]
           }
         ],
         "services": [
@@ -6369,6 +6415,11 @@
                 "name": "RevokeAPIKey",
                 "in_type": "RevokeAPIKeyRequest",
                 "out_type": "RevokeAPIKeyResponse"
+              },
+              {
+                "name": "LicenseInfo",
+                "in_type": "LicenseInfoRequest",
+                "out_type": "LicenseInfoResponse"
               },
               {
                 "name": "BeginMoveObject",

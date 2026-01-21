@@ -8260,3 +8260,135 @@ func (m *EncryptedKeyAndNonce) GetEncryptedKey() []byte {
 	}
 	return nil
 }
+
+type LicenseInfoRequest struct {
+	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Type                 string         `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	BucketName           string         `protobuf:"bytes,2,opt,name=bucket_name,json=bucketName,proto3" json:"bucket_name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *LicenseInfoRequest) Reset()         { *m = LicenseInfoRequest{} }
+func (m *LicenseInfoRequest) String() string { return proto.CompactTextString(m) }
+func (*LicenseInfoRequest) ProtoMessage()    {}
+
+func (m *LicenseInfoRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LicenseInfoRequest.Unmarshal(m, b)
+}
+func (m *LicenseInfoRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LicenseInfoRequest.Marshal(b, m, deterministic)
+}
+func (m *LicenseInfoRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LicenseInfoRequest.Merge(m, src)
+}
+func (m *LicenseInfoRequest) XXX_Size() int {
+	return xxx_messageInfo_LicenseInfoRequest.Size(m)
+}
+func (m *LicenseInfoRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_LicenseInfoRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LicenseInfoRequest proto.InternalMessageInfo
+
+func (m *LicenseInfoRequest) GetHeader() *RequestHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
+func (m *LicenseInfoRequest) GetType() string {
+	if m != nil {
+		return m.Type
+	}
+	return ""
+}
+
+func (m *LicenseInfoRequest) GetBucketName() string {
+	if m != nil {
+		return m.BucketName
+	}
+	return ""
+}
+
+type LicenseInfo struct {
+	Type                 string   `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	ExpiresAt            string   `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *LicenseInfo) Reset()         { *m = LicenseInfo{} }
+func (m *LicenseInfo) String() string { return proto.CompactTextString(m) }
+func (*LicenseInfo) ProtoMessage()    {}
+
+func (m *LicenseInfo) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LicenseInfo.Unmarshal(m, b)
+}
+func (m *LicenseInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LicenseInfo.Marshal(b, m, deterministic)
+}
+func (m *LicenseInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LicenseInfo.Merge(m, src)
+}
+func (m *LicenseInfo) XXX_Size() int {
+	return xxx_messageInfo_LicenseInfo.Size(m)
+}
+func (m *LicenseInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_LicenseInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LicenseInfo proto.InternalMessageInfo
+
+func (m *LicenseInfo) GetType() string {
+	if m != nil {
+		return m.Type
+	}
+	return ""
+}
+
+func (m *LicenseInfo) GetExpiresAt() string {
+	if m != nil {
+		return m.ExpiresAt
+	}
+	return ""
+}
+
+type LicenseInfoResponse struct {
+	Licenses             []*LicenseInfo `protobuf:"bytes,1,rep,name=licenses,proto3" json:"licenses,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *LicenseInfoResponse) Reset()         { *m = LicenseInfoResponse{} }
+func (m *LicenseInfoResponse) String() string { return proto.CompactTextString(m) }
+func (*LicenseInfoResponse) ProtoMessage()    {}
+
+func (m *LicenseInfoResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LicenseInfoResponse.Unmarshal(m, b)
+}
+func (m *LicenseInfoResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LicenseInfoResponse.Marshal(b, m, deterministic)
+}
+func (m *LicenseInfoResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LicenseInfoResponse.Merge(m, src)
+}
+func (m *LicenseInfoResponse) XXX_Size() int {
+	return xxx_messageInfo_LicenseInfoResponse.Size(m)
+}
+func (m *LicenseInfoResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_LicenseInfoResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LicenseInfoResponse proto.InternalMessageInfo
+
+func (m *LicenseInfoResponse) GetLicenses() []*LicenseInfo {
+	if m != nil {
+		return m.Licenses
+	}
+	return nil
+}
