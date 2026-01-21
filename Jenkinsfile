@@ -77,9 +77,11 @@ pipeline {
                             script {
                                 if(fileExists(".build/coverprofile")){
                                     sh script: 'filter-cover-profile < .build/coverprofile > .build/clean.coverprofile', returnStatus: true
-                                    sh script: 'gocov convert .build/clean.coverprofile > .build/cover.json', returnStatus: true
-                                    sh script: 'gocov-xml  < .build/cover.json > .build/cobertura.xml', returnStatus: true
-                                    cobertura coberturaReportFile: '.build/cobertura.xml'
+                                    archiveArtifacts artifacts: '.build/clean.coverprofile'
+                                    recordCoverage(
+                                        tools: [[parser: 'GO_COV', pattern: '.build/clean.coverprofile']],
+                                        sourceCodeRetention: 'NEVER',
+                                    )
                                 }
                             }
                         }
