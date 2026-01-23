@@ -4099,6 +4099,26 @@
             ]
           },
           {
+            "name": "ObjectMetadataIncludes",
+            "fields": [
+              {
+                "id": 1,
+                "name": "custom",
+                "type": "bool"
+              },
+              {
+                "id": 2,
+                "name": "etag",
+                "type": "bool"
+              },
+              {
+                "id": 3,
+                "name": "checksum",
+                "type": "bool"
+              }
+            ]
+          },
+          {
             "name": "UpdateObjectMetadataRequest",
             "fields": [
               {
@@ -4142,6 +4162,16 @@
                 ]
               },
               {
+                "id": 9,
+                "name": "set_encrypted_etag",
+                "type": "bool"
+              },
+              {
+                "id": 11,
+                "name": "includes",
+                "type": "ObjectMetadataIncludes"
+              },
+              {
                 "id": 4,
                 "name": "encrypted_metadata_nonce",
                 "type": "bytes",
@@ -4167,13 +4197,23 @@
                 "type": "bytes"
               },
               {
-                "id": 9,
-                "name": "set_encrypted_etag",
+                "id": 10,
+                "name": "encrypted_etag",
+                "type": "bytes"
+              },
+              {
+                "id": 12,
+                "name": "checksum_algorithm",
+                "type": "ObjectChecksumAlgorithm"
+              },
+              {
+                "id": 13,
+                "name": "is_checksum_composite",
                 "type": "bool"
               },
               {
-                "id": 10,
-                "name": "encrypted_etag",
+                "id": 14,
+                "name": "encrypted_checksum",
                 "type": "bytes"
               }
             ]

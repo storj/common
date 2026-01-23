@@ -753,6 +753,19 @@ message GetObjectIPsResponse {
     uint32 placement_constraint = 5;
 }
 
+message ObjectMetadataIncludes {
+    // custom indicates whether the custom metadata, the metadata encryption key, and the
+    // metadata encryption nonce should be included.
+    bool custom = 1;
+    // etag indicates whether the encrypted ETag, the metadata encryption key, and the
+    // encryption nonce should be included.
+    bool etag = 2;
+    // checksum indicates whether the object's checksum information (its checksum algorithm,
+    // checksum type, and encrypted checksum value), the metadata encryption key, and the
+    // metadata encryption nonce should be included.
+    bool checksum = 3;
+}
+
 message UpdateObjectMetadataRequest {
     RequestHeader header = 15;
 
@@ -763,11 +776,30 @@ message UpdateObjectMetadataRequest {
 
     bytes stream_id = 7 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
 
+    // set_encrypted_etag indicates whether the encrypted ETag should be updated. If includes is provided,
+    // set_encrypted_etag is ignored.
+    bool set_encrypted_etag = 9; // gogo protobuf generator does not support explicit field presence on bytes
+
+    // includes indicates which fields of the object's metadata should be updated. If unset, the custom
+    // metadata, metadata encryption key, and metadata encryption nonce will be updated. Additionally,
+    // the encrypted ETag will be updated if set_encrypted_etag is set. Otherwise, if includes is set,
+    // set_encrypted_etag will be ignored.
+    //
+    // includes exists to prevent clients from unintentionally overwriting new metadata fields.
+    // Clients are expected to include only the metadata fields that they know about. If the metadata
+    // at the destination contains data for a field not included in the provided set of includes, the
+    // satellite aborts the operation. Otherwise, the field would either be silently erased or left
+    // unencryptable if new encryption parameters are applied.
+    ObjectMetadataIncludes includes = 11;
+
     bytes encrypted_metadata_nonce = 4 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
     bytes encrypted_metadata = 5; // TODO: set maximum size limit
     bytes encrypted_metadata_encrypted_key = 6;
-    bool  set_encrypted_etag = 9; // gogo protobuf generator does not support explicit field presence on bytes
     /* optional */ bytes encrypted_etag = 10;
+
+    ObjectChecksumAlgorithm checksum_algorithm    = 12;
+    bool                    is_checksum_composite = 13;
+    bytes                   encrypted_checksum    = 14;
 }
 
 message UpdateObjectMetadataResponse {
