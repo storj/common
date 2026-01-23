@@ -73,6 +73,14 @@ const (
 	TagKeyDuplicate StatusCode = 10024
 	TagValueInvalid StatusCode = 10025
 	TagsNotFound    StatusCode = 10026
+
+	ChecksumsUnsupported     StatusCode = 10027
+	ChecksumAlgorithmInvalid StatusCode = 10028
+	ChecksumTypeUnexpected   StatusCode = 10029
+	ChecksumMissing          StatusCode = 10030
+	ChecksumUnexpected       StatusCode = 10031
+
+	ObjectMetadataMissing StatusCode = 10032
 )
 
 // Code returns the status code associated with the error.

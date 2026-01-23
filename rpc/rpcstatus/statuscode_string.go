@@ -53,23 +53,29 @@ func _() {
 	_ = x[TagKeyDuplicate-10024]
 	_ = x[TagValueInvalid-10025]
 	_ = x[TagsNotFound-10026]
+	_ = x[ChecksumsUnsupported-10027]
+	_ = x[ChecksumAlgorithmInvalid-10028]
+	_ = x[ChecksumTypeUnexpected-10029]
+	_ = x[ChecksumMissing-10030]
+	_ = x[ChecksumUnexpected-10031]
+	_ = x[ObjectMetadataMissing-10032]
 }
 
 const (
 	_StatusCode_name_0 = "UnknownOKCanceledInvalidArgumentDeadlineExceededNotFoundAlreadyExistsPermissionDeniedResourceExhaustedFailedPreconditionAbortedOutOfRangeUnimplementedInternalUnavailableDataLossUnauthenticatedMethodNotAllowed"
-	_StatusCode_name_1 = "ObjectLockEndpointsDisabledObjectLockDisabledForProjectObjectLockInvalidBucketStateObjectLockBucketRetentionConfigurationMissingObjectLockObjectRetentionConfigurationMissingObjectLockObjectProtectedObjectLockInvalidObjectStateObjectLockInvalidBucketRetentionConfigurationObjectLockUploadWithTTLObjectLockUploadWithTTLAPIKeyObjectLockUploadWithTTLAndDefaultRetentionObjectLockUploadWithTTLAPIKeyAndDefaultRetentionPlacementInvalidValuePlacementConflictingValuesBucketNameMissingBucketNameInvalidObjectKeyMissingObjectKeyTooLongObjectVersionInvalidBucketNotFoundDeleteObjectsNoItemsDeleteObjectsTooManyItemsTooManyTagsTagKeyInvalidTagKeyDuplicateTagValueInvalidTagsNotFound"
+	_StatusCode_name_1 = "ObjectLockEndpointsDisabledObjectLockDisabledForProjectObjectLockInvalidBucketStateObjectLockBucketRetentionConfigurationMissingObjectLockObjectRetentionConfigurationMissingObjectLockObjectProtectedObjectLockInvalidObjectStateObjectLockInvalidBucketRetentionConfigurationObjectLockUploadWithTTLObjectLockUploadWithTTLAPIKeyObjectLockUploadWithTTLAndDefaultRetentionObjectLockUploadWithTTLAPIKeyAndDefaultRetentionPlacementInvalidValuePlacementConflictingValuesBucketNameMissingBucketNameInvalidObjectKeyMissingObjectKeyTooLongObjectVersionInvalidBucketNotFoundDeleteObjectsNoItemsDeleteObjectsTooManyItemsTooManyTagsTagKeyInvalidTagKeyDuplicateTagValueInvalidTagsNotFoundChecksumsUnsupportedChecksumAlgorithmInvalidChecksumTypeUnexpectedChecksumMissingChecksumUnexpectedObjectMetadataMissing"
 )
 
 var (
 	_StatusCode_index_0 = [...]uint8{0, 7, 9, 17, 32, 48, 56, 69, 85, 102, 120, 127, 137, 150, 158, 169, 177, 192, 208}
-	_StatusCode_index_1 = [...]uint16{0, 27, 55, 83, 128, 173, 198, 226, 271, 294, 323, 365, 413, 434, 460, 477, 494, 510, 526, 546, 560, 580, 605, 616, 629, 644, 659, 671}
+	_StatusCode_index_1 = [...]uint16{0, 27, 55, 83, 128, 173, 198, 226, 271, 294, 323, 365, 413, 434, 460, 477, 494, 510, 526, 546, 560, 580, 605, 616, 629, 644, 659, 671, 691, 715, 737, 752, 770, 791}
 )
 
 func (i StatusCode) String() string {
 	switch {
 	case i <= 17:
 		return _StatusCode_name_0[_StatusCode_index_0[i]:_StatusCode_index_0[i+1]]
-	case 10000 <= i && i <= 10026:
+	case 10000 <= i && i <= 10032:
 		i -= 10000
 		return _StatusCode_name_1[_StatusCode_index_1[i]:_StatusCode_index_1[i+1]]
 	default:
