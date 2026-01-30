@@ -6161,7 +6161,7 @@
             ]
           },
           {
-            "name": "LicenseInfoRequest",
+            "name": "AccountLicensesRequest",
             "fields": [
               {
                 "id": 15,
@@ -6181,7 +6181,7 @@
             ]
           },
           {
-            "name": "LicenseInfo",
+            "name": "AccountLicense",
             "fields": [
               {
                 "id": 1,
@@ -6196,12 +6196,12 @@
             ]
           },
           {
-            "name": "LicenseInfoResponse",
+            "name": "AccountLicensesResponse",
             "fields": [
               {
                 "id": 1,
                 "name": "licenses",
-                "type": "LicenseInfo",
+                "type": "AccountLicense",
                 "is_repeated": true
               }
             ]
@@ -6417,9 +6417,9 @@
                 "out_type": "RevokeAPIKeyResponse"
               },
               {
-                "name": "LicenseInfo",
-                "in_type": "LicenseInfoRequest",
-                "out_type": "LicenseInfoResponse"
+                "name": "AccountLicenses",
+                "in_type": "AccountLicensesRequest",
+                "out_type": "AccountLicensesResponse"
               },
               {
                 "name": "BeginMoveObject",

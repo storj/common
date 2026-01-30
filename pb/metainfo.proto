@@ -72,7 +72,7 @@ service Metainfo {
 
     rpc ProjectInfo(ProjectInfoRequest) returns (ProjectInfoResponse);
     rpc RevokeAPIKey(RevokeAPIKeyRequest) returns (RevokeAPIKeyResponse);
-    rpc LicenseInfo(LicenseInfoRequest) returns (LicenseInfoResponse);
+    rpc AccountLicenses(AccountLicensesRequest) returns (AccountLicensesResponse);
 
     // Server side move.
     rpc BeginMoveObject(BeginMoveObjectRequest) returns (BeginMoveObjectResponse);
@@ -1269,18 +1269,18 @@ message EncryptedKeyAndNonce {
     bytes encrypted_key = 3;
 }
 
-message LicenseInfoRequest {
+message AccountLicensesRequest {
     RequestHeader header = 15;
 
     string type = 1; // optional
     string bucket_name = 2; // optional
 }
 
-message LicenseInfo {
+message AccountLicense {
     string type = 1;
     string expires_at = 2;
 }
 
-message LicenseInfoResponse {
-    repeated LicenseInfo licenses = 1;
+message AccountLicensesResponse {
+    repeated AccountLicense licenses = 1;
 }

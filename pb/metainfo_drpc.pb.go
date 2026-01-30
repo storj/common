@@ -83,7 +83,7 @@ type DRPCMetainfoClient interface {
 	CompressedBatch(ctx context.Context, in *CompressedBatchRequest) (*CompressedBatchResponse, error)
 	ProjectInfo(ctx context.Context, in *ProjectInfoRequest) (*ProjectInfoResponse, error)
 	RevokeAPIKey(ctx context.Context, in *RevokeAPIKeyRequest) (*RevokeAPIKeyResponse, error)
-	LicenseInfo(ctx context.Context, in *LicenseInfoRequest) (*LicenseInfoResponse, error)
+	AccountLicenses(ctx context.Context, in *AccountLicensesRequest) (*AccountLicensesResponse, error)
 	BeginMoveObject(ctx context.Context, in *BeginMoveObjectRequest) (*BeginMoveObjectResponse, error)
 	FinishMoveObject(ctx context.Context, in *FinishMoveObjectRequest) (*FinishMoveObjectResponse, error)
 	BeginCopyObject(ctx context.Context, in *BeginCopyObjectRequest) (*BeginCopyObjectResponse, error)
@@ -469,9 +469,9 @@ func (c *drpcMetainfoClient) RevokeAPIKey(ctx context.Context, in *RevokeAPIKeyR
 	return out, nil
 }
 
-func (c *drpcMetainfoClient) LicenseInfo(ctx context.Context, in *LicenseInfoRequest) (*LicenseInfoResponse, error) {
-	out := new(LicenseInfoResponse)
-	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/LicenseInfo", drpcEncoding_File_metainfo_proto{}, in, out)
+func (c *drpcMetainfoClient) AccountLicenses(ctx context.Context, in *AccountLicensesRequest) (*AccountLicensesResponse, error) {
+	out := new(AccountLicensesResponse)
+	err := c.cc.Invoke(ctx, "/metainfo.Metainfo/AccountLicenses", drpcEncoding_File_metainfo_proto{}, in, out)
 	if err != nil {
 		return nil, err
 	}
@@ -556,7 +556,7 @@ type DRPCMetainfoServer interface {
 	CompressedBatch(context.Context, *CompressedBatchRequest) (*CompressedBatchResponse, error)
 	ProjectInfo(context.Context, *ProjectInfoRequest) (*ProjectInfoResponse, error)
 	RevokeAPIKey(context.Context, *RevokeAPIKeyRequest) (*RevokeAPIKeyResponse, error)
-	LicenseInfo(context.Context, *LicenseInfoRequest) (*LicenseInfoResponse, error)
+	AccountLicenses(context.Context, *AccountLicensesRequest) (*AccountLicensesResponse, error)
 	BeginMoveObject(context.Context, *BeginMoveObjectRequest) (*BeginMoveObjectResponse, error)
 	FinishMoveObject(context.Context, *FinishMoveObjectRequest) (*FinishMoveObjectResponse, error)
 	BeginCopyObject(context.Context, *BeginCopyObjectRequest) (*BeginCopyObjectResponse, error)
@@ -729,7 +729,7 @@ func (s *DRPCMetainfoUnimplementedServer) RevokeAPIKey(context.Context, *RevokeA
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
-func (s *DRPCMetainfoUnimplementedServer) LicenseInfo(context.Context, *LicenseInfoRequest) (*LicenseInfoResponse, error) {
+func (s *DRPCMetainfoUnimplementedServer) AccountLicenses(context.Context, *AccountLicensesRequest) (*AccountLicensesResponse, error) {
 	return nil, drpcerr.WithCode(errors.New("Unimplemented"), drpcerr.Unimplemented)
 }
 
@@ -1125,14 +1125,14 @@ func (DRPCMetainfoDescription) Method(n int) (string, drpc.Encoding, drpc.Receiv
 					)
 			}, DRPCMetainfoServer.RevokeAPIKey, true
 	case 41:
-		return "/metainfo.Metainfo/LicenseInfo", drpcEncoding_File_metainfo_proto{},
+		return "/metainfo.Metainfo/AccountLicenses", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
 				return srv.(DRPCMetainfoServer).
-					LicenseInfo(
+					AccountLicenses(
 						ctx,
-						in1.(*LicenseInfoRequest),
+						in1.(*AccountLicensesRequest),
 					)
-			}, DRPCMetainfoServer.LicenseInfo, true
+			}, DRPCMetainfoServer.AccountLicenses, true
 	case 42:
 		return "/metainfo.Metainfo/BeginMoveObject", drpcEncoding_File_metainfo_proto{},
 			func(srv interface{}, ctx context.Context, in1, in2 interface{}) (drpc.Message, error) {
@@ -1998,20 +1998,20 @@ func (x *drpcMetainfo_RevokeAPIKeyStream) SendAndClose(m *RevokeAPIKeyResponse) 
 	return x.CloseSend()
 }
 
-type DRPCMetainfo_LicenseInfoStream interface {
+type DRPCMetainfo_AccountLicensesStream interface {
 	drpc.Stream
-	SendAndClose(*LicenseInfoResponse) error
+	SendAndClose(*AccountLicensesResponse) error
 }
 
-type drpcMetainfo_LicenseInfoStream struct {
+type drpcMetainfo_AccountLicensesStream struct {
 	drpc.Stream
 }
 
-func (x *drpcMetainfo_LicenseInfoStream) GetStream() drpc.Stream {
+func (x *drpcMetainfo_AccountLicensesStream) GetStream() drpc.Stream {
 	return x.Stream
 }
 
-func (x *drpcMetainfo_LicenseInfoStream) SendAndClose(m *LicenseInfoResponse) error {
+func (x *drpcMetainfo_AccountLicensesStream) SendAndClose(m *AccountLicensesResponse) error {
 	if err := x.MsgSend(m, drpcEncoding_File_metainfo_proto{}); err != nil {
 		return err
 	}

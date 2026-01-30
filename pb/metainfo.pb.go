@@ -8261,7 +8261,7 @@ func (m *EncryptedKeyAndNonce) GetEncryptedKey() []byte {
 	return nil
 }
 
-type LicenseInfoRequest struct {
+type AccountLicensesRequest struct {
 	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
 	Type                 string         `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
 	BucketName           string         `protobuf:"bytes,2,opt,name=bucket_name,json=bucketName,proto3" json:"bucket_name,omitempty"`
@@ -8270,50 +8270,50 @@ type LicenseInfoRequest struct {
 	XXX_sizecache        int32          `json:"-"`
 }
 
-func (m *LicenseInfoRequest) Reset()         { *m = LicenseInfoRequest{} }
-func (m *LicenseInfoRequest) String() string { return proto.CompactTextString(m) }
-func (*LicenseInfoRequest) ProtoMessage()    {}
+func (m *AccountLicensesRequest) Reset()         { *m = AccountLicensesRequest{} }
+func (m *AccountLicensesRequest) String() string { return proto.CompactTextString(m) }
+func (*AccountLicensesRequest) ProtoMessage()    {}
 
-func (m *LicenseInfoRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_LicenseInfoRequest.Unmarshal(m, b)
+func (m *AccountLicensesRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AccountLicensesRequest.Unmarshal(m, b)
 }
-func (m *LicenseInfoRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_LicenseInfoRequest.Marshal(b, m, deterministic)
+func (m *AccountLicensesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AccountLicensesRequest.Marshal(b, m, deterministic)
 }
-func (m *LicenseInfoRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LicenseInfoRequest.Merge(m, src)
+func (m *AccountLicensesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AccountLicensesRequest.Merge(m, src)
 }
-func (m *LicenseInfoRequest) XXX_Size() int {
-	return xxx_messageInfo_LicenseInfoRequest.Size(m)
+func (m *AccountLicensesRequest) XXX_Size() int {
+	return xxx_messageInfo_AccountLicensesRequest.Size(m)
 }
-func (m *LicenseInfoRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_LicenseInfoRequest.DiscardUnknown(m)
+func (m *AccountLicensesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_AccountLicensesRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_LicenseInfoRequest proto.InternalMessageInfo
+var xxx_messageInfo_AccountLicensesRequest proto.InternalMessageInfo
 
-func (m *LicenseInfoRequest) GetHeader() *RequestHeader {
+func (m *AccountLicensesRequest) GetHeader() *RequestHeader {
 	if m != nil {
 		return m.Header
 	}
 	return nil
 }
 
-func (m *LicenseInfoRequest) GetType() string {
+func (m *AccountLicensesRequest) GetType() string {
 	if m != nil {
 		return m.Type
 	}
 	return ""
 }
 
-func (m *LicenseInfoRequest) GetBucketName() string {
+func (m *AccountLicensesRequest) GetBucketName() string {
 	if m != nil {
 		return m.BucketName
 	}
 	return ""
 }
 
-type LicenseInfo struct {
+type AccountLicense struct {
 	Type                 string   `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
 	ExpiresAt            string   `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -8321,72 +8321,72 @@ type LicenseInfo struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *LicenseInfo) Reset()         { *m = LicenseInfo{} }
-func (m *LicenseInfo) String() string { return proto.CompactTextString(m) }
-func (*LicenseInfo) ProtoMessage()    {}
+func (m *AccountLicense) Reset()         { *m = AccountLicense{} }
+func (m *AccountLicense) String() string { return proto.CompactTextString(m) }
+func (*AccountLicense) ProtoMessage()    {}
 
-func (m *LicenseInfo) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_LicenseInfo.Unmarshal(m, b)
+func (m *AccountLicense) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AccountLicense.Unmarshal(m, b)
 }
-func (m *LicenseInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_LicenseInfo.Marshal(b, m, deterministic)
+func (m *AccountLicense) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AccountLicense.Marshal(b, m, deterministic)
 }
-func (m *LicenseInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LicenseInfo.Merge(m, src)
+func (m *AccountLicense) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AccountLicense.Merge(m, src)
 }
-func (m *LicenseInfo) XXX_Size() int {
-	return xxx_messageInfo_LicenseInfo.Size(m)
+func (m *AccountLicense) XXX_Size() int {
+	return xxx_messageInfo_AccountLicense.Size(m)
 }
-func (m *LicenseInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_LicenseInfo.DiscardUnknown(m)
+func (m *AccountLicense) XXX_DiscardUnknown() {
+	xxx_messageInfo_AccountLicense.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_LicenseInfo proto.InternalMessageInfo
+var xxx_messageInfo_AccountLicense proto.InternalMessageInfo
 
-func (m *LicenseInfo) GetType() string {
+func (m *AccountLicense) GetType() string {
 	if m != nil {
 		return m.Type
 	}
 	return ""
 }
 
-func (m *LicenseInfo) GetExpiresAt() string {
+func (m *AccountLicense) GetExpiresAt() string {
 	if m != nil {
 		return m.ExpiresAt
 	}
 	return ""
 }
 
-type LicenseInfoResponse struct {
-	Licenses             []*LicenseInfo `protobuf:"bytes,1,rep,name=licenses,proto3" json:"licenses,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
-	XXX_unrecognized     []byte         `json:"-"`
-	XXX_sizecache        int32          `json:"-"`
+type AccountLicensesResponse struct {
+	Licenses             []*AccountLicense `protobuf:"bytes,1,rep,name=licenses,proto3" json:"licenses,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
-func (m *LicenseInfoResponse) Reset()         { *m = LicenseInfoResponse{} }
-func (m *LicenseInfoResponse) String() string { return proto.CompactTextString(m) }
-func (*LicenseInfoResponse) ProtoMessage()    {}
+func (m *AccountLicensesResponse) Reset()         { *m = AccountLicensesResponse{} }
+func (m *AccountLicensesResponse) String() string { return proto.CompactTextString(m) }
+func (*AccountLicensesResponse) ProtoMessage()    {}
 
-func (m *LicenseInfoResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_LicenseInfoResponse.Unmarshal(m, b)
+func (m *AccountLicensesResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AccountLicensesResponse.Unmarshal(m, b)
 }
-func (m *LicenseInfoResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_LicenseInfoResponse.Marshal(b, m, deterministic)
+func (m *AccountLicensesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AccountLicensesResponse.Marshal(b, m, deterministic)
 }
-func (m *LicenseInfoResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LicenseInfoResponse.Merge(m, src)
+func (m *AccountLicensesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AccountLicensesResponse.Merge(m, src)
 }
-func (m *LicenseInfoResponse) XXX_Size() int {
-	return xxx_messageInfo_LicenseInfoResponse.Size(m)
+func (m *AccountLicensesResponse) XXX_Size() int {
+	return xxx_messageInfo_AccountLicensesResponse.Size(m)
 }
-func (m *LicenseInfoResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_LicenseInfoResponse.DiscardUnknown(m)
+func (m *AccountLicensesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_AccountLicensesResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_LicenseInfoResponse proto.InternalMessageInfo
+var xxx_messageInfo_AccountLicensesResponse proto.InternalMessageInfo
 
-func (m *LicenseInfoResponse) GetLicenses() []*LicenseInfo {
+func (m *AccountLicensesResponse) GetLicenses() []*AccountLicense {
 	if m != nil {
 		return m.Licenses
 	}
