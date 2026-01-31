@@ -80,7 +80,9 @@ const (
 	ChecksumMissing          StatusCode = 10030
 	ChecksumUnexpected       StatusCode = 10031
 
-	ObjectMetadataMissing StatusCode = 10032
+	ObjectMetadataMissing              StatusCode = 10032
+	ObjectMetadataIncludesInvalid      StatusCode = 10033
+	InsufficientObjectMetadataIncludes StatusCode = 10034
 )
 
 // Code returns the status code associated with the error.
