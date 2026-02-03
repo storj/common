@@ -1278,7 +1278,8 @@ message AccountLicensesRequest {
 
 message AccountLicense {
     string type = 1;
-    string expires_at = 2;
+    google.protobuf.Timestamp expires_at = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    bytes key = 3;
 }
 
 message AccountLicensesResponse {

@@ -8314,11 +8314,12 @@ func (m *AccountLicensesRequest) GetBucketName() string {
 }
 
 type AccountLicense struct {
-	Type                 string   `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	ExpiresAt            string   `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Type                 string    `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	ExpiresAt            time.Time `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3,stdtime" json:"expires_at"`
+	Key                  []byte    `protobuf:"bytes,3,opt,name=key,proto3" json:"key,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
 func (m *AccountLicense) Reset()         { *m = AccountLicense{} }
@@ -8350,11 +8351,18 @@ func (m *AccountLicense) GetType() string {
 	return ""
 }
 
-func (m *AccountLicense) GetExpiresAt() string {
+func (m *AccountLicense) GetExpiresAt() time.Time {
 	if m != nil {
 		return m.ExpiresAt
 	}
-	return ""
+	return time.Time{}
+}
+
+func (m *AccountLicense) GetKey() []byte {
+	if m != nil {
+		return m.Key
+	}
+	return nil
 }
 
 type AccountLicensesResponse struct {

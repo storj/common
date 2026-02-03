@@ -6191,7 +6191,22 @@
               {
                 "id": 2,
                 "name": "expires_at",
-                "type": "string"
+                "type": "google.protobuf.Timestamp",
+                "options": [
+                  {
+                    "name": "(gogoproto.stdtime)",
+                    "value": "true"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "name": "key",
+                "type": "bytes"
               }
             ]
           },
