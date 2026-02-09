@@ -77,6 +77,7 @@ type Processes struct {
 	Uplink             Process `json:"uplink"`
 	Gateway            Process `json:"gateway"`
 	Identity           Process `json:"identity"`
+	ObjectMountGui     Process `json:"objectMountGui"`
 }
 
 // Process versions for specific binary.
