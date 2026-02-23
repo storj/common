@@ -21,7 +21,6 @@ import (
 
 func TestDialCloseIfError(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	connector := &trackedConnector{}
 

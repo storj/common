@@ -43,7 +43,6 @@ func TestProcessor(t *testing.T) {
 	t.Parallel()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	log := zaptest.NewLogger(t)
 	defer ctx.Check(log.Sync)
@@ -109,7 +108,6 @@ func TestProcessorWithShipment(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ctx := testcontext.New(t)
-			defer ctx.Cleanup()
 
 			log := zaptest.NewLogger(t)
 			defer ctx.Check(log.Sync)
@@ -172,7 +170,6 @@ func TestProcessorWithInterval(t *testing.T) {
 	t.Parallel()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	log := zaptest.NewLogger(t)
 	defer ctx.Check(log.Sync)
@@ -301,7 +298,6 @@ func BenchmarkParallelQueueEntryWithTimedFlush(b *testing.B) {
 
 func benchmarkParallelQueueEntry(b *testing.B, interval time.Duration) {
 	ctx := testcontext.New(b)
-	defer ctx.Cleanup()
 
 	log := zap.NewNop()
 	defer ctx.Check(log.Sync)
@@ -340,7 +336,6 @@ func BenchmarkQueueEntryWithTimedFlush(b *testing.B) {
 
 func benchmarkQueueEntry(b *testing.B, interval time.Duration) {
 	ctx := testcontext.New(b)
-	defer ctx.Cleanup()
 
 	log := zap.NewNop()
 	defer ctx.Check(log.Sync)

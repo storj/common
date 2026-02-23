@@ -175,7 +175,6 @@ func TestExec_InvalidValues(t *testing.T) {
 
 func TestExec_CustomFlagName(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	configFile := ctx.File(process.DefaultCfgFilename)
 
@@ -228,7 +227,6 @@ func TestHidden(t *testing.T) {
 
 	// Setup test config file
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	testConfigFile := ctx.File("testconfig.yaml")
 
@@ -258,7 +256,6 @@ func TestLoadConfig(t *testing.T) {
 
 	// Setup test directory and config files
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	configDir := ctx.Dir("config")
 

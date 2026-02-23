@@ -32,7 +32,6 @@ import (
 
 func TestDialerUnencrypted(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	d := rpc.NewDefaultPooledDialer(nil)
 
@@ -51,7 +50,6 @@ func (goodHandler) HandleRPC(stream drpc.Stream, rpc string) error { return nil 
 
 func TestDialHostnameVerification(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	certificatePEM, privateKeyPEM := createTestingCertificate(t, "localhost")
 

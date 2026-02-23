@@ -15,7 +15,6 @@ import (
 
 func TestAtomicWriteFile(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	err := fpath.AtomicWriteFile(ctx.File("example.txt"), []byte{1, 2, 3}, 0600)
 	require.NoError(t, err)

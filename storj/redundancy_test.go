@@ -12,7 +12,6 @@ import (
 
 	"storj.io/common/memory"
 	"storj.io/common/storj"
-	"storj.io/common/testcontext"
 )
 
 func TestRedundancySchemeStripesCount(t *testing.T) {
@@ -57,10 +56,9 @@ func TestRedundancySchemeStripesCount(t *testing.T) {
 }
 
 func TestRedundancyPieceSize(t *testing.T) {
-	const uint32Size = 4
+	t.Parallel()
 
-	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
+	const uint32Size = 4
 
 	type TestCase struct {
 		Size         int64

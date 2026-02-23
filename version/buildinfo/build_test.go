@@ -14,9 +14,8 @@ import (
 
 func TestFromBuild(t *testing.T) {
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
-	cmd := exec.Command("go", "run", ".")
+	cmd := exec.CommandContext(ctx, "go", "run", ".")
 	cmd.Dir = "testbuild"
 
 	data, err := cmd.CombinedOutput()

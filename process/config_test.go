@@ -23,7 +23,6 @@ func TestSaveConfig_CustomFlagName(t *testing.T) {
 	process.Bind(cmd, &config)
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	configFile := ctx.File(process.DefaultCfgFilename)
 

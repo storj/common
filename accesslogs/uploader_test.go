@@ -21,7 +21,6 @@ func TestLimits(t *testing.T) {
 	t.Parallel()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	log := zaptest.NewLogger(t)
 	defer ctx.Check(log.Sync)
@@ -46,7 +45,6 @@ func TestQueueNoLimit(t *testing.T) {
 	t.Parallel()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	log := zaptest.NewLogger(t)
 	defer ctx.Check(log.Sync)
@@ -77,7 +75,6 @@ func TestQueueNoLimitErroringStorage(t *testing.T) {
 	t.Parallel()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	log := zaptest.NewLogger(t)
 	defer ctx.Check(log.Sync)
@@ -101,7 +98,6 @@ func TestQueueErroringStorage(t *testing.T) {
 	t.Parallel()
 
 	ctx := testcontext.New(t)
-	defer ctx.Cleanup()
 
 	log := zaptest.NewLogger(t)
 	defer ctx.Check(log.Sync)
