@@ -225,9 +225,7 @@ func TestCache_ShortExpirationEventuallyClears(t *testing.T) {
 
 	var wg sync.WaitGroup
 	for range 10 {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			for range 10000 {
 				x := c.Take("key")
 				if x == nil {
@@ -235,7 +233,7 @@ func TestCache_ShortExpirationEventuallyClears(t *testing.T) {
 				}
 				c.Put("key", x)
 			}
-		}()
+		})
 	}
 
 	wg.Wait()

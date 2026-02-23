@@ -13,14 +13,14 @@ import (
 )
 
 var (
-	marshalCSVType  = reflect.TypeOf((*Marshaler)(nil)).Elem()
-	marshalTextType = reflect.TypeOf((*encoding.TextMarshaler)(nil)).Elem()
+	marshalCSVType  = reflect.TypeFor[Marshaler]()
+	marshalTextType = reflect.TypeFor[encoding.TextMarshaler]()
 
-	stringType  = reflect.TypeOf((*string)(nil)).Elem()
-	boolType    = reflect.TypeOf((*bool)(nil)).Elem()
-	int64Type   = reflect.TypeOf((*int64)(nil)).Elem()
-	uint64Type  = reflect.TypeOf((*uint64)(nil)).Elem()
-	float64Type = reflect.TypeOf((*float64)(nil)).Elem()
+	stringType  = reflect.TypeFor[string]()
+	boolType    = reflect.TypeFor[bool]()
+	int64Type   = reflect.TypeFor[int64]()
+	uint64Type  = reflect.TypeFor[uint64]()
+	float64Type = reflect.TypeFor[float64]()
 )
 
 // Marshaler is used to implement customized CSV field marshaling.
@@ -52,7 +52,7 @@ func Write(w io.Writer, obj any) error {
 		return Error.New("source (%T) cannot be nil", obj)
 	}
 	v := reflect.ValueOf(obj)
-	if v.Kind() == reflect.Ptr && v.IsNil() {
+	if v.Kind() == reflect.Pointer && v.IsNil() {
 		return Error.New("source (%T) cannot be nil", obj)
 	}
 
@@ -62,7 +62,7 @@ func Write(w io.Writer, obj any) error {
 		isSlice = true
 		t = t.Elem()
 	}
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 	if t.Kind() != reflect.Struct {
@@ -113,7 +113,7 @@ func Write(w io.Writer, obj any) error {
 }
 
 func getFieldsRecord(fields []gettableField, v reflect.Value) ([]string, error) {
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		if v.IsNil() {
 			return nil, Error.New("slice has one or more nil elements")
 		}
@@ -162,7 +162,7 @@ func getGettableFields(t reflect.Type) ([]gettableField, error) {
 			getter = getMarshalTextValue
 		default:
 			ft := field.Type
-			if ft.Kind() == reflect.Ptr {
+			if ft.Kind() == reflect.Pointer {
 				ft = ft.Elem()
 			}
 			switch ft.Kind() {
@@ -181,7 +181,7 @@ func getGettableFields(t reflect.Type) ([]gettableField, error) {
 			}
 		}
 
-		if field.Type.Kind() == reflect.Ptr {
+		if field.Type.Kind() == reflect.Pointer {
 			getter = getPointerValue(getter)
 		}
 

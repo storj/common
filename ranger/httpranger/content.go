@@ -482,16 +482,16 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 
 	var ranges []HTTPRange
 	noOverlap := false
-	for _, ra := range strings.Split(s[len(b):], ",") {
+	for ra := range strings.SplitSeq(s[len(b):], ",") {
 		ra = strings.TrimSpace(ra)
 		if ra == "" {
 			continue
 		}
-		i := strings.Index(ra, "-")
-		if i < 0 {
+		before, after, ok := strings.Cut(ra, "-")
+		if !ok {
 			return nil, ErrInvalidRange.New("%v", ra)
 		}
-		start, end := strings.TrimSpace(ra[:i]), strings.TrimSpace(ra[i+1:])
+		start, end := strings.TrimSpace(before), strings.TrimSpace(after)
 		var r HTTPRange
 		if start == "" {
 			// If no start is specified, end specifies the

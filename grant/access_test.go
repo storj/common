@@ -63,8 +63,8 @@ func TestLimitTo(t *testing.T) {
 	}
 
 	split := func(prefix string) (bucket, path string) {
-		if idx := strings.IndexByte(prefix, '|'); idx >= 0 {
-			return prefix[:idx], prefix[idx+1:]
+		if before, after, ok := strings.Cut(prefix, "|"); ok {
+			return before, after
 		}
 		return "bucket", prefix
 	}

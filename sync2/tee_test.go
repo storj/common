@@ -35,7 +35,6 @@ func TestTee_Basic(t *testing.T) {
 		})
 
 		for i := range readers {
-			i := i
 			group.Go(func() error {
 				data, err := io.ReadAll(readers[i])
 				assert.Equal(t, []byte{1, 2, 3, 1, 2, 3}, data)
@@ -68,7 +67,6 @@ func TestTee_CloseWithError(t *testing.T) {
 		})
 
 		for i := range readers {
-			i := i
 			group.Go(func() error {
 				_, err := io.ReadAll(readers[i])
 				if err != nil {

@@ -49,7 +49,7 @@ type Info struct {
 	// sync/atomic cache
 	commitHashCRC uint32
 
-	Timestamp  time.Time `json:"timestamp,omitempty"`
+	Timestamp  time.Time `json:"timestamp"`
 	CommitHash string    `json:"commitHash,omitempty"`
 	Version    SemVer    `json:"version"`
 	Release    bool      `json:"release,omitempty"`

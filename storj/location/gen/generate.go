@@ -179,7 +179,7 @@ func fetchCountryCodes(ctx context.Context) ([]CountryCode, error) {
 	}
 
 	var codes []CountryCode
-	for _, line := range strings.Split(string(content), "\n") {
+	for line := range strings.SplitSeq(string(content), "\n") {
 		if strings.HasPrefix(line, "#") {
 			continue
 		}

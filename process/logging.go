@@ -141,7 +141,7 @@ func NewLoggerWithOutputPathsAndAtomicLevel(processName string, outputPaths ...s
 // NamedLog creates a child logger with a name and configured customization.
 func NamedLog(base *zap.Logger, name string) *zap.Logger {
 	child := base.Named(name)
-	for _, customization := range strings.Split(*customLevel, ",") {
+	for customization := range strings.SplitSeq(*customLevel, ",") {
 		customization = strings.TrimSpace(customization)
 		if len(customization) == 0 {
 			continue

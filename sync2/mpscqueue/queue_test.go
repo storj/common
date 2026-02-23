@@ -43,7 +43,6 @@ func TestNoBreaks(t *testing.T) {
 
 	var senders errgroup.Group
 	for i := range N {
-		i := i
 		senders.Go(func() error {
 			queue.Enqueue(i)
 			return nil

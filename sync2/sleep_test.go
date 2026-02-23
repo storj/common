@@ -18,8 +18,7 @@ func TestSleep(t *testing.T) {
 	t.Run("against the real clock", func(t *testing.T) {
 		const sleepError = time.Second / 2 // should be larger than most system error with regards to sleep
 
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
+		ctx := t.Context()
 
 		start := time.Now()
 		if !sync2.Sleep(ctx, time.Second) {

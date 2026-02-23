@@ -18,8 +18,7 @@ import (
 func TestCopy(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	r := io.LimitReader(testrand.Reader(), 32*memory.KiB.Int64())
 

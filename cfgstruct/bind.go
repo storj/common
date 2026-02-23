@@ -121,7 +121,7 @@ func Bind(flags FlagSet, config any, opts ...BindOpt) {
 
 func bind(flags FlagSet, config any, opts ...BindOpt) {
 	ptrtype := reflect.TypeOf(config)
-	if ptrtype.Kind() != reflect.Ptr {
+	if ptrtype.Kind() != reflect.Pointer {
 		panic(fmt.Sprintf("invalid config type: %#v. Expecting pointer to struct.", config))
 	}
 	isDev := !version.Build.Release
@@ -281,41 +281,41 @@ func bindConfig(flags FlagSet, prefix string, val reflect.Value, vars map[string
 				}
 			}
 			switch field.Type {
-			case reflect.TypeOf(int(0)):
+			case reflect.TypeFor[int]():
 				val, err := strconv.ParseInt(def, 0, strconv.IntSize)
 				check(err)
 				flags.IntVar(fieldaddr.(*int), flagname, int(val), help)
-			case reflect.TypeOf(int64(0)):
+			case reflect.TypeFor[int64]():
 				val, err := strconv.ParseInt(def, 0, 64)
 				check(err)
 				flags.Int64Var(fieldaddr.(*int64), flagname, val, help)
-			case reflect.TypeOf(uint(0)):
+			case reflect.TypeFor[uint]():
 				val, err := strconv.ParseUint(def, 0, strconv.IntSize)
 				check(err)
 				flags.UintVar(fieldaddr.(*uint), flagname, uint(val), help)
-			case reflect.TypeOf(uint64(0)):
+			case reflect.TypeFor[uint64]():
 				val, err := strconv.ParseUint(def, 0, 64)
 				check(err)
 				flags.Uint64Var(fieldaddr.(*uint64), flagname, val, help)
-			case reflect.TypeOf(time.Duration(0)):
+			case reflect.TypeFor[time.Duration]():
 				val, err := time.ParseDuration(def)
 				check(err)
 				flags.DurationVar(fieldaddr.(*time.Duration), flagname, val, help)
-			case reflect.TypeOf(float64(0)):
+			case reflect.TypeFor[float64]():
 				val, err := strconv.ParseFloat(def, 64)
 				check(err)
 				flags.Float64Var(fieldaddr.(*float64), flagname, val, help)
-			case reflect.TypeOf(string("")):
+			case reflect.TypeFor[string]():
 				if field.Tag.Get("path") == "true" {
 					// NB: conventionally unix path separators are used in default values
 					def = filepath.FromSlash(def)
 				}
 				flags.StringVar(fieldaddr.(*string), flagname, def, help)
-			case reflect.TypeOf(bool(false)):
+			case reflect.TypeFor[bool]():
 				val, err := strconv.ParseBool(def)
 				check(err)
 				flags.BoolVar(fieldaddr.(*bool), flagname, val, help)
-			case reflect.TypeOf([]string(nil)):
+			case reflect.TypeFor[[]string]():
 				// allow either a single string, or comma separated values for defaults
 				defaultValues := []string{}
 				if def != "" {

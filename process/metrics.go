@@ -107,7 +107,7 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 
 	log.Info("Telemetry enabled", zap.String("instance_id", instanceID))
 
-	for _, address := range strings.Split(*metricCollector, ",") {
+	for address := range strings.SplitSeq(*metricCollector, ",") {
 		c, err := telemetry.NewClient(address, telemetry.ClientOpts{
 			Interval:      calcMetricInterval(),
 			Application:   appName,
@@ -136,7 +136,7 @@ func InitMetrics(ctx context.Context, log *zap.Logger, r *monkit.Registry, insta
 
 // UDPDestination initializes UDP evenkit destination.
 func UDPDestination(ctx context.Context, log *zap.Logger, destConfig string, eventRegistry *eventkit.Registry, appName string, instanceID string) {
-	for _, address := range strings.Split(destConfig, ",") {
+	for address := range strings.SplitSeq(destConfig, ",") {
 		c := eventkit.NewUDPClient(
 			appName,
 			flagDefault(

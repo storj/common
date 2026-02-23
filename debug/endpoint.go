@@ -74,11 +74,9 @@ func (f *Endpoint) CollectRuntimeTraces2(stream pb.DRPCDebug_CollectRuntimeTrace
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	wg.Add(1)
-	go func() {
+	wg.Go(func() {
 		capturePackets(stream.Context(), stop)
-		wg.Done()
-	}()
+	})
 
 	// wait for a done message or error from caller
 	for {
