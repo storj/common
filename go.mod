@@ -1,6 +1,6 @@
 module storj.io/common
 
-go 1.23.0
+go 1.24.0
 
 require (
 	cloud.google.com/go/profiler v0.4.0
@@ -15,23 +15,23 @@ require (
 	github.com/jtolio/crawlspace v0.0.0-20231116162947-3ec5cc6b36c5
 	github.com/jtolio/crawlspace/tools v0.0.0-20231116162947-3ec5cc6b36c5
 	github.com/jtolio/noiseconn v0.0.0-20230111204749-d7ec1a08b0b8
-	github.com/quic-go/quic-go v0.53.0
+	github.com/quic-go/quic-go v0.59.0
 	github.com/shopspring/decimal v1.2.0
 	github.com/spacemonkeygo/monkit/v3 v3.0.25-0.20251022131615-eb24eb109368
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.18.2
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.11.1
 	github.com/zeebo/admission/v3 v3.0.3
 	github.com/zeebo/blake3 v0.2.3
 	github.com/zeebo/errs v1.3.0
 	github.com/zeebo/structs v1.0.2
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.38.0
-	golang.org/x/mod v0.18.0
-	golang.org/x/sync v0.14.0
-	golang.org/x/sys v0.33.0
+	golang.org/x/crypto v0.48.0
+	golang.org/x/mod v0.33.0
+	golang.org/x/sync v0.19.0
+	golang.org/x/sys v0.41.0
 	gopkg.in/yaml.v2 v2.4.0
 	storj.io/drpc v0.0.35-0.20250513201419-f7819ea69b55
 	storj.io/eventkit v0.0.0-20250410172343-61f26d3de156
@@ -72,7 +72,7 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.18 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/rogpeppe/go-internal v1.9.0 // indirect
+	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
@@ -91,14 +91,14 @@ require (
 	go.opentelemetry.io/otel v1.24.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
-	go.uber.org/mock v0.5.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
-	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/oauth2 v0.17.0 // indirect
-	golang.org/x/text v0.25.0 // indirect
+	golang.org/x/telemetry v0.0.0-20260109210033-bd525da824e2 // indirect
+	golang.org/x/text v0.34.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.22.0 // indirect
+	golang.org/x/tools v0.41.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/api v0.168.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect

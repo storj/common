@@ -135,7 +135,6 @@ func TestRollout_MarshalJSON_UnmarshalJSON(t *testing.T) {
 func TestShouldUpdate(t *testing.T) {
 	// NB: total and acceptable tolerance are negatively correlated.
 	total := 20000
-	tolerance := total / 100 // 1%
 
 	for p := 10; p < 100; p += 10 {
 		var rollouts int
@@ -156,6 +155,11 @@ func TestShouldUpdate(t *testing.T) {
 				rollouts++
 			}
 		}
+
+		// Use 6 standard deviations as tolerance to avoid flaky failures.
+		// For binomial distribution: stddev = sqrt(n * p * (1-p)).
+		pf := float64(percentage) / 100
+		tolerance := int(6 * math.Sqrt(float64(total)*pf*(1-pf)))
 
 		assert.Condition(t, func() bool {
 			diff := rollouts - (total * percentage / 100)

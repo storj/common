@@ -5,6 +5,7 @@ package encryption
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -15,6 +16,16 @@ import (
 	"storj.io/common/storj"
 	"storj.io/common/testrand"
 )
+
+// assertNotSameMap asserts that two maps do not share the same underlying data.
+func assertNotSameMap(t *testing.T, a, b any) {
+	t.Helper()
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Pointer() == bv.Pointer() {
+		t.Errorf("expected different map pointers, but both point to %p", a)
+	}
+}
 
 func consumeIter(iter paths.Iterator) string {
 	var parts []string
@@ -262,22 +273,22 @@ func TestStoreClone(t *testing.T) {
 	assert.NotSame(t, store.defaultKey, clone.defaultKey)
 	assert.Equal(t, *store.defaultKey, *clone.defaultKey)
 
-	assert.NotSame(t, store.roots, clone.roots)
+	assertNotSameMap(t, store.roots, clone.roots)
 	assert.Equal(t, store.roots, clone.roots)
 
 	assert.NotSame(t, store.roots["bucket1"], clone.roots["bucket1"])
 	assert.Equal(t, store.roots["bucket1"], clone.roots["bucket1"])
 
-	assert.NotSame(t, store.roots["bucket1"].enc, clone.roots["bucket1"].enc)
+	assertNotSameMap(t, store.roots["bucket1"].enc, clone.roots["bucket1"].enc)
 	assert.Equal(t, store.roots["bucket1"].enc, clone.roots["bucket1"].enc)
 
-	assert.NotSame(t, store.roots["bucket1"].encMap, clone.roots["bucket1"].encMap)
+	assertNotSameMap(t, store.roots["bucket1"].encMap, clone.roots["bucket1"].encMap)
 	assert.Equal(t, store.roots["bucket1"].encMap, clone.roots["bucket1"].encMap)
 
-	assert.NotSame(t, store.roots["bucket1"].unenc, clone.roots["bucket1"].unenc)
+	assertNotSameMap(t, store.roots["bucket1"].unenc, clone.roots["bucket1"].unenc)
 	assert.Equal(t, store.roots["bucket1"].unenc, clone.roots["bucket1"].unenc)
 
-	assert.NotSame(t, store.roots["bucket1"].unencMap, clone.roots["bucket1"].unencMap)
+	assertNotSameMap(t, store.roots["bucket1"].unencMap, clone.roots["bucket1"].unencMap)
 	assert.Equal(t, store.roots["bucket1"].unencMap, clone.roots["bucket1"].unencMap)
 
 	assert.NotSame(t, store.roots["bucket1"].unenc["path1"].base, clone.roots["bucket1"].unenc["path1"].base)

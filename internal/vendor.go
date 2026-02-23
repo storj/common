@@ -12,7 +12,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strings"
 )
 
@@ -26,7 +25,12 @@ func main() {
 }
 
 func run() error {
-	sha512block := filepath.Join(runtime.GOROOT(), "src", "crypto", "sha512", "sha512block*")
+	goroot, err := goEnvGOROOT()
+	if err != nil {
+		return err
+	}
+
+	sha512block := filepath.Join(goroot, "src", "crypto", "sha512", "sha512block*")
 
 	matches, err := filepath.Glob(sha512block)
 	if err != nil {
@@ -57,7 +61,7 @@ func run() error {
 		}
 	}
 
-	version, err := os.ReadFile(filepath.Join(runtime.GOROOT(), "VERSION"))
+	version, err := os.ReadFile(filepath.Join(goroot, "VERSION"))
 	if err != nil {
 		return err
 	}
@@ -74,6 +78,14 @@ func run() error {
 	}
 
 	return nil
+}
+
+func goEnvGOROOT() (string, error) {
+	out, err := exec.Command("go", "env", "GOROOT").CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("go env GOROOT: %w\n%s", err, out)
+	}
+	return strings.TrimSpace(string(out)), nil
 }
 
 const doc = `// Copyright (C) 2022 Storj Labs, Inc.
