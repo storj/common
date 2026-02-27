@@ -4099,6 +4099,91 @@
             ]
           },
           {
+            "name": "GetPendingObjectMetadataRequest",
+            "fields": [
+              {
+                "id": 15,
+                "name": "header",
+                "type": "RequestHeader"
+              },
+              {
+                "id": 1,
+                "name": "bucket",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "encrypted_object_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "stream_id",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "StreamID"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "GetPendingObjectMetadataResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "encrypted_metadata_nonce",
+                "type": "bytes",
+                "options": [
+                  {
+                    "name": "(gogoproto.customtype)",
+                    "value": "Nonce"
+                  },
+                  {
+                    "name": "(gogoproto.nullable)",
+                    "value": "false"
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "name": "encrypted_metadata_encrypted_key",
+                "type": "bytes"
+              },
+              {
+                "id": 3,
+                "name": "encrypted_metadata",
+                "type": "bytes"
+              },
+              {
+                "id": 4,
+                "name": "encrypted_etag",
+                "type": "bytes"
+              },
+              {
+                "id": 5,
+                "name": "checksum_algorithm",
+                "type": "ObjectChecksumAlgorithm"
+              },
+              {
+                "id": 6,
+                "name": "is_checksum_composite",
+                "type": "bool"
+              },
+              {
+                "id": 7,
+                "name": "encrypted_checksum",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
             "name": "ObjectMetadataIncludes",
             "fields": [
               {
@@ -5490,6 +5575,12 @@
                 "oneof_parent": "Request"
               },
               {
+                "id": 45,
+                "name": "object_get_pending_metadata",
+                "type": "GetPendingObjectMetadataRequest",
+                "oneof_parent": "Request"
+              },
+              {
                 "id": 24,
                 "name": "object_update_metadata",
                 "type": "UpdateObjectMetadataRequest",
@@ -5770,6 +5861,12 @@
                 "id": 23,
                 "name": "object_download",
                 "type": "DownloadObjectResponse",
+                "oneof_parent": "Response"
+              },
+              {
+                "id": 45,
+                "name": "object_get_pending_metadata",
+                "type": "GetPendingObjectMetadataResponse",
                 "oneof_parent": "Response"
               },
               {
@@ -6484,6 +6581,11 @@
                 "name": "DownloadObject",
                 "in_type": "DownloadObjectRequest",
                 "out_type": "DownloadObjectResponse"
+              },
+              {
+                "name": "GetPendingObjectMetadata",
+                "in_type": "GetPendingObjectMetadataRequest",
+                "out_type": "GetPendingObjectMetadataResponse"
               },
               {
                 "name": "UpdateObjectMetadata",

@@ -4330,6 +4330,136 @@ func (m *GetObjectIPsResponse) GetPlacementConstraint() uint32 {
 	return 0
 }
 
+type GetPendingObjectMetadataRequest struct {
+	Header               *RequestHeader `protobuf:"bytes,15,opt,name=header,proto3" json:"header,omitempty"`
+	Bucket               []byte         `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	EncryptedObjectKey   []byte         `protobuf:"bytes,2,opt,name=encrypted_object_key,json=encryptedObjectKey,proto3" json:"encrypted_object_key,omitempty"`
+	StreamId             StreamID       `protobuf:"bytes,3,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *GetPendingObjectMetadataRequest) Reset()         { *m = GetPendingObjectMetadataRequest{} }
+func (m *GetPendingObjectMetadataRequest) String() string { return proto.CompactTextString(m) }
+func (*GetPendingObjectMetadataRequest) ProtoMessage()    {}
+
+func (m *GetPendingObjectMetadataRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetPendingObjectMetadataRequest.Unmarshal(m, b)
+}
+func (m *GetPendingObjectMetadataRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetPendingObjectMetadataRequest.Marshal(b, m, deterministic)
+}
+func (m *GetPendingObjectMetadataRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetPendingObjectMetadataRequest.Merge(m, src)
+}
+func (m *GetPendingObjectMetadataRequest) XXX_Size() int {
+	return xxx_messageInfo_GetPendingObjectMetadataRequest.Size(m)
+}
+func (m *GetPendingObjectMetadataRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetPendingObjectMetadataRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetPendingObjectMetadataRequest proto.InternalMessageInfo
+
+func (m *GetPendingObjectMetadataRequest) GetHeader() *RequestHeader {
+	if m != nil {
+		return m.Header
+	}
+	return nil
+}
+
+func (m *GetPendingObjectMetadataRequest) GetBucket() []byte {
+	if m != nil {
+		return m.Bucket
+	}
+	return nil
+}
+
+func (m *GetPendingObjectMetadataRequest) GetEncryptedObjectKey() []byte {
+	if m != nil {
+		return m.EncryptedObjectKey
+	}
+	return nil
+}
+
+type GetPendingObjectMetadataResponse struct {
+	EncryptedMetadataNonce        Nonce                   `protobuf:"bytes,1,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
+	EncryptedMetadataEncryptedKey []byte                  `protobuf:"bytes,2,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
+	EncryptedMetadata             []byte                  `protobuf:"bytes,3,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
+	EncryptedEtag                 []byte                  `protobuf:"bytes,4,opt,name=encrypted_etag,json=encryptedEtag,proto3" json:"encrypted_etag,omitempty"`
+	ChecksumAlgorithm             ObjectChecksumAlgorithm `protobuf:"varint,5,opt,name=checksum_algorithm,json=checksumAlgorithm,proto3,enum=metainfo.ObjectChecksumAlgorithm" json:"checksum_algorithm,omitempty"`
+	IsChecksumComposite           bool                    `protobuf:"varint,6,opt,name=is_checksum_composite,json=isChecksumComposite,proto3" json:"is_checksum_composite,omitempty"`
+	EncryptedChecksum             []byte                  `protobuf:"bytes,7,opt,name=encrypted_checksum,json=encryptedChecksum,proto3" json:"encrypted_checksum,omitempty"`
+	XXX_NoUnkeyedLiteral          struct{}                `json:"-"`
+	XXX_unrecognized              []byte                  `json:"-"`
+	XXX_sizecache                 int32                   `json:"-"`
+}
+
+func (m *GetPendingObjectMetadataResponse) Reset()         { *m = GetPendingObjectMetadataResponse{} }
+func (m *GetPendingObjectMetadataResponse) String() string { return proto.CompactTextString(m) }
+func (*GetPendingObjectMetadataResponse) ProtoMessage()    {}
+
+func (m *GetPendingObjectMetadataResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetPendingObjectMetadataResponse.Unmarshal(m, b)
+}
+func (m *GetPendingObjectMetadataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetPendingObjectMetadataResponse.Marshal(b, m, deterministic)
+}
+func (m *GetPendingObjectMetadataResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetPendingObjectMetadataResponse.Merge(m, src)
+}
+func (m *GetPendingObjectMetadataResponse) XXX_Size() int {
+	return xxx_messageInfo_GetPendingObjectMetadataResponse.Size(m)
+}
+func (m *GetPendingObjectMetadataResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetPendingObjectMetadataResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetPendingObjectMetadataResponse proto.InternalMessageInfo
+
+func (m *GetPendingObjectMetadataResponse) GetEncryptedMetadataEncryptedKey() []byte {
+	if m != nil {
+		return m.EncryptedMetadataEncryptedKey
+	}
+	return nil
+}
+
+func (m *GetPendingObjectMetadataResponse) GetEncryptedMetadata() []byte {
+	if m != nil {
+		return m.EncryptedMetadata
+	}
+	return nil
+}
+
+func (m *GetPendingObjectMetadataResponse) GetEncryptedEtag() []byte {
+	if m != nil {
+		return m.EncryptedEtag
+	}
+	return nil
+}
+
+func (m *GetPendingObjectMetadataResponse) GetChecksumAlgorithm() ObjectChecksumAlgorithm {
+	if m != nil {
+		return m.ChecksumAlgorithm
+	}
+	return ObjectChecksumAlgorithm_NONE
+}
+
+func (m *GetPendingObjectMetadataResponse) GetIsChecksumComposite() bool {
+	if m != nil {
+		return m.IsChecksumComposite
+	}
+	return false
+}
+
+func (m *GetPendingObjectMetadataResponse) GetEncryptedChecksum() []byte {
+	if m != nil {
+		return m.EncryptedChecksum
+	}
+	return nil
+}
+
 type ObjectMetadataIncludes struct {
 	// custom indicates whether the custom metadata, the metadata encryption key, and the
 	// metadata encryption nonce should be included.
@@ -6610,6 +6740,7 @@ type BatchRequestItem struct {
 	//	*BatchRequestItem_ObjectGetIps
 	//	*BatchRequestItem_ObjectListPendingStreams
 	//	*BatchRequestItem_ObjectDownload
+	//	*BatchRequestItem_ObjectGetPendingMetadata
 	//	*BatchRequestItem_ObjectUpdateMetadata
 	//	*BatchRequestItem_ObjectBeginMove
 	//	*BatchRequestItem_ObjectFinishMove
@@ -6730,6 +6861,9 @@ type BatchRequestItem_ObjectListPendingStreams struct {
 type BatchRequestItem_ObjectDownload struct {
 	ObjectDownload *DownloadObjectRequest `protobuf:"bytes,23,opt,name=object_download,json=objectDownload,proto3,oneof" json:"object_download,omitempty"`
 }
+type BatchRequestItem_ObjectGetPendingMetadata struct {
+	ObjectGetPendingMetadata *GetPendingObjectMetadataRequest `protobuf:"bytes,45,opt,name=object_get_pending_metadata,json=objectGetPendingMetadata,proto3,oneof" json:"object_get_pending_metadata,omitempty"`
+}
 type BatchRequestItem_ObjectUpdateMetadata struct {
 	ObjectUpdateMetadata *UpdateObjectMetadataRequest `protobuf:"bytes,24,opt,name=object_update_metadata,json=objectUpdateMetadata,proto3,oneof" json:"object_update_metadata,omitempty"`
 }
@@ -6811,6 +6945,7 @@ func (*BatchRequestItem_ObjectsDelete) isBatchRequestItem_Request()             
 func (*BatchRequestItem_ObjectGetIps) isBatchRequestItem_Request()                       {}
 func (*BatchRequestItem_ObjectListPendingStreams) isBatchRequestItem_Request()           {}
 func (*BatchRequestItem_ObjectDownload) isBatchRequestItem_Request()                     {}
+func (*BatchRequestItem_ObjectGetPendingMetadata) isBatchRequestItem_Request()           {}
 func (*BatchRequestItem_ObjectUpdateMetadata) isBatchRequestItem_Request()               {}
 func (*BatchRequestItem_ObjectBeginMove) isBatchRequestItem_Request()                    {}
 func (*BatchRequestItem_ObjectFinishMove) isBatchRequestItem_Request()                   {}
@@ -6999,6 +7134,13 @@ func (m *BatchRequestItem) GetObjectDownload() *DownloadObjectRequest {
 	return nil
 }
 
+func (m *BatchRequestItem) GetObjectGetPendingMetadata() *GetPendingObjectMetadataRequest {
+	if x, ok := m.GetRequest().(*BatchRequestItem_ObjectGetPendingMetadata); ok {
+		return x.ObjectGetPendingMetadata
+	}
+	return nil
+}
+
 func (m *BatchRequestItem) GetObjectUpdateMetadata() *UpdateObjectMetadataRequest {
 	if x, ok := m.GetRequest().(*BatchRequestItem_ObjectUpdateMetadata); ok {
 		return x.ObjectUpdateMetadata
@@ -7158,6 +7300,7 @@ func (*BatchRequestItem) XXX_OneofWrappers() []interface{} {
 		(*BatchRequestItem_ObjectGetIps)(nil),
 		(*BatchRequestItem_ObjectListPendingStreams)(nil),
 		(*BatchRequestItem_ObjectDownload)(nil),
+		(*BatchRequestItem_ObjectGetPendingMetadata)(nil),
 		(*BatchRequestItem_ObjectUpdateMetadata)(nil),
 		(*BatchRequestItem_ObjectBeginMove)(nil),
 		(*BatchRequestItem_ObjectFinishMove)(nil),
@@ -7286,6 +7429,7 @@ type BatchResponseItem struct {
 	//	*BatchResponseItem_ObjectGetIps
 	//	*BatchResponseItem_ObjectListPendingStreams
 	//	*BatchResponseItem_ObjectDownload
+	//	*BatchResponseItem_ObjectGetPendingMetadata
 	//	*BatchResponseItem_ObjectUpdateMetadata
 	//	*BatchResponseItem_ObjectBeginMove
 	//	*BatchResponseItem_ObjectFinishMove
@@ -7406,6 +7550,9 @@ type BatchResponseItem_ObjectListPendingStreams struct {
 type BatchResponseItem_ObjectDownload struct {
 	ObjectDownload *DownloadObjectResponse `protobuf:"bytes,23,opt,name=object_download,json=objectDownload,proto3,oneof" json:"object_download,omitempty"`
 }
+type BatchResponseItem_ObjectGetPendingMetadata struct {
+	ObjectGetPendingMetadata *GetPendingObjectMetadataResponse `protobuf:"bytes,45,opt,name=object_get_pending_metadata,json=objectGetPendingMetadata,proto3,oneof" json:"object_get_pending_metadata,omitempty"`
+}
 type BatchResponseItem_ObjectUpdateMetadata struct {
 	ObjectUpdateMetadata *UpdateObjectMetadataResponse `protobuf:"bytes,24,opt,name=object_update_metadata,json=objectUpdateMetadata,proto3,oneof" json:"object_update_metadata,omitempty"`
 }
@@ -7487,6 +7634,7 @@ func (*BatchResponseItem_ObjectsDelete) isBatchResponseItem_Response()          
 func (*BatchResponseItem_ObjectGetIps) isBatchResponseItem_Response()                       {}
 func (*BatchResponseItem_ObjectListPendingStreams) isBatchResponseItem_Response()           {}
 func (*BatchResponseItem_ObjectDownload) isBatchResponseItem_Response()                     {}
+func (*BatchResponseItem_ObjectGetPendingMetadata) isBatchResponseItem_Response()           {}
 func (*BatchResponseItem_ObjectUpdateMetadata) isBatchResponseItem_Response()               {}
 func (*BatchResponseItem_ObjectBeginMove) isBatchResponseItem_Response()                    {}
 func (*BatchResponseItem_ObjectFinishMove) isBatchResponseItem_Response()                   {}
@@ -7675,6 +7823,13 @@ func (m *BatchResponseItem) GetObjectDownload() *DownloadObjectResponse {
 	return nil
 }
 
+func (m *BatchResponseItem) GetObjectGetPendingMetadata() *GetPendingObjectMetadataResponse {
+	if x, ok := m.GetResponse().(*BatchResponseItem_ObjectGetPendingMetadata); ok {
+		return x.ObjectGetPendingMetadata
+	}
+	return nil
+}
+
 func (m *BatchResponseItem) GetObjectUpdateMetadata() *UpdateObjectMetadataResponse {
 	if x, ok := m.GetResponse().(*BatchResponseItem_ObjectUpdateMetadata); ok {
 		return x.ObjectUpdateMetadata
@@ -7834,6 +7989,7 @@ func (*BatchResponseItem) XXX_OneofWrappers() []interface{} {
 		(*BatchResponseItem_ObjectGetIps)(nil),
 		(*BatchResponseItem_ObjectListPendingStreams)(nil),
 		(*BatchResponseItem_ObjectDownload)(nil),
+		(*BatchResponseItem_ObjectGetPendingMetadata)(nil),
 		(*BatchResponseItem_ObjectUpdateMetadata)(nil),
 		(*BatchResponseItem_ObjectBeginMove)(nil),
 		(*BatchResponseItem_ObjectFinishMove)(nil),
