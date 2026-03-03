@@ -7226,6 +7226,44 @@
                 "is_repeated": true
               }
             ]
+          },
+          {
+            "name": "SignTagsRequest",
+            "fields": [
+              {
+                "id": 1,
+                "name": "node_id",
+                "type": "bytes"
+              },
+              {
+                "id": 2,
+                "name": "secret",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "SignTagsResponse",
+            "fields": [
+              {
+                "id": 1,
+                "name": "tags",
+                "type": "SignedNodeTagSet",
+                "is_repeated": true
+              }
+            ]
+          }
+        ],
+        "services": [
+          {
+            "name": "TagSigner",
+            "rpcs": [
+              {
+                "name": "SignTags",
+                "in_type": "SignTagsRequest",
+                "out_type": "SignTagsResponse"
+              }
+            ]
           }
         ],
         "package": {
