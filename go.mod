@@ -1,6 +1,6 @@
 module storj.io/common
 
-go 1.25
+go 1.25.0
 
 require (
 	cloud.google.com/go/profiler v0.4.0
@@ -31,7 +31,7 @@ require (
 	golang.org/x/crypto v0.48.0
 	golang.org/x/mod v0.33.0
 	golang.org/x/sync v0.19.0
-	golang.org/x/sys v0.41.0
+	golang.org/x/sys v0.41.1-0.20260303015103-eaaaaee1dc1a
 	gopkg.in/yaml.v2 v2.4.0
 	storj.io/drpc v0.0.35-0.20250513201419-f7819ea69b55
 	storj.io/eventkit v0.0.0-20250410172343-61f26d3de156
