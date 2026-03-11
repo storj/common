@@ -32,7 +32,7 @@ func TestServeContent(t *testing.T) {
 			requestHeaderMap: map[string]string{"If-Match": "\t\t"},
 		},
 	} {
-		req := httptest.NewRequest(tt.requestMethod, "/", nil)
+		req := httptest.NewRequestWithContext(t.Context(), tt.requestMethod, "/", nil)
 		for k, v := range tt.requestHeaderMap {
 			req.Header.Add(k, v)
 		}
@@ -42,24 +42,24 @@ func TestServeContent(t *testing.T) {
 			writer.Header().Add(k, v)
 		}
 
-		err := ServeContent(context.Background(), writer, req, tt.name, tt.modtime, tt.content)
+		err := ServeContent(t.Context(), writer, req, tt.name, tt.modtime, tt.content)
 		assert.NoError(t, err)
 	}
 }
 
 func TestServeContentContentSize(t *testing.T) {
-	req := httptest.NewRequest("", "/", nil)
+	req := httptest.NewRequestWithContext(t.Context(), "", "/", nil)
 	writer := httptest.NewRecorder()
 	ranger := ranger.ByteRanger([]byte(""))
 
-	err := ServeContent(context.Background(), writer, req, "", time.Now().UTC(), ranger)
+	err := ServeContent(t.Context(), writer, req, "", time.Now().UTC(), ranger)
 	assert.NoError(t, err)
 
 	assert.Equal(t, http.StatusOK, writer.Code)
 }
 
 func TestServeContentParseRange(t *testing.T) {
-	req := httptest.NewRequest("", "/", nil)
+	req := httptest.NewRequestWithContext(t.Context(), "", "/", nil)
 	for k, v := range map[string]string{"If-Range": "\"abcde\""} {
 		req.Header.Add(k, v)
 	}
@@ -70,7 +70,7 @@ func TestServeContentParseRange(t *testing.T) {
 	}
 	ranger := ranger.ByteRanger([]byte("bytes=1-5/0,bytes=1-5/8"))
 
-	err := ServeContent(context.Background(), writer, req, "", time.Now().UTC(), ranger)
+	err := ServeContent(t.Context(), writer, req, "", time.Now().UTC(), ranger)
 	assert.NoError(t, err)
 
 	assert.Equal(t, http.StatusOK, writer.Code)
@@ -87,11 +87,11 @@ func (rr *errorRanger) Range(ctx context.Context, offset, length int64) (io.Read
 }
 
 func TestServeContentErrorRanger(t *testing.T) {
-	req := httptest.NewRequest("", "/", nil)
+	req := httptest.NewRequestWithContext(t.Context(), "", "/", nil)
 	writer := httptest.NewRecorder()
 	ranger := new(errorRanger)
 
-	err := ServeContent(context.Background(), writer, req, "file.pdf", time.Now().UTC(), ranger)
+	err := ServeContent(t.Context(), writer, req, "file.pdf", time.Now().UTC(), ranger)
 	assert.EqualError(t, err, "test error")
 
 	result := writer.Result()
@@ -201,7 +201,7 @@ func Test_checkPreconditions(t *testing.T) {
 			expectedRangeHeader: "",
 		},
 	} {
-		req := httptest.NewRequest(tt.requestMethod, "/", nil)
+		req := httptest.NewRequestWithContext(t.Context(), tt.requestMethod, "/", nil)
 		for k, v := range tt.requestHeaderMap {
 			req.Header.Add(k, v)
 		}
@@ -257,7 +257,7 @@ func Test_checkIfMatch(t *testing.T) {
 			expectedResult:   condTrue,
 		},
 	} {
-		req := httptest.NewRequest("", "/", nil)
+		req := httptest.NewRequestWithContext(t.Context(), "", "/", nil)
 		for k, v := range tt.requestHeaderMap {
 			req.Header.Add(k, v)
 		}
@@ -307,7 +307,7 @@ func Test_checkIfUnmodifiedSince(t *testing.T) {
 			expectedResult: condNone,
 		},
 	} {
-		req := httptest.NewRequest("", "/", nil)
+		req := httptest.NewRequestWithContext(t.Context(), "", "/", nil)
 		for k, v := range tt.headerMap {
 			req.Header.Add(k, v)
 		}
@@ -357,7 +357,7 @@ func Test_checkIfNoneMatch(t *testing.T) {
 			expectedResult:   condFalse,
 		},
 	} {
-		req := httptest.NewRequest("", "/", nil)
+		req := httptest.NewRequestWithContext(t.Context(), "", "/", nil)
 		for k, v := range tt.requestHeaderMap {
 			req.Header.Add(k, v)
 		}
@@ -410,7 +410,7 @@ func Test_checkIfModifiedSince(t *testing.T) {
 			expectedResult: condTrue,
 		},
 	} {
-		req := httptest.NewRequest(tt.requestMethod, "/", nil)
+		req := httptest.NewRequestWithContext(t.Context(), tt.requestMethod, "/", nil)
 		for k, v := range tt.headerMap {
 			req.Header.Add(k, v)
 		}
@@ -475,7 +475,7 @@ func Test_checkIfRange(t *testing.T) {
 			expectedResult:   condFalse,
 		},
 	} {
-		req := httptest.NewRequest(tt.requestMethod, "/", nil)
+		req := httptest.NewRequestWithContext(t.Context(), tt.requestMethod, "/", nil)
 		for k, v := range tt.requestHeaderMap {
 			req.Header.Add(k, v)
 		}
@@ -898,11 +898,11 @@ func Test_contentType_detection(t *testing.T) {
 			expected: []string{"application/xml", "text/xml; charset=utf-8"},
 		},
 	} {
-		req := httptest.NewRequest("", "/"+tt.name, nil)
+		req := httptest.NewRequestWithContext(t.Context(), "", "/"+tt.name, nil)
 		writer := httptest.NewRecorder()
 		ranger := ranger.ByteRanger([]byte(""))
 
-		err := ServeContent(context.Background(), writer, req, tt.name, time.Now().UTC(), ranger)
+		err := ServeContent(t.Context(), writer, req, tt.name, time.Now().UTC(), ranger)
 		assert.NoError(t, err)
 
 		assert.Equal(t, http.StatusOK, writer.Code)
