@@ -11,13 +11,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"os"
 	"reflect"
 	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/blang/semver/v4"
 	"github.com/zeebo/errs"
 	"go.uber.org/zap"
 	"golang.org/x/mod/module"
@@ -54,12 +54,6 @@ type Info struct {
 	Version    SemVer    `json:"version"`
 	Release    bool      `json:"release,omitempty"`
 	Modified   bool      `json:"modified,omitempty"`
-}
-
-// SemVer represents a semantic version.
-// TODO: replace with semver.Version.
-type SemVer struct {
-	semver.Version
 }
 
 // AllowedVersions provides the Minimum SemVer per Service.
@@ -127,37 +121,11 @@ func (rb *RolloutBytes) UnmarshalJSON(b []byte) error {
 // NewSemVer parses a given version and returns an instance of SemVer or
 // an error if unable to parse the version.
 func NewSemVer(v string) (SemVer, error) {
-	ver, err := semver.ParseTolerant(v)
+	ver, err := ParseSemVer(v)
 	if err != nil {
 		return SemVer{}, VerError.Wrap(err)
 	}
-
-	return SemVer{
-		Version: ver,
-	}, nil
-}
-
-// Compare compares two versions, return -1 if compared version is greater, 0 if equal and 1 if less.
-func (sem *SemVer) Compare(version SemVer) int {
-	return sem.Version.Compare(version.Version)
-}
-
-// String converts the SemVer struct to a more easy to handle string.
-func (sem *SemVer) String() (version string) {
-	base := fmt.Sprintf("v%d.%d.%d", sem.Major, sem.Minor, sem.Patch)
-	if len(sem.Pre) > 0 {
-		var build string
-		for _, val := range sem.Pre {
-			build = build + "-" + val.String()
-		}
-		return fmt.Sprintf("%s%s", base, build)
-	}
-	return base
-}
-
-// IsZero checks if the semantic version is its zero value.
-func (sem SemVer) IsZero() bool {
-	return reflect.ValueOf(sem).IsZero()
+	return ver, nil
 }
 
 // SemVer converts a version struct into a semantic version struct.
@@ -195,7 +163,7 @@ func (info Info) Marshal() ([]byte, error) {
 // us make it match Info.
 func (info Info) Proto() (*pb.NodeVersion, error) {
 	return &pb.NodeVersion{
-		Version:    info.Version.String(),
+		Version:    info.Version.VString(),
 		CommitHash: info.CommitHash,
 		Timestamp:  info.Timestamp,
 		Release:    info.Release,
@@ -211,7 +179,7 @@ func (info Info) String() (out string) {
 	}
 
 	if !info.Version.IsZero() {
-		out += fmt.Sprintln("Version:", info.Version.String())
+		out += fmt.Sprintln("Version:", info.Version.VString())
 	}
 	if !info.Timestamp.IsZero() {
 		out += fmt.Sprintln("Build timestamp:", info.Timestamp.Format(time.RFC822))
@@ -228,7 +196,7 @@ func (info Info) String() (out string) {
 // Log prints out the version information to a zap compatible log.
 func (info Info) Log(logger func(msg string, fields ...zap.Field)) {
 	logger("Version info",
-		zap.Stringer("version", info.Version.Version),
+		zap.Stringer("version", info.Version),
 		zap.String("commit_hash", info.CommitHash),
 		zap.Stringer("build_timestamp", info.Timestamp),
 		zap.Bool("release_build", info.Release),
@@ -413,10 +381,12 @@ func getInfoFromBuildInfo() (rv Info) {
 
 	if !versionSet && buildVersion != "" {
 		sv, err := NewSemVer(buildVersion)
-		if err != nil {
-			panic(err)
+		if err == nil {
+			rv.Version = sv
+		} else {
+			fmt.Fprintf(os.Stderr, "failed to parse build version %q: %v\n", buildVersion, err)
+			rv.Release = false
 		}
-		rv.Version = sv
 	}
 
 	if buildRelease != "" {
