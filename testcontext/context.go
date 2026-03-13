@@ -2,6 +2,12 @@
 // See LICENSE for copying information.
 
 // Package testcontext implements convenience context for testing.
+//
+// Used instead of the `testing.T.Context()` from the standard library when testing concurrency
+// related things. It has an internal timeout, which is lower than the whole test. It also dumps the
+// whole call stack that makes it easier to find things that got stuck.
+//
+// It has also some additional helpers for creating files and directories.
 package testcontext
 
 import (
