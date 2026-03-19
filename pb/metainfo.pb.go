@@ -42,6 +42,39 @@ func (x ListDirection) String() string {
 	return proto.EnumName(ListDirection_name, int32(x))
 }
 
+type ObjectChecksumAlgorithm int32
+
+const (
+	ObjectChecksumAlgorithm_NONE      ObjectChecksumAlgorithm = 0
+	ObjectChecksumAlgorithm_CRC32     ObjectChecksumAlgorithm = 1
+	ObjectChecksumAlgorithm_CRC32C    ObjectChecksumAlgorithm = 2
+	ObjectChecksumAlgorithm_CRC64NVME ObjectChecksumAlgorithm = 3
+	ObjectChecksumAlgorithm_SHA1      ObjectChecksumAlgorithm = 4
+	ObjectChecksumAlgorithm_SHA256    ObjectChecksumAlgorithm = 5
+)
+
+var ObjectChecksumAlgorithm_name = map[int32]string{
+	0: "NONE",
+	1: "CRC32",
+	2: "CRC32C",
+	3: "CRC64NVME",
+	4: "SHA1",
+	5: "SHA256",
+}
+
+var ObjectChecksumAlgorithm_value = map[string]int32{
+	"NONE":      0,
+	"CRC32":     1,
+	"CRC32C":    2,
+	"CRC64NVME": 3,
+	"SHA1":      4,
+	"SHA256":    5,
+}
+
+func (x ObjectChecksumAlgorithm) String() string {
+	return proto.EnumName(ObjectChecksumAlgorithm_name, int32(x))
+}
+
 type Retention_Mode int32
 
 const (

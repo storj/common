@@ -2140,6 +2140,34 @@
             ]
           },
           {
+            "name": "ObjectChecksumAlgorithm",
+            "enum_fields": [
+              {
+                "name": "NONE"
+              },
+              {
+                "name": "CRC32",
+                "integer": 1
+              },
+              {
+                "name": "CRC32C",
+                "integer": 2
+              },
+              {
+                "name": "CRC64NVME",
+                "integer": 3
+              },
+              {
+                "name": "SHA1",
+                "integer": 4
+              },
+              {
+                "name": "SHA256",
+                "integer": 5
+              }
+            ]
+          },
+          {
             "name": "Object.Status",
             "enum_fields": [
               {

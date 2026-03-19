@@ -345,6 +345,15 @@ message Retention {
     google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
+enum ObjectChecksumAlgorithm {
+    NONE = 0;
+    CRC32 = 1;
+    CRC32C = 2;
+    CRC64NVME = 3;
+    SHA1 = 4;
+    SHA256 = 5;
+}
+
 message Object {
     enum Status {
         INVALID    = 0;
