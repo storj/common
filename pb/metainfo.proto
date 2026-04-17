@@ -355,6 +355,8 @@ enum ObjectChecksumAlgorithm {
 }
 
 message Object {
+    reserved 7;
+
     enum Status {
         INVALID    = 0;
         UPLOADING  = 1;
@@ -375,7 +377,6 @@ message Object {
     bytes  stream_id = 5 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
 
     google.protobuf.Timestamp created_at = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    google.protobuf.Timestamp status_at  = 7 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     google.protobuf.Timestamp expires_at = 8 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 
     bytes encrypted_metadata_nonce         = 9 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
@@ -610,6 +611,8 @@ message ListObjectsResponse {
 }
 
 message ObjectListItem {
+    reserved 5;
+
     bytes  encrypted_object_key = 1;
     int32  version        = 2; // deprecated
     bytes  object_version = 12;
@@ -617,7 +620,6 @@ message ObjectListItem {
     bool   is_latest = 13;
 
     google.protobuf.Timestamp created_at = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    google.protobuf.Timestamp status_at  = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
     google.protobuf.Timestamp expires_at = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 
     bytes encrypted_metadata_nonce = 7 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];

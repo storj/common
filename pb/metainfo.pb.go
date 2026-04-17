@@ -2148,7 +2148,6 @@ type Object struct {
 	Status                        Object_Status `protobuf:"varint,4,opt,name=status,proto3,enum=metainfo.Object_Status" json:"status,omitempty"`
 	StreamId                      StreamID      `protobuf:"bytes,5,opt,name=stream_id,json=streamId,proto3,customtype=StreamID" json:"stream_id"`
 	CreatedAt                     time.Time     `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3,stdtime" json:"created_at"`
-	StatusAt                      time.Time     `protobuf:"bytes,7,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
 	ExpiresAt                     time.Time     `protobuf:"bytes,8,opt,name=expires_at,json=expiresAt,proto3,stdtime" json:"expires_at"`
 	EncryptedMetadataNonce        Nonce         `protobuf:"bytes,9,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
 	EncryptedMetadata             []byte        `protobuf:"bytes,10,opt,name=encrypted_metadata,json=encryptedMetadata,proto3" json:"encrypted_metadata,omitempty"`
@@ -2235,13 +2234,6 @@ func (m *Object) GetStatus() Object_Status {
 func (m *Object) GetCreatedAt() time.Time {
 	if m != nil {
 		return m.CreatedAt
-	}
-	return time.Time{}
-}
-
-func (m *Object) GetStatusAt() time.Time {
-	if m != nil {
-		return m.StatusAt
 	}
 	return time.Time{}
 }
@@ -3468,7 +3460,6 @@ type ObjectListItem struct {
 	Status                        Object_Status `protobuf:"varint,3,opt,name=status,proto3,enum=metainfo.Object_Status" json:"status,omitempty"`
 	IsLatest                      bool          `protobuf:"varint,13,opt,name=is_latest,json=isLatest,proto3" json:"is_latest,omitempty"`
 	CreatedAt                     time.Time     `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3,stdtime" json:"created_at"`
-	StatusAt                      time.Time     `protobuf:"bytes,5,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
 	ExpiresAt                     time.Time     `protobuf:"bytes,6,opt,name=expires_at,json=expiresAt,proto3,stdtime" json:"expires_at"`
 	EncryptedMetadataNonce        Nonce         `protobuf:"bytes,7,opt,name=encrypted_metadata_nonce,json=encryptedMetadataNonce,proto3,customtype=Nonce" json:"encrypted_metadata_nonce"`
 	EncryptedMetadataEncryptedKey []byte        `protobuf:"bytes,11,opt,name=encrypted_metadata_encrypted_key,json=encryptedMetadataEncryptedKey,proto3" json:"encrypted_metadata_encrypted_key,omitempty"`
@@ -3542,13 +3533,6 @@ func (m *ObjectListItem) GetIsLatest() bool {
 func (m *ObjectListItem) GetCreatedAt() time.Time {
 	if m != nil {
 		return m.CreatedAt
-	}
-	return time.Time{}
-}
-
-func (m *ObjectListItem) GetStatusAt() time.Time {
-	if m != nil {
-		return m.StatusAt
 	}
 	return time.Time{}
 }

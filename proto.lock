@@ -3017,21 +3017,6 @@
                 ]
               },
               {
-                "id": 7,
-                "name": "status_at",
-                "type": "google.protobuf.Timestamp",
-                "options": [
-                  {
-                    "name": "(gogoproto.stdtime)",
-                    "value": "true"
-                  },
-                  {
-                    "name": "(gogoproto.nullable)",
-                    "value": "false"
-                  }
-                ]
-              },
-              {
                 "id": 8,
                 "name": "expires_at",
                 "type": "google.protobuf.Timestamp",
@@ -3121,6 +3106,9 @@
                 "name": "plain_size",
                 "type": "int64"
               }
+            ],
+            "reserved_ids": [
+              7
             ]
           },
           {
@@ -3684,21 +3672,6 @@
                 ]
               },
               {
-                "id": 5,
-                "name": "status_at",
-                "type": "google.protobuf.Timestamp",
-                "options": [
-                  {
-                    "name": "(gogoproto.stdtime)",
-                    "value": "true"
-                  },
-                  {
-                    "name": "(gogoproto.nullable)",
-                    "value": "false"
-                  }
-                ]
-              },
-              {
                 "id": 6,
                 "name": "expires_at",
                 "type": "google.protobuf.Timestamp",
@@ -3759,6 +3732,9 @@
                   }
                 ]
               }
+            ],
+            "reserved_ids": [
+              5
             ]
           },
           {
