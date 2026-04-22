@@ -4,6 +4,7 @@
 package sync2_test
 
 import (
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -72,6 +73,36 @@ func TestWithTimeout_Fail(t *testing.T) {
 
 	require.Equal(t, workResult, 1)
 	require.Equal(t, timeoutResult, 1)
+}
+
+func TestWithTimeout_NoOnTimeoutAfterDo(t *testing.T) {
+	t.Parallel()
+
+	// Force the race window by making do's completion collide with the timer's
+	// deadline: do sleeps for `timeout` so it returns at roughly the same
+	// instant the timer fires. With the pre-CAS implementation, if the timer
+	// expires between do returning and the deferred t.Stop(), onTimeout runs
+	// spuriously after do has already completed (this is the piecestore bug:
+	// a successful Send followed by the timeout callback cancelling the
+	// shared ctx). The fix must ensure onTimeout never observes a completed
+	// do.
+	const timeout = time.Millisecond
+	const iterations = 200
+	var spurious atomic.Int32
+	for i := 0; i < iterations; i++ {
+		var doDone atomic.Bool
+		sync2.WithTimeout(timeout, func() {
+			time.Sleep(timeout)
+			doDone.Store(true)
+		}, func() {
+			if doDone.Load() {
+				spurious.Add(1)
+			}
+		})
+	}
+	require.Zero(t, spurious.Load(),
+		"onTimeout ran after do completed in %d/%d iterations",
+		spurious.Load(), iterations)
 }
 
 func BenchmarkWithTimeout(b *testing.B) {
