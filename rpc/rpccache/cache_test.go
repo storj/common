@@ -198,7 +198,7 @@ func TestCache_ShortExpirationEventuallyClears(t *testing.T) {
 		for _, ch := range chans {
 			select {
 			case <-ch:
-			default:
+			case <-time.After(2 * time.Second):
 				t.Error("some channel did not close")
 				return
 			}
