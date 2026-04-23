@@ -33,14 +33,14 @@ func TestCycle_Basic(t *testing.T) {
 			t.Parallel()
 			defer cycle.Close()
 
-			count := int64(0)
+			var count atomic.Int64
 
 			var group errgroup.Group
 
 			start := time.Now()
 
 			cycle.Start(ctx, &group, func(ctx context.Context) error {
-				atomic.AddInt64(&count, 1)
+				count.Add(1)
 				return nil
 			})
 
@@ -50,12 +50,12 @@ func TestCycle_Basic(t *testing.T) {
 				const expected = 10
 				cycle.Pause()
 
-				startingCount := atomic.LoadInt64(&count)
+				startingCount := count.Load()
 				for range expected - 1 {
 					cycle.Trigger()
 				}
 				cycle.TriggerWait()
-				countAfterTrigger := atomic.LoadInt64(&count)
+				countAfterTrigger := count.Load()
 
 				change := countAfterTrigger - startingCount
 				if expected != change {
@@ -65,7 +65,7 @@ func TestCycle_Basic(t *testing.T) {
 				cycle.Restart()
 				time.Sleep(3 * time.Second)
 
-				countAfterRestart := atomic.LoadInt64(&count)
+				countAfterRestart := count.Load()
 				if countAfterRestart == countAfterTrigger {
 					return errors.New("cycle has not restarted")
 				}
@@ -98,9 +98,9 @@ func TestCycle_MultipleStops(t *testing.T) {
 	ctx := context.Background()
 
 	var group errgroup.Group
-	var count int64
+	var count atomic.Int64
 	cycle.Start(ctx, &group, func(ctx context.Context) error {
-		atomic.AddInt64(&count, 1)
+		count.Add(1)
 		return nil
 	})
 
@@ -183,14 +183,14 @@ func TestCycle_Stop_EnsureLoopIsFinished(t *testing.T) {
 
 	ctx := context.Background()
 
-	var completed int64
+	var completed atomic.Int64
 	started := make(chan int)
 
 	go func() {
 		_ = cycle.Run(ctx, func(_ context.Context) error {
 			close(started)
 			time.Sleep(1 * time.Second)
-			atomic.StoreInt64(&completed, 1)
+			completed.Store(1)
 			return nil
 		})
 	}()
@@ -198,7 +198,7 @@ func TestCycle_Stop_EnsureLoopIsFinished(t *testing.T) {
 	<-started
 	cycle.Stop()
 
-	require.Equal(t, atomic.LoadInt64(&completed), int64(1))
+	require.Equal(t, completed.Load(), int64(1))
 }
 
 func TestCycle_TimeTriggered(t *testing.T) {

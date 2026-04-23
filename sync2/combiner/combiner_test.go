@@ -22,13 +22,13 @@ func TestCombiner(t *testing.T) {
 	ctx := testcontext.New(t)
 
 	const n = 1000
-	var total int64
+	var total atomic.Int64
 
 	q := combiner.New(ctx, combiner.Options[int64]{
 		Process: func(ctx context.Context, queue *combiner.Queue[int64]) {
 			for batch := range queue.Batches() {
 				for _, v := range batch {
-					atomic.AddInt64(&total, v)
+					total.Add(v)
 				}
 			}
 		},
@@ -52,7 +52,7 @@ func TestCombiner(t *testing.T) {
 	require.NoError(t, q.Wait(ctx))
 	q.Close()
 
-	require.Equal(t, expect, total)
+	require.Equal(t, expect, total.Load())
 }
 
 func TestCombiner_Stop(t *testing.T) {

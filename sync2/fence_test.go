@@ -23,14 +23,14 @@ func TestFence(t *testing.T) {
 
 	var group errgroup.Group
 	var fence sync2.Fence
-	var done int32
+	var done atomic.Int32
 
 	for range 10 {
 		group.Go(func() error {
 			if !fence.Wait(ctx) {
 				return errors.New("got false from Wait")
 			}
-			if atomic.LoadInt32(&done) == 0 {
+			if done.Load() == 0 {
 				return errors.New("fence not yet released")
 			}
 			return nil
@@ -42,7 +42,7 @@ func TestFence(t *testing.T) {
 
 	for range 3 {
 		group.Go(func() error {
-			atomic.StoreInt32(&done, 1)
+			done.Store(1)
 			fence.Release()
 			return nil
 		})

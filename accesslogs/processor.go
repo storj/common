@@ -84,7 +84,7 @@ type Processor struct {
 	// long as locking that happens during the timed flush is brief.
 	pendingWrites sync.RWMutex
 	parcels       sync.Map
-	globalSize    int64
+	globalSize    atomic.Int64
 }
 
 // Options define how Processor should be configured when initialized.
@@ -143,7 +143,7 @@ func (p *Processor) QueueEntry(store Storage, key Key, entry Entry) (err error) 
 
 	entrySize := entry.Size().Int() + lfSize
 
-	if g := atomic.LoadInt64(&p.globalSize); g+int64(entrySize) > p.globalLimit.Int64() {
+	if g := p.globalSize.Load(); g+int64(entrySize) > p.globalLimit.Int64() {
 		// NOTE(artur): this is a best-effort check; we could return an
 		// error here, but we would have to flush immediately afterward.
 		mon.Event("global_limit_exceeded")
@@ -186,7 +186,7 @@ func (p *Processor) QueueEntry(store Storage, key Key, entry Entry) (err error) 
 		return Error.Wrap(err)
 	}
 
-	mon.IntVal("globalLimit").Observe(atomic.AddInt64(&p.globalSize, int64(-shipped+entrySize)))
+	mon.IntVal("globalLimit").Observe(p.globalSize.Add(int64(-shipped + entrySize)))
 
 	return nil
 }
@@ -207,7 +207,7 @@ func (p *Processor) timedFlush(key Key, interval time.Duration) error {
 
 		shipped, err := parcel.flush(p.upload)
 
-		mon.IntVal("globalLimit").Observe(atomic.AddInt64(&p.globalSize, int64(-shipped)))
+		mon.IntVal("globalLimit").Observe(p.globalSize.Add(int64(-shipped)))
 		p.log.Debug("timed flush",
 			zap.String("public_project_id", key.PublicProjectID.String()),
 			zap.String("bucket", key.Bucket),

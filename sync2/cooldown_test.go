@@ -24,13 +24,13 @@ func TestCooldown_Basic(t *testing.T) {
 	cooldown := sync2.NewCooldown(10 * time.Second)
 	defer cooldown.Close()
 
-	count := int64(0)
+	var count atomic.Int64
 
 	completed := make(chan struct{})
 
 	var group errgroup.Group
 	cooldown.Start(ctx, &group, func(ctx context.Context) error {
-		atomic.AddInt64(&count, 1)
+		count.Add(1)
 		completed <- struct{}{}
 		return nil
 	})
@@ -50,7 +50,7 @@ func TestCooldown_Basic(t *testing.T) {
 	err := group.Wait()
 	require.NoError(t, err)
 
-	endCount := atomic.LoadInt64(&count)
+	endCount := count.Load()
 	require.Equal(t, int64(1), endCount)
 }
 
@@ -63,9 +63,9 @@ func TestCooldown_MultipleStops(t *testing.T) {
 	ctx := testcontext.New(t)
 
 	var group errgroup.Group
-	var count int64
+	var count atomic.Int64
 	cooldown.Start(ctx, &group, func(ctx context.Context) error {
-		atomic.AddInt64(&count, 1)
+		count.Add(1)
 		return nil
 	})
 
@@ -101,14 +101,14 @@ func TestCooldown_Stop_EnsureLoopIsFinished(t *testing.T) {
 
 	ctx := testcontext.New(t)
 
-	var completed int64
+	var completed atomic.Int64
 	started := make(chan int)
 
 	go func() {
 		_ = cooldown.Run(ctx, func(_ context.Context) error {
 			close(started)
 			time.Sleep(1 * time.Second)
-			atomic.StoreInt64(&completed, 1)
+			completed.Store(1)
 			return nil
 		})
 	}()
@@ -117,5 +117,5 @@ func TestCooldown_Stop_EnsureLoopIsFinished(t *testing.T) {
 	<-started
 	cooldown.Stop()
 
-	require.Equal(t, atomic.LoadInt64(&completed), int64(1))
+	require.Equal(t, completed.Load(), int64(1))
 }

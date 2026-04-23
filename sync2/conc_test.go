@@ -13,24 +13,24 @@ import (
 )
 
 func TestGo(t *testing.T) {
-	var a int32
+	var a atomic.Int32
 	wait := sync2.Go(
-		func() { atomic.AddInt32(&a, 1) },
-		func() { atomic.AddInt32(&a, 1) },
+		func() { a.Add(1) },
+		func() { a.Add(1) },
 	)
 	wait()
-	require.Equal(t, int32(2), a)
+	require.Equal(t, int32(2), a.Load())
 	wait()
-	require.Equal(t, int32(2), a)
+	require.Equal(t, int32(2), a.Load())
 }
 
 func TestParallel(t *testing.T) {
 	values := []int64{1, 3, 7}
 
-	total := int64(0)
+	var total atomic.Int64
 	sync2.Parallel(values, func(t int64) {
-		atomic.AddInt64(&total, t)
+		total.Add(t)
 	})
 
-	require.Equal(t, int64(11), total)
+	require.Equal(t, int64(11), total.Load())
 }

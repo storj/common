@@ -63,37 +63,37 @@ func TestThrottleBasic(t *testing.T) {
 	t.Parallel()
 
 	throttle := sync2.NewThrottle()
-	var stage int64
+	var stage atomic.Int64
 	c := make(chan error, 1)
 
 	// consumer
 	go func() {
 		consume, _ := throttle.ConsumeOrWait(4)
-		if v := atomic.LoadInt64(&stage); v != 1 || consume != 4 {
+		if v := stage.Load(); v != 1 || consume != 4 {
 			c <- fmt.Errorf("did not block in time: %d / %d", v, consume)
 			return
 		}
 
 		consume, _ = throttle.ConsumeOrWait(4)
-		if v := atomic.LoadInt64(&stage); v != 1 || consume != 4 {
+		if v := stage.Load(); v != 1 || consume != 4 {
 			c <- fmt.Errorf("did not block in time: %d / %d", v, consume)
 			return
 		}
-		atomic.AddInt64(&stage, 2)
+		stage.Add(2)
 		c <- nil
 	}()
 
 	// slowly produce
 	time.Sleep(time.Millisecond)
 	// set stage to 1
-	atomic.AddInt64(&stage, 1)
+	stage.Add(1)
 	_ = throttle.Produce(8)
 	// wait until consumer consumes twice
 	_ = throttle.WaitUntilBelow(3)
 	// wait slightly for updating stage
 	time.Sleep(time.Millisecond)
 
-	if v := atomic.LoadInt64(&stage); v != 3 {
+	if v := stage.Load(); v != 3 {
 		t.Fatalf("did not unblock in time: %d", v)
 	}
 

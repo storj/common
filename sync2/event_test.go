@@ -23,13 +23,13 @@ func TestEvent(t *testing.T) {
 
 	var group errgroup.Group
 	var event sync2.Event
-	var done int32
+	var done atomic.Int32
 
 	group.Go(func() error {
 		if !event.Wait(ctx) {
 			return errors.New("got false from Wait")
 		}
-		if atomic.LoadInt32(&done) == 0 {
+		if done.Load() == 0 {
 			return errors.New("event not yet signaled")
 		}
 		return nil
@@ -41,7 +41,7 @@ func TestEvent(t *testing.T) {
 
 	for range 3 {
 		group.Go(func() error {
-			atomic.StoreInt32(&done, 1)
+			done.Store(1)
 			event.Signal()
 			return nil
 		})

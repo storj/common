@@ -18,14 +18,14 @@ func TestLimiterLimiting(t *testing.T) {
 	const N, Limit = 1000, 10
 	ctx := context.Background()
 	limiter := sync2.NewLimiter(Limit)
-	counter := int32(0)
+	var counter atomic.Int32
 	for range N {
 		limiter.Go(ctx, func() {
-			if atomic.AddInt32(&counter, 1) > Limit {
+			if counter.Add(1) > Limit {
 				panic("limit exceeded")
 			}
 			time.Sleep(time.Millisecond)
-			atomic.AddInt32(&counter, -1)
+			counter.Add(-1)
 		})
 	}
 	limiter.Close()
@@ -39,7 +39,7 @@ func TestLimiterCanceling(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	counter := int32(0)
+	var counter atomic.Int32
 
 	waitForCancel := make(chan struct{}, N)
 	block := make(chan struct{})
@@ -48,7 +48,7 @@ func TestLimiterCanceling(t *testing.T) {
 	go func() {
 		for range N {
 			limiter.Go(ctx, func() {
-				if atomic.AddInt32(&counter, 1) > Limit {
+				if counter.Add(1) > Limit {
 					panic("limit exceeded")
 				}
 
@@ -67,7 +67,7 @@ func TestLimiterCanceling(t *testing.T) {
 	close(block)
 
 	limiter.Close()
-	if counter > Limit {
+	if counter.Load() > Limit {
 		t.Fatal("too many times run")
 	}
 

@@ -27,10 +27,10 @@ func TestReadCache(t *testing.T) {
 
 	start := time.Now()
 
-	refresh := int64(0)
+	var refresh atomic.Int64
 	cache, err := sync2.NewReadCache(2*time.Second, 5*time.Second,
 		func(ctx context.Context) (int64, error) {
-			return atomic.AddInt64(&refresh, 1), nil
+			return refresh.Add(1), nil
 		})
 	require.NoError(t, err)
 
