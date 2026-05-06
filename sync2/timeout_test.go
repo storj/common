@@ -4,7 +4,6 @@
 package sync2_test
 
 import (
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -75,34 +74,44 @@ func TestWithTimeout_Fail(t *testing.T) {
 	require.Equal(t, timeoutResult, 1)
 }
 
-func TestWithTimeout_NoOnTimeoutAfterDo(t *testing.T) {
-	t.Parallel()
+// TestWithTimeout_Panic confirms that panics that occur within the goroutine
+// executing the task callback are surfaced to the caller.
+func TestWithTimeout_Panic(t *testing.T) {
+	panicValue := "panicked"
 
-	// Force the race window by making do's completion collide with the timer's
-	// deadline: do sleeps for `timeout` so it returns at roughly the same
-	// instant the timer fires. With the pre-CAS implementation, if the timer
-	// expires between do returning and the deferred t.Stop(), onTimeout runs
-	// spuriously after do has already completed (this is the piecestore bug:
-	// a successful Send followed by the timeout callback cancelling the
-	// shared ctx). The fix must ensure onTimeout never observes a completed
-	// do.
-	const timeout = time.Millisecond
-	const iterations = 200
-	var spurious atomic.Int32
-	for i := 0; i < iterations; i++ {
-		var doDone atomic.Bool
-		sync2.WithTimeout(timeout, func() {
-			time.Sleep(timeout)
-			doDone.Store(true)
-		}, func() {
-			if doDone.Load() {
-				spurious.Add(1)
-			}
+	t.Run("Panic before timeout", func(t *testing.T) {
+		require.PanicsWithValue(t, panicValue, func() {
+			sync2.WithTimeout(time.Second, func() {
+				time.Sleep(time.Millisecond * 30)
+				panic(panicValue)
+			}, func() {})
 		})
-	}
-	require.Zero(t, spurious.Load(),
-		"onTimeout ran after do completed in %d/%d iterations",
-		spurious.Load(), iterations)
+	})
+
+	t.Run("Panic after timeout", func(t *testing.T) {
+		ch := make(chan struct{})
+		require.PanicsWithValue(t, panicValue, func() {
+			sync2.WithTimeout(time.Second, func() {
+				<-ch
+				panic(panicValue)
+			}, func() {
+				close(ch)
+			})
+		})
+	})
+
+	t.Run("Task panic takes precedence over timeout panic", func(t *testing.T) {
+		ch := make(chan struct{})
+		require.PanicsWithValue(t, panicValue, func() {
+			sync2.WithTimeout(time.Second, func() {
+				<-ch
+				panic(panicValue)
+			}, func() {
+				close(ch)
+				panic("panicked in timeout callback")
+			})
+		})
+	})
 }
 
 func BenchmarkWithTimeout(b *testing.B) {

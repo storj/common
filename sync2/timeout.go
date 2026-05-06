@@ -4,37 +4,40 @@
 package sync2
 
 import (
-	"sync/atomic"
 	"time"
 )
 
-// WithTimeout calls `do` and when the timeout is reached before `do`
-// returns, it'll call `onTimeout` concurrently.
+// WithTimeout calls `do` concurrently and waits for it to complete. If the timeout
+// is reached before `do` returns, `onTimeout` will be called; otherwise, `onTimeout`
+// will not be called.
 //
-// If `do` returns at roughly the same instant the timer fires, exactly one
-// of them wins: either `do`'s completion stops the timer and `onTimeout`
-// is not called, or `onTimeout` runs and `do`'s subsequent return does not
-// suppress it. This prevents a successful `do` from being followed by a
-// spurious `onTimeout` call that can poison shared state (e.g. cancel a
-// context that downstream operations still depend on).
-//
-// When WithTimeout returns it's guaranteed to not call onTimeout.
+// Avoid attempting to detect whether a timeout has occurred from within `do`.
+// Because `do` runs concurrently with the timeout timer, it may complete at the
+// same time as the timeout timer expires, making detection within `do` unreliable.
+// Logic specific to the timeout should instead be placed in `onTimeout`.
 func WithTimeout(timeout time.Duration, do, onTimeout func()) {
-	// state transitions: 0 (pending) -> 1 (do completed) OR 0 -> 2 (timed out).
-	var state atomic.Int32
-	done := make(chan struct{})
-	t := time.AfterFunc(timeout, func() {
-		defer close(done)
-		if state.CompareAndSwap(0, 2) {
-			onTimeout()
-		}
-	})
-	defer func() {
-		if state.CompareAndSwap(0, 1) {
-			t.Stop()
-			return
-		}
-		<-done
+	done := make(chan any)
+	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				done <- err
+			}
+			close(done)
+		}()
+		do()
 	}()
-	do()
+
+	select {
+	case err, ok := <-done:
+		if ok {
+			panic(err)
+		}
+	case <-time.After(timeout):
+		defer func() {
+			if err, ok := <-done; ok {
+				panic(err)
+			}
+		}()
+		onTimeout()
+	}
 }
