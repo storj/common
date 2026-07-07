@@ -8375,6 +8375,22 @@
                 "integer": 1
               }
             ]
+          },
+          {
+            "name": "StorageMethod",
+            "enum_fields": [
+              {
+                "name": "STORAGE_METHOD_UNSPECIFIED"
+              },
+              {
+                "name": "STORAGE_METHOD_PIECESTORE",
+                "integer": 1
+              },
+              {
+                "name": "STORAGE_METHOD_HASHSTORE",
+                "integer": 2
+              }
+            ]
           }
         ],
         "messages": [
@@ -8691,6 +8707,12 @@
                 "id": 1,
                 "name": "missing",
                 "type": "uint32",
+                "is_repeated": true
+              },
+              {
+                "id": 2,
+                "name": "storage_method",
+                "type": "StorageMethod",
                 "is_repeated": true
               }
             ]
