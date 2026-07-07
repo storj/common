@@ -285,11 +285,8 @@ func comparePre(a, b []PrereleaseVersion) int {
 		return -1
 	}
 
-	minLen := aLen
-	if bLen < minLen {
-		minLen = bLen
-	}
-	for i := 0; i < minLen; i++ {
+	minLen := min(bLen, aLen)
+	for i := range minLen {
 		if c := a[i].Compare(b[i]); c != 0 {
 			return c
 		}

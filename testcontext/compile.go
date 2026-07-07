@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 // Compile compiles the specified package and returns the executable name.
@@ -90,10 +91,11 @@ func (ctx *Context) CompileAt(workDir, pkg string, preArgs ...string) string {
 func (ctx *Context) CompileWithLDFlagsX(pkg string, ldFlagsX map[string]string) string {
 	ctx.test.Helper()
 
-	var ldFlags = "-s -w"
+	var ldFlags strings.Builder
+	ldFlags.WriteString("-s -w")
 	for key, value := range ldFlagsX {
-		ldFlags += (" -X " + key + "=" + value)
+		ldFlags.WriteString((" -X " + key + "=" + value))
 	}
 
-	return ctx.Compile(pkg, "-ldflags", ldFlags)
+	return ctx.Compile(pkg, "-ldflags", ldFlags.String())
 }

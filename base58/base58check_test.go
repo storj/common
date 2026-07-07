@@ -6,6 +6,7 @@ package base58_test
 
 import (
 	"errors"
+	"strings"
 	"testing"
 
 	"storj.io/common/base58"
@@ -58,10 +59,10 @@ func TestBase58Check(t *testing.T) {
 	}
 	// case 2: invalid formats (string lengths below 5 mean the version byte and/or the checksum
 	// bytes are missing).
-	testString := ""
+	var testString strings.Builder
 	for range 4 {
-		testString += "x"
-		_, _, err = base58.CheckDecode(testString)
+		testString.WriteString("x")
+		_, _, err = base58.CheckDecode(testString.String())
 		if !errors.Is(err, base58.ErrInvalidFormat) {
 			t.Error("Checkdecode test failed, expected ErrInvalidFormat")
 		}

@@ -5,6 +5,7 @@ package version
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -89,26 +90,26 @@ func TestParseSemVer(t *testing.T) {
 				for _, p := range v.Pre {
 					preParts = append(preParts, p.String())
 				}
-				got := ""
+				var got strings.Builder
 				for i, p := range preParts {
 					if i > 0 {
-						got += "."
+						got.WriteString(".")
 					}
-					got += p
+					got.WriteString(p)
 				}
-				assert.Equal(t, tt.pre, got)
+				assert.Equal(t, tt.pre, got.String())
 			}
 
 			// Verify build round-trips correctly.
 			if tt.build != "" {
-				got := ""
+				var got strings.Builder
 				for i, b := range v.Build {
 					if i > 0 {
-						got += "."
+						got.WriteString(".")
 					}
-					got += b
+					got.WriteString(b)
 				}
-				assert.Equal(t, tt.build, got)
+				assert.Equal(t, tt.build, got.String())
 			}
 		})
 	}
@@ -186,15 +187,15 @@ func TestSemverCompareHelpers(t *testing.T) {
 	b, err := ParseSemVer("2.0.0")
 	require.NoError(t, err)
 
-	assert.True(t, a.LT(b))
-	assert.True(t, a.LE(b))
-	assert.False(t, a.GT(b))
-	assert.False(t, a.GE(b))
-	assert.False(t, a.EQ(b))
+	assert.True(t, a.Less(b))
+	assert.True(t, a.LessOrEqual(b))
+	assert.False(t, a.Greater(b))
+	assert.False(t, a.GreaterOrEqual(b))
+	assert.False(t, a.Equal(b))
 
-	assert.True(t, a.EQ(a))
-	assert.True(t, a.LE(a))
-	assert.True(t, a.GE(a))
+	assert.True(t, a.Equal(a)) //nolint:gocritic // intentional reflexivity check
+	assert.True(t, a.LessOrEqual(a))
+	assert.True(t, a.GreaterOrEqual(a))
 }
 
 func TestSemverJSON(t *testing.T) {
