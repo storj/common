@@ -7,7 +7,7 @@ option go_package = "storj.io/common/pb";
 package metainfo;
 
 import "encryption.proto";
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "node.proto";
@@ -93,7 +93,7 @@ message Bucket {
     bytes                  name = 1;
     encryption.CipherSuite path_cipher = 2;
 
-    google.protobuf.Timestamp created_at = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp created_at = 3 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 
     int64                           default_segment_size = 4;
     pointerdb.RedundancyScheme      default_redundancy_scheme = 5;
@@ -105,7 +105,7 @@ message BucketListItem {
     bytes             name = 1;
     bytes             user_agent = 3;
 
-    google.protobuf.Timestamp created_at = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp created_at = 2 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 }
 
 message CreateBucketRequest {
@@ -327,7 +327,7 @@ message EdgeUrlOverrides {
 message ProjectInfoResponse {
     bytes project_salt = 1;
     bytes project_public_id = 2;
-    google.protobuf.Timestamp project_created_at = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp project_created_at = 4 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     EdgeUrlOverrides edge_url_overrides = 3;
 }
 
@@ -343,7 +343,7 @@ message Retention {
     }
 
     Mode                      mode           = 1;
-    google.protobuf.Timestamp retain_until   = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp retain_until   = 2 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 }
 
 enum ObjectChecksumAlgorithm {
@@ -375,12 +375,12 @@ message Object {
     bytes  object_version = 19;
     Status status         = 4;
 
-    bytes  stream_id = 5 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes  stream_id = 5 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
 
-    google.protobuf.Timestamp created_at = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    google.protobuf.Timestamp expires_at = 8 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp created_at = 6 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
+    google.protobuf.Timestamp expires_at = 8 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 
-    bytes encrypted_metadata_nonce         = 9 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_nonce         = 9 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_metadata               = 10;
     bytes encrypted_metadata_encrypted_key = 17;
     bytes encrypted_etag                   = 22;
@@ -397,7 +397,10 @@ message Object {
     // retention is omitted if the object has no retention period or the request lacks the permission to read it.
     Retention                 retention  = 20;
     // legal_hold is omitted if the request lacks the permission to read the object's legal hold status.
-    google.protobuf.BoolValue legal_hold = 21;
+    google.protobuf.BoolValue legal_hold = 21 [
+        (pico.field).custom_type = "bool",
+        (pico.field).custom_serialize = "storj.io/picobuf/picoconv.BoolValue"
+    ];
 
     // total_size of object.
     int64 total_size  = 14;
@@ -416,12 +419,12 @@ message BeginObjectRequest {
     bytes  encrypted_object_key = 2;
     int32  version = 3; // deprecated
 
-    google.protobuf.Timestamp expires_at = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp expires_at = 4 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 
     pointerdb.RedundancyScheme      redundancy_scheme = 7; // can be zero
     encryption.EncryptionParameters encryption_parameters = 8; // can be zero
 
-    bytes encrypted_metadata_nonce = 9 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_nonce = 9 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_metadata = 10;
     bytes encrypted_metadata_encrypted_key = 11;
     bytes encrypted_etag                   = 14;
@@ -442,7 +445,7 @@ message BeginObjectResponse {
     bytes  encrypted_object_key = 2;
     int32  version = 3; // deprecated
 
-    bytes  stream_id = 4 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes  stream_id = 4 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
 
     pointerdb.RedundancyScheme      redundancy_scheme = 5;
     encryption.EncryptionParameters encryption_parameters = 6;
@@ -451,14 +454,14 @@ message BeginObjectResponse {
 message CommitObjectRequest {
     RequestHeader header = 15;
 
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
 
     // skip_override_encrypted_metadata is used to control if we want to override metadata on commit
     // message which can lead to overriding existing metadata. We need to have flag where default (false)
     // value will be backward compatible with old uplinks, default false means metadata will be always
     // set by older uplinks.
     bool  skip_override_encrypted_metadata = 5;
-    bytes encrypted_metadata_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_nonce = 2 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_metadata = 3; // TODO: set maximum size limit
     bytes encrypted_metadata_encrypted_key = 4;
     bytes encrypted_etag                   = 7;
@@ -635,10 +638,10 @@ message ObjectListItem {
     Object.Status status  = 3;
     bool   is_latest = 13;
 
-    google.protobuf.Timestamp created_at = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    google.protobuf.Timestamp expires_at = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp created_at = 4 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
+    google.protobuf.Timestamp expires_at = 6 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 
-    bytes encrypted_metadata_nonce = 7 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_nonce = 7 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_metadata_encrypted_key = 11;
     bytes encrypted_metadata       = 8;
     bytes encrypted_etag           = 14;
@@ -650,7 +653,7 @@ message ObjectListItem {
     // plain_size is 0 for migrated objects.
     int64 plain_size = 10;
 
-    bytes stream_id = 9 [(gogoproto.customtype) = "StreamID"];
+    bytes stream_id = 9 [(pico.field).custom_type = "storj.io/common/storj.StreamID"];
 }
 
 message ObjectListItemIncludes {
@@ -680,19 +683,19 @@ message BeginDeleteObjectRequest {
     int32 version = 3; // deprecated
     bytes object_version = 6;
     int32 status = 4;
-    bytes stream_id = 5 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = true];
+    bytes stream_id = 5 [(pico.field).custom_type = "storj.io/common/storj.StreamID"];
     bool bypass_governance_retention = 7;
 }
 
 message BeginDeleteObjectResponse {
-    bytes  stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes  stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
     Object object = 2;
 }
 
 message FinishDeleteObjectRequest {
     RequestHeader header = 15;
 
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
 }
 
 message FinishDeleteObjectResponse {
@@ -762,11 +765,11 @@ message GetPendingObjectMetadataRequest {
 
     bytes bucket               = 1;
     bytes encrypted_object_key = 2;
-    bytes stream_id            = 3 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id            = 3 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
 }
 
 message GetPendingObjectMetadataResponse {
-    bytes encrypted_metadata_nonce         = 1 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_nonce         = 1 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_metadata_encrypted_key = 2;
     bytes encrypted_metadata               = 3;
     bytes encrypted_etag                   = 4;
@@ -797,7 +800,7 @@ message UpdateObjectMetadataRequest {
     int32 version = 3; // deprecated
     bytes object_version = 8;
 
-    bytes stream_id = 7 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 7 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
 
     // set_encrypted_etag indicates whether the encrypted ETag should be updated. If includes is provided,
     // set_encrypted_etag is ignored.
@@ -815,7 +818,7 @@ message UpdateObjectMetadataRequest {
     // unencryptable if new encryption parameters are applied.
     ObjectMetadataIncludes includes = 11;
 
-    bytes encrypted_metadata_nonce = 4 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_nonce = 4 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_metadata = 5; // TODO: set maximum size limit
     bytes encrypted_metadata_encrypted_key = 6;
     /* optional */ bytes encrypted_etag = 10;
@@ -885,7 +888,7 @@ message GetObjectLegalHoldResponse {
 // TODO this needs to be removed BUT unfortunately libuplink is using it and
 // we need to keep this for backward compatibility
 message SatStreamID {
-    google.protobuf.Timestamp creation_date = 5  [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp creation_date = 5  [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 }
 
 //---------------------------
@@ -893,10 +896,10 @@ message SatStreamID {
 //---------------------------
 
 message Segment {
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
     SegmentPosition position = 2;
 
-    bytes encrypted_key_nonce = 3 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_key_nonce = 3 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_key = 4;
 
     int64 size_encrypted_data = 5; // refers to segment size not piece size
@@ -907,7 +910,7 @@ message Segment {
 
 message Piece {
     int32 piece_num = 1;
-    bytes node = 2[(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes node = 2[(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
 }
 
 message SegmentPosition {
@@ -918,7 +921,7 @@ message SegmentPosition {
 message BeginSegmentRequest {
     RequestHeader header = 15;
 
-    bytes           stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes           stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
     SegmentPosition position = 2;
 
     int64 max_order_limit = 3;
@@ -928,9 +931,9 @@ message BeginSegmentRequest {
 }
 
 message BeginSegmentResponse {
-    bytes                        segment_id = 1 [(gogoproto.customtype) = "SegmentID", (gogoproto.nullable) = false];
+    bytes                        segment_id = 1 [(pico.field).custom_type = "storj.io/common/storj.SegmentID", (pico.field).always_present = true];
     repeated AddressedOrderLimit addressed_limits = 2;
-    bytes                        private_key = 3 [(gogoproto.customtype) = "PiecePrivateKey", (gogoproto.nullable) = false];
+    bytes                        private_key = 3 [(pico.field).custom_type = "storj.io/common/storj.PiecePrivateKey", (pico.field).always_present = true];
     pointerdb.RedundancyScheme   redundancy_scheme = 4;
     CohortRequirements           cohort_requirements = 5;
 }
@@ -960,21 +963,21 @@ message CohortRequirements {
 message RetryBeginSegmentPiecesRequest {
     RequestHeader header = 15;
 
-    bytes           segment_id = 1 [(gogoproto.customtype) = "SegmentID", (gogoproto.nullable) = false];
+    bytes           segment_id = 1 [(pico.field).custom_type = "storj.io/common/storj.SegmentID", (pico.field).always_present = true];
     repeated int32  retry_piece_numbers = 2;
 }
 
 message RetryBeginSegmentPiecesResponse {
-    bytes                        segment_id = 1 [(gogoproto.customtype) = "SegmentID", (gogoproto.nullable) = false];
+    bytes                        segment_id = 1 [(pico.field).custom_type = "storj.io/common/storj.SegmentID", (pico.field).always_present = true];
     repeated AddressedOrderLimit addressed_limits = 2;
 }
 
 message CommitSegmentRequest {
     RequestHeader header = 15;
 
-    bytes segment_id = 1 [(gogoproto.customtype) = "SegmentID", (gogoproto.nullable) = false];
+    bytes segment_id = 1 [(pico.field).custom_type = "storj.io/common/storj.SegmentID", (pico.field).always_present = true];
 
-    bytes encrypted_key_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_key_nonce = 2 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_key = 3;
 
     int64 size_encrypted_data = 4; // refers to segment size not piece size
@@ -988,7 +991,7 @@ message CommitSegmentRequest {
 
 message SegmentPieceUploadResult {
     int32               piece_num = 1;
-    bytes               node_id = 2 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes               node_id = 2 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
     orders.PieceHash    hash = 3;
 }
 
@@ -999,10 +1002,10 @@ message CommitSegmentResponse {
 message MakeInlineSegmentRequest {
     RequestHeader header = 15;
 
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
     SegmentPosition position = 2;
 
-    bytes encrypted_key_nonce = 3 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_key_nonce = 3 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_key = 4;
 
     bytes encrypted_inline_data = 5;
@@ -1017,26 +1020,26 @@ message MakeInlineSegmentResponse {}
 message BeginDeleteSegmentRequest {
     RequestHeader header = 15;
 
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
     SegmentPosition position = 2;
 }
 
 message BeginDeleteSegmentResponse {
-    bytes                           segment_id = 1 [(gogoproto.customtype) = "SegmentID", (gogoproto.nullable) = false];
+    bytes                           segment_id = 1 [(pico.field).custom_type = "storj.io/common/storj.SegmentID", (pico.field).always_present = true];
     repeated AddressedOrderLimit    addressed_limits = 2;
-    bytes                           private_key = 3 [(gogoproto.customtype) = "PiecePrivateKey", (gogoproto.nullable) = false];
+    bytes                           private_key = 3 [(pico.field).custom_type = "storj.io/common/storj.PiecePrivateKey", (pico.field).always_present = true];
 }
 
 message FinishDeleteSegmentRequest {
     RequestHeader header = 15;
 
-    bytes segment_id = 1 [(gogoproto.customtype) = "SegmentID", (gogoproto.nullable) = false];
+    bytes segment_id = 1 [(pico.field).custom_type = "storj.io/common/storj.SegmentID", (pico.field).always_present = true];
     repeated SegmentPieceDeleteResult results = 2;
 }
 
 message SegmentPieceDeleteResult {
     int32               piece_num = 1;
-    bytes               node_id = 2 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes               node_id = 2 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
     orders.PieceHash    hash = 3;
 }
 
@@ -1045,7 +1048,7 @@ message FinishDeleteSegmentResponse {}
 message ListSegmentsRequest {
     RequestHeader header = 15;
 
-    bytes stream_id                 = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id                 = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
     SegmentPosition cursor_position = 2;
     int32 limit                     = 3;
     // If range is included in the request, the response will only include
@@ -1065,17 +1068,17 @@ message SegmentListItem {
     int64 plain_size = 2;
     // plain_offset is 0 for migrated objects.
     int64 plain_offset = 4;
-    google.protobuf.Timestamp created_at = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp created_at = 3 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     bytes encrypted_e_tag = 5;
     bytes encrypted_checksum = 8;
-    bytes encrypted_key_nonce = 6 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_key_nonce = 6 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_key = 7;
 }
 
 message DownloadSegmentRequest {
     RequestHeader header = 15;
 
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
     SegmentPosition cursor_position = 2;
 
     // see DownloadObjectRequest.desired_nodes for more explanation.
@@ -1087,10 +1090,10 @@ message DownloadSegmentRequest {
 }
 
 message DownloadSegmentResponse {
-    bytes segment_id = 1 [(gogoproto.customtype) = "SegmentID", (gogoproto.nullable) = false];
+    bytes segment_id = 1 [(pico.field).custom_type = "storj.io/common/storj.SegmentID", (pico.field).always_present = true];
 
     repeated AddressedOrderLimit addressed_limits = 2;
-    bytes                        private_key = 3 [(gogoproto.customtype) = "PiecePrivateKey", (gogoproto.nullable) = false];
+    bytes                        private_key = 3 [(pico.field).custom_type = "storj.io/common/storj.PiecePrivateKey", (pico.field).always_present = true];
 
     bytes encrypted_inline_data = 4;
     // plain_offset is 0 for migrated objects.
@@ -1099,7 +1102,7 @@ message DownloadSegmentResponse {
     int64 plain_size = 12;
     // segment_size is encrypted_size.
     int64 segment_size = 5;
-    bytes encrypted_key_nonce = 6 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_key_nonce = 6 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_key = 7;
     pointerdb.RedundancyScheme redundancy_scheme = 9;
 
@@ -1111,7 +1114,7 @@ message DownloadSegmentResponse {
 message DeletePartRequest {
     RequestHeader header = 15;
 
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
     int32 part_number = 2;
 }
 
@@ -1274,9 +1277,9 @@ message BeginMoveObjectRequest {
 }
 
 message BeginMoveObjectResponse {
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
 
-    bytes encrypted_metadata_key_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_key_nonce = 2 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_metadata_key = 3;
     repeated EncryptedKeyAndNonce segment_keys = 4;
     encryption.EncryptionParameters encryption_parameters = 5;
@@ -1285,11 +1288,11 @@ message BeginMoveObjectResponse {
 message FinishMoveObjectRequest {
     RequestHeader header = 15;
 
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
 
     bytes new_bucket = 6;
     bytes new_encrypted_object_key = 2;
-    bytes new_encrypted_metadata_key_nonce = 3 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes new_encrypted_metadata_key_nonce = 3 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes new_encrypted_metadata_key = 4;
     repeated EncryptedKeyAndNonce new_segment_keys = 5;
 
@@ -1314,9 +1317,9 @@ message BeginCopyObjectRequest {
 // The satellite returns metadata of the source object,
 // so that the client can re-encrypt it and re-submit it for the destination object.
 message BeginCopyObjectResponse {
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
 
-    bytes encrypted_metadata_key_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_metadata_key_nonce = 2 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_metadata_key = 3;
     repeated EncryptedKeyAndNonce segment_keys = 4;
     encryption.EncryptionParameters encryption_parameters = 5;
@@ -1330,7 +1333,7 @@ message FinishCopyObjectRequest {
     RequestHeader header = 15;
 
     // Stream ID of source object
-    bytes stream_id = 1 [(gogoproto.customtype) = "StreamID", (gogoproto.nullable) = false];
+    bytes stream_id = 1 [(pico.field).custom_type = "storj.io/common/storj.StreamID", (pico.field).always_present = true];
 
     // Newly encrypted data of the copy destination
     bytes new_bucket = 2;
@@ -1340,7 +1343,7 @@ message FinishCopyObjectRequest {
     Retention retention = 10;
     bool legal_hold = 11;
 
-    bytes new_encrypted_metadata_key_nonce = 4 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes new_encrypted_metadata_key_nonce = 4 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes new_encrypted_metadata_key = 5;
 
     // override_metadata indicates whether the copied object's metadata should be entirely sourced
@@ -1367,7 +1370,7 @@ message FinishCopyObjectResponse {
 
 message EncryptedKeyAndNonce {
     SegmentPosition position = 1;
-    bytes encrypted_key_nonce = 2 [(gogoproto.customtype) = "Nonce", (gogoproto.nullable) = false];
+    bytes encrypted_key_nonce = 2 [(pico.field).custom_type = "storj.io/common/storj.Nonce", (pico.field).always_present = true];
     bytes encrypted_key = 3;
 }
 
@@ -1380,7 +1383,7 @@ message AccountLicensesRequest {
 
 message AccountLicense {
     string type = 1;
-    google.protobuf.Timestamp expires_at = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp expires_at = 2 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     bytes key = 3;
 }
 

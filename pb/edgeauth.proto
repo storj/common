@@ -4,7 +4,7 @@
 syntax = "proto3";
 option go_package = "storj.io/common/pb";
 
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 
 // Service which stores credentials for Linksharing and the Multi-Tenant S3 Gateway.
@@ -40,5 +40,5 @@ message EdgeRegisterAccessResponse {
 
 	// Restricted expiration date of the access grant.
 	// It is set if the original expiration date surpassed the free-tier limit.
-	google.protobuf.Timestamp free_tier_restricted_expiration = 4 [(gogoproto.stdtime) = true];
+	google.protobuf.Timestamp free_tier_restricted_expiration = 4 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp"];
 }

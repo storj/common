@@ -7,7 +7,7 @@ option go_package = "storj.io/common/pb";
 package pointerdb;
 
 import "google/protobuf/timestamp.proto";
-import "gogo.proto";
+import "pico.proto";
 import "orders.proto";
 
 message RedundancyScheme {
@@ -28,13 +28,13 @@ message RedundancyScheme {
 
 message RemotePiece {
   int32 piece_num = 1;
-  bytes node_id = 2 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+  bytes node_id = 2 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
   orders.PieceHash hash = 3;
 }
 
 message RemoteSegment {
   RedundancyScheme redundancy = 1;
-  bytes root_piece_id = 2 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+  bytes root_piece_id = 2 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
   repeated RemotePiece remote_pieces = 3;
   bytes merkle_root = 4; // root hash of the hashes of all of these pieces
 }
@@ -51,12 +51,12 @@ message Pointer {
   RemoteSegment remote = 4;
   int64 segment_size = 5;
 
-  google.protobuf.Timestamp creation_date = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-  google.protobuf.Timestamp expiration_date = 7 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  google.protobuf.Timestamp creation_date = 6 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
+  google.protobuf.Timestamp expiration_date = 7 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 
   bytes metadata = 8;
 
-  google.protobuf.Timestamp last_repaired = 9 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  google.protobuf.Timestamp last_repaired = 9 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
   int32 repair_count = 10;
   bool piece_hashes_verified = 11;
 }
@@ -67,7 +67,7 @@ message ListResponse {
     Pointer pointer = 2;
     bool    is_prefix = 3;
   }
-  
+
   repeated Item items = 1;
   bool more = 2;
 }

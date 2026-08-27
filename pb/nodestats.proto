@@ -6,7 +6,7 @@ option go_package = "storj.io/common/pb";
 
 package nodestats;
 
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 
 service NodeStats {
@@ -31,19 +31,19 @@ message GetStatsRequest {}
 message GetStatsResponse {
     ReputationStats uptime_check = 1;
     ReputationStats audit_check = 2;
-    google.protobuf.Timestamp disqualified = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
-    google.protobuf.Timestamp suspended = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
-    google.protobuf.Timestamp joined_at = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    google.protobuf.Timestamp offline_suspended = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
+    google.protobuf.Timestamp disqualified = 3 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp"];
+    google.protobuf.Timestamp suspended = 4 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp"];
+    google.protobuf.Timestamp joined_at = 5 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
+    google.protobuf.Timestamp offline_suspended = 6 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp"];
     double online_score = 7;
-    google.protobuf.Timestamp offline_under_review = 8 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
-    google.protobuf.Timestamp vetted_at = 10 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
+    google.protobuf.Timestamp offline_under_review = 8 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp"];
+    google.protobuf.Timestamp vetted_at = 10 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp"];
     AuditHistory audit_history = 9;
 }
 
 message DailyStorageUsageRequest {
-    google.protobuf.Timestamp from = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    google.protobuf.Timestamp to = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp from = 1 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
+    google.protobuf.Timestamp to = 2 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 }
 
 message DailyStorageUsageResponse {
@@ -51,13 +51,13 @@ message DailyStorageUsageResponse {
         // at_rest_total is the sum of all at_rest_total per each metainfo loop for the day
         double at_rest_total = 1;
         // timestamp represents one tally day
-        google.protobuf.Timestamp timestamp = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+        google.protobuf.Timestamp timestamp = 2 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
         // interval_end_time represents the timestamp for the last tally run time
         //  (i.e. last interval_end_time) for the day
-        google.protobuf.Timestamp interval_end_time = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+        google.protobuf.Timestamp interval_end_time = 3 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     }
 
-    bytes node_id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes node_id = 1 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
     repeated StorageUsage daily_storage_usage = 2;
 }
 
@@ -76,7 +76,7 @@ message AuditHistory {
 }
 
 message AuditWindow {
-    google.protobuf.Timestamp window_start = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp window_start = 1 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     int32 online_count = 2;
     int32 total_count = 3;
 }

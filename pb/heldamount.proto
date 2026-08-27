@@ -4,7 +4,7 @@
 syntax = "proto3";
 option go_package = "storj.io/common/pb";
 
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 
 package heldamount;
@@ -17,13 +17,13 @@ service HeldAmount {
 }
 
 message GetHeldAmountRequest {
-    google.protobuf.Timestamp period = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp period = 1 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 }
 
 message GetHeldAmountResponse {
-    google.protobuf.Timestamp period = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    bytes node_id = 2 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
-    google.protobuf.Timestamp created_at = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp period = 1 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
+    bytes node_id = 2 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
+    google.protobuf.Timestamp created_at = 3 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     string  codes = 4;
     double  usage_at_rest = 5;
     int64   usage_get = 6;
@@ -52,13 +52,13 @@ message GetAllPaystubsResponse {
 }
 
 message GetPaymentRequest {
-    google.protobuf.Timestamp period = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp period = 1 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 }
 
 message GetPaymentResponse {
-    bytes node_id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
-    google.protobuf.Timestamp created_at = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    google.protobuf.Timestamp period = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    bytes node_id = 1 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
+    google.protobuf.Timestamp created_at = 2 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
+    google.protobuf.Timestamp period = 3 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     int64 amount = 4;
     string receipt = 5;
     string notes = 6;

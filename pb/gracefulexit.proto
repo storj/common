@@ -4,7 +4,7 @@
 syntax = "proto3";
 option go_package = "storj.io/common/pb";
 
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 import "metainfo.proto";
 import "orders.proto";
@@ -21,7 +21,7 @@ service SatelliteGracefulExit {
 message GracefulExitFeasibilityRequest {}
 
 message GracefulExitFeasibilityResponse {
-    google.protobuf.Timestamp joined_at = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp joined_at = 1 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     int32 months_required = 2;
     bool is_allowed = 3;
 }
@@ -30,11 +30,11 @@ message TransferSucceeded {
   orders.OrderLimit            original_order_limit    = 1;
   orders.PieceHash             original_piece_hash     = 2;
   orders.PieceHash             replacement_piece_hash  = 3;
-  bytes                        original_piece_id       = 4 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+  bytes                        original_piece_id       = 4 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
 }
 
 message TransferFailed {
-  bytes original_piece_id    = 1 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+  bytes original_piece_id    = 1 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
   enum Error {
       NOT_FOUND                 = 0;
       STORAGE_NODE_UNAVAILABLE  = 1;
@@ -55,26 +55,26 @@ message StorageNodeMessage {
 message NotReady {}
 
 message TransferPiece {
-  bytes original_piece_id    = 1 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
-  bytes private_key = 2 [(gogoproto.customtype) = "PiecePrivateKey", (gogoproto.nullable) = false];
+  bytes original_piece_id    = 1 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
+  bytes private_key = 2 [(pico.field).custom_type = "storj.io/common/storj.PiecePrivateKey", (pico.field).always_present = true];
 
   // addressed_order_limit contains the new piece id.
   metainfo.AddressedOrderLimit addressed_order_limit =3;
 }
 
 message DeletePiece {
-  bytes original_piece_id = 1 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+  bytes original_piece_id = 1 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
 }
 
 message ExitCompleted {
   // when everything is completed
   bytes exit_complete_signature = 1;
   // satellite who issued this exit completed
-  bytes satellite_id = 2 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+  bytes satellite_id = 2 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
   // storage node this exit completed was issued to
-  bytes node_id = 3 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+  bytes node_id = 3 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
   // timestamp when the exit completed
-  google.protobuf.Timestamp completed = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];  
+  google.protobuf.Timestamp completed = 4 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 }
 
 message ExitFailed {
@@ -87,11 +87,11 @@ message ExitFailed {
   bytes exit_failure_signature  = 1;
   Reason reason                 = 2;
   // satellite who issued this exit failed
-  bytes satellite_id = 3 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+  bytes satellite_id = 3 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
   // storage node this exit failed was issued to
-  bytes node_id = 4 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+  bytes node_id = 4 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
   // timestamp when the exit failed
-  google.protobuf.Timestamp failed = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];  
+  google.protobuf.Timestamp failed = 5 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 }
 
 message SatelliteMessage {

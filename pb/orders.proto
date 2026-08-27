@@ -6,7 +6,7 @@ option go_package = "storj.io/common/pb";
 
 package orders;
 
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 import "node.proto";
 
@@ -31,25 +31,25 @@ enum PieceHashAlgorithm {
 // OrderLimit is provided by satellite to execute specific action on storage node within some limits.
 message OrderLimit {
     // unique serial to avoid replay attacks
-    bytes serial_number = 1 [(gogoproto.customtype) = "SerialNumber", (gogoproto.nullable) = false];
+    bytes serial_number = 1 [(pico.field).custom_type = "storj.io/common/storj.SerialNumber", (pico.field).always_present = true];
     // satellite who issued this order limit allowing orderer to do the specified action
-    bytes satellite_id = 2 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes satellite_id = 2 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
     // uplink who requested or whom behalf the order limit to do an action
-    bytes deprecated_uplink_id = 3 [(gogoproto.customtype) = "NodeID"];
+    bytes deprecated_uplink_id = 3 [(pico.field).custom_type = "storj.io/common/storj.NodeID"];
     // public key that will be used to sign orders and piece hash
-    bytes uplink_public_key = 13 [(gogoproto.customtype) = "PiecePublicKey", (gogoproto.nullable) = false];
+    bytes uplink_public_key = 13 [(pico.field).custom_type = "storj.io/common/storj.PiecePublicKey", (pico.field).always_present = true];
     // storage node who can re claim the order limit specified by serial
-    bytes storage_node_id = 4 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes storage_node_id = 4 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
 
     // piece which is allowed to be touched
-    bytes piece_id = 5 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+    bytes piece_id = 5 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
     // limit in bytes how much can be changed
     int64  limit = 6;
     PieceAction action = 7;
 
-    google.protobuf.Timestamp piece_expiration = 8 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    google.protobuf.Timestamp order_expiration = 9 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    google.protobuf.Timestamp order_creation = 12 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp piece_expiration = 8 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
+    google.protobuf.Timestamp order_expiration = 9 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
+    google.protobuf.Timestamp order_creation = 12 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 
     bytes encrypted_metadata_key_id = 14;
     bytes encrypted_metadata = 15; // This refers to satellite/internalpb.OrderLimitMetadata
@@ -68,25 +68,25 @@ message OrderLimit {
 // signing, to handle some backwards compatibility considerations.
 message OrderLimitSigning {
     // unique serial to avoid replay attacks
-    bytes serial_number = 1 [(gogoproto.customtype) = "SerialNumber", (gogoproto.nullable) = false];
+    bytes serial_number = 1 [(pico.field).custom_type = "storj.io/common/storj.SerialNumber", (pico.field).always_present = true];
     // satellite who issued this order limit allowing orderer to do the specified action
-    bytes satellite_id = 2 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes satellite_id = 2 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
     // uplink who requested or whom behalf the order limit to do an action
-    bytes deprecated_uplink_id = 3 [(gogoproto.customtype) = "NodeID"];
+    bytes deprecated_uplink_id = 3 [(pico.field).custom_type = "storj.io/common/storj.NodeID"];
     // public key that will be used to sign orders and piece hash
-    bytes uplink_public_key = 13 [(gogoproto.customtype) = "PiecePublicKey"];
+    bytes uplink_public_key = 13 [(pico.field).custom_type = "storj.io/common/storj.PiecePublicKey"];
     // storage node who can re claimthe order limit specified by serial
-    bytes storage_node_id = 4 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes storage_node_id = 4 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
 
     // piece which is allowed to be touched
-    bytes piece_id = 5 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+    bytes piece_id = 5 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
     // limit in bytes how much can be changed
     int64  limit = 6;
     PieceAction action = 7;
 
-    google.protobuf.Timestamp piece_expiration = 8 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp order_expiration = 9 [(gogoproto.stdtime) = true];
-    google.protobuf.Timestamp order_creation = 12 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp piece_expiration = 8 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp"];
+    google.protobuf.Timestamp order_expiration = 9 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp"];
+    google.protobuf.Timestamp order_creation = 12 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp"];
 
     bytes encrypted_metadata_key_id = 14;
     bytes encrypted_metadata = 15;
@@ -100,7 +100,7 @@ message OrderLimitSigning {
 // Order is a one step of fullfilling Amount number of bytes from an OrderLimit with SerialNumber.
 message Order {
     // serial of the order limit that was signed
-    bytes serial_number = 1 [(gogoproto.customtype) = "SerialNumber", (gogoproto.nullable) = false];
+    bytes serial_number = 1 [(pico.field).custom_type = "storj.io/common/storj.SerialNumber", (pico.field).always_present = true];
     // amount to be signed for
     int64 amount = 2;
     // signature
@@ -115,7 +115,7 @@ message Order {
 // signing, to handle some backwards compatibility considerations.
 message OrderSigning {
     // serial of the order limit that was signed
-    bytes serial_number = 1 [(gogoproto.customtype) = "SerialNumber", (gogoproto.nullable) = false];
+    bytes serial_number = 1 [(pico.field).custom_type = "storj.io/common/storj.SerialNumber", (pico.field).always_present = true];
     // amount to be signed for
     int64 amount = 2;
     // signature
@@ -124,13 +124,13 @@ message OrderSigning {
 
 message PieceHash {
     // piece id
-    bytes piece_id = 1 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+    bytes piece_id = 1 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
     // hash of the piece that was/is uploaded
     bytes hash = 2;
     // size of uploaded piece
     int64 piece_size = 4;
     // timestamp when upload occurred
-    google.protobuf.Timestamp timestamp = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp timestamp = 5 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     // signature either satellite or storage node
     bytes signature = 3;
     // hash algorithm used
@@ -145,13 +145,13 @@ message PieceHash {
 // signing, to handle some backwards compatibility considerations.
 message PieceHashSigning {
     // piece id
-    bytes piece_id = 1 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+    bytes piece_id = 1 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
     // hash of the piece that was/is uploaded
     bytes hash = 2;
     // size of uploaded piece
     int64 piece_size = 4;
     // timestamp when upload occurred
-    google.protobuf.Timestamp timestamp = 5 [(gogoproto.stdtime) = true];
+    google.protobuf.Timestamp timestamp = 5 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp"];
     // signature either satellite or storage node
     bytes signature = 3;
     // hash algorithm used

@@ -6,7 +6,7 @@ option go_package = "storj.io/common/pb";
 
 package piecestore;
 
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 import "orders.proto";
 
@@ -114,7 +114,7 @@ message PieceDeleteResponse {
 }
 
 message DeletePiecesRequest {
-    repeated bytes piece_ids = 1 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+    repeated bytes piece_ids = 1 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
 }
 
 message DeletePiecesResponse {
@@ -125,7 +125,7 @@ message DeletePiecesResponse {
 // RetainRequest contains bloom filter. It's either sent together (time + filter) or in multiple chunks, where
 // first message contains time + first part of the filter, and the last part contains the hash (to double check if all pieces are arrived).
 message RetainRequest {
-    google.protobuf.Timestamp creation_date = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp creation_date = 1 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     bytes filter = 2;
     orders.PieceHashAlgorithm hash_algorithm = 3;
     bytes hash = 4;
@@ -152,18 +152,18 @@ message PieceHeader {
     orders.PieceHashAlgorithm hash_algorithm = 6;
 
     // timestamp when upload occurred, as given by the "timestamp" field in the original orders.PieceHash
-    google.protobuf.Timestamp creation_time = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp creation_time = 3 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     // signature from uplink over the original orders.PieceHash (the corresponding PieceHashSigning
     // is reconstructable using the piece id from the piecestore, the piece size from the
     // filesystem (minus the piece header size), and these (hash, upload_time, signature) fields).
     bytes signature = 4;
     // the OrderLimit authorizing storage of this piece, as signed by the satellite and sent by
     // the uplink
-    orders.OrderLimit order_limit = 5 [(gogoproto.nullable) = false];
+    orders.OrderLimit order_limit = 5 [(pico.field).always_present = true];
 }
 
 message ExistsRequest {
-    repeated bytes piece_ids = 1 [(gogoproto.customtype) = "PieceID", (gogoproto.nullable) = false];
+    repeated bytes piece_ids = 1 [(pico.field).custom_type = "storj.io/common/storj.PieceID", (pico.field).always_present = true];
 }
 
 // StorageMethod identifies which backend a piece is stored in.

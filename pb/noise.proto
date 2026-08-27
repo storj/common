@@ -6,7 +6,7 @@ option go_package = "storj.io/common/pb";
 
 package noise;
 
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 
 // NoiseProtocol represents the handshake pattern and cipher suite.
@@ -37,13 +37,13 @@ message NoiseKeyAttestation {
 
     // these two values are part of the signature.
     bytes noise_public_key = 4;
-    google.protobuf.Timestamp timestamp = 5 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp timestamp = 5 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 
     bytes signature = 6;
 
     // signers should fill this in, validators should ignore this field
     // and just use the node id computed by the cert chain.
-    bytes deprecated_node_id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes deprecated_node_id = 1 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
 }
 
 // NoiseSessionAttestation is a structure that shows the given Noise session
@@ -57,5 +57,5 @@ message NoiseSessionAttestation {
 
     // signers should fill this in, validators should ignore this field
     // and just use the node id computed by the cert chain.
-    bytes deprecated_node_id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes deprecated_node_id = 1 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
 }

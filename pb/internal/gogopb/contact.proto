@@ -1,0 +1,148 @@
+// Copyright (C) 2019 Storj Labs, Inc.
+// See LICENSE for copying information.
+
+syntax = "proto3";
+option go_package = "storj.io/common/pb/internal/gogopb";
+
+package contact;
+
+import "gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "node.proto";
+import "noise.proto";
+import "nodetags.proto";
+
+service Contact {
+    rpc PingNode(ContactPingRequest) returns (ContactPingResponse);
+}
+
+service Node {
+    rpc CheckIn(CheckInRequest) returns (CheckInResponse);
+    rpc PingMe(PingMeRequest) returns (PingMeResponse);
+    rpc GetTime(GetTimeRequest) returns (GetTimeResponse);
+    rpc AmnestyReport(AmnestyReportRequest) returns (AmnestyReportResponse);
+}
+
+message CheckInRequest {
+    string address = 1;
+    node.NodeVersion version = 2;
+    node.NodeCapacity capacity = 3;
+    node.NodeOperator operator = 4;
+
+    // CheckIn may happen over TLS, which means there is not necessarily an
+    // opportunity to use NoiseSessionAttestation instead of
+    // NoiseKeyAttestation.
+    noise.NoiseKeyAttestation noise_key_attestation = 5;
+
+    int32 debounce_limit = 6;
+
+    // features is a set of bit flags
+    uint64 features = 7;
+
+    // these must all be powers of two, since they are bitwise ORed into
+    // the features field.
+    enum Feature {
+        NO_FEATURES = 0;
+
+        TCP_FASTOPEN_ENABLED = 1;
+
+        HASHSTORE_FOR_NEW = 2;
+
+        HASHSTORE_MEMTBL = 4;
+    }
+
+    node.SignedNodeTagSets signed_tags = 8;
+}
+
+message HashstoreSettings {
+    bool active_migrate = 1;
+    bool passive_migrate = 2;
+    bool write_to_new = 3;
+    bool read_new_first = 4;
+    bool ttl_to_new = 5;
+}
+
+// Notification is a message from the satellite to the storage node operator.
+//
+// All fields are untrusted input: title, message and link_label must be
+// rendered as plain text, never as HTML.
+message Notification {
+    // stable identifier chosen by the satellite operator. Keys are scoped
+    // per satellite: the node's primary key is (satellite_id, key), so
+    // re-sending the same key updates the existing notification of the same
+    // satellite instead of creating a new one, and it never affects the
+    // notifications of other satellites.
+    string key = 1;
+    string title = 2;
+    string message = 3;
+    // optional link. Only absolute http:// or https:// URLs are allowed, the
+    // node must ignore any other scheme (e.g. javascript: or data:).
+    string link = 4;
+    string link_label = 5;
+}
+
+// NotificationSet is the full, current set of notifications of a satellite.
+//
+// It is wrapped in a message (instead of a plain repeated field) to make
+// presence explicit on the wire: proto3 cannot distinguish an absent repeated
+// field from an empty one.
+message NotificationSet {
+    // the node removes the notifications of this satellite whose key is not
+    // in the list, so an empty list retracts all of them.
+    repeated Notification notifications = 1;
+}
+
+message CheckInResponse {
+    bool ping_node_success = 1;
+    string ping_error_message = 2;
+    bool ping_node_success_quic = 3;
+    bool node_tag_success = 4;
+    string node_tag_error_message = 5;
+    HashstoreSettings hashstore_settings = 6;
+    // notifications of this satellite. When nil (e.g. a satellite that does
+    // not send notifications, or an early-return / error response), the node
+    // must leave its stored notifications of this satellite unchanged. When
+    // set, it replaces them (see NotificationSet).
+    NotificationSet notifications = 7;
+}
+
+message GetTimeRequest {}
+
+message GetTimeResponse {
+    google.protobuf.Timestamp timestamp = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+}
+
+message ContactPingRequest {}
+
+message ContactPingResponse {}
+
+message PingMeRequest {
+    string address = 1;
+    node.NodeTransport transport = 2;
+
+    // PingMe may happen over TLS, which means there is not necessarily an
+    // opportunity to use NoiseSessionAttestation instead of
+    // NoiseKeyAttestation.
+    noise.NoiseKeyAttestation noise_key_attestation = 3;
+}
+
+message PingMeResponse {}
+
+message AmnestyReportRequest {
+    repeated LostPiece lost_pieces = 1;
+}
+
+enum LostPieceReason {
+    ZERO_HASH = 0;
+    HASH_MISMATCH = 1;
+    READ_FAILURE = 2;
+}
+
+message LostPiece {
+    bytes piece_id = 1 [(gogoproto.customtype) = "PieceID",
+(gogoproto.nullable) = false];
+    LostPieceReason reason = 2;
+}
+
+message AmnestyReportResponse {
+}

@@ -6,7 +6,7 @@ option go_package = "storj.io/common/pb";
 
 package contact;
 
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 import "node.proto";
 import "noise.proto";
@@ -109,7 +109,7 @@ message CheckInResponse {
 message GetTimeRequest {}
 
 message GetTimeResponse {
-    google.protobuf.Timestamp timestamp = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp timestamp = 1 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
 }
 
 message ContactPingRequest {}
@@ -139,8 +139,8 @@ enum LostPieceReason {
 }
 
 message LostPiece {
-    bytes piece_id = 1 [(gogoproto.customtype) = "PieceID",
-(gogoproto.nullable) = false];
+    bytes piece_id = 1 [(pico.field).custom_type = "storj.io/common/storj.PieceID",
+(pico.field).always_present = true];
     LostPieceReason reason = 2;
 }
 

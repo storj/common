@@ -22,7 +22,6 @@ var (
 )
 
 var ignoreProto = map[string]bool{
-	"gogo.proto": true,
 	"pico.proto": true,
 }
 
@@ -49,9 +48,12 @@ func main() {
 		// cleanup previous files
 		localfiles, err := filepath.Glob("*.pb.go")
 		check(err)
+		picofiles, err := filepath.Glob("*.pico.go")
+		check(err)
 
 		all := []string{}
 		all = append(all, localfiles...)
+		all = append(all, picofiles...)
 		for _, match := range all {
 			_ = os.Remove(match)
 		}
@@ -63,12 +65,10 @@ func main() {
 
 		protofiles = ignore(protofiles)
 
-		overrideImports := ",Mgoogle/protobuf/timestamp.proto=storj.io/common/pb" +
-			",Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types"
 		args := []string{
 			"--lint_out=.",
-			"--gogo_out=paths=source_relative" + overrideImports + ":.",
-			"--go-drpc_out=protolib=github.com/gogo/protobuf,paths=source_relative:.",
+			"--pico_out=field_access=true,paths=source_relative:.",
+			"--go-drpc_out=protolib=storj.io/common/pb/picodrpc,json=false,paths=source_relative:.",
 			"-I=.",
 		}
 		args = append(args, protofiles...)
@@ -84,7 +84,7 @@ func main() {
 	}
 
 	{
-		files, err := filepath.Glob("*.pb.go")
+		files, err := filepath.Glob("*_drpc.pb.go")
 		check(err)
 		for _, file := range files {
 			process(file)
@@ -94,6 +94,56 @@ func main() {
 	{
 		// format code to get rid of extra imports
 		out, err := exec.Command("goimports", "-local", "storj.io", "-w", ".").CombinedOutput()
+		if len(out) > 0 {
+			fmt.Println(string(out))
+		}
+		check(err)
+	}
+
+	{
+		// regenerate the gogo/protobuf test oracle from its own copies of the
+		// .proto files, which TestGogoProtoInSync keeps in sync with these.
+		dir := filepath.Join("internal", "gogopb")
+		old, err := filepath.Glob(filepath.Join(dir, "*.pb.go"))
+		check(err)
+		for _, file := range old {
+			check(os.Remove(file))
+		}
+
+		protofiles, err := filepath.Glob(filepath.Join(dir, "*.proto"))
+		check(err)
+		args := []string{
+			"--gogo_out=paths=source_relative" +
+				",Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types" +
+				",Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types:.",
+			"-I=.",
+		}
+		for _, file := range protofiles {
+			if name := filepath.Base(file); name != "gogo.proto" {
+				args = append(args, name)
+			}
+		}
+
+		cmd := exec.Command(*protoc, args...)
+		cmd.Dir = dir
+		fmt.Println(strings.Join(cmd.Args, " "))
+		out, err := cmd.CombinedOutput()
+		if len(out) > 0 {
+			fmt.Println(string(out))
+		}
+		check(err)
+
+		out, err = exec.Command("goimports", "-local", "storj.io", "-w", dir).CombinedOutput()
+		if len(out) > 0 {
+			fmt.Println(string(out))
+		}
+		check(err)
+	}
+
+	{
+		// regenerate the message list that the gogo/protobuf compatibility
+		// test iterates over.
+		out, err := exec.Command("go", "run", "gen_gogocompat.go").CombinedOutput()
 		if len(out) > 0 {
 			fmt.Println(string(out))
 		}

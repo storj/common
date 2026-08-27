@@ -6,14 +6,14 @@ option go_package = "storj.io/common/pb";
 
 package node;
 
-import "gogo.proto";
+import "pico.proto";
 import "google/protobuf/timestamp.proto";
 import "noise.proto";
 
 // Node represents a serialized NodeURL. A NodeURL should be able to be
 // converted to a pb.Node and vice versa.
 message Node {
-    bytes id = 1 [(gogoproto.customtype) = "NodeID", (gogoproto.nullable) = false];
+    bytes id = 1 [(pico.field).custom_type = "storj.io/common/storj.NodeID", (pico.field).always_present = true];
     NodeAddress address = 2;
 
     reserved 3 to 14;
@@ -90,6 +90,6 @@ message NodeRestrictions {
 message NodeVersion {
     string version = 1; // must be semver formatted
     string commit_hash = 2;
-    google.protobuf.Timestamp timestamp = 3 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    google.protobuf.Timestamp timestamp = 3 [(pico.field).custom_type = "time.Time", (pico.field).custom_serialize = "storj.io/picobuf/picoconv.Timestamp", (pico.field).always_present = true];
     bool release = 4;
 }
