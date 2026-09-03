@@ -73,12 +73,7 @@ func capturePackets(ctx context.Context, stop *atomic.Bool) {
 	}
 
 	for _, handle := range handles {
-		handle := handle // avoid loop capture bug
-
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-
+		wg.Go(func() {
 			src := gopacket.NewPacketSource(handle.eh, layers.LinkTypeEthernet)
 			for {
 				packet, err := src.NextPacket()
@@ -108,7 +103,7 @@ func capturePackets(ctx context.Context, stop *atomic.Bool) {
 					packet.Metadata().Timestamp.UnixNano(),
 				)
 			}
-		}()
+		})
 	}
 
 	// wait for all of the handles to be done and send a signal when they are

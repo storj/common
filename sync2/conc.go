@@ -23,12 +23,8 @@ func Concurrently(fns ...func() error) []error {
 // See also Concurrently and errs2.Group.
 func Go(fns ...func()) (wait func()) {
 	var wg sync.WaitGroup
-	wg.Add(len(fns))
 	for _, fn := range fns {
-		go func() {
-			defer wg.Done()
-			fn()
-		}()
+		wg.Go(fn)
 	}
 	return wg.Wait
 }
@@ -40,12 +36,8 @@ func Parallel[T any](vs []T, fn func(T)) {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(len(vs))
 	defer wg.Wait()
 	for _, v := range vs {
-		go func() {
-			defer wg.Done()
-			fn(v)
-		}()
+		wg.Go(func() { fn(v) })
 	}
 }
