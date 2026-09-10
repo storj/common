@@ -10,6 +10,7 @@ import (
 	"sync/atomic"
 
 	"github.com/calebcase/tmpfile"
+	"github.com/zeebo/errs"
 )
 
 // PipeWriter allows closing the writer with an error.
@@ -30,32 +31,19 @@ func NewTeeFile(readers int, tempdir string) ([]PipeReader, PipeWriter, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	handles := new(atomic.Int64)
-	handles.Store(int64(readers + 1)) // +1 for the writer
-
-	tee := &tee{
-		open: handles,
-	}
-	tee.nodata.L = &tee.mu
-	tee.noreader.L = &tee.mu
+	tee := newTee(readers, file)
 
 	teeReaders := make([]PipeReader, readers)
 	for i := range readers {
 		teeReaders[i] = &teeReader{
-			tee: tee,
-			buffer: &sharedFile{
-				file: file,
-				open: handles,
-			},
+			tee:    tee,
+			buffer: &sharedFile{file: file},
 		}
 	}
 
 	return teeReaders, &teeWriter{
-		tee: tee,
-		buffer: &sharedFile{
-			file: file,
-			open: handles,
-		},
+		tee:    tee,
+		buffer: &sharedFile{file: file},
 	}, nil
 }
 
@@ -64,22 +52,13 @@ func NewTeeInmemory(readers int, blockSize int64) ([]PipeReader, PipeWriter, err
 	block := &memoryBlock{
 		data: make([]byte, blockSize),
 	}
-	handles := new(atomic.Int64)
-	handles.Store(int64(readers + 1)) // +1 for the writer
-
-	tee := &tee{
-		open: handles,
-	}
-	tee.nodata.L = &tee.mu
-	tee.noreader.L = &tee.mu
+	tee := newTee(readers, nil)
 
 	teeReaders := make([]PipeReader, readers)
 	for i := range readers {
 		teeReaders[i] = &teeReader{
-			tee: tee,
-			buffer: &blockReader{
-				current: block,
-			},
+			tee:    tee,
+			buffer: newBlockReader(block),
 		}
 	}
 
@@ -95,12 +74,17 @@ func NewTeeInmemory(readers int, blockSize int64) ([]PipeReader, PipeWriter, err
 type tee struct {
 	noCopy noCopy //nolint:structcheck
 
-	open *atomic.Int64
+	// shared is released once every handle has been closed, nil when there is
+	// nothing to release.
+	shared io.Closer
 
 	mu       sync.Mutex
 	nodata   sync.Cond
 	noreader sync.Cond
 
+	// open counts the handles that have not been closed yet, so that the
+	// writer can give up once every reader is gone.
+	open    int
 	maxRead int64
 	write   int64
 
@@ -108,11 +92,31 @@ type tee struct {
 	writerErr  error
 }
 
+func newTee(readers int, shared io.Closer) *tee {
+	tee := &tee{
+		shared: shared,
+		open:   readers + 1, // +1 for the writer
+	}
+	tee.nodata.L = &tee.mu
+	tee.noreader.L = &tee.mu
+	return tee
+}
+
+// dropHandle drops one handle and releases the shared buffer once the last one
+// is gone. It must be called with tee.mu held.
+func (tee *tee) dropHandle() error {
+	tee.open--
+	if tee.open > 0 || tee.shared == nil {
+		return nil
+	}
+	return tee.shared.Close()
+}
+
 type teeReader struct {
 	tee    *tee
 	buffer io.ReadCloser
 	pos    int64
-	closed atomic.Int32
+	closed atomic.Bool
 }
 
 type teeWriter struct {
@@ -122,8 +126,14 @@ type teeWriter struct {
 
 // Read reads from the tee returning io.EOF when writer is closed or bufSize is reached.
 //
+// It returns io.ErrClosedPipe once the reader has been closed.
+//
 // It will block if the writer has not provided the data yet.
 func (reader *teeReader) Read(data []byte) (n int, err error) {
+	if reader.closed.Load() {
+		return 0, io.ErrClosedPipe
+	}
+
 	tee := reader.tee
 	tee.mu.Lock()
 
@@ -164,6 +174,13 @@ func (reader *teeReader) Read(data []byte) (n int, err error) {
 	readAmount, err := reader.buffer.Read(data[:toRead])
 	reader.pos += int64(readAmount)
 
+	// the buffer is not read under the lock, so Close can have released it
+	// after the check above; report that as a closed pipe rather than leaking
+	// whatever the released buffer returned.
+	if err != nil && reader.closed.Load() {
+		err = io.ErrClosedPipe
+	}
+
 	return readAmount, err
 }
 
@@ -182,7 +199,7 @@ func (writer *teeWriter) Write(data []byte) (n int, err error) {
 
 	for tee.write > tee.maxRead {
 		// are all readers already closed?
-		if tee.open.Load() <= 1 {
+		if tee.open <= 1 {
 			tee.mu.Unlock()
 			return 0, io.ErrClosedPipe
 		}
@@ -213,11 +230,18 @@ func (writer *teeWriter) Close() error { return writer.CloseWithError(nil) }
 // CloseWithError implements closing with error.
 func (reader *teeReader) CloseWithError(reason error) (err error) {
 	tee := reader.tee
-	if reader.closed.CompareAndSwap(0, 1) {
-		err = reader.buffer.Close()
-	}
 
+	if !reader.closed.CompareAndSwap(false, true) {
+		return nil
+	}
+	err = reader.buffer.Close()
+
+	// dropping the handle and waking the writer have to happen under the lock,
+	// otherwise the writer can read open and start waiting in between the two.
+	tee.mu.Lock()
+	err = errs.Combine(err, tee.dropHandle())
 	tee.noreader.Broadcast()
+	tee.mu.Unlock()
 
 	return err
 }
@@ -236,8 +260,9 @@ func (writer *teeWriter) CloseWithError(reason error) error {
 	}
 	tee.writerDone = true
 	tee.writerErr = reason
+	err := tee.dropHandle()
 	tee.nodata.Broadcast()
 	tee.mu.Unlock()
 
-	return writer.buffer.Close()
+	return errs.Combine(err, writer.buffer.Close())
 }

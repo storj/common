@@ -81,6 +81,40 @@ func TestTee_CloseWithError(t *testing.T) {
 	})
 }
 
+func TestTee_ClosedReadersUnblockWriter(t *testing.T) {
+	run(t, func(t *testing.T, readers []sync2.PipeReader, writer sync2.PipeWriter) {
+		for _, reader := range readers {
+			require.NoError(t, reader.Close())
+		}
+
+		// the first write is free, the writer only waits once it is ahead of
+		// the furthest read request. a regression blocks here until the test
+		// binary times out.
+		var err error
+		for range 2 {
+			if _, err = writer.Write(testrand.Bytes(testBlockSize)); err != nil {
+				break
+			}
+		}
+		require.ErrorIs(t, err, io.ErrClosedPipe)
+	})
+}
+
+func TestTee_ReadAfterClose(t *testing.T) {
+	run(t, func(t *testing.T, readers []sync2.PipeReader, writer sync2.PipeWriter) {
+		_, err := writer.Write(testrand.Bytes(testBlockSize))
+		require.NoError(t, err)
+
+		require.NoError(t, readers[0].Close())
+
+		_, err = readers[0].Read(make([]byte, testBlockSize))
+		require.ErrorIs(t, err, io.ErrClosedPipe)
+
+		require.NoError(t, readers[1].Close())
+		require.NoError(t, writer.Close())
+	})
+}
+
 const testBlockSize = 1024 // 1KiB
 
 func TestTee_Blocks(t *testing.T) {
