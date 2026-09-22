@@ -347,6 +347,36 @@
             ]
           },
           {
+            "name": "Notification",
+            "fields": [
+              {
+                "id": 1,
+                "name": "key",
+                "type": "string"
+              },
+              {
+                "id": 2,
+                "name": "title",
+                "type": "string"
+              },
+              {
+                "id": 3,
+                "name": "message",
+                "type": "string"
+              },
+              {
+                "id": 4,
+                "name": "link",
+                "type": "string"
+              },
+              {
+                "id": 5,
+                "name": "link_label",
+                "type": "string"
+              }
+            ]
+          },
+          {
             "name": "CheckInResponse",
             "fields": [
               {
@@ -378,6 +408,12 @@
                 "id": 6,
                 "name": "hashstore_settings",
                 "type": "HashstoreSettings"
+              },
+              {
+                "id": 7,
+                "name": "notifications",
+                "type": "Notification",
+                "is_repeated": true
               }
             ]
           },

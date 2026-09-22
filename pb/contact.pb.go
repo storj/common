@@ -232,16 +232,143 @@ func (m *HashstoreSettings) GetTtlToNew() bool {
 	return false
 }
 
+// Notification is a message from the satellite to the storage node operator.
+//
+// All fields are untrusted input: title, message and link_label must be
+// rendered as plain text, never as HTML.
+type Notification struct {
+	// stable identifier chosen by the satellite operator. Keys are scoped
+	// per satellite: the node's primary key is (satellite_id, key), so
+	// re-sending the same key updates the existing notification of the same
+	// satellite instead of creating a new one, and it never affects the
+	// notifications of other satellites.
+	Key     string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Title   string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	// optional link. Only absolute http:// or https:// URLs are allowed, the
+	// node must ignore any other scheme (e.g. javascript: or data:).
+	Link                 string   `protobuf:"bytes,4,opt,name=link,proto3" json:"link,omitempty"`
+	LinkLabel            string   `protobuf:"bytes,5,opt,name=link_label,json=linkLabel,proto3" json:"link_label,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Notification) Reset()         { *m = Notification{} }
+func (m *Notification) String() string { return proto.CompactTextString(m) }
+func (*Notification) ProtoMessage()    {}
+
+func (m *Notification) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Notification.Unmarshal(m, b)
+}
+func (m *Notification) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Notification.Marshal(b, m, deterministic)
+}
+func (m *Notification) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Notification.Merge(m, src)
+}
+func (m *Notification) XXX_Size() int {
+	return xxx_messageInfo_Notification.Size(m)
+}
+func (m *Notification) XXX_DiscardUnknown() {
+	xxx_messageInfo_Notification.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Notification proto.InternalMessageInfo
+
+func (m *Notification) GetKey() string {
+	if m != nil {
+		return m.Key
+	}
+	return ""
+}
+
+func (m *Notification) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *Notification) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *Notification) GetLink() string {
+	if m != nil {
+		return m.Link
+	}
+	return ""
+}
+
+func (m *Notification) GetLinkLabel() string {
+	if m != nil {
+		return m.LinkLabel
+	}
+	return ""
+}
+
+// NotificationSet is the full, current set of notifications of a satellite.
+//
+// It is wrapped in a message (instead of a plain repeated field) to make
+// presence explicit on the wire: proto3 cannot distinguish an absent repeated
+// field from an empty one.
+type NotificationSet struct {
+	// the node removes the notifications of this satellite whose key is not
+	// in the list, so an empty list retracts all of them.
+	Notifications        []*Notification `protobuf:"bytes,1,rep,name=notifications,proto3" json:"notifications,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *NotificationSet) Reset()         { *m = NotificationSet{} }
+func (m *NotificationSet) String() string { return proto.CompactTextString(m) }
+func (*NotificationSet) ProtoMessage()    {}
+
+func (m *NotificationSet) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NotificationSet.Unmarshal(m, b)
+}
+func (m *NotificationSet) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NotificationSet.Marshal(b, m, deterministic)
+}
+func (m *NotificationSet) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NotificationSet.Merge(m, src)
+}
+func (m *NotificationSet) XXX_Size() int {
+	return xxx_messageInfo_NotificationSet.Size(m)
+}
+func (m *NotificationSet) XXX_DiscardUnknown() {
+	xxx_messageInfo_NotificationSet.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NotificationSet proto.InternalMessageInfo
+
+func (m *NotificationSet) GetNotifications() []*Notification {
+	if m != nil {
+		return m.Notifications
+	}
+	return nil
+}
+
 type CheckInResponse struct {
-	PingNodeSuccess      bool               `protobuf:"varint,1,opt,name=ping_node_success,json=pingNodeSuccess,proto3" json:"ping_node_success,omitempty"`
-	PingErrorMessage     string             `protobuf:"bytes,2,opt,name=ping_error_message,json=pingErrorMessage,proto3" json:"ping_error_message,omitempty"`
-	PingNodeSuccessQuic  bool               `protobuf:"varint,3,opt,name=ping_node_success_quic,json=pingNodeSuccessQuic,proto3" json:"ping_node_success_quic,omitempty"`
-	NodeTagSuccess       bool               `protobuf:"varint,4,opt,name=node_tag_success,json=nodeTagSuccess,proto3" json:"node_tag_success,omitempty"`
-	NodeTagErrorMessage  string             `protobuf:"bytes,5,opt,name=node_tag_error_message,json=nodeTagErrorMessage,proto3" json:"node_tag_error_message,omitempty"`
-	HashstoreSettings    *HashstoreSettings `protobuf:"bytes,6,opt,name=hashstore_settings,json=hashstoreSettings,proto3" json:"hashstore_settings,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
+	PingNodeSuccess     bool               `protobuf:"varint,1,opt,name=ping_node_success,json=pingNodeSuccess,proto3" json:"ping_node_success,omitempty"`
+	PingErrorMessage    string             `protobuf:"bytes,2,opt,name=ping_error_message,json=pingErrorMessage,proto3" json:"ping_error_message,omitempty"`
+	PingNodeSuccessQuic bool               `protobuf:"varint,3,opt,name=ping_node_success_quic,json=pingNodeSuccessQuic,proto3" json:"ping_node_success_quic,omitempty"`
+	NodeTagSuccess      bool               `protobuf:"varint,4,opt,name=node_tag_success,json=nodeTagSuccess,proto3" json:"node_tag_success,omitempty"`
+	NodeTagErrorMessage string             `protobuf:"bytes,5,opt,name=node_tag_error_message,json=nodeTagErrorMessage,proto3" json:"node_tag_error_message,omitempty"`
+	HashstoreSettings   *HashstoreSettings `protobuf:"bytes,6,opt,name=hashstore_settings,json=hashstoreSettings,proto3" json:"hashstore_settings,omitempty"`
+	// notifications of this satellite. When nil (e.g. a satellite that does
+	// not send notifications, or an early-return / error response), the node
+	// must leave its stored notifications of this satellite unchanged. When
+	// set, it replaces them (see NotificationSet).
+	Notifications        *NotificationSet `protobuf:"bytes,7,opt,name=notifications,proto3" json:"notifications,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
 }
 
 func (m *CheckInResponse) Reset()         { *m = CheckInResponse{} }
@@ -304,6 +431,13 @@ func (m *CheckInResponse) GetNodeTagErrorMessage() string {
 func (m *CheckInResponse) GetHashstoreSettings() *HashstoreSettings {
 	if m != nil {
 		return m.HashstoreSettings
+	}
+	return nil
+}
+
+func (m *CheckInResponse) GetNotifications() *NotificationSet {
+	if m != nil {
+		return m.Notifications
 	}
 	return nil
 }
