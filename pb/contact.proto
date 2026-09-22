@@ -62,6 +62,18 @@ message HashstoreSettings {
     bool ttl_to_new = 5;
 }
 
+message Notification {
+    // stable identifier chosen by the satellite operator; the node derives
+    // the notification's primary key from it, so re-sending the same key
+    // updates the existing notification instead of creating a new one.
+    string key = 1;
+    string title = 2;
+    string message = 3;
+    string link = 4;
+    string link_label = 5;
+
+}
+
 message CheckInResponse {
     bool ping_node_success = 1;
     string ping_error_message = 2;
@@ -69,6 +81,8 @@ message CheckInResponse {
     bool node_tag_success = 4;
     string node_tag_error_message = 5;
     HashstoreSettings hashstore_settings = 6;
+    repeated Notification notifications = 7;
+
 }
 
 message GetTimeRequest {}

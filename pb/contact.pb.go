@@ -232,6 +232,77 @@ func (m *HashstoreSettings) GetTtlToNew() bool {
 	return false
 }
 
+type Notification struct {
+	// stable identifier chosen by the satellite operator; the node derives
+	// the notification's primary key from it, so re-sending the same key
+	// updates the existing notification instead of creating a new one.
+	Key                  string   `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Title                string   `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Message              string   `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Link                 string   `protobuf:"bytes,4,opt,name=link,proto3" json:"link,omitempty"`
+	LinkLabel            string   `protobuf:"bytes,5,opt,name=link_label,json=linkLabel,proto3" json:"link_label,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Notification) Reset()         { *m = Notification{} }
+func (m *Notification) String() string { return proto.CompactTextString(m) }
+func (*Notification) ProtoMessage()    {}
+
+func (m *Notification) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Notification.Unmarshal(m, b)
+}
+func (m *Notification) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Notification.Marshal(b, m, deterministic)
+}
+func (m *Notification) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Notification.Merge(m, src)
+}
+func (m *Notification) XXX_Size() int {
+	return xxx_messageInfo_Notification.Size(m)
+}
+func (m *Notification) XXX_DiscardUnknown() {
+	xxx_messageInfo_Notification.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Notification proto.InternalMessageInfo
+
+func (m *Notification) GetKey() string {
+	if m != nil {
+		return m.Key
+	}
+	return ""
+}
+
+func (m *Notification) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *Notification) GetMessage() string {
+	if m != nil {
+		return m.Message
+	}
+	return ""
+}
+
+func (m *Notification) GetLink() string {
+	if m != nil {
+		return m.Link
+	}
+	return ""
+}
+
+func (m *Notification) GetLinkLabel() string {
+	if m != nil {
+		return m.LinkLabel
+	}
+	return ""
+}
+
 type CheckInResponse struct {
 	PingNodeSuccess      bool               `protobuf:"varint,1,opt,name=ping_node_success,json=pingNodeSuccess,proto3" json:"ping_node_success,omitempty"`
 	PingErrorMessage     string             `protobuf:"bytes,2,opt,name=ping_error_message,json=pingErrorMessage,proto3" json:"ping_error_message,omitempty"`
@@ -239,6 +310,7 @@ type CheckInResponse struct {
 	NodeTagSuccess       bool               `protobuf:"varint,4,opt,name=node_tag_success,json=nodeTagSuccess,proto3" json:"node_tag_success,omitempty"`
 	NodeTagErrorMessage  string             `protobuf:"bytes,5,opt,name=node_tag_error_message,json=nodeTagErrorMessage,proto3" json:"node_tag_error_message,omitempty"`
 	HashstoreSettings    *HashstoreSettings `protobuf:"bytes,6,opt,name=hashstore_settings,json=hashstoreSettings,proto3" json:"hashstore_settings,omitempty"`
+	Notifications        []*Notification    `protobuf:"bytes,7,rep,name=notifications,proto3" json:"notifications,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -304,6 +376,13 @@ func (m *CheckInResponse) GetNodeTagErrorMessage() string {
 func (m *CheckInResponse) GetHashstoreSettings() *HashstoreSettings {
 	if m != nil {
 		return m.HashstoreSettings
+	}
+	return nil
+}
+
+func (m *CheckInResponse) GetNotifications() []*Notification {
+	if m != nil {
+		return m.Notifications
 	}
 	return nil
 }
