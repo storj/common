@@ -126,6 +126,10 @@ func TestAmountJSONMarshal(t *testing.T) {
 			Amount: AmountFromBaseUnits(100555555, USDollarsMicro),
 			JSON:   fmt.Sprintf(`{"value":"100.555555","currency":"%s"}`, USDollarsMicro.Symbol()),
 		},
+		{
+			Amount: AmountFromBaseUnits(100555555, USDC),
+			JSON:   fmt.Sprintf(`{"value":"100.555555","currency":"%s"}`, USDC.Symbol()),
+		},
 	}
 	for _, test := range tests {
 		b, err := json.Marshal(test.Amount)
@@ -169,6 +173,11 @@ func TestAmountJSONUnmarshal(t *testing.T) {
 			JSON:      fmt.Sprintf(`{"value":"100.555555","currency":"%s"}`, USDollarsMicro.Symbol()),
 			BaseUnits: 100555555,
 			Currency:  USDollarsMicro,
+		},
+		{
+			JSON:      fmt.Sprintf(`{"value":"100.555555","currency":"%s"}`, USDC.Symbol()),
+			BaseUnits: 100555555,
+			Currency:  USDC,
 		},
 		{
 			JSON:      fmt.Sprintf(`{"value":"10","currency":"%s"}`, LiveGoats.Symbol()),
