@@ -60,6 +60,8 @@ var (
 	// Bitcoin is the currency for the well-known cryptocurrency Bitcoin
 	// (a.k.a. BTC).
 	Bitcoin = New("Bitcoin (BTC)", "BTC", 8)
+	// USDC is the currency for the USD Coin stablecoin (a.k.a. USDC).
+	USDC = New("USDC stablecoin", "USDC", 6)
 	// LiveGoats is the currency of live goats, which some Storj network
 	// satellites may elect to support for payments.
 	LiveGoats = New("Live goats", "goats", 0)
@@ -79,6 +81,8 @@ func FromSymbol(symbol string) (*Currency, error) {
 		return USDollars, nil
 	case "USDMicro":
 		return USDollarsMicro, nil
+	case "USDC":
+		return USDC, nil
 	case "goats":
 		return LiveGoats, nil
 	default:
