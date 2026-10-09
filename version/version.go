@@ -225,7 +225,8 @@ func PercentageToCursorF(pct float64) RolloutBytes {
 	maxInt.SetBytes(maxBytes[:])
 	maskInt.Mul(maskInt.Div(&maxInt, big.NewInt(100*10000)), big.NewInt(int64(pct*10000)))
 	var cursor RolloutBytes
-	copy(cursor[:], maskInt.Bytes())
+	// NB: FillBytes keeps the leading zero bytes, which Bytes() would drop.
+	maskInt.FillBytes(cursor[:])
 
 	return cursor
 }

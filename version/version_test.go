@@ -4,6 +4,7 @@
 package version_test
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -217,4 +218,22 @@ func TestPercentageToCursorF_Precision(t *testing.T) {
 	cursorSmall := version.PercentageToCursorF(0.002)
 	cursorZero := version.PercentageToCursorF(0)
 	assert.NotEqual(t, cursorZero, cursorSmall)
+}
+
+func TestPercentageToCursorF_SmallPercentages(t *testing.T) {
+	// small percentages produce values with leading zero bytes, which must be preserved.
+	res := version.PercentageToCursorF(0.1)
+	assert.Equal(t, "00418937", hex.EncodeToString(res[:4]))
+
+	res = version.PercentageToCursorF(0.001)
+	assert.Equal(t, "0000a7c5", hex.EncodeToString(res[:4]))
+
+	// the cursor must not decrease as the percentage grows.
+	prev := version.PercentageToCursorF(0)
+	for i := 1; i <= 10000; i++ {
+		pct := float64(i) / 10000
+		cursor := version.PercentageToCursorF(pct)
+		require.True(t, bytes.Compare(prev[:], cursor[:]) <= 0, "cursor for %v%% is smaller than previous", pct)
+		prev = cursor
+	}
 }
