@@ -216,7 +216,7 @@ func PublicKeyEqual(a, b crypto.PublicKey) bool {
 
 // publicECDSAKeyEqual returns true if two ECDSA public keys are the same.
 func publicECDSAKeyEqual(a, b *ecdsa.PublicKey) bool {
-	return a.Curve == b.Curve && bigIntEq(a.X, b.X) && bigIntEq(a.Y, b.Y)
+	return a.Equal(b)
 }
 
 // publicRSAKeyEqual returns true if two RSA public keys are the same.
