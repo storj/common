@@ -46,12 +46,12 @@ func ProtoToConfig(proto pb.NoiseProtocol) (noise.Config, error) {
 	switch proto {
 	case pb.NoiseProtocol_NOISE_IK_25519_CHACHAPOLY_BLAKE2B:
 		return noise.Config{
-			CipherSuite: noise.NewCipherSuite(noise.DH25519, noise.CipherChaChaPoly, noise.HashBLAKE2b),
+			CipherSuite: noise.NewCipherSuite(DH25519, noise.CipherChaChaPoly, noise.HashBLAKE2b),
 			Pattern:     noise.HandshakeIK,
 		}, nil
 	case pb.NoiseProtocol_NOISE_IK_25519_AESGCM_BLAKE2B:
 		return noise.Config{
-			CipherSuite: noise.NewCipherSuite(noise.DH25519, noise.CipherAESGCM, noise.HashBLAKE2b),
+			CipherSuite: noise.NewCipherSuite(DH25519, noise.CipherAESGCM, noise.HashBLAKE2b),
 			Pattern:     noise.HandshakeIK,
 		}, nil
 	case pb.NoiseProtocol_NOISE_UNSET:

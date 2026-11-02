@@ -4,6 +4,7 @@ go 1.26.0
 
 require (
 	cloud.google.com/go/profiler v0.6.0
+	filippo.io/edwards25519 v1.2.0
 	github.com/bmkessler/fastdiv v0.0.0-20190227075523-41d5178f2044
 	github.com/calebcase/tmpfile v1.0.3
 	github.com/flynn/noise v1.1.0

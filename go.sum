@@ -23,6 +23,8 @@ cloud.google.com/go/profiler v0.6.0 h1:Vwxqgnp8CQwBNcKjO8luwLCh7qblEkcZCtMUvhU9Y
 cloud.google.com/go/profiler v0.6.0/go.mod h1:cJV7Qfj0o9PAC7q/xQTkM6qn2FO9So3TFk4P5O5yLis=
 cloud.google.com/go/storage v1.62.0 h1:w2pQJhpUqVerMON45vatE2FpCYsNTf7OHjkn6ux5mMU=
 cloud.google.com/go/storage v1.62.0/go.mod h1:T5hz3qzcpnxZ5LdKc7y8Tw7lh4v9zeeVyrD/cLJAzZU=
+filippo.io/edwards25519 v1.2.0 h1:crnVqOiS4jqYleHd9vaKZ+HKtHfllngJIiOpNpoJsjo=
+filippo.io/edwards25519 v1.2.0/go.mod h1:xzAOLCNug/yB62zG1bQ8uziwrIqIuxhctzJT18Q77mc=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.33.0 h1:l7+6kwRMJNwdCvYdDl7Eax+wzEYHSnNY7zrrfbhDdTA=
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.33.0/go.mod h1:pJTkW8hEUIIi3Pf65lPZOnn4Y81yCllX6IWk2jNXdkM=
