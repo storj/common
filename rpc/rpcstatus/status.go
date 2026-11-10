@@ -47,6 +47,7 @@ const (
 	ObjectKeyTooLong     StatusCode = 10017
 	ObjectVersionInvalid StatusCode = 10018
 	StreamIDInvalid      StatusCode = 10035
+	MetadataTooLarge     StatusCode = 10036
 
 	BucketNotFound StatusCode = 10019
 

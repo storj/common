@@ -32,6 +32,7 @@ func _() {
 	_ = x[ObjectKeyTooLong-10017]
 	_ = x[ObjectVersionInvalid-10018]
 	_ = x[StreamIDInvalid-10035]
+	_ = x[MetadataTooLarge-10036]
 	_ = x[BucketNotFound-10019]
 	_ = x[ObjectLockEndpointsDisabled-10000]
 	_ = x[ObjectLockDisabledForProject-10001]
@@ -66,19 +67,19 @@ func _() {
 
 const (
 	_StatusCode_name_0 = "UnknownOKCanceledInvalidArgumentDeadlineExceededNotFoundAlreadyExistsPermissionDeniedResourceExhaustedFailedPreconditionAbortedOutOfRangeUnimplementedInternalUnavailableDataLossUnauthenticatedMethodNotAllowed"
-	_StatusCode_name_1 = "ObjectLockEndpointsDisabledObjectLockDisabledForProjectObjectLockInvalidBucketStateObjectLockBucketRetentionConfigurationMissingObjectLockObjectRetentionConfigurationMissingObjectLockObjectProtectedObjectLockInvalidObjectStateObjectLockInvalidBucketRetentionConfigurationObjectLockUploadWithTTLObjectLockUploadWithTTLAPIKeyObjectLockUploadWithTTLAndDefaultRetentionObjectLockUploadWithTTLAPIKeyAndDefaultRetentionPlacementInvalidValuePlacementConflictingValuesBucketNameMissingBucketNameInvalidObjectKeyMissingObjectKeyTooLongObjectVersionInvalidBucketNotFoundDeleteObjectsNoItemsDeleteObjectsTooManyItemsTooManyTagsTagKeyInvalidTagKeyDuplicateTagValueInvalidTagsNotFoundChecksumsUnsupportedChecksumAlgorithmInvalidChecksumTypeUnexpectedChecksumMissingChecksumUnexpectedObjectMetadataMissingObjectMetadataIncludesInvalidInsufficientObjectMetadataIncludesStreamIDInvalid"
+	_StatusCode_name_1 = "ObjectLockEndpointsDisabledObjectLockDisabledForProjectObjectLockInvalidBucketStateObjectLockBucketRetentionConfigurationMissingObjectLockObjectRetentionConfigurationMissingObjectLockObjectProtectedObjectLockInvalidObjectStateObjectLockInvalidBucketRetentionConfigurationObjectLockUploadWithTTLObjectLockUploadWithTTLAPIKeyObjectLockUploadWithTTLAndDefaultRetentionObjectLockUploadWithTTLAPIKeyAndDefaultRetentionPlacementInvalidValuePlacementConflictingValuesBucketNameMissingBucketNameInvalidObjectKeyMissingObjectKeyTooLongObjectVersionInvalidBucketNotFoundDeleteObjectsNoItemsDeleteObjectsTooManyItemsTooManyTagsTagKeyInvalidTagKeyDuplicateTagValueInvalidTagsNotFoundChecksumsUnsupportedChecksumAlgorithmInvalidChecksumTypeUnexpectedChecksumMissingChecksumUnexpectedObjectMetadataMissingObjectMetadataIncludesInvalidInsufficientObjectMetadataIncludesStreamIDInvalidMetadataTooLarge"
 )
 
 var (
 	_StatusCode_index_0 = [...]uint8{0, 7, 9, 17, 32, 48, 56, 69, 85, 102, 120, 127, 137, 150, 158, 169, 177, 192, 208}
-	_StatusCode_index_1 = [...]uint16{0, 27, 55, 83, 128, 173, 198, 226, 271, 294, 323, 365, 413, 434, 460, 477, 494, 510, 526, 546, 560, 580, 605, 616, 629, 644, 659, 671, 691, 715, 737, 752, 770, 791, 820, 854, 869}
+	_StatusCode_index_1 = [...]uint16{0, 27, 55, 83, 128, 173, 198, 226, 271, 294, 323, 365, 413, 434, 460, 477, 494, 510, 526, 546, 560, 580, 605, 616, 629, 644, 659, 671, 691, 715, 737, 752, 770, 791, 820, 854, 869, 885}
 )
 
 func (i StatusCode) String() string {
 	switch {
 	case i <= 17:
 		return _StatusCode_name_0[_StatusCode_index_0[i]:_StatusCode_index_0[i+1]]
-	case 10000 <= i && i <= 10035:
+	case 10000 <= i && i <= 10036:
 		i -= 10000
 		return _StatusCode_name_1[_StatusCode_index_1[i]:_StatusCode_index_1[i+1]]
 	default:
