@@ -8,9 +8,10 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/zeebo/errs"
 
 	"storj.io/common/ranger"
 )
@@ -33,11 +34,7 @@ func HTTPRanger(ctx context.Context, url string) (_ ranger.Ranger, err error) {
 		return nil, err
 	}
 
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			log.Printf("Failed to close body: %v", err)
-		}
-	}()
+	defer func() { err = errs.Combine(err, resp.Body.Close()) }()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, Error.New("unexpected status code: %d (expected %d)",

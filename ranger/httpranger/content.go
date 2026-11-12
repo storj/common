@@ -12,7 +12,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"mime"
 	"mime/multipart"
 	"net/http"
@@ -115,40 +114,26 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 			"multipart/byteranges; boundary="+mw.Boundary())
 		sendContent = func() (io.ReadCloser, error) { return io.NopCloser(pr), nil }
 		// cause writing goroutine to fail and exit if CopyN doesn't finish.
-		defer func() {
-			if err := pr.Close(); err != nil {
-				log.Printf("Error Closing pipereader: %s", err)
-			}
-		}()
+		defer func() { _ = pr.Close() }()
 
 		go func() {
 			for _, ra := range ranges {
 				failed := func() bool {
 					part, err := mw.CreatePart(ra.mimeHeader(ctype, size))
 					if err != nil {
-						if err := pw.CloseWithError(err); err != nil {
-							log.Printf("Error Closing pipewriter with errors: %s", err)
-						}
+						_ = pw.CloseWithError(err)
 						return true
 					}
 
 					partReader, err := content.Range(ctx, ra.Start, ra.Length)
 					if err != nil {
-						if err := pw.CloseWithError(err); err != nil {
-							log.Printf("Error Closing pipewriter with errors: %s", err)
-						}
+						_ = pw.CloseWithError(err)
 						return true
 					}
 
-					defer func() {
-						if err := partReader.Close(); err != nil {
-							log.Printf("Error Closing partReader: %s", err)
-						}
-					}()
-					if _, err := io.Copy(part, partReader); err != nil {
-						if err := pw.CloseWithError(err); err != nil {
-							log.Printf("Error Closing pipewriter with errors: %s", err)
-						}
+					_, err = io.Copy(part, partReader)
+					if err = errs.Combine(err, partReader.Close()); err != nil {
+						_ = pw.CloseWithError(err)
 						return true
 					}
 
@@ -158,12 +143,8 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 					return
 				}
 			}
-			if err := mw.Close(); err != nil {
-				log.Printf("Error Closing writer: %s", err)
-			}
-			if err := pw.Close(); err != nil {
-				log.Printf("Error closing pipewriter: %s", err)
-			}
+			// A nil error closes the pipe with io.EOF.
+			_ = pw.CloseWithError(mw.Close())
 		}()
 	}
 
@@ -187,18 +168,21 @@ func ServeContent(ctx context.Context, w http.ResponseWriter, r *http.Request, n
 
 	w.WriteHeader(code)
 
-	if _, err := io.CopyN(w, rd, sendSize); err != nil && shouldLogErr(ctx, err) {
-		log.Printf("Error Copying bytes: %s", err)
+	// The status line is already sent, so the error can't reach the client
+	// or caller. Most failures here are the client going away or the
+	// source failing mid-stream, so they're counted rather than logged.
+	if _, err := io.CopyN(w, rd, sendSize); err != nil && isUnexpected(ctx, err) {
+		mon.Event("serve_content_copy_error")
 	}
 
-	if err := rd.Close(); err != nil && shouldLogErr(ctx, err) {
-		log.Printf("Error closing: %s", err)
+	if err := rd.Close(); err != nil && isUnexpected(ctx, err) {
+		mon.Event("serve_content_close_error")
 	}
 
 	return nil
 }
 
-func shouldLogErr(ctx context.Context, err error) bool {
+func isUnexpected(ctx context.Context, err error) bool {
 	switch {
 	case errs.Is(err, syscall.ECONNRESET), errs.Is(err, syscall.EPIPE):
 		return false
@@ -556,16 +540,12 @@ func (w *countingWriter) Write(p []byte) (n int, err error) {
 func rangesMIMESize(ranges []HTTPRange, contentType string, contentSize int64) (encSize int64) {
 	var w countingWriter
 	mw := multipart.NewWriter(&w)
+	// countingWriter never fails, so neither can the multipart writer.
 	for _, ra := range ranges {
-		if _, err := mw.CreatePart(ra.mimeHeader(contentType, contentSize)); err != nil {
-			log.Printf("Failed to Create Part: %s", err)
-		}
-
+		_, _ = mw.CreatePart(ra.mimeHeader(contentType, contentSize))
 		encSize += ra.Length
 	}
-	if err := mw.Close(); err != nil {
-		log.Printf("Failed to close: %s", err)
-	}
+	_ = mw.Close()
 
 	encSize += int64(w)
 	return encSize
