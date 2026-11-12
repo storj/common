@@ -42,9 +42,7 @@ func fields(v any) []Field {
 	}
 
 	var fields []Field
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-
+	for f := range t.Fields() {
 		tag := f.Tag.Get("protobuf")
 		if tag == "" {
 			continue

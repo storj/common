@@ -140,8 +140,7 @@ type gettableField struct {
 
 func getGettableFields(t reflect.Type) ([]gettableField, error) {
 	var fields []gettableField
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
+	for field := range t.Fields() {
 		header := field.Tag.Get("csv")
 		if header == "" {
 			return nil, Error.New("field %q missing csv tag", field.Name)

@@ -150,8 +150,7 @@ func (c *Conn) SetDeadline(t time.Time) error {
 // isSessionSuccessfulExit determines whether an error as returned from a network
 // operation is a QUIC "successful exit" application code.
 func isSessionSuccessfulExit(err error) bool {
-	var quicErr *quic.ApplicationError
-	if errors.As(err, &quicErr) {
+	if quicErr, ok := errors.AsType[*quic.ApplicationError](err); ok {
 		return quicErr.ErrorCode == quic.ApplicationErrorCode(quic.NoError)
 	}
 

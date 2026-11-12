@@ -46,8 +46,7 @@ func SetUserTimeout(conn *net.TCPConn, timeout time.Duration) error {
 // is returned when netutil.SetUserTimeout is called if running on the Windows
 // Subsystem for Linux (see Jira issue COM-23).
 func ignoreProtocolNotAvailable(err error) error {
-	var errno syscall.Errno
-	if errors.As(err, &errno) {
+	if errno, ok := errors.AsType[syscall.Errno](err); ok {
 		if errno == syscall.ENOPROTOOPT {
 			return nil
 		}

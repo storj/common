@@ -91,13 +91,13 @@ var (
 	}
 
 	optionalFieldsSet = OptionalFields{
-		String:     optString("STRING"),
-		Bool:       optBool(true),
-		Int64:      optInt64(1),
-		Uint64:     optUint64(2),
-		Float64:    optFloat64(3.3),
-		CustomCSV:  optCustomCSV("CUSTOMCSV"),
-		CustomText: optCustomText("CUSTOMTEXT"),
+		String:     new("STRING"),
+		Bool:       new(true),
+		Int64:      new(int64(1)),
+		Uint64:     new(uint64(2)),
+		Float64:    new(3.3),
+		CustomCSV:  new(CustomCSV("CUSTOMCSV")),
+		CustomText: new(CustomText("CUSTOMTEXT")),
 	}
 
 	definedFields = DefinedFields{
@@ -123,14 +123,6 @@ STRING,true,1,2,3.300000,~CUSTOMCSV~,~CUSTOMTEXT~
 STRING,true,1,2,3.300000
 `
 )
-
-func optString(v string) *string             { return &v }
-func optInt64(v int64) *int64                { return &v }
-func optUint64(v uint64) *uint64             { return &v }
-func optFloat64(v float64) *float64          { return &v }
-func optBool(v bool) *bool                   { return &v }
-func optCustomCSV(v CustomCSV) *CustomCSV    { return &v }
-func optCustomText(v CustomText) *CustomText { return &v }
 
 type badCSVField struct{}
 

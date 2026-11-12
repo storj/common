@@ -5,6 +5,7 @@ package rpccache
 
 import (
 	"container/list"
+	"slices"
 	"sync"
 	"time"
 
@@ -213,8 +214,7 @@ func (c *Cache) Take(key any) any {
 	defer c.mu.Unlock()
 
 	entries := c.entries[key]
-	for i := len(entries) - 1; i >= 0; i-- {
-		ent := entries[i]
+	for _, ent := range slices.Backward(entries) {
 
 		// if the entry is not unblocked, then skip considering it.
 		if !c.opts.unblocked(ent.val) {

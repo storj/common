@@ -151,8 +151,7 @@ type settableFields map[string]settableField
 
 func getSettableFields(t reflect.Type) (settableFields, error) {
 	fields := make(settableFields)
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
+	for field := range t.Fields() {
 		header := field.Tag.Get("csv")
 		if header == "" {
 			return nil, Error.New("field %q missing csv tag", field.Name)
