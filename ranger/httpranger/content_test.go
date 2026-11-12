@@ -10,10 +10,12 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"storj.io/common/ranger"
 )
@@ -749,12 +751,31 @@ func Test_parseRange(t *testing.T) {
 			expectedRange: nil,
 			expectedError: true,
 		},
+		{
+			name:          "negative suffix",
+			s:             "bytes=--5",
+			size:          100,
+			expectedRange: nil,
+			expectedError: true,
+		},
 	} {
 		gotRange, err := ParseRange(tt.s, tt.size)
 
 		assert.Equal(t, err != nil, tt.expectedError, tt.name)
 		assert.Equal(t, gotRange, tt.expectedRange, tt.name)
 	}
+}
+
+func TestParseRangeMaxRanges(t *testing.T) {
+	header := "bytes=0-0" + strings.Repeat(",0-0", maxRanges-1)
+
+	ranges, err := ParseRange(header, 100)
+	require.NoError(t, err)
+	require.Len(t, ranges, maxRanges)
+
+	ranges, err = ParseRange(header+",0-0", 100)
+	require.NoError(t, err)
+	require.Nil(t, ranges)
 }
 
 func Test_countingWriter_Write(t *testing.T) {

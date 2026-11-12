@@ -453,8 +453,14 @@ func (r HTTPRange) mimeHeader(contentType string, size int64) (rv textproto.MIME
 	}
 }
 
+// maxRanges is the most ranges ParseRange accepts, matching net/http's
+// default since Go 1.26.9 and 1.27.2. Each range is a separate read from
+// the Ranger.
+const maxRanges = 200
+
 // ParseRange parses a Range header string as per RFC 2616.
 // errNoOverlap is returned if none of the ranges overlap.
+// A header with more than 200 ranges is ignored.
 func ParseRange(s string, size int64) ([]HTTPRange, error) {
 	if s == "" {
 		return nil, nil // header not present
@@ -462,6 +468,9 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 	const b = "bytes="
 	if !strings.HasPrefix(s, b) {
 		return nil, ErrInvalidRange.New("%v", s)
+	}
+	if strings.Count(s[len(b):], ",")+1 > maxRanges {
+		return nil, nil
 	}
 
 	var ranges []HTTPRange
@@ -484,7 +493,7 @@ func ParseRange(s string, size int64) ([]HTTPRange, error) {
 			// which has to be a non-negative integer as per
 			// RFC 7233 Section 2.1 "Byte-Ranges".
 			i, err := strconv.ParseInt(end, 10, 64)
-			if err != nil {
+			if err != nil || i < 0 {
 				return nil, ErrInvalidRange.New("%v", ra)
 			}
 			if i > size {
