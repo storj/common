@@ -81,6 +81,17 @@ message Notification {
     string link_label = 5;
 }
 
+// NotificationSet is the full, current set of notifications of a satellite.
+//
+// It is wrapped in a message (instead of a plain repeated field) to make
+// presence explicit on the wire: proto3 cannot distinguish an absent repeated
+// field from an empty one.
+message NotificationSet {
+    // the node removes the notifications of this satellite whose key is not
+    // in the list, so an empty list retracts all of them.
+    repeated Notification notifications = 1;
+}
+
 message CheckInResponse {
     bool ping_node_success = 1;
     string ping_error_message = 2;
@@ -88,8 +99,11 @@ message CheckInResponse {
     bool node_tag_success = 4;
     string node_tag_error_message = 5;
     HashstoreSettings hashstore_settings = 6;
-    // notifications of this satellite. Possible only to introduce new notifications. No need for retract.
-    repeated Notification notifications = 7;
+    // notifications of this satellite. When nil (e.g. a satellite that does
+    // not send notifications, or an early-return / error response), the node
+    // must leave its stored notifications of this satellite unchanged. When
+    // set, it replaces them (see NotificationSet).
+    NotificationSet notifications = 7;
 }
 
 message GetTimeRequest {}

@@ -377,6 +377,17 @@
             ]
           },
           {
+            "name": "NotificationSet",
+            "fields": [
+              {
+                "id": 1,
+                "name": "notifications",
+                "type": "Notification",
+                "is_repeated": true
+              }
+            ]
+          },
+          {
             "name": "CheckInResponse",
             "fields": [
               {
@@ -412,8 +423,7 @@
               {
                 "id": 7,
                 "name": "notifications",
-                "type": "Notification",
-                "is_repeated": true
+                "type": "NotificationSet"
               }
             ]
           },
