@@ -32,7 +32,7 @@ require (
 	golang.org/x/sync v0.24.0
 	golang.org/x/sys v0.49.0
 	gopkg.in/yaml.v2 v2.4.0
-	storj.io/drpc v1.0.0
+	storj.io/drpc v1.1.0
 	storj.io/eventkit v0.0.0-20260707062648-170ec15e6f3f
 	storj.io/monkit-jaeger v0.0.0-20250523220404-454c1b072fad
 	storj.io/picobuf v0.9.4
