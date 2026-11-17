@@ -2,8 +2,8 @@
 // source: encryption.proto
 //
 // versions:
-//     protoc-gen-pico: v0.0.4
-//     protoc:          v6.30.2
+//     protoc-gen-pico: v0.9.4
+//     protoc:          v7.36.0
 
 package pb
 
@@ -37,8 +37,9 @@ func (m CipherSuite) String() string {
 }
 
 type EncryptionParameters struct {
-	CipherSuite CipherSuite `json:"cipher_suite,omitempty"`
-	BlockSize   int64       `json:"block_size,omitempty"`
+	CipherSuite      CipherSuite `json:"cipher_suite,omitzero"`
+	BlockSize        int64       `json:"block_size,omitzero"`
+	XXX_unrecognized []byte      `json:"-"`
 }
 
 func (m *EncryptionParameters) Encode(c *picobuf.Encoder) bool {
@@ -47,6 +48,7 @@ func (m *EncryptionParameters) Encode(c *picobuf.Encoder) bool {
 	}
 	c.Int32(1, (*int32)(&m.CipherSuite))
 	c.Int64(2, &m.BlockSize)
+	c.UnrecognizedFields(m.XXX_unrecognized)
 	return true
 }
 
@@ -56,4 +58,5 @@ func (m *EncryptionParameters) Decode(c *picobuf.Decoder) {
 	}
 	c.Int32(1, (*int32)(&m.CipherSuite))
 	c.Int64(2, &m.BlockSize)
+	c.UnrecognizedFields(6, &m.XXX_unrecognized)
 }

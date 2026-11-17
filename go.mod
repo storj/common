@@ -35,7 +35,7 @@ require (
 	storj.io/drpc v1.0.0
 	storj.io/eventkit v0.0.0-20260707062648-170ec15e6f3f
 	storj.io/monkit-jaeger v0.0.0-20250523220404-454c1b072fad
-	storj.io/picobuf v0.0.4
+	storj.io/picobuf v0.9.4
 )
 
 require (
@@ -103,6 +103,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/grpc v1.83.2 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -2,8 +2,8 @@
 // source: encryption_access.proto
 //
 // versions:
-//     protoc-gen-pico: v0.0.4
-//     protoc:          v6.30.2
+//     protoc-gen-pico: v0.9.4
+//     protoc:          v7.36.0
 
 package pb
 
@@ -12,10 +12,11 @@ import (
 )
 
 type EncryptionAccess struct {
-	DefaultKey                  []byte                         `json:"default_key,omitempty"`
-	StoreEntries                []*EncryptionAccess_StoreEntry `json:"store_entries,omitempty"`
-	DefaultPathCipher           CipherSuite                    `json:"default_path_cipher,omitempty"`
-	DefaultEncryptionParameters *EncryptionParameters          `json:"default_encryption_parameters,omitempty"`
+	DefaultKey                  []byte                         `json:"default_key,omitzero"`
+	StoreEntries                []*EncryptionAccess_StoreEntry `json:"store_entries,omitzero"`
+	DefaultPathCipher           CipherSuite                    `json:"default_path_cipher,omitzero"`
+	DefaultEncryptionParameters *EncryptionParameters          `json:"default_encryption_parameters,omitzero"`
+	XXX_unrecognized            []byte                         `json:"-"`
 }
 
 func (m *EncryptionAccess) Encode(c *picobuf.Encoder) bool {
@@ -27,7 +28,10 @@ func (m *EncryptionAccess) Encode(c *picobuf.Encoder) bool {
 		c.AlwaysMessage(2, x.Encode)
 	}
 	c.Int32(3, (*int32)(&m.DefaultPathCipher))
-	c.Message(4, m.DefaultEncryptionParameters.Encode)
+	if m.DefaultEncryptionParameters != nil {
+		c.Message(4, m.DefaultEncryptionParameters.Encode)
+	}
+	c.UnrecognizedFields(m.XXX_unrecognized)
 	return true
 }
 
@@ -36,11 +40,7 @@ func (m *EncryptionAccess) Decode(c *picobuf.Decoder) {
 		return
 	}
 	c.Bytes(1, &m.DefaultKey)
-	c.RepeatedMessage(2, func(c *picobuf.Decoder) {
-		x := new(EncryptionAccess_StoreEntry)
-		c.Loop(x.Decode)
-		m.StoreEntries = append(m.StoreEntries, x)
-	})
+	picobuf.DecodeRepeatedMessages(c, 2, &m.StoreEntries, (*EncryptionAccess_StoreEntry).Decode)
 	c.Int32(3, (*int32)(&m.DefaultPathCipher))
 	c.Message(4, func(c *picobuf.Decoder) {
 		if m.DefaultEncryptionParameters == nil {
@@ -48,15 +48,17 @@ func (m *EncryptionAccess) Decode(c *picobuf.Decoder) {
 		}
 		m.DefaultEncryptionParameters.Decode(c)
 	})
+	c.UnrecognizedFields(30, &m.XXX_unrecognized)
 }
 
 type EncryptionAccess_StoreEntry struct {
-	Bucket               []byte                `json:"bucket,omitempty"`
-	UnencryptedPath      []byte                `json:"unencrypted_path,omitempty"`
-	EncryptedPath        []byte                `json:"encrypted_path,omitempty"`
-	Key                  []byte                `json:"key,omitempty"`
-	PathCipher           CipherSuite           `json:"path_cipher,omitempty"`
-	EncryptionParameters *EncryptionParameters `json:"encryption_parameters,omitempty"`
+	Bucket               []byte                `json:"bucket,omitzero"`
+	UnencryptedPath      []byte                `json:"unencrypted_path,omitzero"`
+	EncryptedPath        []byte                `json:"encrypted_path,omitzero"`
+	Key                  []byte                `json:"key,omitzero"`
+	PathCipher           CipherSuite           `json:"path_cipher,omitzero"`
+	EncryptionParameters *EncryptionParameters `json:"encryption_parameters,omitzero"`
+	XXX_unrecognized     []byte                `json:"-"`
 }
 
 func (m *EncryptionAccess_StoreEntry) Encode(c *picobuf.Encoder) bool {
@@ -68,7 +70,10 @@ func (m *EncryptionAccess_StoreEntry) Encode(c *picobuf.Encoder) bool {
 	c.Bytes(3, &m.EncryptedPath)
 	c.Bytes(4, &m.Key)
 	c.Int32(5, (*int32)(&m.PathCipher))
-	c.Message(6, m.EncryptionParameters.Encode)
+	if m.EncryptionParameters != nil {
+		c.Message(6, m.EncryptionParameters.Encode)
+	}
+	c.UnrecognizedFields(m.XXX_unrecognized)
 	return true
 }
 
@@ -87,4 +92,5 @@ func (m *EncryptionAccess_StoreEntry) Decode(c *picobuf.Decoder) {
 		}
 		m.EncryptionParameters.Decode(c)
 	})
+	c.UnrecognizedFields(126, &m.XXX_unrecognized)
 }

@@ -2,8 +2,8 @@
 // source: types.proto
 //
 // versions:
-//     protoc-gen-pico: v0.0.4
-//     protoc:          v6.33.2
+//     protoc-gen-pico: v0.9.4
+//     protoc:          v7.36.0
 
 package macaroon
 
@@ -15,25 +15,26 @@ import (
 )
 
 type Caveat struct {
-	DisallowReads                              bool           `json:"disallow_reads,omitempty"`
-	DisallowWrites                             bool           `json:"disallow_writes,omitempty"`
-	DisallowLists                              bool           `json:"disallow_lists,omitempty"`
-	DisallowDeletes                            bool           `json:"disallow_deletes,omitempty"`
-	DisallowLocks                              bool           `json:"disallow_locks,omitempty"`
-	DisallowPutRetention                       bool           `json:"disallow_put_retention,omitempty"`
-	DisallowGetRetention                       bool           `json:"disallow_get_retention,omitempty"`
-	DisallowPutLegalHold                       bool           `json:"disallow_put_legal_hold,omitempty"`
-	DisallowGetLegalHold                       bool           `json:"disallow_get_legal_hold,omitempty"`
-	DisallowBypassGovernanceRetention          bool           `json:"disallow_bypass_governance_retention,omitempty"`
-	DisallowPutBucketObjectLockConfiguration   bool           `json:"disallow_put_bucket_object_lock_configuration,omitempty"`
-	DisallowGetBucketObjectLockConfiguration   bool           `json:"disallow_get_bucket_object_lock_configuration,omitempty"`
-	DisallowPutBucketNotificationConfiguration bool           `json:"disallow_put_bucket_notification_configuration,omitempty"`
-	DisallowGetBucketNotificationConfiguration bool           `json:"disallow_get_bucket_notification_configuration,omitempty"`
-	AllowedPaths                               []*Caveat_Path `json:"allowed_paths,omitempty"`
-	NotAfter                                   *time.Time     `json:"not_after,omitempty"`
-	NotBefore                                  *time.Time     `json:"not_before,omitempty"`
-	MaxObjectTtl                               *time.Duration `json:"max_object_ttl,omitempty"`
-	Nonce                                      []byte         `json:"nonce,omitempty"`
+	DisallowReads                              bool           `json:"disallow_reads,omitzero"`
+	DisallowWrites                             bool           `json:"disallow_writes,omitzero"`
+	DisallowLists                              bool           `json:"disallow_lists,omitzero"`
+	DisallowDeletes                            bool           `json:"disallow_deletes,omitzero"`
+	DisallowLocks                              bool           `json:"disallow_locks,omitzero"`
+	DisallowPutRetention                       bool           `json:"disallow_put_retention,omitzero"`
+	DisallowGetRetention                       bool           `json:"disallow_get_retention,omitzero"`
+	DisallowPutLegalHold                       bool           `json:"disallow_put_legal_hold,omitzero"`
+	DisallowGetLegalHold                       bool           `json:"disallow_get_legal_hold,omitzero"`
+	DisallowBypassGovernanceRetention          bool           `json:"disallow_bypass_governance_retention,omitzero"`
+	DisallowPutBucketObjectLockConfiguration   bool           `json:"disallow_put_bucket_object_lock_configuration,omitzero"`
+	DisallowGetBucketObjectLockConfiguration   bool           `json:"disallow_get_bucket_object_lock_configuration,omitzero"`
+	DisallowPutBucketNotificationConfiguration bool           `json:"disallow_put_bucket_notification_configuration,omitzero"`
+	DisallowGetBucketNotificationConfiguration bool           `json:"disallow_get_bucket_notification_configuration,omitzero"`
+	AllowedPaths                               []*Caveat_Path `json:"allowed_paths,omitzero"`
+	NotAfter                                   *time.Time     `json:"not_after,omitzero"`
+	NotBefore                                  *time.Time     `json:"not_before,omitzero"`
+	MaxObjectTtl                               *time.Duration `json:"max_object_ttl,omitzero"`
+	Nonce                                      []byte         `json:"nonce,omitzero"`
+	XXX_unrecognized                           []byte         `json:"-"`
 }
 
 func (m *Caveat) Encode(c *picobuf.Encoder) bool {
@@ -57,10 +58,17 @@ func (m *Caveat) Encode(c *picobuf.Encoder) bool {
 	c.Bool(13, &m.DisallowGetBucketObjectLockConfiguration)
 	c.Bool(14, &m.DisallowPutBucketNotificationConfiguration)
 	c.Bool(15, &m.DisallowGetBucketNotificationConfiguration)
-	(*picoconv.Timestamp)(m.NotAfter).PicoEncode(c, 20)
-	(*picoconv.Timestamp)(m.NotBefore).PicoEncode(c, 21)
-	(*picoconv.Duration)(m.MaxObjectTtl).PicoEncode(c, 22)
+	if m.NotAfter != nil {
+		(*picoconv.Timestamp)(m.NotAfter).PicoEncode(c, 20)
+	}
+	if m.NotBefore != nil {
+		(*picoconv.Timestamp)(m.NotBefore).PicoEncode(c, 21)
+	}
+	if m.MaxObjectTtl != nil {
+		(*picoconv.Duration)(m.MaxObjectTtl).PicoEncode(c, 22)
+	}
 	c.Bytes(30, &m.Nonce)
+	c.UnrecognizedFields(m.XXX_unrecognized)
 	return true
 }
 
@@ -77,40 +85,38 @@ func (m *Caveat) Decode(c *picobuf.Decoder) {
 	c.Bool(7, &m.DisallowGetRetention)
 	c.Bool(8, &m.DisallowPutLegalHold)
 	c.Bool(9, &m.DisallowGetLegalHold)
-	c.RepeatedMessage(10, func(c *picobuf.Decoder) {
-		x := new(Caveat_Path)
-		c.Loop(x.Decode)
-		m.AllowedPaths = append(m.AllowedPaths, x)
-	})
+	picobuf.DecodeRepeatedMessages(c, 10, &m.AllowedPaths, (*Caveat_Path).Decode)
 	c.Bool(11, &m.DisallowBypassGovernanceRetention)
 	c.Bool(12, &m.DisallowPutBucketObjectLockConfiguration)
 	c.Bool(13, &m.DisallowGetBucketObjectLockConfiguration)
 	c.Bool(14, &m.DisallowPutBucketNotificationConfiguration)
 	c.Bool(15, &m.DisallowGetBucketNotificationConfiguration)
-	if c.PendingField() == 20 {
+	if c.MatchField(20, 2) {
 		if m.NotAfter == nil {
 			m.NotAfter = new(time.Time)
 		}
 		(*picoconv.Timestamp)(m.NotAfter).PicoDecode(c, 20)
 	}
-	if c.PendingField() == 21 {
+	if c.MatchField(21, 2) {
 		if m.NotBefore == nil {
 			m.NotBefore = new(time.Time)
 		}
 		(*picoconv.Timestamp)(m.NotBefore).PicoDecode(c, 21)
 	}
-	if c.PendingField() == 22 {
+	if c.MatchField(22, 2) {
 		if m.MaxObjectTtl == nil {
 			m.MaxObjectTtl = new(time.Duration)
 		}
 		(*picoconv.Duration)(m.MaxObjectTtl).PicoDecode(c, 22)
 	}
 	c.Bytes(30, &m.Nonce)
+	c.UnrecognizedFields(1081147390, &m.XXX_unrecognized)
 }
 
 type Caveat_Path struct {
-	Bucket              []byte `json:"bucket,omitempty"`
-	EncryptedPathPrefix []byte `json:"encrypted_path_prefix,omitempty"`
+	Bucket              []byte `json:"bucket,omitzero"`
+	EncryptedPathPrefix []byte `json:"encrypted_path_prefix,omitzero"`
+	XXX_unrecognized    []byte `json:"-"`
 }
 
 func (m *Caveat_Path) Encode(c *picobuf.Encoder) bool {
@@ -119,6 +125,7 @@ func (m *Caveat_Path) Encode(c *picobuf.Encoder) bool {
 	}
 	c.Bytes(1, &m.Bucket)
 	c.Bytes(2, &m.EncryptedPathPrefix)
+	c.UnrecognizedFields(m.XXX_unrecognized)
 	return true
 }
 
@@ -128,4 +135,5 @@ func (m *Caveat_Path) Decode(c *picobuf.Decoder) {
 	}
 	c.Bytes(1, &m.Bucket)
 	c.Bytes(2, &m.EncryptedPathPrefix)
+	c.UnrecognizedFields(6, &m.XXX_unrecognized)
 }

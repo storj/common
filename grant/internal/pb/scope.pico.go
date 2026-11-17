@@ -2,8 +2,8 @@
 // source: scope.proto
 //
 // versions:
-//     protoc-gen-pico: v0.0.4
-//     protoc:          v6.30.2
+//     protoc-gen-pico: v0.9.4
+//     protoc:          v7.36.0
 
 package pb
 
@@ -12,9 +12,10 @@ import (
 )
 
 type Scope struct {
-	SatelliteAddr    string            `json:"satellite_addr,omitempty"`
-	ApiKey           []byte            `json:"api_key,omitempty"`
-	EncryptionAccess *EncryptionAccess `json:"encryption_access,omitempty"`
+	SatelliteAddr    string            `json:"satellite_addr,omitzero"`
+	ApiKey           []byte            `json:"api_key,omitzero"`
+	EncryptionAccess *EncryptionAccess `json:"encryption_access,omitzero"`
+	XXX_unrecognized []byte            `json:"-"`
 }
 
 func (m *Scope) Encode(c *picobuf.Encoder) bool {
@@ -23,7 +24,10 @@ func (m *Scope) Encode(c *picobuf.Encoder) bool {
 	}
 	c.String(1, &m.SatelliteAddr)
 	c.Bytes(2, &m.ApiKey)
-	c.Message(3, m.EncryptionAccess.Encode)
+	if m.EncryptionAccess != nil {
+		c.Message(3, m.EncryptionAccess.Encode)
+	}
+	c.UnrecognizedFields(m.XXX_unrecognized)
 	return true
 }
 
@@ -39,4 +43,5 @@ func (m *Scope) Decode(c *picobuf.Decoder) {
 		}
 		m.EncryptionAccess.Decode(c)
 	})
+	c.UnrecognizedFields(14, &m.XXX_unrecognized)
 }

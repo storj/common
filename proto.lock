@@ -93,7 +93,7 @@
                     "value": "time.Time"
                   },
                   {
-                    "name": "(pico.field).custom_cast",
+                    "name": "(pico.field).custom_serialize",
                     "value": "storj.io/picobuf/picoconv.Timestamp"
                   }
                 ]
@@ -108,7 +108,7 @@
                     "value": "time.Time"
                   },
                   {
-                    "name": "(pico.field).custom_cast",
+                    "name": "(pico.field).custom_serialize",
                     "value": "storj.io/picobuf/picoconv.Timestamp"
                   }
                 ]
@@ -123,7 +123,7 @@
                     "value": "time.Duration"
                   },
                   {
-                    "name": "(pico.field).custom_cast",
+                    "name": "(pico.field).custom_serialize",
                     "value": "storj.io/picobuf/picoconv.Duration"
                   }
                 ]
@@ -8338,6 +8338,24 @@
     {
       "protopath": "pb:/:pico.proto",
       "def": {
+        "enums": [
+          {
+            "name": "UnrecognizedFields",
+            "enum_fields": [
+              {
+                "name": "UNRECOGNIZED_CAPTURE"
+              },
+              {
+                "name": "UNRECOGNIZED_IGNORE",
+                "integer": 1
+              },
+              {
+                "name": "UNRECOGNIZED_REJECT",
+                "integer": 2
+              }
+            ]
+          }
+        ],
         "messages": [
           {
             "name": "MessageOptions",
@@ -8346,7 +8364,18 @@
                 "id": 1,
                 "name": "always_present",
                 "type": "bool"
+              },
+              {
+                "id": 3,
+                "name": "unrecognized_fields",
+                "type": "UnrecognizedFields"
               }
+            ],
+            "reserved_ids": [
+              2
+            ],
+            "reserved_names": [
+              "capture_unrecognized_fields"
             ]
           },
           {
@@ -8374,8 +8403,13 @@
               },
               {
                 "id": 3,
-                "name": "custom_cast",
+                "name": "custom_serialize",
                 "type": "string"
+              },
+              {
+                "id": 4,
+                "name": "value_presence",
+                "type": "bool"
               }
             ]
           },
