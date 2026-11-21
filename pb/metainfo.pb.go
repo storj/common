@@ -2368,11 +2368,14 @@ type BeginObjectRequest struct {
 	ChecksumAlgorithm             ObjectChecksumAlgorithm `protobuf:"varint,16,opt,name=checksum_algorithm,json=checksumAlgorithm,proto3,enum=metainfo.ObjectChecksumAlgorithm" json:"checksum_algorithm,omitempty"`
 	IsChecksumComposite           bool                    `protobuf:"varint,17,opt,name=is_checksum_composite,json=isChecksumComposite,proto3" json:"is_checksum_composite,omitempty"`
 	EncryptedChecksum             []byte                  `protobuf:"bytes,18,opt,name=encrypted_checksum,json=encryptedChecksum,proto3" json:"encrypted_checksum,omitempty"`
-	Retention                     *Retention              `protobuf:"bytes,12,opt,name=retention,proto3" json:"retention,omitempty"`
-	LegalHold                     bool                    `protobuf:"varint,13,opt,name=legal_hold,json=legalHold,proto3" json:"legal_hold,omitempty"`
-	XXX_NoUnkeyedLiteral          struct{}                `json:"-"`
-	XXX_unrecognized              []byte                  `json:"-"`
-	XXX_sizecache                 int32                   `json:"-"`
+	// is_checksum_default indicates that the uploader chose the checksum algorithm,
+	// rather than its client asking for it.
+	IsChecksumDefault    bool       `protobuf:"varint,19,opt,name=is_checksum_default,json=isChecksumDefault,proto3" json:"is_checksum_default,omitempty"`
+	Retention            *Retention `protobuf:"bytes,12,opt,name=retention,proto3" json:"retention,omitempty"`
+	LegalHold            bool       `protobuf:"varint,13,opt,name=legal_hold,json=legalHold,proto3" json:"legal_hold,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
 }
 
 func (m *BeginObjectRequest) Reset()         { *m = BeginObjectRequest{} }
@@ -2486,6 +2489,13 @@ func (m *BeginObjectRequest) GetEncryptedChecksum() []byte {
 		return m.EncryptedChecksum
 	}
 	return nil
+}
+
+func (m *BeginObjectRequest) GetIsChecksumDefault() bool {
+	if m != nil {
+		return m.IsChecksumDefault
+	}
+	return false
 }
 
 func (m *BeginObjectRequest) GetRetention() *Retention {

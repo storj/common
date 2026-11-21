@@ -3266,6 +3266,11 @@
                 "type": "bytes"
               },
               {
+                "id": 19,
+                "name": "is_checksum_default",
+                "type": "bool"
+              },
+              {
                 "id": 12,
                 "name": "retention",
                 "type": "Retention"

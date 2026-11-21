@@ -429,6 +429,9 @@ message BeginObjectRequest {
     ObjectChecksumAlgorithm checksum_algorithm    = 16;
     bool                    is_checksum_composite = 17;
     bytes                   encrypted_checksum    = 18;
+    // is_checksum_default indicates that the uploader chose the checksum algorithm,
+    // rather than its client asking for it.
+    bool                    is_checksum_default   = 19;
 
     Retention retention = 12;
     bool legal_hold = 13;
