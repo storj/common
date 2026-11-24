@@ -3,20 +3,37 @@
 
 package pb
 
-import "storj.io/picobuf"
+import (
+	"reflect"
+
+	"storj.io/picobuf"
+)
 
 // Message is an alias for picobuf.Message.
 type Message = picobuf.Message
 
-// Unmarshal is an alias for picobuf.Unmarshal.
-func Unmarshal(buf []byte, pb Message) error { return picobuf.Unmarshal(buf, pb) }
+// Unmarshal resets pb and decodes buf into it.
+//
+// picobuf.Unmarshal merges into pb, gogo/protobuf reset it first; callers
+// reuse messages and rely on the reset.
+func Unmarshal(buf []byte, pb Message) error {
+	reflect.ValueOf(pb).Elem().SetZero()
+	return picobuf.Unmarshal(buf, pb)
+}
 
 // Marshal encodes pb with map entries sorted by key.
 //
 // Signatures are verified over re-encoded messages, so the encoding must not
 // depend on map iteration order.
+//
+// An empty message encodes to a non-nil empty slice, as with gogo/protobuf,
+// so that it is not stored as NULL in a database.
 func Marshal(pb Message) ([]byte, error) {
-	return picobuf.MarshalOptions{Deterministic: true}.Marshal(pb)
+	data, err := picobuf.MarshalOptions{Deterministic: true}.Marshal(pb)
+	if data == nil && err == nil {
+		data = []byte{}
+	}
+	return data, err
 }
 
 // Size returns the encoded size of pb.
