@@ -2,7 +2,7 @@
 // source: edgeauth.proto
 //
 // versions:
-//     protoc-gen-pico: v0.9.4
+//     protoc-gen-pico: v0.9.6
 //     protoc:          v7.36.0
 
 package pb

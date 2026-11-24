@@ -2,7 +2,7 @@
 // source: piecestore2.proto
 //
 // versions:
-//     protoc-gen-pico: v0.9.4
+//     protoc-gen-pico: v0.9.6
 //     protoc:          v7.36.0
 
 package pb
@@ -10,6 +10,7 @@ package pb
 import (
 	strconv "strconv"
 	time "time"
+	unsafe "unsafe"
 
 	storj "storj.io/common/storj"
 	picobuf "storj.io/picobuf"
@@ -416,7 +417,7 @@ func (m *DeletePiecesRequest) Decode(c *picobuf.Decoder) {
 	if m == nil {
 		return
 	}
-	for c.MatchField(1, 2) && c.TakeRepeated(1) {
+	for c.MatchField(1, 2) && c.TakeRepeatedOfSize(1, unsafe.Sizeof(m.PieceIds[0])) {
 		var zero storj.PieceID
 		m.PieceIds = append(m.PieceIds, zero)
 		m.PieceIds[len(m.PieceIds)-1].PicoDecode(c, 1)
@@ -680,7 +681,7 @@ func (m *ExistsRequest) Decode(c *picobuf.Decoder) {
 	if m == nil {
 		return
 	}
-	for c.MatchField(1, 2) && c.TakeRepeated(1) {
+	for c.MatchField(1, 2) && c.TakeRepeatedOfSize(1, unsafe.Sizeof(m.PieceIds[0])) {
 		var zero storj.PieceID
 		m.PieceIds = append(m.PieceIds, zero)
 		m.PieceIds[len(m.PieceIds)-1].PicoDecode(c, 1)
