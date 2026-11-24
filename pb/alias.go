@@ -3,11 +3,7 @@
 
 package pb
 
-import (
-	"reflect"
-
-	"storj.io/picobuf"
-)
+import "storj.io/picobuf"
 
 // Message is an alias for picobuf.Message.
 type Message = picobuf.Message
@@ -16,8 +12,12 @@ type Message = picobuf.Message
 //
 // picobuf.Unmarshal merges into pb, gogo/protobuf reset it first; callers
 // reuse messages and rely on the reset.
-func Unmarshal(buf []byte, pb Message) error {
-	reflect.ValueOf(pb).Elem().SetZero()
+func Unmarshal[T any, PT interface {
+	*T
+	Message
+}](buf []byte, pb PT) error {
+	var zero T
+	*pb = zero
 	return picobuf.Unmarshal(buf, pb)
 }
 

@@ -282,7 +282,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 			b.SetBytes(int64(len(data)))
 			for b.Loop() {
 				msg := reflect.New(picoType).Interface().(pb.Message)
-				if err := pb.Unmarshal(data, msg); err != nil {
+				if err := picobuf.Unmarshal(data, msg); err != nil {
 					b.Fatal(err)
 				}
 			}

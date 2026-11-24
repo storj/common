@@ -16,6 +16,7 @@ import (
 
 	"storj.io/common/pb"
 	"storj.io/common/storj"
+	"storj.io/picobuf"
 )
 
 // gogoMessage is the gogo/protobuf side of a message pair.
@@ -69,7 +70,7 @@ func requireSameEncoding(t *testing.T, picoMsg pb.Message, gogoMsg gogoMessage, 
 
 	// picobuf must decode what gogo wrote and re-encode it unchanged, which is
 	// what signature verification across version skew relies on.
-	require.NoError(t, pb.Unmarshal(gogoData, empty))
+	require.NoError(t, picobuf.Unmarshal(gogoData, empty))
 	redone, err := pb.Marshal(empty)
 	require.NoError(t, err)
 	require.True(t, bytes.Equal(gogoData, redone), "picobuf round-trip differs:\n%x\n%x", gogoData, redone)
