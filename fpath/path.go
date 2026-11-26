@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -20,34 +19,42 @@ type FPath struct {
 	path     string // only for Storj URL - the path within the bucket, cleaned from duplicated slashes
 }
 
-var parseSchemeRegex = regexp.MustCompile(`^([a-zA-Z][a-zA-Z0-9+.-]*):(.*)$`)
-
+// parseScheme splits o into a URL scheme and the rest,
+// equivalent to matching `^([a-zA-Z][a-zA-Z0-9+.-]*):(.*)$`.
+//
+// Hand-written instead of a package-level regexp, so that importing
+// fpath does not link in package regexp.
 func parseScheme(o string) (scheme, rest string) {
-	found := parseSchemeRegex.FindStringSubmatch(o)
-
-	switch len(found) {
-	case 2:
-		return strings.ToLower(found[1]), ""
-	case 3:
-		return strings.ToLower(found[1]), found[2]
+	scheme, rest, ok := strings.Cut(o, ":")
+	if !ok || scheme == "" || !isAlpha(scheme[0]) || strings.Contains(rest, "\n") {
+		return "", o
 	}
-
-	return "", o
+	for i := 1; i < len(scheme); i++ {
+		c := scheme[i]
+		if !isAlpha(c) && !('0' <= c && c <= '9') && c != '+' && c != '.' && c != '-' {
+			return "", o
+		}
+	}
+	return strings.ToLower(scheme), rest
 }
 
-var parseBucketRegex = regexp.MustCompile(`^/{1,4}([^/]+)(/.*)?$`)
+func isAlpha(c byte) bool { return 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' }
 
+// parseBucket splits o into a bucket and the rest,
+// equivalent to matching `^/{1,4}([^/]+)(/.*)?$`.
 func parseBucket(o string) (bucket, rest string) {
-	found := parseBucketRegex.FindStringSubmatch(o)
-
-	switch len(found) {
-	case 2:
-		return found[1], ""
-	case 3:
-		return found[1], found[2]
+	trimmed := strings.TrimLeft(o, "/")
+	if slashes := len(o) - len(trimmed); slashes < 1 || slashes > 4 {
+		return "", o
 	}
-
-	return "", o
+	bucket, rest = trimmed, ""
+	if i := strings.IndexByte(trimmed, '/'); i >= 0 {
+		bucket, rest = trimmed[:i], trimmed[i:]
+	}
+	if bucket == "" || strings.Contains(rest, "\n") {
+		return "", o
+	}
+	return bucket, rest
 }
 
 // New creates new FPath from the given URL.
