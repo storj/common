@@ -49,8 +49,7 @@ func (s *secretboxEncrypter) OutBlockSize() int {
 	return s.blockSize + secretbox.Overhead
 }
 
-func calcNonce(startingNonce *storj.Nonce, blockNum int64) (rv *storj.Nonce, err error) {
-	rv = new(storj.Nonce)
+func calcNonce(startingNonce *storj.Nonce, blockNum int64) (rv storj.Nonce, err error) {
 	if copy(rv[:], (*startingNonce)[:]) != len(rv) {
 		return rv, Error.New("didn't copy memory?!")
 	}

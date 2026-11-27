@@ -6,6 +6,7 @@ package encryption
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"sync"
 
 	"storj.io/common/storj"
 	"storj.io/common/sync2/race2"
@@ -72,11 +73,21 @@ func calcGCMNonce(startingNonce *AESGCMNonce, blockNum int64) (rv [12]byte, err 
 	return rv, err
 }
 
+// gcmNoncePool holds nonce scratch buffers. cipher.AEAD is an interface, so
+// a nonce passed to it escapes; pooling avoids a heap allocation per block.
+// A per-transformer field would race, because encryption.Transform shares
+// one Transformer across concurrent Range calls.
+var gcmNoncePool = sync.Pool{New: func() any { return new([12]byte) }}
+
 func (s *aesgcmEncrypter) Transform(out, in []byte, blockNum int64) ([]byte, error) {
 	race2.ReadSlice(in)
 	race2.WriteSlice(out)
 
-	nonce, err := calcGCMNonce(s.startingNonce, blockNum)
+	nonce := gcmNoncePool.Get().(*[12]byte)
+	defer gcmNoncePool.Put(nonce)
+
+	var err error
+	*nonce, err = calcGCMNonce(s.startingNonce, blockNum)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +142,11 @@ func (s *aesgcmDecrypter) Transform(out, in []byte, blockNum int64) ([]byte, err
 	race2.ReadSlice(in)
 	race2.WriteSlice(out)
 
-	nonce, err := calcGCMNonce(s.startingNonce, blockNum)
+	nonce := gcmNoncePool.Get().(*[12]byte)
+	defer gcmNoncePool.Put(nonce)
+
+	var err error
+	*nonce, err = calcGCMNonce(s.startingNonce, blockNum)
 	if err != nil {
 		return nil, err
 	}

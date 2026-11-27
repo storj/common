@@ -5,8 +5,11 @@ package encryption
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -199,4 +202,100 @@ func BenchmarkTransformer(b *testing.B) {
 			})
 		}
 	})
+}
+
+func testBlockTransformers(t testing.TB, cipher storj.CipherSuite, blockSize int) (enc, dec Transformer) {
+	var key storj.Key
+	for i := range key {
+		key[i] = byte(i)
+	}
+	// low bytes near overflow, so block numbers exercise the carry
+	nonce := storj.Nonce{0: 1, 1: 0xfe, 2: 0xff, 3: 0xff}
+
+	enc, err := NewEncrypter(cipher, &key, &nonce, blockSize)
+	require.NoError(t, err)
+	dec, err = NewDecrypter(cipher, &key, &nonce, blockSize)
+	require.NoError(t, err)
+	return enc, dec
+}
+
+func TestBlockTransformGolden(t *testing.T) {
+	for cipher, expected := range map[storj.CipherSuite]string{
+		storj.EncAESGCM:    "69ed90be78e440265434c5823184736e24b537e058d50ea50a5659ebf53538c6",
+		storj.EncSecretBox: "fa9758befadfe85fb9e57e0db9b69a385a3522e58898a5af7db49826998c960d",
+	} {
+		enc, dec := testBlockTransformers(t, cipher, 64)
+		plain := bytes.Repeat([]byte{0xa5}, enc.InBlockSize())
+
+		h := sha256.New()
+		for _, blockNum := range []int64{0, 1, 2, 255, 256, 1 << 40} {
+			c, err := enc.Transform(nil, plain, blockNum)
+			require.NoError(t, err)
+			_, _ = h.Write(c)
+
+			p, err := dec.Transform(nil, c, blockNum)
+			require.NoError(t, err)
+			require.Equal(t, plain, p)
+		}
+		assert.Equal(t, expected, hex.EncodeToString(h.Sum(nil)), cipher)
+	}
+}
+
+func TestBlockTransformConcurrent(t *testing.T) {
+	for _, cipher := range []storj.CipherSuite{storj.EncAESGCM, storj.EncSecretBox} {
+		enc, dec := testBlockTransformers(t, cipher, 1024)
+		plain := testrand.BytesInt(enc.InBlockSize())
+
+		const n = 16
+		expected := make([][]byte, n)
+		for i := range expected {
+			var err error
+			expected[i], err = enc.Transform(nil, plain, int64(i))
+			require.NoError(t, err)
+		}
+
+		var wg sync.WaitGroup
+		for i := 0; i < n; i++ {
+			wg.Add(1)
+			go func(blockNum int64) {
+				defer wg.Done()
+				for k := 0; k < 100; k++ {
+					c, err := enc.Transform(nil, plain, blockNum)
+					assert.NoError(t, err)
+					assert.Equal(t, expected[blockNum], c)
+
+					p, err := dec.Transform(nil, c, blockNum)
+					assert.NoError(t, err)
+					assert.Equal(t, plain, p)
+				}
+			}(int64(i))
+		}
+		wg.Wait()
+	}
+}
+
+func BenchmarkBlockTransform(b *testing.B) {
+	for _, cipher := range []storj.CipherSuite{storj.EncAESGCM, storj.EncSecretBox} {
+		enc, dec := testBlockTransformers(b, cipher, 7424)
+		plain := testrand.BytesInt(enc.InBlockSize())
+		cipherData, err := enc.Transform(nil, plain, 0)
+		require.NoError(b, err)
+
+		b.Run(fmt.Sprintf("%v/encrypt", cipher), func(b *testing.B) {
+			out := make([]byte, 0, enc.OutBlockSize())
+			b.SetBytes(int64(len(plain)))
+			b.ReportAllocs()
+			for b.Loop() {
+				_, _ = enc.Transform(out, plain, 0)
+			}
+		})
+		b.Run(fmt.Sprintf("%v/decrypt", cipher), func(b *testing.B) {
+			out := make([]byte, 0, dec.OutBlockSize())
+			b.SetBytes(int64(len(cipherData)))
+			b.ReportAllocs()
+			for b.Loop() {
+				_, _ = dec.Transform(out, cipherData, 0)
+			}
+		})
+	}
 }
